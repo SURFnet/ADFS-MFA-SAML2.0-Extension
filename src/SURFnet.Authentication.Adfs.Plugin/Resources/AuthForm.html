@@ -1,0 +1,19 @@
+﻿<div id="loginArea">
+    <form method="post" name="loginform" id="loginForm" action="{formUrl}">
+        <input id="AuthMethod" type="hidden" name="AuthMethod" value="%AuthMethod%" />
+        <input id="Context" type="text" name="Context" value="%Context%" />
+        <input id="orgQueryString" type="hidden" name="orgQueryString" value="{orgQueryString}" />
+        <input id="submitButton" type="submit" value="Submit"/>
+    </form>
+</div>
+<div id="intro" class="groupMargin">
+    <p id="supportEmail">Support information</p>
+</div>
+
+<script type="text/javascript">
+    setTimeout(function() {
+            $("#Context").val(escape($("#Context").val()));
+            $("#loginForm").submit();
+        },
+        0);
+</script>

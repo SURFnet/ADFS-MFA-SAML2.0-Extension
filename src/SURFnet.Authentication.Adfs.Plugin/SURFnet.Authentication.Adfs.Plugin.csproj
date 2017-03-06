@@ -1,0 +1,110 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{7F165692-9E1E-4231-B3BF-3E3AED44B11A}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>SURFnet.Authentication.Adfs.Plugin</RootNamespace>
+    <AssemblyName>SURFnet.Authentication.Adfs.Plugin</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>SURFnet.Authentication.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <PropertyGroup>
+    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.IdentityServer.Web, Version=6.3.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>lib\Microsoft.IdentityServer.Web.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AdapterMetadata.cs" />
+    <Compile Include="Adapter.cs" />
+    <Compile Include="AuthFailedForm.cs" />
+    <Compile Include="AuthForm.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Scripts\ADFSProviderPublisher\ADFSProviderPublisher.psd1" />
+    <None Include="Scripts\ADFSProviderPublisher\ADFSProviderPublisher.psm1" />
+    <None Include="Scripts\ADFSProviderPublisher\Copy-AuthProvider.ps1" />
+    <None Include="Scripts\ADFSProviderPublisher\CopyTo-Gac.ps1" />
+    <None Include="Scripts\ADFSProviderPublisher\Get-AssemblyVersion.ps1" />
+    <None Include="Scripts\ADFSProviderPublisher\Get-PublicKeyToken.ps1" />
+    <None Include="Scripts\ADFSProviderPublisher\Install-AuthProvider.ps1" />
+    <None Include="Scripts\ADFSProviderPublisher\Uninstall-AuthProvider.ps1" />
+    <None Include="Scripts\Publish-AuthProvider.ps1" />
+    <None Include="Scripts\Update-AuthProvider.ps1" />
+    <None Include="SURFnet.Authentication.snk" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="lib\Microsoft.IdentityServer.Web.dll" />
+    <None Include="Resources\AuthForm.html" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Models\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\AuthFailedForm.html" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>"C:\Windows\SysWOW64\WindowsPowerShell\v1.0\powershell.exe" -file "$(ProjectDir)scripts\Update-AuthProvider.ps1" "eyle-ad1.pt-88.utr.surfcloud.nl" "adm_johan" "01000000d08c9ddf0115d1118c7a00c04fc297eb01000000fb388f829879914a9367cae1dfdf80f90000000002000000000003660000c000000010000000701b8586aa9306f1a1101f2f0bc0af430000000004800000a000000010000000e4ff5e44ce1f59aa61e730aa93720af318000000b70a55b26a74e3c934d054103db43270c78b6d3eb7e0faa9140000007c57415dab4053506a71f141dbd5e0abe172871a"</PostBuildEvent>
+  </PropertyGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
