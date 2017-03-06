@@ -73,7 +73,6 @@
     <None Include="Scripts\ADFSProviderPublisher\Copy-AuthProvider.ps1" />
     <None Include="Scripts\ADFSProviderPublisher\CopyTo-Gac.ps1" />
     <None Include="Scripts\ADFSProviderPublisher\Get-AssemblyVersion.ps1" />
-    <None Include="Scripts\ADFSProviderPublisher\Get-PublicKeyToken.ps1" />
     <None Include="Scripts\ADFSProviderPublisher\Install-AuthProvider.ps1" />
     <None Include="Scripts\ADFSProviderPublisher\Uninstall-AuthProvider.ps1" />
     <None Include="Scripts\Publish-AuthProvider.ps1" />

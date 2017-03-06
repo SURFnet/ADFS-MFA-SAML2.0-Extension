@@ -22,10 +22,8 @@ try{
 		return
 	}
 
-	$publicKeyToken = Get-PublicKeyToken $builtAssemblyPath
-	$version = Get-AssemblyVersion $builtAssemblyPath
-
-	$fullTypeName = "SURFnet.Authentication.Adfs.Plugin.Adapter, SURFnet.Authentication.Adfs.Plugin, Version={0}, Culture=neutral, PublicKeyToken={1}" -f $version, $publicKeyToken
+	$fullname = ([system.reflection.assembly]::loadfile($builtAssemblyPath)).FullName
+	$fullTypeName = "SURFnet.Authentication.Adfs.Plugin.Adapter, " + $fullname
 	write-host
 	$username = Read-Host "Please enter username"
 	$pwd = Read-Host "Please enter the password for $($userName)" -AsSecureString
