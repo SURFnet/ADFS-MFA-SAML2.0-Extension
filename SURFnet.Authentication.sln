@@ -5,16 +5,40 @@ VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SURFnet.Authentication.Adfs.Plugin", "src\SURFnet.Authentication.Adfs.Plugin\SURFnet.Authentication.Adfs.Plugin.csproj", "{7F165692-9E1E-4231-B3BF-3E3AED44B11A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SURFnet.Authentication.Core", "src\SURFnet.Authentication.Core\SURFnet.Authentication.Core.csproj", "{964A89B6-FD6D-4153-A489-40A9D7AF50C2}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionItems", "{9D4482C6-E4FA-48DD-A9C3-473B7FF90551}"
+	ProjectSection(SolutionItems) = preProject
+		src\SURFnet.Authentication.snk = src\SURFnet.Authentication.snk
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SURFnet.Authentication.Test", "src\SURFnet.Authentication.Test\SURFnet.Authentication.Test.csproj", "{F910F17B-758E-401E-8E30-08A95A4FE661}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
+		Deploy|Any CPU = Deploy|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{7F165692-9E1E-4231-B3BF-3E3AED44B11A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{7F165692-9E1E-4231-B3BF-3E3AED44B11A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7F165692-9E1E-4231-B3BF-3E3AED44B11A}.Deploy|Any CPU.ActiveCfg = Debug|Any CPU
+		{7F165692-9E1E-4231-B3BF-3E3AED44B11A}.Deploy|Any CPU.Build.0 = Debug|Any CPU
 		{7F165692-9E1E-4231-B3BF-3E3AED44B11A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7F165692-9E1E-4231-B3BF-3E3AED44B11A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{964A89B6-FD6D-4153-A489-40A9D7AF50C2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{964A89B6-FD6D-4153-A489-40A9D7AF50C2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{964A89B6-FD6D-4153-A489-40A9D7AF50C2}.Deploy|Any CPU.ActiveCfg = Deploy|Any CPU
+		{964A89B6-FD6D-4153-A489-40A9D7AF50C2}.Deploy|Any CPU.Build.0 = Deploy|Any CPU
+		{964A89B6-FD6D-4153-A489-40A9D7AF50C2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{964A89B6-FD6D-4153-A489-40A9D7AF50C2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F910F17B-758E-401E-8E30-08A95A4FE661}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F910F17B-758E-401E-8E30-08A95A4FE661}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F910F17B-758E-401E-8E30-08A95A4FE661}.Deploy|Any CPU.ActiveCfg = Deploy|Any CPU
+		{F910F17B-758E-401E-8E30-08A95A4FE661}.Deploy|Any CPU.Build.0 = Deploy|Any CPU
+		{F910F17B-758E-401E-8E30-08A95A4FE661}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F910F17B-758E-401E-8E30-08A95A4FE661}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -9,9 +9,13 @@
 
 namespace SURFnet.Authentication.Adfs.Plugin
 {
+    using System;
+
     using Microsoft.IdentityServer.Web.Authentication.External;
 
     using Properties;
+
+    using SURFnet.Authentication.Core;
 
     /// <summary>
     /// The presentation form for the adapter.
@@ -20,17 +24,24 @@ namespace SURFnet.Authentication.Adfs.Plugin
     public class AuthForm : IAdapterPresentationForm
     {
         /// <summary>
-        /// The query string to relay to the service.
+        /// The second factor request.
         /// </summary>
-        private readonly string queryString;
+        private readonly SecondFactorAuthRequest request;
+
+        /// <summary>
+        /// The service URL.
+        /// </summary>
+        private Uri serviceUrl;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AuthForm" /> class.
         /// </summary>
-        /// <param name="queryString">The query string to relay to the service.</param>
-        public AuthForm(string queryString)
+        /// <param name="serviceUrl">The service URL.</param>
+        /// <param name="request">The request.</param>
+        public AuthForm(Uri serviceUrl, SecondFactorAuthRequest request)
         {
-            this.queryString = queryString;
+            this.serviceUrl = serviceUrl;
+            this.request = request;
         }
 
         /// <summary>
@@ -40,12 +51,9 @@ namespace SURFnet.Authentication.Adfs.Plugin
         /// <returns>The form HTML.</returns>
         public string GetFormHtml(int lcid)
         {
-            var url = $"https://authenticatieservice.eylemansch.nl/Authentication/initiate";
-            
             var form = Resources.AuthForm;
-            form = form.Replace("{formUrl}", url);
-            form = form.Replace("{orgQueryString}", this.queryString);
-
+            form = form.Replace("%FormUrl%", this.serviceUrl.ToString());
+            form = form.Replace("%Request%", this.request.Serialize());
             return form;
         }
 
@@ -66,7 +74,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
         /// <returns>The page title.</returns>
         public string GetPageTitle(int lcid)
         {
-            return "SURFnet Strong Authentication";
+            return "Working...";
         }
     }
 }

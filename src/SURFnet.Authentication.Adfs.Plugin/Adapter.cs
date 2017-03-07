@@ -14,6 +14,10 @@ namespace SURFnet.Authentication.Adfs.Plugin
 
     using Microsoft.IdentityServer.Web.Authentication.External;
 
+    using SURFnet.Authentication.Adfs.Plugin.Properties;
+    using SURFnet.Authentication.Adfs.Plugin.Services;
+    using SURFnet.Authentication.Core;
+
     /// <summary>
     /// The ADFS MFA Adapter.
     /// </summary>
@@ -35,7 +39,16 @@ namespace SURFnet.Authentication.Adfs.Plugin
         /// <returns>A presentation form.</returns>
         public IAdapterPresentation BeginAuthentication(Claim identityClaim, HttpListenerRequest request, IAuthenticationContext context)
         {
-            return new AuthForm(request.Url.Query);
+            var url = Settings.Default.ServiceUrl;
+            var authRequest = new SecondFactorAuthRequest(request.Url)
+                                  {
+                                      SamlRequest = AuthService.CreateAuthnRequest(identityClaim).ToXml()
+                                  };
+
+            var cryptographicService = new CryptographicService();
+            cryptographicService.SignSamlRequest(authRequest);
+            cryptographicService.SignAuthRequest(authRequest);
+            return new AuthForm(url, authRequest);
         }
 
         /// <summary>

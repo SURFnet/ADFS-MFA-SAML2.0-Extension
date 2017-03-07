@@ -1,0 +1,21 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="SURFnet.Authentication.Adfs.Plugin.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="ServiceUrl" Type="System.Uri" Scope="Application">
+      <Value Profile="(Default)">https://authenticatieservice.eylemansch.nl/Authentication/initiate</Value>
+    </Setting>
+    <Setting Name="SecondFactorEndpoint" Type="System.Uri" Scope="Application">
+      <Value Profile="(Default)">https://gw.stepup.example.org/gssp/2nd-factor-only/single-sign-on</Value>
+    </Setting>
+    <Setting Name="AssertionConsumerUrl" Type="System.Uri" Scope="Application">
+      <Value Profile="(Default)">https://authenticatieservice.eylemansch.nl/authentication/consume-acs</Value>
+    </Setting>
+    <Setting Name="Issuer" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">http://authenticatieservice.eylemansch.nl</Value>
+    </Setting>
+    <Setting Name="SigningCertificate" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">D6208034477498F829593650CC1774167340B1E3</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>

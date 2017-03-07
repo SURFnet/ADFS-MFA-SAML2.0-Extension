@@ -4,14 +4,13 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{7F165692-9E1E-4231-B3BF-3E3AED44B11A}</ProjectGuid>
+    <ProjectGuid>{964A89B6-FD6D-4153-A489-40A9D7AF50C2}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SURFnet.Authentication.Adfs.Plugin</RootNamespace>
-    <AssemblyName>SURFnet.Authentication.Adfs.Plugin</AssemblyName>
+    <RootNamespace>SURFnet.Authentication.Core</RootNamespace>
+    <AssemblyName>SURFnet.Authentication.Core</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -21,7 +20,6 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -30,7 +28,6 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
     <SignAssembly>true</SignAssembly>
@@ -38,17 +35,19 @@
   <PropertyGroup>
     <AssemblyOriginatorKeyFile>..\SURFnet.Authentication.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
-  <PropertyGroup>
-    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Deploy|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Deploy\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Kentor.AuthServices, Version=0.19.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Kentor.AuthServices.0.19.0\lib\net45\Kentor.AuthServices.dll</HintPath>
       <Private>True</Private>
-    </Reference>
-    <Reference Include="Microsoft.IdentityServer.Web, Version=6.3.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>lib\Microsoft.IdentityServer.Web.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
@@ -65,63 +64,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AdapterMetadata.cs" />
-    <Compile Include="Adapter.cs" />
-    <Compile Include="AuthFailedForm.cs" />
-    <Compile Include="AuthForm.cs" />
+    <Compile Include="Extensions\ObjectExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-    <Compile Include="Properties\Settings.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>Settings.settings</DependentUpon>
-    </Compile>
-    <Compile Include="Services\CryptographicService.cs" />
-    <None Include="Scripts\SignAssemblies.ps1" />
-    <Compile Include="Services\AuthService.cs" />
+    <Compile Include="Saml2AuthenticationSecondFactorRequest.cs" />
+    <Compile Include="SecondFactorAuthRequest.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="app.config" />
     <None Include="packages.config" />
-    <None Include="Properties\Settings.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
-    </None>
-    <None Include="Scripts\ADFSProviderPublisher\ADFSProviderPublisher.psd1" />
-    <None Include="Scripts\ADFSProviderPublisher\ADFSProviderPublisher.psm1" />
-    <None Include="Scripts\ADFSProviderPublisher\Copy-AuthProvider.ps1" />
-    <None Include="Scripts\ADFSProviderPublisher\CopyTo-Gac.ps1" />
-    <None Include="Scripts\ADFSProviderPublisher\Get-AssemblyVersion.ps1" />
-    <None Include="Scripts\ADFSProviderPublisher\Install-AuthProvider.ps1" />
-    <None Include="Scripts\ADFSProviderPublisher\Uninstall-AuthProvider.ps1" />
-    <None Include="Scripts\Publish-AuthProvider.ps1" />
-    <None Include="Scripts\Update-AuthProvider.ps1" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="lib\Microsoft.IdentityServer.Web.dll" />
-    <None Include="Resources\AuthForm.html" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\SURFnet.Authentication.Core\SURFnet.Authentication.Core.csproj">
-      <Project>{964a89b6-fd6d-4153-a489-40a9d7af50c2}</Project>
-      <Name>SURFnet.Authentication.Core</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\AuthFailedForm.html" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Models\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
