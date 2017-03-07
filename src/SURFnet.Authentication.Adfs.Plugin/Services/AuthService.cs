@@ -32,7 +32,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
         /// <returns>The authentication request.</returns>
         public static Saml2AuthenticationSecondFactorRequest CreateAuthnRequest(Claim identityClaim)
         {
-            var nameIdentifier = new Saml2NameIdentifier(identityClaim.Value, new Uri("urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified"));
+            var nameIdentifier = new Saml2NameIdentifier(GetNameId(identityClaim), new Uri("urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified"));
 
             var authnRequest = new Saml2AuthenticationSecondFactorRequest
             {
@@ -44,6 +44,23 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
             };
 
             return authnRequest;
+        }
+
+        /// <summary>
+        /// Gets the name identifier based in the identity claim.
+        /// </summary>
+        /// <param name="identityClaim">The identity claim.</param>
+        /// <returns>A name identifier.</returns>
+        private static string GetNameId(Claim identityClaim)
+        {
+            var nameId = string.Empty;
+            if (identityClaim.Value.IndexOf('\\') > -1)
+            {
+                nameId = identityClaim.Value.Split('\\')[1];
+            }
+
+            // Todo:: add schaHomeOrganization
+            return nameId;
         }
     }
 }

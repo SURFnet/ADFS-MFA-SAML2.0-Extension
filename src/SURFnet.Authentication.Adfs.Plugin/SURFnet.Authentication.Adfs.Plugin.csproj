@@ -81,7 +81,6 @@
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
     <Compile Include="Services\CryptographicService.cs" />
-    <None Include="Scripts\SignAssemblies.ps1" />
     <Compile Include="Services\AuthService.cs" />
   </ItemGroup>
   <ItemGroup>
