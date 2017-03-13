@@ -10,6 +10,9 @@
 namespace SURFnet.Authentication.Core
 {
     using System;
+
+    using log4net;
+
     using Newtonsoft.Json;
 
     /// <summary>

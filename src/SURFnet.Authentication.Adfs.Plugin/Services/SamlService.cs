@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="AuthService.cs" company="Winvision bv">
+// <copyright file="SamlService.cs" company="Winvision bv">
 //   Copyright (c) Winvision bv.  All rights reserved.
 // </copyright>
 // <summary>
@@ -20,6 +20,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
 
     using Kentor.AuthServices.Saml2P;
 
+    using log4net;
+
     using SURFnet.Authentication.Adfs.Plugin.Properties;
     using SURFnet.Authentication.Core;
 
@@ -29,12 +31,18 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
     public class SamlService
     {
         /// <summary>
+        /// Used for logging.
+        /// </summary>
+        private static readonly ILog Log = LogManager.GetLogger("SAML Service");
+
+        /// <summary>
         /// Creates the SAML authentication request with the correct name identifier.
         /// </summary>
         /// <param name="identityClaim">The identity claim.</param>
         /// <returns>The authentication request.</returns>
         public static Saml2AuthenticationSecondFactorRequest CreateAuthnRequest(Claim identityClaim)
         {
+            Log.DebugFormat("Creating AuthnRequest for identity '{0}'", identityClaim.Value);
             var nameIdentifier = new Saml2NameIdentifier(GetNameId(identityClaim), new Uri("urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified"));
 
             var authnRequest = new Saml2AuthenticationSecondFactorRequest
@@ -46,6 +54,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
                 Subject = new Saml2Subject(nameIdentifier)
             };
 
+            Log.DebugFormat("Created AuthnRequest for '{0}' with id '{1}'", identityClaim.Value, authnRequest.Id.Value);
             return authnRequest;
         }
 
@@ -56,6 +65,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
         /// <returns>A base64 encoded deflated SAML authentication request.</returns>
         public static string Deflate(Saml2AuthenticationSecondFactorRequest request)
         {
+            Log.DebugFormat("Deflate AuthnRequest with id '{0}'", request.Id.Value);
             using (var output = new MemoryStream())
             {
                 using (var gzip = new DeflateStream(output, CompressionMode.Compress))
@@ -88,6 +98,5 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
             //Todo: replace @ by _
             return "urn:collab:person:surfguest.nl:04b68be9-0187-4362-b2d1-52be719423d9";
         }
-
     }
 }

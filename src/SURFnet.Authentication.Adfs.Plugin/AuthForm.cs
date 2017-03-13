@@ -11,6 +11,8 @@ namespace SURFnet.Authentication.Adfs.Plugin
 {
     using System;
 
+    using log4net;
+
     using Microsoft.IdentityServer.Web.Authentication.External;
 
     using Properties;
@@ -31,7 +33,12 @@ namespace SURFnet.Authentication.Adfs.Plugin
         /// <summary>
         /// The service URL.
         /// </summary>
-        private Uri serviceUrl;
+        private readonly Uri serviceUrl;
+
+        /// <summary>
+        /// Used for logging.
+        /// </summary>
+        private readonly ILog log;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AuthForm" /> class.
@@ -40,6 +47,8 @@ namespace SURFnet.Authentication.Adfs.Plugin
         /// <param name="request">The request.</param>
         public AuthForm(Uri serviceUrl, SecondFactorAuthRequest request)
         {
+            this.log = LogManager.GetLogger("AuthForm");
+            this.log.Debug("Entering AuthForm.");
             this.serviceUrl = serviceUrl;
             this.request = request;
         }
@@ -51,9 +60,11 @@ namespace SURFnet.Authentication.Adfs.Plugin
         /// <returns>The form HTML.</returns>
         public string GetFormHtml(int lcid)
         {
+            var serializedRequest = this.request.Serialize();
+            this.log.DebugFormat("Rendering form for posting request to '{0}'.{1}Serialized Request:{2}", this.serviceUrl, Environment.NewLine, serializedRequest);
             var form = Resources.AuthForm;
             form = form.Replace("%FormUrl%", this.serviceUrl.ToString());
-            form = form.Replace("%Request%", this.request.Serialize());
+            form = form.Replace("%Request%", serializedRequest);
             return form;
         }
 

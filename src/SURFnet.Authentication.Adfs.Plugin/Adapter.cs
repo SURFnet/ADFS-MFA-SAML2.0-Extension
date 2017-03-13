@@ -11,6 +11,8 @@ namespace SURFnet.Authentication.Adfs.Plugin
 {
     using System.Net;
     using System.Security.Claims;
+    
+    using log4net;
 
     using Microsoft.IdentityServer.Web.Authentication.External;
 
@@ -24,6 +26,19 @@ namespace SURFnet.Authentication.Adfs.Plugin
     /// <seealso cref="Microsoft.IdentityServer.Web.Authentication.External.IAuthenticationAdapter" />
     public class Adapter : IAuthenticationAdapter
     {
+        /// <summary>
+        /// Used for logging.
+        /// </summary>
+        private readonly ILog log;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Adapter"/> class.
+        /// </summary>
+        public Adapter()
+        {
+            this.log = LogManager.GetLogger("ADFS Plugin");
+        }
+
         /// <summary>
         /// Gets the metadata.
         /// </summary>
@@ -39,6 +54,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
         /// <returns>A presentation form.</returns>
         public IAdapterPresentation BeginAuthentication(Claim identityClaim, HttpListenerRequest httpListenerRequest, IAuthenticationContext context)
         {
+            this.log.Debug("Entering BeginAuthentication");
             //ldap
             var url = Settings.Default.ServiceUrl;
             var authRequest = SamlService.CreateAuthnRequest(identityClaim);
@@ -51,7 +67,6 @@ namespace SURFnet.Authentication.Adfs.Plugin
 
             var cryptographicService = new CryptographicService();
             cryptographicService.SignSamlRequest(request);
-            cryptographicService.SignAuthRequest(request);
             return new AuthForm(url, request);
         }
 
@@ -102,6 +117,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
         /// <returns>A form if the the validation fails or claims if the validation succeeds.</returns>
         public IAdapterPresentation TryEndAuthentication(IAuthenticationContext context, IProofData proofData, HttpListenerRequest request, out Claim[] claims)
         {
+            this.log.Debug("Entering TryEndAuthentication");
             claims = null;
             var response = proofData.Properties["data"].ToString();
             if (!string.IsNullOrWhiteSpace(response))

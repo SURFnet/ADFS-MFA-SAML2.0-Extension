@@ -9,6 +9,8 @@
 
 namespace SURFnet.Authentication.Adfs.Plugin
 {
+    using log4net;
+
     using Microsoft.IdentityServer.Web.Authentication.External;
 
     using Properties;
@@ -19,6 +21,11 @@ namespace SURFnet.Authentication.Adfs.Plugin
     /// <seealso cref="Microsoft.IdentityServer.Web.Authentication.External.IAdapterPresentationForm" />
     public class AuthFailedForm : IAdapterPresentationForm
     {
+        /// <summary>
+        /// Used for logging.
+        /// </summary>
+        private readonly ILog log = LogManager.GetLogger("AuthFailedForm");
+
         /// <summary>
         /// Initializes a new instance of the <see cref="AuthFailedForm"/> class.
         /// </summary>
@@ -32,6 +39,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
         /// <param name="exception">The exception.</param>
         public AuthFailedForm(ExternalAuthenticationException exception)
         {
+            this.log.ErrorFormat("An error occured in the authentication request. Details: {0}", exception);
         }
 
         /// <summary>
