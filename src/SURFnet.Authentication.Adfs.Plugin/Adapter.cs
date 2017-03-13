@@ -9,10 +9,16 @@
 
 namespace SURFnet.Authentication.Adfs.Plugin
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
     using System.Net;
     using System.Security.Claims;
-    
+
+    using Kentor.AuthServices.Saml2P;
+
     using log4net;
+    using log4net.Util;
 
     using Microsoft.IdentityServer.Web.Authentication.External;
 
@@ -36,6 +42,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
         /// </summary>
         public Adapter()
         {
+            Kentor.AuthServices.Configuration.Options.GlobalEnableSha256XmlSignatures();
             this.log = LogManager.GetLogger("ADFS Plugin");
         }
 
@@ -118,16 +125,31 @@ namespace SURFnet.Authentication.Adfs.Plugin
         public IAdapterPresentation TryEndAuthentication(IAuthenticationContext context, IProofData proofData, HttpListenerRequest request, out Claim[] claims)
         {
             this.log.Debug("Entering TryEndAuthentication");
-            claims = null;
-            var response = proofData.Properties["data"].ToString();
-            if (!string.IsNullOrWhiteSpace(response))
+            try
             {
+                var response = SecondFactorAuthResponse.Deserialize(proofData);
+                this.log.DebugFormat("Received response for request with id '{0}'", response.SamlRequestId.Value);
+                var samlResponse = new Saml2Response(response.SamlResponse, response.SamlRequestId);
+                var responseClaims = samlResponse.GetClaims(Kentor.AuthServices.Configuration.Options.FromConfiguration).ToList();
+
+                var c = new List<Claim>();
+                foreach (var claimsIdentity in responseClaims)
+                {
+                    c.AddRange(claimsIdentity.Claims);
+                }
+
                 var claim = new Claim("http://schemas.microsoft.com/ws/2008/06/identity/claims/authenticationmethod", "http://schemas.microsoft.com/ws/2012/12/authmethod/otp");
-                claims = new[] { claim };
-                return null;
+                c.Add(claim);
+                claims = c.ToArray();
             }
-           
-            return new AuthFailedForm();            
+            catch (Exception ex)
+            {
+                this.log.ErrorFormat("Error while processing the saml response. Details: {0}", ex);
+                claims = null;
+                return new AuthFailedForm(ex);
+            }
+
+            return null;
         }
     }
 }
