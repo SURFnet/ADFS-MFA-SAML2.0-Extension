@@ -50,10 +50,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>lib\Microsoft.IdentityServer.Web.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.IdentityModel" />
@@ -68,6 +64,7 @@
     <Compile Include="AdapterMetadata.cs" />
     <Compile Include="Adapter.cs" />
     <Compile Include="AuthFailedForm.cs" />
+    <Compile Include="TestForm.cs" />
     <Compile Include="AuthForm.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
@@ -81,7 +78,7 @@
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
     <Compile Include="Services\CryptographicService.cs" />
-    <Compile Include="Services\AuthService.cs" />
+    <Compile Include="Services\SamlService.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
@@ -123,6 +120,9 @@
     <Folder Include="Models\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent />
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

@@ -7,17 +7,15 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-using System;
-using System.Text;
-
 namespace SURFnet.Authentication.Adfs.Plugin.Services
 {
+    using System;
     using System.Security.Cryptography;
     using System.Security.Cryptography.X509Certificates;
+    using System.Text;
 
     using SURFnet.Authentication.Adfs.Plugin.Properties;
     using SURFnet.Authentication.Core;
-    using SURFnet.Authentication.Core.Extensions;
 
     /// <summary>
     /// Handles the signing.
@@ -43,7 +41,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
         /// <param name="authRequest">The authentication request.</param>
         public void SignSamlRequest(SecondFactorAuthRequest authRequest)
         {
-            var tbs = $"{Uri.EscapeDataString(authRequest.SamlRequest)}&SigAlg={Uri.EscapeDataString(authRequest.SigAlg)}";
+            var tbs = $"SAMLRequest={Uri.EscapeDataString(authRequest.SamlRequest)}&SigAlg={Uri.EscapeDataString(authRequest.SigAlg)}";
             var bytes = Encoding.ASCII.GetBytes(tbs);
             var signature = this.Sign(bytes);
             authRequest.SamlSignature = signature;
@@ -55,7 +53,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
         /// <param name="authRequest">The authentication request.</param>
         public void SignAuthRequest(SecondFactorAuthRequest authRequest)
         {
-            var signature = this.Sign(Encoding.ASCII.GetBytes(authRequest.OriginalRequest));
+            var signature = this.Sign(Encoding.ASCII.GetBytes(authRequest.OriginalRequest + authRequest.SamlRequestId));
             authRequest.AuthRequestSignature = signature;
         }
 
@@ -85,7 +83,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
             catch (Exception e)
             {
                 //Todo: Log
-                //throw;
+                throw;
             }
             finally
             {

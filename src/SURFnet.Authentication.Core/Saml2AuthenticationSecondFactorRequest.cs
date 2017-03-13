@@ -52,5 +52,14 @@ namespace SURFnet.Authentication.Core
 
             return element;
         }
+
+        /// <summary>
+        /// Serializes the message into wellformed Xml.
+        /// </summary>
+        /// <returns>String containing the Xml data.</returns>
+        public override string ToXml()
+        {
+            return this.ToXElement().ToString();
+        }
     }
 }

@@ -3,19 +3,22 @@
   <Profiles />
   <Settings>
     <Setting Name="ServiceUrl" Type="System.Uri" Scope="Application">
-      <Value Profile="(Default)">https://authenticatieservice.eylemansch.nl/Authentication/initiate</Value>
+      <Value Profile="(Default)" />
     </Setting>
     <Setting Name="SecondFactorEndpoint" Type="System.Uri" Scope="Application">
-      <Value Profile="(Default)">https://gw.stepup.example.org/gssp/2nd-factor-only/single-sign-on</Value>
+      <Value Profile="(Default)" />
     </Setting>
     <Setting Name="AssertionConsumerUrl" Type="System.Uri" Scope="Application">
-      <Value Profile="(Default)">https://authenticatieservice.eylemansch.nl/authentication/consume-acs</Value>
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="Loa" Type="System.Uri" Scope="Application">
+      <Value Profile="(Default)" />
     </Setting>
     <Setting Name="Issuer" Type="System.String" Scope="Application">
-      <Value Profile="(Default)">http://authenticatieservice.eylemansch.nl</Value>
+      <Value Profile="(Default)" />
     </Setting>
     <Setting Name="SigningCertificate" Type="System.String" Scope="Application">
-      <Value Profile="(Default)">D6208034477498F829593650CC1774167340B1E3</Value>
+      <Value Profile="(Default)" />
     </Setting>
   </Settings>
 </SettingsFile>

@@ -1,0 +1,7 @@
+﻿@model SURFnet.Authentication.Core.SecondFactorAuthRequest
+
+<script type="text/javascript">
+    setTimeout(function () {
+        window.location = "@Html.Raw(Model.CreateSfoRequestUrl())";
+    },0);
+</script>

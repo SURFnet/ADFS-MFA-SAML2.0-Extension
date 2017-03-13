@@ -1,15 +1,18 @@
-﻿<div id="loginArea">
+﻿<noscript>
+    <div id="noscript" class="groupMargin">
+        <p>Je hebt JavaScript uitgeschakeld. Schakel Javascript in om verder te gaan.</p>
+    </div>
+</noscript>
+<div id="intro" class="groupMargin">
+    <p>Een moment geduld aub...</p>
+</div>
+<div id="loginArea">
     <form method="post" name="loginform" id="loginForm" action="%FormUrl%">
         <input id="AuthMethod" type="hidden" name="AuthMethod" value="%AuthMethod%" />
         <input id="Context" type="hidden" name="Context" value="%Context%" />
         <input id="request" type="hidden" name="request" value="%Request%" />
-        <input id="submitButton" type="submit" value="Klik hier om verder te gaan"/>
     </form>
 </div>
-<div id="intro" class="groupMargin">
-    <p id="supportEmail">Support information</p>
-</div>
-
 <script type="text/javascript">
     setTimeout(function () {
         var context = document.getElementById("Context");

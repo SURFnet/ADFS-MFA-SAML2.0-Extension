@@ -34,21 +34,25 @@ namespace SURFnet.Authentication.Adfs.Plugin
         /// Begins the authentication.
         /// </summary>
         /// <param name="identityClaim">The identity claim.</param>
-        /// <param name="request">The request.</param>
+        /// <param name="httpListenerRequest">The HTTP listener request.</param>
         /// <param name="context">The context.</param>
         /// <returns>A presentation form.</returns>
-        public IAdapterPresentation BeginAuthentication(Claim identityClaim, HttpListenerRequest request, IAuthenticationContext context)
+        public IAdapterPresentation BeginAuthentication(Claim identityClaim, HttpListenerRequest httpListenerRequest, IAuthenticationContext context)
         {
+            //ldap
             var url = Settings.Default.ServiceUrl;
-            var authRequest = new SecondFactorAuthRequest(request.Url)
-                                  {
-                                      SamlRequest = AuthService.CreateAuthnRequest(identityClaim).ToXml()
-                                  };
+            var authRequest = SamlService.CreateAuthnRequest(identityClaim);
+            var request = new SecondFactorAuthRequest(httpListenerRequest.Url)
+                              {
+                                  SamlRequestId = authRequest.Id.Value,
+                                  SamlRequest = SamlService.Deflate(authRequest),
+                                  SecondFactorEndpoint = Settings.Default.SecondFactorEndpoint
+                              };
 
             var cryptographicService = new CryptographicService();
-            cryptographicService.SignSamlRequest(authRequest);
-            cryptographicService.SignAuthRequest(authRequest);
-            return new AuthForm(url, authRequest);
+            cryptographicService.SignSamlRequest(request);
+            cryptographicService.SignAuthRequest(request);
+            return new AuthForm(url, request);
         }
 
         /// <summary>
@@ -99,8 +103,8 @@ namespace SURFnet.Authentication.Adfs.Plugin
         public IAdapterPresentation TryEndAuthentication(IAuthenticationContext context, IProofData proofData, HttpListenerRequest request, out Claim[] claims)
         {
             claims = null;
-            var pin = proofData.Properties["postData"].ToString();
-            if (pin == "12345")
+            var response = proofData.Properties["data"].ToString();
+            if (!string.IsNullOrWhiteSpace(response))
             {
                 var claim = new Claim("http://schemas.microsoft.com/ws/2008/06/identity/claims/authenticationmethod", "http://schemas.microsoft.com/ws/2012/12/authmethod/otp");
                 claims = new[] { claim };

@@ -1,0 +1,11 @@
+@model SURFnet.Authentication.Core.SecondFactorAuthRequest
+
+<form name="form" id="form" method="post" action="@Html.Raw(Model.OriginalRequest)">
+    @Html.Hidden("AuthMethod", Model.AuthMethod);
+    @Html.Hidden("Context", Html.Raw(Model.DecodedAdfsContext));
+    @Html.Hidden("Data", Model.SamlResponse);
+</form>
+
+<script>
+    setTimeout(function() { document.form.submit() },0);
+</script>
