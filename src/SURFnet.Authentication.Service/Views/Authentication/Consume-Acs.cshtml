@@ -3,7 +3,8 @@
 <form name="form" id="form" method="post" action="@Html.Raw(Model.OriginalRequest)">
     @Html.Hidden("AuthMethod", Model.AuthMethod);
     @Html.Hidden("Context", Html.Raw(Model.DecodedAdfsContext));
-    @Html.Hidden("Data", Model.SamlResponse);
+    @Html.Hidden("RequestId", Model.SamlRequestId);
+    <input type="hidden" name="Response" id="Response" value="@Html.Raw(this.ViewBag.SamlResponse)" />
 </form>
 
 <script>

@@ -47,7 +47,7 @@ namespace SURFnet.Authentication.Service.Controllers
                 throw new Exception("No Session found");
             }
 
-            request.SamlResponse = samlResponse;
+            this.ViewBag.SamlResponse = samlResponse;
             return this.View(request);
         }
     }

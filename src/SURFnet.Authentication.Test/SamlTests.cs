@@ -15,6 +15,8 @@ namespace SURFnet.Authentication.Test
     using System.IdentityModel.Tokens;
     using System.Linq;
     using System.Security.Claims;
+    using System.Text;
+    using System.Xml;
     using System.Xml.Linq;
 
     using Kentor.AuthServices;
@@ -45,19 +47,6 @@ namespace SURFnet.Authentication.Test
             var element = requestXml.Element(ns + "Subject");
             Assert.IsNotNull(element);
             Assert.AreEqual(claim.Value, ((XElement)element.FirstNode).Value);
-        }
-
-        [TestMethod]
-        public void EncodeDecode()
-        {
-            var stringToDecode = "https://test.nl/?RelayState=https%3A%2F%2Fsp.eylemansch.nl%2Fsimplesaml%2Fmodule.php%2Fcore%2Fauthenticate.php%3Fas%3Dadfs-sp";
-            var request = new SecondFactorAuthRequest();
-            request.OriginalRequest = stringToDecode;
-            var serializedObj = request.Serialize();
-            var deserialized = Uri.UnescapeDataString(serializedObj);
-            var obj = JsonConvert.DeserializeObject<SecondFactorAuthRequest>(deserialized);
-
-            Assert.AreEqual(stringToDecode, obj.OriginalRequest);
         }
     }
 }

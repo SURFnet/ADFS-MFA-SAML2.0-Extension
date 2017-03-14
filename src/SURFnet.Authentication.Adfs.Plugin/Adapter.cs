@@ -9,9 +9,12 @@
 
 namespace SURFnet.Authentication.Adfs.Plugin
 {
+    using System;
     using System.Net;
     using System.Security.Claims;
-    
+
+    using Kentor.AuthServices.Saml2P;
+
     using log4net;
 
     using Microsoft.IdentityServer.Web.Authentication.External;
@@ -36,6 +39,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
         /// </summary>
         public Adapter()
         {
+            Kentor.AuthServices.Configuration.Options.GlobalEnableSha256XmlSignatures();
             this.log = LogManager.GetLogger("ADFS Plugin");
         }
 
@@ -54,20 +58,28 @@ namespace SURFnet.Authentication.Adfs.Plugin
         /// <returns>A presentation form.</returns>
         public IAdapterPresentation BeginAuthentication(Claim identityClaim, HttpListenerRequest httpListenerRequest, IAuthenticationContext context)
         {
-            this.log.Debug("Entering BeginAuthentication");
-            //ldap
-            var url = Settings.Default.ServiceUrl;
-            var authRequest = SamlService.CreateAuthnRequest(identityClaim);
-            var request = new SecondFactorAuthRequest(httpListenerRequest.Url)
-                              {
-                                  SamlRequestId = authRequest.Id.Value,
-                                  SamlRequest = SamlService.Deflate(authRequest),
-                                  SecondFactorEndpoint = Settings.Default.SecondFactorEndpoint
-                              };
+            try
+            {
+                this.log.Debug("Entering BeginAuthentication");
+                //ldap
+                var url = Settings.Default.ServiceUrl;
+                var authRequest = SamlService.CreateAuthnRequest(identityClaim);
+                var request = new SecondFactorAuthRequest(httpListenerRequest.Url)
+                                  {
+                                      SamlRequestId = authRequest.Id.Value,
+                                      SamlRequest = SamlService.Deflate(authRequest),
+                                      SecondFactorEndpoint = Settings.Default.SecondFactorEndpoint
+                                  };
 
-            var cryptographicService = new CryptographicService();
-            cryptographicService.SignSamlRequest(request);
-            return new AuthForm(url, request);
+                var cryptographicService = new CryptographicService();
+                cryptographicService.SignSamlRequest(request);
+                return new AuthForm(url, request);
+            }
+            catch (Exception ex)
+            {
+                this.log.ErrorFormat("Error while initiating authentication:{0}", ex);
+                return new AuthFailedForm();
+            }
         }
 
         /// <summary>
@@ -118,16 +130,21 @@ namespace SURFnet.Authentication.Adfs.Plugin
         public IAdapterPresentation TryEndAuthentication(IAuthenticationContext context, IProofData proofData, HttpListenerRequest request, out Claim[] claims)
         {
             this.log.Debug("Entering TryEndAuthentication");
-            claims = null;
-            var response = proofData.Properties["data"].ToString();
-            if (!string.IsNullOrWhiteSpace(response))
+            try
             {
-                var claim = new Claim("http://schemas.microsoft.com/ws/2008/06/identity/claims/authenticationmethod", "http://schemas.microsoft.com/ws/2012/12/authmethod/otp");
-                claims = new[] { claim };
+                var response = SecondFactorAuthResponse.Deserialize(proofData);
+                this.log.InfoFormat("Received response for request with id '{0}'", response.SamlRequestId.Value);
+                var samlResponse = new Saml2Response(response.SamlResponse, response.SamlRequestId);
+                claims = SamlService.VerifyResponseAndGetAuthenticationClaim(samlResponse);
+                this.log.InfoFormat("Successfully processed response for request with id '{0}'", response.SamlRequestId.Value);
                 return null;
             }
-           
-            return new AuthFailedForm();            
+            catch (Exception ex)
+            {
+                this.log.ErrorFormat("Error while processing the saml response. Details: {0}", ex);
+                claims = null;
+                return new AuthFailedForm(ex);
+            }
         }
     }
 }

@@ -31,7 +31,12 @@ namespace SURFnet.Authentication.Adfs.Plugin
         /// <value>The authentication methods.</value>
         public string[] AuthenticationMethods => new[]
                                                      {
-                                                         "http://schemas.microsoft.com/ws/2012/12/authmethod/otp"
+                                                         "http://pilot.surfconext.nl/assurance/sfo-level1",
+                                                         "http://pilot.surfconext.nl/assurance/sfo-level2",
+                                                         "http://pilot.surfconext.nl/assurance/sfo-level3",
+                                                         "http://surfconext.nl/assurance/sfo-level1",
+                                                         "http://surfconext.nl/assurance/sfo-level2",
+                                                         "http://surfconext.nl/assurance/sfo-level3"
                                                      };
 
         /// <summary>

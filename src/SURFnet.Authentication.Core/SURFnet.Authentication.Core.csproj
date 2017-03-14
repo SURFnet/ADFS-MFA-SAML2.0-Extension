@@ -53,6 +53,9 @@
       <HintPath>..\..\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Microsoft.IdentityServer.Web">
+      <HintPath>..\SURFnet.Authentication.Adfs.Plugin\lib\Microsoft.IdentityServer.Web.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
@@ -70,6 +73,7 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Saml2AuthenticationSecondFactorRequest.cs" />
+    <Compile Include="SecondFactorAuthResponse.cs" />
     <Compile Include="SecondFactorAuthRequest.cs" />
   </ItemGroup>
   <ItemGroup>

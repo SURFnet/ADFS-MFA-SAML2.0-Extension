@@ -55,6 +55,8 @@ function Install-AuthProvider{
 
 			# Enable the provider in ADFS
 			Set-AdfsGlobalAuthenticationPolicy -AdditionalAuthenticationProvider $providerName
+
+			Restart-Service -Name adfssrv -Force
 		}
 		Catch
 		{

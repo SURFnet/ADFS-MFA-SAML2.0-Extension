@@ -11,8 +11,6 @@ namespace SURFnet.Authentication.Core
 {
     using System;
 
-    using log4net;
-
     using Newtonsoft.Json;
 
     /// <summary>
@@ -131,15 +129,22 @@ namespace SURFnet.Authentication.Core
             get;
             set;
         }
-
+        
         /// <summary>
-        /// Gets or sets the SAML response.
+        /// Deserializes the <see cref="SecondFactorAuthRequest"/> data.
         /// </summary>
-        /// <value>The SAML response.</value>
-        public string SamlResponse  
+        /// <param name="data">The data.</param>
+        /// <returns>A Second Factor Authentication Request.</returns>
+        public static SecondFactorAuthRequest Deserialize(string data)
         {
-            get;
-            set;
+            if (string.IsNullOrWhiteSpace(data))
+            {
+                return null;
+            }
+
+            data = Uri.UnescapeDataString(data);
+            var result = JsonConvert.DeserializeObject<SecondFactorAuthRequest>(data);
+            return result;
         }
 
         /// <summary>
