@@ -33,16 +33,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
         public AuthFailedForm()
         {
         }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AuthFailedForm" /> class.
-        /// </summary>
-        /// <param name="exception">The exception.</param>
-        public AuthFailedForm(ExternalAuthenticationException exception)
-        {
-            this.log.ErrorFormat("An error occured in the authentication request. Details: {0}", exception);
-        }
-
+        
         /// <summary>
         /// Gets the form HTML.
         /// </summary>
