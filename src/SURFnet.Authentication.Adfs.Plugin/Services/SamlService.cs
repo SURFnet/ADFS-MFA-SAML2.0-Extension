@@ -54,9 +54,9 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
             var authnRequest = new Saml2AuthenticationSecondFactorRequest
             {
                 DestinationUrl = Settings.Default.SecondFactorEndpoint,
-                AssertionConsumerServiceUrl = Settings.Default.AssertionConsumerUrl,
+                AssertionConsumerServiceUrl = identityProvider.SingleSignOnServiceUrl,
                 Issuer = serviceproviderConfiguration.SPOptions.EntityId,
-                RequestedAuthnContext = new Saml2RequestedAuthnContext(Settings.Default.Loa, AuthnContextComparisonType.Exact),
+                RequestedAuthnContext = new Saml2RequestedAuthnContext(Settings.Default.MinimalLoa, AuthnContextComparisonType.Exact),
                 Subject = new Saml2Subject(nameIdentifier)
             };
 

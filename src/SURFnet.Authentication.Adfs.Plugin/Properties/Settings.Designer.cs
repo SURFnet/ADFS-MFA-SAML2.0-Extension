@@ -26,9 +26,9 @@ namespace SURFnet.Authentication.Adfs.Plugin.Properties {
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("https://authenticatieservice.eylemansch.nl/Authentication/initiate")]
-        public global::System.Uri ServiceUrl {
+        public global::System.Uri AuthenticationServiceUrl {
             get {
-                return ((global::System.Uri)(this["ServiceUrl"]));
+                return ((global::System.Uri)(this["AuthenticationServiceUrl"]));
             }
         }
         
@@ -43,28 +43,19 @@ namespace SURFnet.Authentication.Adfs.Plugin.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("https://authenticatieservice.eylemansch.nl/authentication/consume-acs")]
-        public global::System.Uri AssertionConsumerUrl {
-            get {
-                return ((global::System.Uri)(this["AssertionConsumerUrl"]));
-            }
-        }
-        
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("D6208034477498F829593650CC1774167340B1E3")]
-        public string SigningCertificate {
+        public string SpSigningCertificate {
             get {
-                return ((string)(this["SigningCertificate"]));
+                return ((string)(this["SpSigningCertificate"]));
             }
         }
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("http://pilot.surfconext.nl/assurance/sfo-level2")]
-        public global::System.Uri Loa {
+        public global::System.Uri MinimalLoa {
             get {
-                return ((global::System.Uri)(this["Loa"]));
+                return ((global::System.Uri)(this["MinimalLoa"]));
             }
         }
     }

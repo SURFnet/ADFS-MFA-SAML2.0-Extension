@@ -72,14 +72,14 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
         /// </summary>
         private void LoadCertificate()
         {
-            this.log.DebugFormat("Search sigingin certificate with thumbprint '{0}' in LocalMachine store.", Settings.Default.SigningCertificate);
+            this.log.DebugFormat("Search sigingin certificate with thumbprint '{0}' in LocalMachine store.", Settings.Default.SpSigningCertificate);
             var store = new X509Store(StoreName.My, StoreLocation.LocalMachine);
             store.Open(OpenFlags.ReadOnly);
             try
             {
                 var cert = this.GetCertificateWithPrivateKey(store);
                 this.signingCertificate = cert;
-                this.log.DebugFormat("Found signing certificate with thumbprint '{0}'", Settings.Default.SigningCertificate);
+                this.log.DebugFormat("Found signing certificate with thumbprint '{0}'", Settings.Default.SpSigningCertificate);
             }
             catch (Exception e)
             {
@@ -100,16 +100,16 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
         /// <returns>A certificate for signing the SAML authentication request.</returns>
         private X509Certificate2 GetCertificateWithPrivateKey(X509Store store)
         {
-            var certCollection = store.Certificates.Find(X509FindType.FindByThumbprint, Settings.Default.SigningCertificate, false);
+            var certCollection = store.Certificates.Find(X509FindType.FindByThumbprint, Settings.Default.SpSigningCertificate, false);
             if (certCollection.Count == 0)
             {
-                throw new Exception($"No certificate found with thumbprint '{Settings.Default.SigningCertificate}'");
+                throw new Exception($"No certificate found with thumbprint '{Settings.Default.SpSigningCertificate}'");
             }
 
             var cert = certCollection[0];
             if (!cert.HasPrivateKey)
             {
-                throw new Exception($"Certificate with thumbprint '{Settings.Default.SigningCertificate}' doesn't have a private key.");
+                throw new Exception($"Certificate with thumbprint '{Settings.Default.SpSigningCertificate}' doesn't have a private key.");
             }
 
             return cert;

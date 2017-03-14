@@ -62,7 +62,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
             {
                 this.log.Debug("Entering BeginAuthentication");
                 //ldap
-                var url = Settings.Default.ServiceUrl;
+                var url = Settings.Default.AuthenticationServiceUrl;
                 var authRequest = SamlService.CreateAuthnRequest(identityClaim);
                 var request = new SecondFactorAuthRequest(httpListenerRequest.Url)
                                   {
