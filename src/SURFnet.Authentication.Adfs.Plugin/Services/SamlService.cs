@@ -11,15 +11,19 @@ using System;
 
 namespace SURFnet.Authentication.Adfs.Plugin.Services
 {
-    using System.IdentityModel.Metadata;
+    using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.IdentityModel.Tokens;
     using System.IO;
     using System.IO.Compression;
+    using System.Linq;
     using System.Security.Claims;
     using System.Text;
 
+    using Kentor.AuthServices;
+    using Kentor.AuthServices.Configuration;
     using Kentor.AuthServices.Saml2P;
-
+    
     using log4net;
 
     using SURFnet.Authentication.Adfs.Plugin.Properties;
@@ -42,6 +46,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
         /// <returns>The authentication request.</returns>
         public static Saml2AuthenticationSecondFactorRequest CreateAuthnRequest(Claim identityClaim)
         {
+            var serviceproviderConfiguration = Kentor.AuthServices.Configuration.Options.FromConfiguration;
+            var identityProvider = GetIdentityProvider(serviceproviderConfiguration);
             Log.DebugFormat("Creating AuthnRequest for identity '{0}'", identityClaim.Value);
             var nameIdentifier = new Saml2NameIdentifier(GetNameId(identityClaim), new Uri("urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified"));
 
@@ -49,15 +55,15 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
             {
                 DestinationUrl = Settings.Default.SecondFactorEndpoint,
                 AssertionConsumerServiceUrl = Settings.Default.AssertionConsumerUrl,
-                Issuer = new EntityId(Settings.Default.Issuer),
+                Issuer = serviceproviderConfiguration.SPOptions.EntityId,
                 RequestedAuthnContext = new Saml2RequestedAuthnContext(Settings.Default.Loa, AuthnContextComparisonType.Exact),
                 Subject = new Saml2Subject(nameIdentifier)
             };
 
-            Log.DebugFormat("Created AuthnRequest for '{0}' with id '{1}'", identityClaim.Value, authnRequest.Id.Value);
+            Log.InfoFormat("Created AuthnRequest for '{0}' with id '{1}'", identityClaim.Value, authnRequest.Id.Value);
             return authnRequest;
         }
-
+        
         /// <summary>
         /// Deflates the specified request.
         /// </summary>
@@ -78,6 +84,52 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
                 
                 return Convert.ToBase64String(output.ToArray());
             }
+        }
+
+        /// <summary>
+        /// Verifies the response and gets authentication claim from the response.
+        /// </summary>
+        /// <param name="samlResponse">The SAML response.</param>
+        /// <returns>The authentication claim.</returns>
+        public static Claim[] VerifyResponseAndGetAuthenticationClaim(Saml2Response samlResponse)
+        {
+            // The response is verified when the claims are retrieved.
+            var responseClaims = samlResponse.GetClaims(Kentor.AuthServices.Configuration.Options.FromConfiguration).ToList();
+
+            var claims = new List<Claim>();
+            foreach (var claimsIdentity in responseClaims)
+            {
+                var authClaim = claimsIdentity.Claims.FirstOrDefault(c => c.Type.Equals("http://schemas.microsoft.com/ws/2008/06/identity/claims/authenticationmethod"));
+                if (authClaim != null)
+                {
+                    claims.Add(authClaim);
+                    break;
+                }
+            }
+
+            return claims.ToArray();
+        }
+
+        /// <summary>
+        /// Gets the SURFConext identity provider from the configuration.
+        /// </summary>
+        /// <param name="serviceProviderConfiguration">The service provider configuration.</param>
+        /// <returns>The SURFConext identity provider.</returns>
+        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "Reviewed. Suppression is OK here.")]
+        private static IdentityProvider GetIdentityProvider(Options serviceProviderConfiguration)
+        {
+            var providers = serviceProviderConfiguration.IdentityProviders.KnownIdentityProviders.ToList();
+            if (providers.Count == 0)
+            {
+                throw new Exception("No identity providers found. Add the SURFConext identity provider before using Second Factor Authentication");
+            }
+
+            if (providers.Count > 1)
+            {
+                throw new Exception("Too many identity providers found. Add only the SURFConext identity provider");
+            }
+
+            return providers[0];
         }
 
         /// <summary>

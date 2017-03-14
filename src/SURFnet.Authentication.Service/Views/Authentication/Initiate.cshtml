@@ -1,5 +1,7 @@
 ﻿@model SURFnet.Authentication.Core.SecondFactorAuthRequest
-
+<span>
+Please wait while we redirect you to SURFConext...
+</span>
 <script type="text/javascript">
     setTimeout(function () {
         window.location = "@Html.Raw(Model.CreateSfoRequestUrl())";

@@ -10,15 +10,12 @@
 namespace SURFnet.Authentication.Adfs.Plugin
 {
     using System;
-    using System.Collections.Generic;
-    using System.Linq;
     using System.Net;
     using System.Security.Claims;
 
     using Kentor.AuthServices.Saml2P;
 
     using log4net;
-    using log4net.Util;
 
     using Microsoft.IdentityServer.Web.Authentication.External;
 
@@ -61,20 +58,28 @@ namespace SURFnet.Authentication.Adfs.Plugin
         /// <returns>A presentation form.</returns>
         public IAdapterPresentation BeginAuthentication(Claim identityClaim, HttpListenerRequest httpListenerRequest, IAuthenticationContext context)
         {
-            this.log.Debug("Entering BeginAuthentication");
-            //ldap
-            var url = Settings.Default.ServiceUrl;
-            var authRequest = SamlService.CreateAuthnRequest(identityClaim);
-            var request = new SecondFactorAuthRequest(httpListenerRequest.Url)
-                              {
-                                  SamlRequestId = authRequest.Id.Value,
-                                  SamlRequest = SamlService.Deflate(authRequest),
-                                  SecondFactorEndpoint = Settings.Default.SecondFactorEndpoint
-                              };
+            try
+            {
+                this.log.Debug("Entering BeginAuthentication");
+                //ldap
+                var url = Settings.Default.ServiceUrl;
+                var authRequest = SamlService.CreateAuthnRequest(identityClaim);
+                var request = new SecondFactorAuthRequest(httpListenerRequest.Url)
+                                  {
+                                      SamlRequestId = authRequest.Id.Value,
+                                      SamlRequest = SamlService.Deflate(authRequest),
+                                      SecondFactorEndpoint = Settings.Default.SecondFactorEndpoint
+                                  };
 
-            var cryptographicService = new CryptographicService();
-            cryptographicService.SignSamlRequest(request);
-            return new AuthForm(url, request);
+                var cryptographicService = new CryptographicService();
+                cryptographicService.SignSamlRequest(request);
+                return new AuthForm(url, request);
+            }
+            catch (Exception ex)
+            {
+                this.log.ErrorFormat("Error while initiating authentication:{0}", ex);
+                return new AuthFailedForm();
+            }
         }
 
         /// <summary>
@@ -128,19 +133,11 @@ namespace SURFnet.Authentication.Adfs.Plugin
             try
             {
                 var response = SecondFactorAuthResponse.Deserialize(proofData);
-                this.log.DebugFormat("Received response for request with id '{0}'", response.SamlRequestId.Value);
+                this.log.InfoFormat("Received response for request with id '{0}'", response.SamlRequestId.Value);
                 var samlResponse = new Saml2Response(response.SamlResponse, response.SamlRequestId);
-                var responseClaims = samlResponse.GetClaims(Kentor.AuthServices.Configuration.Options.FromConfiguration).ToList();
-
-                var c = new List<Claim>();
-                foreach (var claimsIdentity in responseClaims)
-                {
-                    c.AddRange(claimsIdentity.Claims);
-                }
-
-                var claim = new Claim("http://schemas.microsoft.com/ws/2008/06/identity/claims/authenticationmethod", "http://schemas.microsoft.com/ws/2012/12/authmethod/otp");
-                c.Add(claim);
-                claims = c.ToArray();
+                claims = SamlService.VerifyResponseAndGetAuthenticationClaim(samlResponse);
+                this.log.InfoFormat("Successfully processed response for request with id '{0}'", response.SamlRequestId.Value);
+                return null;
             }
             catch (Exception ex)
             {
@@ -148,8 +145,6 @@ namespace SURFnet.Authentication.Adfs.Plugin
                 claims = null;
                 return new AuthFailedForm(ex);
             }
-
-            return null;
         }
     }
 }
