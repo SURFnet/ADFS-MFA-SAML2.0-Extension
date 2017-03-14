@@ -32,16 +32,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
         /// <summary>
         /// Used for logging.
         /// </summary>
-        private readonly ILog log;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Adapter"/> class.
-        /// </summary>
-        public Adapter()
-        {
-            Kentor.AuthServices.Configuration.Options.GlobalEnableSha256XmlSignatures();
-            this.log = LogManager.GetLogger("ADFS Plugin");
-        }
+        private readonly Lazy<ILog> log = new Lazy<ILog>(() => LogManager.GetLogger("ADFS Plugin"));
 
         /// <summary>
         /// Gets the metadata.
@@ -60,8 +51,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
         {
             try
             {
-                this.log.Debug("Entering BeginAuthentication");
-                //ldap
+                this.log.Value.Debug("Enter BeginAuthentication");
                 var url = Settings.Default.AuthenticationServiceUrl;
                 var authRequest = SamlService.CreateAuthnRequest(identityClaim);
                 var request = new SecondFactorAuthRequest(httpListenerRequest.Url)
@@ -77,7 +67,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
             }
             catch (Exception ex)
             {
-                this.log.ErrorFormat("Error while initiating authentication:{0}", ex);
+                this.log.Value.ErrorFormat("Error while initiating authentication:{0}", ex);
                 return new AuthFailedForm();
             }
         }
@@ -116,7 +106,8 @@ namespace SURFnet.Authentication.Adfs.Plugin
         /// <returns>The presentation form.</returns>
         public IAdapterPresentation OnError(HttpListenerRequest request, ExternalAuthenticationException ex)
         {
-            return new AuthFailedForm(ex);
+            this.log.Value.ErrorFormat("Error occured:{0}", ex);
+            return new AuthFailedForm();
         }
 
         /// <summary>
@@ -129,21 +120,21 @@ namespace SURFnet.Authentication.Adfs.Plugin
         /// <returns>A form if the the validation fails or claims if the validation succeeds.</returns>
         public IAdapterPresentation TryEndAuthentication(IAuthenticationContext context, IProofData proofData, HttpListenerRequest request, out Claim[] claims)
         {
-            this.log.Debug("Entering TryEndAuthentication");
+            this.log.Value.Debug("Entering TryEndAuthentication");
             try
             {
                 var response = SecondFactorAuthResponse.Deserialize(proofData);
-                this.log.InfoFormat("Received response for request with id '{0}'", response.SamlRequestId.Value);
+                this.log.Value.InfoFormat("Received response for request with id '{0}'", response.SamlRequestId.Value);
                 var samlResponse = new Saml2Response(response.SamlResponse, response.SamlRequestId);
                 claims = SamlService.VerifyResponseAndGetAuthenticationClaim(samlResponse);
-                this.log.InfoFormat("Successfully processed response for request with id '{0}'", response.SamlRequestId.Value);
+                this.log.Value.InfoFormat("Successfully processed response for request with id '{0}'", response.SamlRequestId.Value);
                 return null;
             }
             catch (Exception ex)
             {
-                this.log.ErrorFormat("Error while processing the saml response. Details: {0}", ex);
+                this.log.Value.ErrorFormat("Error while processing the saml response. Details: {0}", ex);
                 claims = null;
-                return new AuthFailedForm(ex);
+                return new AuthFailedForm();
             }
         }
     }

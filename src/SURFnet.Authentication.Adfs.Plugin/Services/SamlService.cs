@@ -23,10 +23,11 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
     using Kentor.AuthServices;
     using Kentor.AuthServices.Configuration;
     using Kentor.AuthServices.Saml2P;
-    
+
     using log4net;
 
     using SURFnet.Authentication.Adfs.Plugin.Properties;
+    using SURFnet.Authentication.Adfs.Plugin.Repositories;
     using SURFnet.Authentication.Core;
 
     /// <summary>
@@ -38,6 +39,14 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
         /// Used for logging.
         /// </summary>
         private static readonly ILog Log = LogManager.GetLogger("SAML Service");
+
+        /// <summary>
+        /// Initializes static members of the <see cref="SamlService"/> class.
+        /// </summary>
+        static SamlService()
+        {
+            Kentor.AuthServices.Configuration.Options.GlobalEnableSha256XmlSignatures();
+        }
 
         /// <summary>
         /// Creates the SAML authentication request with the correct name identifier.
@@ -63,7 +72,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
             Log.InfoFormat("Created AuthnRequest for '{0}' with id '{1}'", identityClaim.Value, authnRequest.Id.Value);
             return authnRequest;
         }
-        
+
         /// <summary>
         /// Deflates the specified request.
         /// </summary>
@@ -81,7 +90,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
                         writer.Write(request.ToXml());
                     }
                 }
-                
+
                 return Convert.ToBase64String(output.ToArray());
             }
         }
@@ -139,16 +148,11 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
         /// <returns>A name identifier.</returns>
         private static string GetNameId(Claim identityClaim)
         {
-            //var nameId = string.Empty;
-            //if (identityClaim.Value.IndexOf('\\') > -1)
-            //{
-            //    nameId = identityClaim.Value.Split('\\')[1];
-            //}
+            var repository = new ActiveDirectoryRepository();
+            var nameid = $"urn:collab:person:{Settings.Default.schacHomeOrganization}:{repository.GetUserIdForIdentity(identityClaim)}";
 
-            //// Todo:: add schaHomeOrganization
-            //return nameId;
-            //Todo: replace @ by _
-            return "urn:collab:person:surfguest.nl:04b68be9-0187-4362-b2d1-52be719423d9";
+            nameid = nameid.Replace('@', '_');
+            return nameid;
         }
     }
 }

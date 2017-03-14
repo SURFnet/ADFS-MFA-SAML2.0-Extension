@@ -25,7 +25,6 @@ namespace SURFnet.Authentication.Adfs.Plugin.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("https://authenticatieservice.eylemansch.nl/Authentication/initiate")]
         public global::System.Uri AuthenticationServiceUrl {
             get {
                 return ((global::System.Uri)(this["AuthenticationServiceUrl"]));
@@ -34,7 +33,6 @@ namespace SURFnet.Authentication.Adfs.Plugin.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("https://gw.stepup.example.org/gssp/2nd-factor-only/single-sign-on")]
         public global::System.Uri SecondFactorEndpoint {
             get {
                 return ((global::System.Uri)(this["SecondFactorEndpoint"]));
@@ -43,7 +41,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("D6208034477498F829593650CC1774167340B1E3")]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
         public string SpSigningCertificate {
             get {
                 return ((string)(this["SpSigningCertificate"]));
@@ -52,10 +50,36 @@ namespace SURFnet.Authentication.Adfs.Plugin.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("http://pilot.surfconext.nl/assurance/sfo-level2")]
         public global::System.Uri MinimalLoa {
             get {
                 return ((global::System.Uri)(this["MinimalLoa"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string schacHomeOrganization {
+            get {
+                return ((string)(this["schacHomeOrganization"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string ActiveDirectoryUserIdAttribute {
+            get {
+                return ((string)(this["ActiveDirectoryUserIdAttribute"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string ActiveDirectoryName {
+            get {
+                return ((string)(this["ActiveDirectoryName"]));
             }
         }
     }

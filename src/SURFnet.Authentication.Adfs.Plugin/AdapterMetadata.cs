@@ -16,6 +16,8 @@ namespace SURFnet.Authentication.Adfs.Plugin
 
     using Microsoft.IdentityServer.Web.Authentication.External;
 
+    using SURFnet.Authentication.Adfs.Plugin.Properties;
+
     /// <summary>
     /// The adapter metadata.
     /// </summary>
@@ -31,10 +33,8 @@ namespace SURFnet.Authentication.Adfs.Plugin
         /// <value>The authentication methods.</value>
         public string[] AuthenticationMethods => new[]
                                                      {
-                                                         "http://pilot.surfconext.nl/assurance/sfo-level1",
                                                          "http://pilot.surfconext.nl/assurance/sfo-level2",
                                                          "http://pilot.surfconext.nl/assurance/sfo-level3",
-                                                         "http://surfconext.nl/assurance/sfo-level1",
                                                          "http://surfconext.nl/assurance/sfo-level2",
                                                          "http://surfconext.nl/assurance/sfo-level3"
                                                      };
