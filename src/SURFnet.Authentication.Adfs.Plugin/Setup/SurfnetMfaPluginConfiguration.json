@@ -1,0 +1,4 @@
+$config={
+"SfoCertificate":"pilot.stepup.cert"
+"SigningCertificateThumbprint":null
+}

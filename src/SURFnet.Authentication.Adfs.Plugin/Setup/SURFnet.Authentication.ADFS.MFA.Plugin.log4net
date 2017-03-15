@@ -12,7 +12,7 @@
       </layout>
     </appender>
     <root>
-      <level value="ALL" />
+      <level value="Information" />
       <appender-ref ref="EventLogAppender" />
     </root>
   </log4net>

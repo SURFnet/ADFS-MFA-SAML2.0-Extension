@@ -55,6 +55,7 @@
     <Reference Include="Microsoft.IdentityServer.Web, Version=6.3.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>lib\Microsoft.IdentityServer.Web.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -90,9 +91,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-    <Content Include="ADFS.plugin.log4net">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -105,7 +103,19 @@
     <None Include="Scripts\ADFSProviderPublisher\Get-AssemblyVersion.ps1" />
     <None Include="Scripts\ADFSProviderPublisher\Install-AuthProvider.ps1" />
     <None Include="Scripts\ADFSProviderPublisher\Uninstall-AuthProvider.ps1" />
+    <Content Include="Setup\SURFnet.Authentication.ADFS.MFA.Plugin.log4net">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Setup\SURFnet.Authentication.ADFS.MFA.Plugin.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Setup\Install-SurfnetMfaPlugin.ps1">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <None Include="Scripts\Publish-AuthProvider.ps1" />
+    <None Include="Setup\SurfnetMfaPluginConfiguration.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="Scripts\Update-AuthProvider.ps1" />
   </ItemGroup>
   <ItemGroup>
