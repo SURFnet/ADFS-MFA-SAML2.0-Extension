@@ -120,7 +120,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
         /// <returns>A form if the the validation fails or claims if the validation succeeds.</returns>
         public IAdapterPresentation TryEndAuthentication(IAuthenticationContext context, IProofData proofData, HttpListenerRequest request, out Claim[] claims)
         {
-            this.log.Value.Debug("Entering TryEndAuthentication");
+            this.log.Value.Debug("Enter TryEndAuthentication");
             try
             {
                 var response = SecondFactorAuthResponse.Deserialize(proofData);

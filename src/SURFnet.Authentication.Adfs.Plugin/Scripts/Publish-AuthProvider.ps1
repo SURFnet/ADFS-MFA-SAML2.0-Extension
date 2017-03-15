@@ -30,7 +30,7 @@ try{
 
 	$cred = New-Object System.Management.Automation.PSCredential ($username, $pwd)
 	$sourcePath = [System.IO.Path]::GetFullPath("$PSScriptRoot\..\bin\debug")
-	$assemblies =  Get-ChildItem "$sourcePath\" -Include SURFnet.Authentication.Adfs.Plugin.dll -Recurse | Select-Object -ExpandProperty Name
+	$assemblies =  Get-ChildItem "$sourcePath\" -Include *.dll -Recurse | Select-Object -ExpandProperty Name
 
 	$adfsProviderParams = @{
 		FullTypeName = $fullTypeName

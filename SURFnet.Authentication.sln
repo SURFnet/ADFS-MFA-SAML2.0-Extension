@@ -9,7 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SURFnet.Authentication.Core
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionItems", "{9D4482C6-E4FA-48DD-A9C3-473B7FF90551}"
 	ProjectSection(SolutionItems) = preProject
-		src\SURFnet.Authentication.snk = src\SURFnet.Authentication.snk
+		SolutionItems\SignKentorAuthLibrary.cmd = SolutionItems\SignKentorAuthLibrary.cmd
+		SolutionItems\SURFnet.Authentication.snk = SolutionItems\SURFnet.Authentication.snk
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SURFnet.Authentication.Test", "src\SURFnet.Authentication.Test\SURFnet.Authentication.Test.csproj", "{F910F17B-758E-401E-8E30-08A95A4FE661}"
