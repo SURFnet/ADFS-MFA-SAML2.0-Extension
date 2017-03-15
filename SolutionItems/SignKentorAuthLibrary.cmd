@@ -1,0 +1,1 @@
+..\packages\Brutal.Dev.StrongNameSigner.2.1.0\build\StrongNameSigner.Console.exe -a ..\packages\Kentor.AuthServices.0.19.0\lib\net45\Kentor.AuthServices.dll -k SURFnet.Authentication.snk

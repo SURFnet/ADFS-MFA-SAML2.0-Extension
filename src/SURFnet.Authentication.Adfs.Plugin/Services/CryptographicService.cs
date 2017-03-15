@@ -25,6 +25,11 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
     public class CryptographicService
     {
         /// <summary>
+        /// To enable SHA256 signatures in the SAML Library we need to enable this only once.
+        /// </summary>
+        private static bool isSha265Enabled;
+
+        /// <summary>
         /// Used for logging.
         /// </summary>
         private readonly ILog log;
@@ -39,6 +44,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
         /// </summary>
         public CryptographicService()
         {
+            this.EnableSha256Support();
+
             this.log = LogManager.GetLogger("CryptographicService");
             this.LoadCertificate();
         }
@@ -65,6 +72,20 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
             this.log.DebugFormat("Signing AuthnRequest for '{0}'", authRequest.SamlRequestId);
             var signature = this.Sign(Encoding.ASCII.GetBytes(authRequest.OriginalRequest + authRequest.SamlRequestId));
             authRequest.AuthRequestSignature = signature;
+        }
+
+        /// <summary>
+        /// To enable SHA256 signatures in the SAML Library we need to enable this only once.
+        /// </summary>
+        private void EnableSha256Support()
+        {
+            if (isSha265Enabled)
+            {
+                return;
+            }
+
+            Kentor.AuthServices.Configuration.Options.GlobalEnableSha256XmlSignatures();
+            isSha265Enabled = true;
         }
 
         /// <summary>

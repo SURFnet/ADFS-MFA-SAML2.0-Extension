@@ -41,14 +41,6 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
         private static readonly ILog Log = LogManager.GetLogger("SAML Service");
 
         /// <summary>
-        /// Initializes static members of the <see cref="SamlService"/> class.
-        /// </summary>
-        static SamlService()
-        {
-            Kentor.AuthServices.Configuration.Options.GlobalEnableSha256XmlSignatures();
-        }
-
-        /// <summary>
         /// Creates the SAML authentication request with the correct name identifier.
         /// </summary>
         /// <param name="identityClaim">The identity claim.</param>
