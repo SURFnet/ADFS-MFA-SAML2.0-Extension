@@ -58,7 +58,9 @@ function Ensure-SigningCertificate{
         {
             . $PSScriptRoot\New-SelfSignedCertificateEx.ps1
             $selfSignedCertificate = New-SelfSignedCertificateEx -Subject "CN=$dnsName" -KeyUsage DigitalSignature -StoreLocation "LocalMachine" -ProviderName "Microsoft Enhanced RSA and AES Cryptographic Provider" -Exportable -SignatureAlgorithm SHA256 -NotAfter (Get-Date).AddYears(5)
-        }
+			#Get certificate with private key
+            $selfSignedCertificate = Get-ChildItem Cert:\LocalMachine\My -DnsName $dnsName 
+		}
     }
 
     Set-PrivateKeyReadPermission $selfSignedCertificate
@@ -160,7 +162,7 @@ function Install-AuthProvider{
 		# Enable the provider in ADFS
 		Set-AdfsGlobalAuthenticationPolicy -AdditionalAuthenticationProvider $providerName
 
-		Write-Host -ForegroundColor Green "SURFnet MFA plugin registeren. Restarting AD FS"
+		Write-Host -ForegroundColor Green "SURFnet MFA plugin registered. Restarting AD FS"
 		Restart-Service -Name adfssrv -Force > $null
 		Write-Host -ForegroundColor Green "Finished publishing $providerName to $env:ComputerName"
 	}

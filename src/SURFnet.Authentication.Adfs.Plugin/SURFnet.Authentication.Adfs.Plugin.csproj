@@ -110,7 +110,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <None Include="Scripts\Publish-AuthProvider.ps1" />
-    <None Include="Setup\New-SelfSignedCertificateEx.ps1" />
+    <Content Include="Setup\New-SelfSignedCertificateEx.ps1">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <None Include="Setup\SurfnetMfaPluginConfiguration.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
