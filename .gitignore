@@ -242,3 +242,4 @@ ModelManifest.xml
 .fake/
 /src/Winvision.DotSettings
 /src/Settings.SourceAnalysis
+*.pubxml
