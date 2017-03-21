@@ -1,4 +1,19 @@
-$config={
-"SfoCertificate":"pilot.stepup.cert"
-"SigningCertificateThumbprint":null
+{
+  "Settings": {
+    "AuthenticationServiceUrl": "",
+    "SecondFactorEndpoint": "",
+    "MinimalLoa": "",
+    "schacHomeOrganization": "",
+    "ActiveDirectoryName": "",
+    "ActiveDirectoryUserIdAttribute": ""
+  },
+  "ServiceProvider": {
+    "SigningCertificate": "",
+    "EntityId": "",
+    "AssertionConsumerServiceUrl": ""
+  },
+  "IdentityProvider": {
+    "EntityId": "",
+    "Certificate": ""
+  }
 }
