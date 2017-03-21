@@ -106,9 +106,6 @@
     <Content Include="Setup\SURFnet.Authentication.ADFS.MFA.Plugin.log4net">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Setup\SURFnet.Authentication.ADFS.MFA.Plugin.config">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Content Include="Setup\Install-SurfnetMfaPlugin.ps1">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
