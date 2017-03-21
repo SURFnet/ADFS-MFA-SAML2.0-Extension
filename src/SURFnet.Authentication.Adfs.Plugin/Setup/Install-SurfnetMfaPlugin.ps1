@@ -187,7 +187,7 @@ function Update-ADFSConfiguration{
 
     $configurationFilePath = "$env:WinDir\ADFS\Microsoft.IdentityServer.Servicehost.exe.config"
     [xml]$adfsConfiguration = Get-Content $configurationFilePath
-    [xml]$pluginConfiguration = Get-Content "$PSScriptroot\SURFnet.Authentication.ADFS.MFA.Plugin.config"
+    [xml]$pluginConfiguration = Get-Content "$PSScriptroot\..\SURFnet.Authentication.Adfs.Plugin.dll.config"
     
     if(!($adfsConfiguration.SelectSingleNode("/configuration/configSections/section[@name='kentor.authServices']"))){
         Create-AdfsConfigurationBackup
