@@ -1,13 +1,6 @@
-﻿#check server is adfs server
-#validate configuration
-#Install plugin in ADFS
-#generate signing certificate
-#Set thumbprint in configuration
-#install surfnet certificate 
-#Create eventlog
-
-$ErrorActionPreference = "Stop"
+﻿$ErrorActionPreference = "Stop"
 $global:adfsServiceAccount = $null
+$global:pfxPassword = $null;
 
 function Verify{
 	if(([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator") -ne $true){
@@ -23,10 +16,9 @@ function Verify{
 }
 
 function Create-AdfsConfigurationBackup{
-    $configurationFilePath = "C:\Windows\ADFS\Microsoft.IdentityServer.Servicehost.exe.config"
+    $configurationFilePath = "$env:WinDir\ADFS\Microsoft.IdentityServer.Servicehost.exe.config"
     Copy-Item -Path $configurationFilePath -Destination ($configurationFilePath + ".backup")
     Write-Host -ForegroundColor Green "Created AD FS Configuration backup"
-
 }
 
 function Get-Configuration{
@@ -39,7 +31,7 @@ function Get-Configuration{
 }
 
 function Copy-LogConfiguration{
-    Copy-Item -Path $PSScriptRoot\SURFnet.Authentication.ADFS.MFA.Plugin.log4net -Destination "C:\Windows\ADFS\"
+    Copy-Item -Path $PSScriptRoot\SURFnet.Authentication.ADFS.MFA.Plugin.log4net -Destination "$env:WinDir\ADFS\"
     Write-Host -ForegroundColor Green "Copied Logger configuration"
 
 }
@@ -56,8 +48,17 @@ function Ensure-SigningCertificate{
     }
     else{
         $dnsName = "signing." + $env:userdnsdomain.ToLower()
-        . $PSScriptRoot\New-SelfSignedCertificateEx.ps1
-        $selfSignedCertificate = New-SelfSignedCertificateEx -Subject "CN=$dnsName" -KeyUsage DigitalSignature -StoreLocation "LocalMachine" -ProviderName "Microsoft Enhanced RSA and AES Cryptographic Provider" -Exportable -SignatureAlgorithm SHA256 -NotAfter (Get-Date).AddYears(5)
+        
+        $selfSignedCertificate = Get-ChildItem Cert:\LocalMachine\My -DnsName $dnsName
+        if($selfSignedCertificate){
+            $selfSignedCertificate = $selfSignedCertificate[0]
+            Write-Host -ForegroundColor DarkYellow "Certificate with DnsName $dnsName already exists. Using this certificate:`n$selfSignedCertificate"
+        }
+        else
+        {
+            . $PSScriptRoot\New-SelfSignedCertificateEx.ps1
+            $selfSignedCertificate = New-SelfSignedCertificateEx -Subject "CN=$dnsName" -KeyUsage DigitalSignature -StoreLocation "LocalMachine" -ProviderName "Microsoft Enhanced RSA and AES Cryptographic Provider" -Exportable -SignatureAlgorithm SHA256 -NotAfter (Get-Date).AddYears(5)
+        }
     }
 
     Set-PrivateKeyReadPermission $selfSignedCertificate
@@ -69,13 +70,14 @@ function Set-PrivateKeyReadPermission{
         [System.Security.Cryptography.X509Certificates.X509Certificate2]
         $cert
     )
-#todo:fix owner error when certificate is generated
+
     Write-Host -ForegroundColor green "Set Private Key read permissions"
-    $fullPath = "C:\ProgramData\Microsoft\Crypto\RSA\MachineKeys\" + $cert.PrivateKey.CspKeyContainerInfo.UniqueKeyContainerName
+    $fullPath = "$env:ProgramData\Microsoft\Crypto\RSA\MachineKeys\" + $cert.PrivateKey.CspKeyContainerInfo.UniqueKeyContainerName
     $acl = Get-Acl -Path $fullPath
-    $permission = $global:adfsServiceAccount, "Read", "Allow"
-    $accessRule=new-object System.Security.AccessControl.FileSystemAccessRule $permission
-    $acl.AddAccessRule($accessRule)
+
+    $saPermission = $global:adfsServiceAccount, "Read", "Allow"
+    $saAccessRule=new-object System.Security.AccessControl.FileSystemAccessRule $saPermission
+    $acl.AddAccessRule($saAccessRule)
 
     Set-Acl $fullPath $acl
     Write-Host -ForegroundColor green "Successfully set ACL on private key for $global:adfsServiceAccount"
@@ -92,7 +94,7 @@ function Import-SfoCertificate{
 	}
     
     Write-Host -ForegroundColor Green "Import certificate $certName on $env:ComputerName"		
-    Import-Certificate "$PSScriptRoot\$certName" -CertStoreLocation Cert:\LocalMachine\My
+    return Import-Certificate "$PSScriptRoot\$certName" -CertStoreLocation Cert:\LocalMachine\My
 }
     
 function Ensure-EventLogForPlugin{
@@ -183,7 +185,7 @@ function Update-ADFSConfiguration{
         $spCertificateThumbprint
     )
 
-    $configurationFilePath = "C:\Windows\ADFS\Microsoft.IdentityServer.Servicehost.exe.config"
+    $configurationFilePath = "$env:WinDir\ADFS\Microsoft.IdentityServer.Servicehost.exe.config"
     [xml]$adfsConfiguration = Get-Content $configurationFilePath
     [xml]$pluginConfiguration = Get-Content "$PSScriptroot\SURFnet.Authentication.ADFS.MFA.Plugin.config"
     
@@ -231,6 +233,31 @@ function Update-ADFSConfiguration{
     }
 }
 
+function Export-SigningCertificate{
+    Param(
+		[PSCustomObject]        
+        [Parameter(Mandatory=$true)]
+        $config,
+
+        [System.Security.Cryptography.X509Certificates.X509Certificate2]
+        [Parameter(Mandatory=$true)]
+        $cert
+    )
+    
+	if($config.ServiceProvider.SigningCertificate -eq $null -or $config.ServiceProvider.SigningCertificate -eq ""){
+        Add-Type -AssemblyName System.Web
+        $global:pfxPassword = [System.Web.Security.Membership]::GeneratePassword(16,3)
+        $pwd = ConvertTo-SecureString -String $global:pfxPassword -AsPlainText -Force
+        $certname = $cert.DnsNameList[0].Unicode + ".pfx"
+        Export-PfxCertificate -Cert $cert -FilePath "$PSScriptroot\$certName" -Password $pwd
+
+        $config.ServiceProvider.SigningCertificate = $certName
+        $config | ConvertTo-Json -depth 100 | Out-File "$PSScriptRoot\SurfnetMfaPluginConfiguration.json"
+    }
+
+
+}
+
 function Print-Summary{
     Param(
         [System.Security.Cryptography.X509Certificates.X509Certificate2]
@@ -242,6 +269,13 @@ function Print-Summary{
     )
 
     Write-Host -ForegroundColor Green "================================Details===================================="
+    if($global:pfxPassword){
+        Write-Host "Het signing certificaat is geexporteerd. Gebruik het volgende wachtwoord om deze te installeren: `"$global:pfxPassword`". Gebruik dit wachtwoord om het certificaat te installeren op andere de AD FS servers"
+        Write-Host ""
+    }
+
+
+
     Write-Host -ForegroundColor Green "Geef onderstaande gegevens door aan SURFnet"
     Write-Host -ForegroundColor White "Issuer: $entityId"
     Write-Host -ForegroundColor White "-----BEGIN CERTIFICATE-----"
@@ -258,6 +292,7 @@ try{
     Ensure-EventLogForPlugin
     Install-AuthProvider
     Update-ADFSConfiguration $config $sfoCertificate.Thumbprint $spCertificate.Thumbprint
+    Export-SigningCertificate $config $spCertificate
     Print-Summary $spCertificate $config.ServiceProvider.EntityId
 }
 catch{
