@@ -53,8 +53,11 @@
                                       SecondFactorEndpoint = Settings.Default.SecondFactorEndpoint
                                   };
 
-                var cryptographicService = new CryptographicService();
-                cryptographicService.SignSamlRequest(request);
+                using (var cryptographicService = new CryptographicService())
+                {
+                    cryptographicService.SignSamlRequest(request);
+                }
+                
                 return new AuthForm(url, request);
             }
             catch (Exception ex)
