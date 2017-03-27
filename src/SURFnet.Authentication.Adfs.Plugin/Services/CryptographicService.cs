@@ -13,7 +13,7 @@
     /// <summary>
     /// Handles the signing.
     /// </summary>
-    public class CryptographicService
+    public class CryptographicService : IDisposable
     {
         /// <summary>
         /// To enable SHA256 signatures in the SAML Library we need to enable this only once.
@@ -63,6 +63,14 @@
             this.log.DebugFormat("Signing AuthnRequest for '{0}'", authRequest.SamlRequestId);
             var signature = this.Sign(Encoding.ASCII.GetBytes(authRequest.OriginalRequest + authRequest.SamlRequestId));
             authRequest.AuthRequestSignature = signature;
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            this.signingCertificate = null;
         }
 
         /// <summary>
