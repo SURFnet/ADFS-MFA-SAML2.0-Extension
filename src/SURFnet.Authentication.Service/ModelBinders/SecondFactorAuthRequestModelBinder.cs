@@ -1,15 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="SecondFactorAuthRequestModelBinder.cs" company="Winvision bv">
-//   Copyright (c) Winvision bv.  All rights reserved.
-// </copyright>
-// <summary>
-//   Binds the post data from the plugin to a <see cref="SecondFactorAuthRequest" />
-// </summary>
-// --------------------------------------------------------------------------------------------------------------------
-
-using System;
-
-namespace SURFnet.Authentication.Service.ModelBinders
+﻿namespace SURFnet.Authentication.Service.ModelBinders
 {
     using System.Collections.Specialized;
     using System.Web.Mvc;
