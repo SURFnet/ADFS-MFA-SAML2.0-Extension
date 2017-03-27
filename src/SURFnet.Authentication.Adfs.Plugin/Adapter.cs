@@ -116,11 +116,17 @@
         public IAdapterPresentation TryEndAuthentication(IAuthenticationContext context, IProofData proofData, HttpListenerRequest request, out Claim[] claims)
         {
             this.log.Debug("Enter TryEndAuthentication");
+            claims = null;
             try
             {
                 var response = SecondFactorAuthResponse.Deserialize(proofData);
                 this.log.InfoFormat("Received response for request with id '{0}'", response.SamlRequestId.Value);
                 var samlResponse = new Saml2Response(response.SamlResponse, response.SamlRequestId);
+                if (samlResponse.Status != Saml2StatusCode.Success)
+                {
+                    return new AuthFailedForm(samlResponse.StatusMessage);
+                }
+
                 claims = SamlService.VerifyResponseAndGetAuthenticationClaim(samlResponse);
                 this.log.InfoFormat("Successfully processed response for request with id '{0}'", response.SamlRequestId.Value);
                 return null;
@@ -128,7 +134,6 @@
             catch (Exception ex)
             {
                 this.log.ErrorFormat("Error while processing the saml response. Details: {0}", ex);
-                claims = null;
                 return new AuthFailedForm();
             }
         }
