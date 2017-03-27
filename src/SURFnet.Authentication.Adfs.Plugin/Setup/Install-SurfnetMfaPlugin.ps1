@@ -223,8 +223,10 @@ function Update-ADFSConfiguration{
                 $value = $spCertificateThumbprint
             }
 
-            Write-Host -ForegroundColor Green "Write setting: $name with value: '$value'"
-            $setting.value = $value
+			if($value){
+				Write-Host -ForegroundColor Green "Write setting: $name with value: '$value'"
+				$setting.value = $value
+			}
         }
         Write-Host -ForegroundColor Green "Written plugin settings"
 
@@ -272,7 +274,7 @@ function Print-Summary{
 
     Write-Host -ForegroundColor Green "================================Details===================================="
     if($global:pfxPassword){
-        Write-Host "Het signing certificaat is geexporteerd. Gebruik het volgende wachtwoord om deze te installeren: `"$global:pfxPassword`". Gebruik dit wachtwoord om het certificaat te installeren op andere de AD FS servers"
+        Write-Host "Het signing certificaat bestond al en is geexporteerd. Gebruik het volgende wachtwoord om deze te installeren: `"$global:pfxPassword`". Gebruik dit wachtwoord om het certificaat te installeren op andere de AD FS servers"
         Write-Host ""
     }
 
