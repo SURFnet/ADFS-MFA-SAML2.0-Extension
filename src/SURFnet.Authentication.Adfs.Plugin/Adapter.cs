@@ -1,13 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="Adapter.cs" company="Winvision bv">
-//   Copyright (c) Winvision bv.  All rights reserved.
-// </copyright>
-// <summary>
-//   Defines the Adapter type.
-// </summary>
-// --------------------------------------------------------------------------------------------------------------------
-
-namespace SURFnet.Authentication.Adfs.Plugin
+﻿namespace SURFnet.Authentication.Adfs.Plugin
 {
     using System;
     using System.Net;
@@ -32,7 +23,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
         /// <summary>
         /// Used for logging.
         /// </summary>
-        private readonly Lazy<ILog> log = new Lazy<ILog>(() => LogManager.GetLogger("ADFS Plugin"));
+        private ILog log;
 
         /// <summary>
         /// Gets the metadata.
@@ -51,7 +42,8 @@ namespace SURFnet.Authentication.Adfs.Plugin
         {
             try
             {
-                this.log.Value.Debug("Enter BeginAuthentication");
+                this.InitializeLogger();
+                this.log.Debug("Enter BeginAuthentication");
                 var url = Settings.Default.AuthenticationServiceUrl;
                 var authRequest = SamlService.CreateAuthnRequest(identityClaim);
                 var request = new SecondFactorAuthRequest(httpListenerRequest.Url)
@@ -67,7 +59,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
             }
             catch (Exception ex)
             {
-                this.log.Value.ErrorFormat("Error while initiating authentication:{0}", ex);
+                this.log.ErrorFormat("Error while initiating authentication:{0}", ex);
                 return new AuthFailedForm();
             }
         }
@@ -106,7 +98,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
         /// <returns>The presentation form.</returns>
         public IAdapterPresentation OnError(HttpListenerRequest request, ExternalAuthenticationException ex)
         {
-            this.log.Value.ErrorFormat("Error occured:{0}", ex);
+            this.log.ErrorFormat("Error occured:{0}", ex);
             return new AuthFailedForm();
         }
 
@@ -120,21 +112,32 @@ namespace SURFnet.Authentication.Adfs.Plugin
         /// <returns>A form if the the validation fails or claims if the validation succeeds.</returns>
         public IAdapterPresentation TryEndAuthentication(IAuthenticationContext context, IProofData proofData, HttpListenerRequest request, out Claim[] claims)
         {
-            this.log.Value.Debug("Enter TryEndAuthentication");
+            this.log.Debug("Enter TryEndAuthentication");
             try
             {
                 var response = SecondFactorAuthResponse.Deserialize(proofData);
-                this.log.Value.InfoFormat("Received response for request with id '{0}'", response.SamlRequestId.Value);
+                this.log.InfoFormat("Received response for request with id '{0}'", response.SamlRequestId.Value);
                 var samlResponse = new Saml2Response(response.SamlResponse, response.SamlRequestId);
                 claims = SamlService.VerifyResponseAndGetAuthenticationClaim(samlResponse);
-                this.log.Value.InfoFormat("Successfully processed response for request with id '{0}'", response.SamlRequestId.Value);
+                this.log.InfoFormat("Successfully processed response for request with id '{0}'", response.SamlRequestId.Value);
                 return null;
             }
             catch (Exception ex)
             {
-                this.log.Value.ErrorFormat("Error while processing the saml response. Details: {0}", ex);
+                this.log.ErrorFormat("Error while processing the saml response. Details: {0}", ex);
                 claims = null;
                 return new AuthFailedForm();
+            }
+        }
+
+        /// <summary>
+        /// Initializes the logger. This cannot be done in a lazy or constructor, because this throws an error while installing the plugin for the first time.
+        /// </summary>
+        private void InitializeLogger()
+        {
+            if (this.log == null)
+            {
+                this.log = LogManager.GetLogger("ADFS Plugin");
             }
         }
     }

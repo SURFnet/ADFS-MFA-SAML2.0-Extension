@@ -1,13 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="Saml2AuthenticationSecondFactorRequest.cs" company="Winvision bv">
-//   Copyright (c) Winvision bv.  All rights reserved.
-// </copyright>
-// <summary>
-//   A special authentication request for the SURFconext Second Factor Endpoint.
-// </summary>
-// --------------------------------------------------------------------------------------------------------------------
-
-namespace SURFnet.Authentication.Core
+﻿namespace SURFnet.Authentication.Core
 {
     using System.Diagnostics.CodeAnalysis;
     using System.IdentityModel.Tokens;

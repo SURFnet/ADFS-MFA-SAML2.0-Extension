@@ -1,13 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="Global.asax.cs" company="Winvision bv">
-//   Copyright (c) Winvision bv.  All rights reserved.
-// </copyright>
-// <summary>
-//   Defines the WebApiApplication type.
-// </summary>
-// --------------------------------------------------------------------------------------------------------------------
-
-using System.Web.Routing;
+﻿using System.Web.Routing;
 
 namespace SURFnet.Authentication.Service
 {

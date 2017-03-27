@@ -1,13 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="RouteConfig.cs" company="Winvision bv">
-//   Copyright (c) Winvision bv.  All rights reserved.
-// </copyright>
-// <summary>
-//   Configuring the routes.
-// </summary>
-// --------------------------------------------------------------------------------------------------------------------
-
-namespace SURFnet.Authentication.Service
+﻿namespace SURFnet.Authentication.Service
 {
     using System.Web.Mvc;
     using System.Web.Routing;

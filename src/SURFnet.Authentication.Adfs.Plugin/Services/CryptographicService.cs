@@ -1,13 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="CryptographicService.cs" company="Winvision bv">
-//   Copyright (c) Winvision bv.  All rights reserved.
-// </copyright>
-// <summary>
-//   Handles the signing.
-// </summary>
-// --------------------------------------------------------------------------------------------------------------------
-
-namespace SURFnet.Authentication.Adfs.Plugin.Services
+﻿namespace SURFnet.Authentication.Adfs.Plugin.Services
 {
     using System;
     using System.Security.Cryptography;

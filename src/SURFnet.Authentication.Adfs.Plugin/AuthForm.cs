@@ -1,13 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="AuthForm.cs" company="Winvision bv">
-//   Copyright (c) Winvision bv.  All rights reserved.
-// </copyright>
-// <summary>
-//   Defines the PresentationForm type.
-// </summary>
-// --------------------------------------------------------------------------------------------------------------------
-
-namespace SURFnet.Authentication.Adfs.Plugin
+﻿namespace SURFnet.Authentication.Adfs.Plugin
 {
     using System;
 

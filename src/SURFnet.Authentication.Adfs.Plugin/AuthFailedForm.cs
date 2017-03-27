@@ -1,13 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="AuthFailedForm.cs" company="Winvision bv">
-//   Copyright (c) Winvision bv.  All rights reserved.
-// </copyright>
-// <summary>
-//   The presentation form for the adapter.
-// </summary>
-// --------------------------------------------------------------------------------------------------------------------
-
-namespace SURFnet.Authentication.Adfs.Plugin
+﻿namespace SURFnet.Authentication.Adfs.Plugin
 {
     using Microsoft.IdentityServer.Web.Authentication.External;
 

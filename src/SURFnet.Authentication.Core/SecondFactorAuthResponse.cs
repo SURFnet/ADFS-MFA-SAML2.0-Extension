@@ -1,13 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="SecondFactorAuthResponse.cs" company="Winvision bv">
-//   Copyright (c) Winvision bv.  All rights reserved.
-// </copyright>
-// <summary>
-//   Contains the data to do a second factor authentication request.
-// </summary>
-// --------------------------------------------------------------------------------------------------------------------
-
-namespace SURFnet.Authentication.Core
+﻿namespace SURFnet.Authentication.Core
 {
     using System;
     using System.IdentityModel.Tokens;
