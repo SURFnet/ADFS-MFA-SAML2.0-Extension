@@ -22,9 +22,15 @@ try{
 	$providerName = 'ADFS.SCSA'
 	$builtAssemblyPath = [System.IO.Path]::GetFullPath("$PSScriptRoot\..\bin\Debug\SURFnet.Authentication.Adfs.Plugin.dll")
 	
-	$fullTypeName = "SURFnet.Authentication.Adfs.Plugin.Adapter, SURFnet.Authentication.Adfs.Plugin, Version={0}, Culture=neutral, PublicKeyToken={1}" -f $version, $publicKeyToken
-	
-	$cred = New-Object System.Management.Automation.PSCredential ($username, ($password | ConvertTo-SecureString))
+	if(!(Test-Path $builtAssemblyPath)){
+		"SURFnet.Authentication.Adfs.Plugin.dll not found. Try building the project first. Searched for {0}" -f $builtAssemblyPath | Write-Error
+		return
+	}
+
+	$fullname = ([system.reflection.assembly]::loadfile($builtAssemblyPath)).FullName
+	$fullTypeName = "SURFnet.Authentication.Adfs.Plugin.Adapter, " + $fullname
+
+	$cred = New-Object System.Management.Automation.PSCredential ($username, ($password | ConvertTo-SecureString -AsPlainText -Force))
 	$sourcePath = [System.IO.Path]::GetFullPath("$PSScriptRoot\..\bin\debug")
 	$assemblies =  Get-ChildItem "$sourcePath\" -Include *.dll -Recurse | Select-Object -ExpandProperty Name
 		
