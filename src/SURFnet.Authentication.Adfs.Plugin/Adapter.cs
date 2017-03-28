@@ -1,8 +1,10 @@
 ﻿namespace SURFnet.Authentication.Adfs.Plugin
 {
     using System;
+    using System.Configuration;
     using System.Net;
     using System.Security.Claims;
+    using System.Text;
 
     using Kentor.AuthServices.Saml2P;
 
@@ -57,7 +59,7 @@
                 {
                     cryptographicService.SignSamlRequest(request);
                 }
-                
+
                 return new AuthForm(url, request);
             }
             catch (Exception ex)
@@ -146,7 +148,35 @@
             if (this.log == null)
             {
                 this.log = LogManager.GetLogger("ADFS Plugin");
+                this.LogCurrentConfiguration();
             }
+        }
+
+        /// <summary>
+        /// Logs the current configuration for troubleshooting purposes.
+        /// </summary>
+        private void LogCurrentConfiguration()
+        {
+            var sb = new StringBuilder();
+            sb.AppendLine("Current plugin configuration");
+            foreach (SettingsProperty settingsProperty in Settings.Default.Properties)
+            {
+                sb.AppendLine($"{settingsProperty.Name} : '{Settings.Default[settingsProperty.Name]}'");
+            }
+            
+            try
+            {
+                var options = Kentor.AuthServices.Configuration.Options.FromConfiguration;
+                sb.AppendLine($"AssertionConsumerService: '{options.SPOptions.ReturnUrl.OriginalString}'");
+                sb.AppendLine($"ServiceProvider.EntityId: '{Kentor.AuthServices.Configuration.Options.FromConfiguration.SPOptions.EntityId.Id}'");
+                sb.AppendLine($"IdentityProvider.EntityId: '{SamlService.GetIdentityProvider(Kentor.AuthServices.Configuration.Options.FromConfiguration).EntityId.Id}'");
+            }
+            catch (Exception ex)
+            {
+                sb.AppendLine($"Error while reading configuration file. Please enter Serviceprovider en IdentityProvider settings. Details: {ex.Message}");
+            }
+            
+            this.log.Info(sb);
         }
     }
 }

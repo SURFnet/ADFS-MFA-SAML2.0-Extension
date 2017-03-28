@@ -108,7 +108,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
         /// <param name="serviceProviderConfiguration">The service provider configuration.</param>
         /// <returns>The SURFConext identity provider.</returns>
         [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "Reviewed. Suppression is OK here.")]
-        private static IdentityProvider GetIdentityProvider(Options serviceProviderConfiguration)
+        public static IdentityProvider GetIdentityProvider(Options serviceProviderConfiguration)
         {
             var providers = serviceProviderConfiguration.IdentityProviders.KnownIdentityProviders.ToList();
             if (providers.Count == 0)
