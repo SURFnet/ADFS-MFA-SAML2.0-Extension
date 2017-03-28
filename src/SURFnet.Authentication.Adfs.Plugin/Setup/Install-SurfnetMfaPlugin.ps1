@@ -155,7 +155,7 @@ function Install-AuthProvider{
 		Register-AdfsAuthenticationProvider -TypeName $fullTypeName -Name $providerName
 
 		$deviceRegistrationService = Get-WmiObject win32_service |? {$_.name -eq "drs"}
-        if($deviceRegistrationService.StartMode -ne "Disabled"){
+        if($deviceRegistrationService -and $deviceRegistrationService.StartMode -ne "Disabled"){
             Start-Service -Name drs > $null
         }
 
@@ -198,9 +198,13 @@ function Update-ADFSConfiguration{
         $configuration = $adfsConfiguration.SelectSingleNode("/configuration")
         
         $sectionDeclaration = $adfsConfiguration.SelectSingleNode("/configuration/configSections")
-        $configuration.RemoveChild($sectionDeclaration);
-        $newSectionDeclaration = $adfsConfiguration.ImportNode($pluginConfiguration.SelectSingleNode("/configuration/configSections"), $true)
-        $adfsConfiguration.SelectSingleNode("/configuration").InsertBefore($newSectionDeclaration, $configuration.FirstChild)
+        
+        $newSectionDeclaration = $pluginConfiguration.SelectSingleNode("/configuration/configSections")
+        foreach($item in $newSectionDeclaration.ChildNodes){
+            $newNode = $adfsConfiguration.ImportNode($item, $true)
+            $sectionDeclaration.InsertBefore($newNode, $sectionDeclaration.FirstChild);
+        }
+
         Write-Host -ForegroundColor Green "Written section declaration"
 
         $kentorConfiguration = $adfsConfiguration.ImportNode($pluginConfiguration.SelectSingleNode("/configuration/kentor.authServices"), $true)
@@ -211,7 +215,7 @@ function Update-ADFSConfiguration{
         $idp.entityId = $config.IdentityProvider.EntityId
         $idp.signOnUrl = $config.ServiceProvider.AssertionConsumerServiceUrl
         $idp.signingCertificate.findValue = $sfoCertificateThumbprint        
-        $configuration.InsertAfter($kentorConfiguration, $newSectionDeclaration)
+        $configuration.InsertAfter($kentorConfiguration, $sectionDeclaration)
         Write-Host -ForegroundColor Green "Written SAML configuration"
 
         $appSettings = $adfsConfiguration.ImportNode($pluginConfiguration.SelectSingleNode("/configuration/applicationSettings"), $true)
