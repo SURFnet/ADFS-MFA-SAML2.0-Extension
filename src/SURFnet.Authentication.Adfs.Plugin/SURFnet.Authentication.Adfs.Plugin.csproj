@@ -113,6 +113,7 @@
     <Content Include="Setup\New-SelfSignedCertificateEx.ps1">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <None Include="Setup\SetupPackage.zip" />
     <None Include="Setup\SurfnetMfaPluginConfiguration.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
