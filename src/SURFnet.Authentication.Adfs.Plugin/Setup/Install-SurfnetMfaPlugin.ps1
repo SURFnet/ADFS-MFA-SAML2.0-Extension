@@ -119,7 +119,8 @@ function Install-AuthProvider{
 		$publish = New-Object System.EnterpriseServices.Internal.Publish
 		
 		Write-Host -ForegroundColor Green "Stop AD FS Service"
-			
+		$sourcePath = [System.IO.Path]::GetFullPath("$PSScriptRoot\..\")
+		$assemblies =  Get-ChildItem "$sourcePath\" -Include *.dll -Recurse | Select-Object -ExpandProperty Name
 		Stop-Service -Name adfssrv -Force > $null
 		$assemblies | % {
 					$path = "$PSScriptRoot\..\$_"
@@ -146,8 +147,7 @@ function Install-AuthProvider{
 		$fullname = ([system.reflection.assembly]::loadfile($builtAssemblyPath)).FullName
 		$fullTypeName = "SURFnet.Authentication.Adfs.Plugin.Adapter, " + $fullname
 		
-		$sourcePath = [System.IO.Path]::GetFullPath("$PSScriptRoot\..\")
-		$assemblies =  Get-ChildItem "$sourcePath\" -Include *.dll -Recurse | Select-Object -ExpandProperty Name
+		
 
 		Write-Host -ForegroundColor Green "Install $providerName on $env:ComputerName"		
 
