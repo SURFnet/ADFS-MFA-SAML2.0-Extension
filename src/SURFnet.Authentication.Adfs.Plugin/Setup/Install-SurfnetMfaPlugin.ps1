@@ -114,6 +114,23 @@ function Install-AuthProvider{
 		# change these values to suit your needs
 		$providerName = 'ADFS.SCSA'
 
+		Write-Host -ForegroundColor Green "Installing assemblies in GAC"
+		[System.Reflection.Assembly]::Load("System.EnterpriseServices, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a")
+		$publish = New-Object System.EnterpriseServices.Internal.Publish
+		
+		Write-Host -ForegroundColor Green "Stop AD FS Service"
+			
+		Stop-Service -Name adfssrv -Force > $null
+		$assemblies | % {
+					$path = "$PSScriptRoot\..\$_"
+					$publish.GacInstall($path)
+				} > $null
+
+		Write-Host -ForegroundColor Green "Copied assemblies to GAC"
+		Write-Host -ForegroundColor Green "Start AD FS Service"
+			
+		Start-Service -Name adfssrv > $null
+		
         if((Get-AdfsAuthenticationProvider -Name $providerName)){
 		    Write-Host -ForegroundColor Green "Skip plugin installation. Reason: SURFnet MFA Plugin already installed on $env:ComputerName"
             return
@@ -133,25 +150,9 @@ function Install-AuthProvider{
 		$assemblies =  Get-ChildItem "$sourcePath\" -Include *.dll -Recurse | Select-Object -ExpandProperty Name
 
 		Write-Host -ForegroundColor Green "Install $providerName on $env:ComputerName"		
-		
-		[System.Reflection.Assembly]::Load("System.EnterpriseServices, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a")
-		$publish = New-Object System.EnterpriseServices.Internal.Publish
-		Write-Host -ForegroundColor Green "Install $providerName on $env:ComputerName"
-		Write-Host -ForegroundColor Green "Stop AD FS Service"
-			
-		Stop-Service -Name adfssrv -Force > $null
-		$assemblies | % {
-					$path = "$PSScriptRoot\..\$_"
-					$publish.GacInstall($path)
-				} > $null
-
-		Write-Host -ForegroundColor Green "Copied assemblies to GAC"
-		Write-Host -ForegroundColor Green "Start AD FS Service"
-			
-		Start-Service -Name adfssrv > $null
 
 		Write-Host -ForegroundColor Green "Register SURFnet MFA plugin"
-
+		Write-Host -ForegroundColor Green "Install $providerName on $env:ComputerName"
 		Register-AdfsAuthenticationProvider -TypeName $fullTypeName -Name $providerName
 
 		$deviceRegistrationService = Get-WmiObject win32_service |? {$_.name -eq "drs"}
