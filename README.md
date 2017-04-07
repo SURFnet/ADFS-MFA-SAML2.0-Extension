@@ -4,7 +4,7 @@ Extension to Microsoft ADFS 3.0 and 4.0 that performs remote Second Factor Authe
 To create the ability to redirect the user to the Second Factor Endpoint and back to our plugin a extra service is necessary because of the encrypted context that is served by Microsoft ADFS. This encrypted context needs to be present on every authenticationrequest that comes from and goes to the ADFS Plugin. This service is used to relay the SAML AuthnRequest to the Second Factor Endpoint, save the encrypted context and post back the SAML Response from the Second Factor Endpoint with the AD FS context so that we can postback to the plugin. 
 
 ## Installation
-To install the package add the environment specific settings in SurfnetMfaPluginConfiguration.json and run Install-SurfnetMfaPlugin.ps1 as an administrator. The installation process will restart the AD FS service several times and optionally generates a signing certificate. This depends on your input parameters. 
+To install the package add the environment specific settings in [SurfnetMfaPluginConfiguration.json](ADFS-MFA-SAML2.0-Extension/src/SURFnet.Authentication.Adfs.Plugin/Setup/SurfnetMfaPluginConfiguration.json) and run Install-SurfnetMfaPlugin.ps1 as an administrator. The installation process will restart the AD FS service several times and optionally generates a signing certificate. This depends on your input parameters. 
 Do not forget to change your PowerShell ExecutionPolicy to unrestricted to install this plugin:
 ```powershell
 Get-ExecutionPolicy
