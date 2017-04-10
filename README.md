@@ -4,6 +4,7 @@ Extension to Microsoft ADFS 3.0 and 4.0 that performs remote Second Factor Authe
 To create the ability to redirect the user to the Second Factor Endpoint and back to our plugin a extra service is necessary because of the encrypted context that is served by Microsoft ADFS. This encrypted context needs to be present on every authenticationrequest that comes from and goes to the ADFS Plugin. This service is used to relay the SAML AuthnRequest to the Second Factor Endpoint, save the encrypted context and post back the SAML Response from the Second Factor Endpoint with the AD FS context so that we can postback to the plugin. 
 
 ## Installation
+### Precompiled version
 To install a precompiled version of the plugin, download [InstallPackage.zip](https://github.com/SURFnet/ADFS-MFA-SAML2.0-Extension/blob/master/src/SURFnet.Authentication.Adfs.Plugin/Setup/SetupPackage.zip). To install the package add the environment specific settings in [SurfnetMfaPluginConfiguration.json](https://github.com/SURFnet/ADFS-MFA-SAML2.0-Extension/blob/master/src/SURFnet.Authentication.Adfs.Plugin/Setup/SurfnetMfaPluginConfiguration.json) and run Install-SurfnetMfaPlugin.ps1 as an administrator. The installation process will restart the AD FS service several times and optionally generates a signing certificate. This depends on your input parameters.
 
 Do not forget to change your PowerShell ExecutionPolicy to unrestricted to install this plugin:
@@ -21,7 +22,10 @@ Set-ExectionPolicy restricted
 Get-ExecutionPolicy
 ```
 
-### Configuration file
+### Compiling
+To be added.
+
+## Configuration file
 ```javascript
 {
     "settings":
@@ -47,7 +51,7 @@ Get-ExecutionPolicy
 }
 ```
 
-### Configuration file explained
+## Configuration file explained
 |PropertyName |Required |DataType |Description|
 |-------------|---------|---------|-----------------------------------|
 |AuthenticationServiceUrl|Yes|URI|The URL of the SFO gateway. The SAML AuthnRequest is forwarded to this URL.|
@@ -62,6 +66,6 @@ Get-ExecutionPolicy
 |IdentityProvider.EntityId|Yes|URI|The entity ID of the SFO endpoint|
 |IdentityProvider.Certificate|Yes|string|The name of the .cert file of the SFO endpoint. This is used to verify the signing of the SAML Response|
 
-### Bugs and Features
+## Bugs and Features
 Our Pivotal Tracker for this project is accessible for everyone, please find it here:
 https://www.pivotaltracker.com/n/projects/1950415
