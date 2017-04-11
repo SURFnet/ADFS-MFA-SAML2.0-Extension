@@ -23,7 +23,7 @@ Get-ExecutionPolicy
 ```
 
 ### Compiling
-To be added.
+Compile this project as normal. When building in release modus, a SetupPackage.zip file is created. Use this zip file to install the AD FS plugin on the AD FS server. You should only add the public key of your SFO endpoint to the zip and set the environment specific variables in the configuration file.
 
 ## Configuration file
 ```javascript
