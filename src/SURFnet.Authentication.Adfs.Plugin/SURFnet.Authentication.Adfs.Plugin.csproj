@@ -166,6 +166,6 @@
   <Target Name="BeforeBuild">
   </Target>-->
   <Target Name="AfterBuild">
-    <CallTarget Targets="BuildPackage" />
-  </Target>
+    <CallTarget Targets="BuildPackage" Condition="'$(Configuration)'=='Release'"/>
+  </Target> 
 </Project>
