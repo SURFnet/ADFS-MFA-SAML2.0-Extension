@@ -30,7 +30,6 @@ Compile this project as normal. When building in release modus, a SetupPackage.z
 {
     "settings":
     {
-        "AuthenticationServiceUrl": "https://<your authentication service url>/authentication/initiate",
         "SecondFactorEndpoint": "<Your second factor endpoint>",
         "MinimalLoa": "<The minimal LOA level required>",
         "schacHomeOrganization": "<schacHomeOrganization>",
@@ -40,8 +39,7 @@ Compile this project as normal. When building in release modus, a SetupPackage.z
     "ServiceProvider":
     {
         "SigningCertificate": "signing.myorganization.pfx",
-        "EntityId": "http://myorganization.com",
-        "AssertionConsumerServiceUrl": "https://<your authentication service url>/authenticate/consume-acs"
+        "EntityId": "http://myorganization.com"
     },
     "IdentityProvider":
     {
@@ -54,7 +52,6 @@ Compile this project as normal. When building in release modus, a SetupPackage.z
 ## Configuration file explained
 |PropertyName |Required |DataType |Description|
 |-------------|---------|---------|-----------------------------------|
-|AuthenticationServiceUrl|Yes|URI|The URL of the SFO gateway. The SAML AuthnRequest is forwarded to this URL.|
 |SecondFactorEndpoint|yes|URI|The actual SFO endpoint.|
 |MinimalLoa|Yes|URI|Indicates the minimal Level of Assurance required for second factor authentication.|
 |schacHomeOrganization|Yes|String|The schacHomeOrganization that the institute uses.|
