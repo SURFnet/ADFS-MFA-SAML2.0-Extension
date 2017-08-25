@@ -84,16 +84,6 @@
             get;
             set;
         }
-        
-        /// <summary>
-        /// Gets or sets the SAML request identifier.
-        /// </summary>
-        /// <value>The SAML request identifier.</value>
-        public string SamlRequestId
-        {
-            get;
-            set;
-        }
 
         /// <summary>
         /// Gets the signing algorithm for the SAML request.

@@ -35,8 +35,9 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
         /// Creates the SAML authentication request with the correct name identifier.
         /// </summary>
         /// <param name="identityClaim">The identity claim.</param>
+        /// <param name="authnRequestId">The AuthnRequest identifier.</param>
         /// <returns>The authentication request.</returns>
-        public static Saml2AuthenticationSecondFactorRequest CreateAuthnRequest(Claim identityClaim)
+        public static Saml2AuthenticationSecondFactorRequest CreateAuthnRequest(Claim identityClaim, string authnRequestId)
         {
             var serviceproviderConfiguration = Kentor.AuthServices.Configuration.Options.FromConfiguration;
             var identityProvider = GetIdentityProvider(serviceproviderConfiguration);
@@ -49,9 +50,10 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
                 AssertionConsumerServiceUrl = identityProvider.SingleSignOnServiceUrl,
                 Issuer = serviceproviderConfiguration.SPOptions.EntityId,
                 RequestedAuthnContext = new Saml2RequestedAuthnContext(Settings.Default.MinimalLoa, AuthnContextComparisonType.Exact),
-                Subject = new Saml2Subject(nameIdentifier)
+                Subject = new Saml2Subject(nameIdentifier),
             };
 
+            authnRequest.SetId(authnRequestId);
             Log.InfoFormat("Created AuthnRequest for '{0}' with id '{1}'", identityClaim.Value, authnRequest.Id.Value);
             return authnRequest;
         }

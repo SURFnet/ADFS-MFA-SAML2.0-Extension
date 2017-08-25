@@ -52,5 +52,14 @@
         {
             return this.ToXElement().ToString();
         }
+
+        /// <summary>
+        /// Sets the identifier of this AuthnRequest.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        public void SetId(string id)
+        {
+            this.Id = new Saml2Id($"_{id}");
+        }
     }
 }

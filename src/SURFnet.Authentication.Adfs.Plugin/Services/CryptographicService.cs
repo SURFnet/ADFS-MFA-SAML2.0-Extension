@@ -47,22 +47,10 @@
         /// <param name="authRequest">The authentication request.</param>
         public void SignSamlRequest(SecondFactorAuthRequest authRequest)
         {
-            this.log.DebugFormat("Signing AuthnRequest for {0}", authRequest.SamlRequestId);
             var tbs = $"SAMLRequest={Uri.EscapeDataString(authRequest.SamlRequest)}&SigAlg={Uri.EscapeDataString(authRequest.SigAlg)}";
             var bytes = Encoding.ASCII.GetBytes(tbs);
             var signature = this.Sign(bytes);
             authRequest.SamlSignature = signature;
-        }
-
-        /// <summary>
-        /// Signs the authentication request.
-        /// </summary>
-        /// <param name="authRequest">The authentication request.</param>
-        public void SignAuthRequest(SecondFactorAuthRequest authRequest)
-        {
-            this.log.DebugFormat("Signing AuthnRequest for '{0}'", authRequest.SamlRequestId);
-            var signature = this.Sign(Encoding.ASCII.GetBytes(authRequest.OriginalRequest + authRequest.SamlRequestId));
-            authRequest.AuthRequestSignature = signature;
         }
 
         /// <summary>
