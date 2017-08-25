@@ -2,6 +2,7 @@
 {
     using System;
     using System.Configuration;
+    using System.IdentityModel.Tokens;
     using System.Net;
     using System.Security.Claims;
     using System.Text;
@@ -47,16 +48,17 @@
                 this.InitializeLogger();
                 this.log.Debug("Enter BeginAuthentication");
                 var url = Settings.Default.AuthenticationServiceUrl;
-                var authRequest = SamlService.CreateAuthnRequest(identityClaim);
+                var authRequest = SamlService.CreateAuthnRequest(identityClaim, context.ContextId);
+
                 var request = new SecondFactorAuthRequest(httpListenerRequest.Url)
                                   {
-                                      SamlRequestId = authRequest.Id.Value,
                                       SamlRequest = SamlService.Deflate(authRequest),
                                       SecondFactorEndpoint = Settings.Default.SecondFactorEndpoint
                                   };
 
                 using (var cryptographicService = new CryptographicService())
                 {
+                    this.log.DebugFormat("Signing AuthnRequest for {0}", context.ContextId);
                     cryptographicService.SignSamlRequest(request);
                 }
 
@@ -121,16 +123,16 @@
             claims = null;
             try
             {
-                var response = SecondFactorAuthResponse.Deserialize(proofData);
-                this.log.InfoFormat("Received response for request with id '{0}'", response.SamlRequestId.Value);
-                var samlResponse = new Saml2Response(response.SamlResponse, response.SamlRequestId);
+                var response = SecondFactorAuthResponse.Deserialize(proofData, context);
+                this.log.InfoFormat("Received response for request with id '{0}'", context.ContextId);
+                var samlResponse = new Saml2Response(response.SamlResponse, new Saml2Id(context.ContextId));
                 if (samlResponse.Status != Saml2StatusCode.Success)
                 {
                     return new AuthFailedForm(samlResponse.StatusMessage);
                 }
 
                 claims = SamlService.VerifyResponseAndGetAuthenticationClaim(samlResponse);
-                this.log.InfoFormat("Successfully processed response for request with id '{0}'", response.SamlRequestId.Value);
+                this.log.InfoFormat("Successfully processed response for request with id '{0}'", context.ContextId);
                 return null;
             }
             catch (Exception ex)
