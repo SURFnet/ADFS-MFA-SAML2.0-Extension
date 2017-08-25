@@ -1,4 +1,4 @@
-﻿namespace SURFnet.Authentication.Core
+﻿namespace SURFnet.Authentication.Adfs.Plugin.Models
 {
     using System;
     using System.IdentityModel.Tokens;
@@ -59,7 +59,7 @@
                 throw new ArgumentException("RequestId");
             }
 
-            var response = new SecondFactorAuthResponse(new Saml2Id($"_{context.ContextId}"), proofData.Properties["Response"].ToString());
+            var response = new SecondFactorAuthResponse(new Saml2Id($"_{context.ContextId}"), proofData.Properties["SAMLResponse"].ToString());
             return response;
         }
     }

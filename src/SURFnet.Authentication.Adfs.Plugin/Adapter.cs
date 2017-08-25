@@ -13,9 +13,9 @@
 
     using Microsoft.IdentityServer.Web.Authentication.External;
 
+    using SURFnet.Authentication.Adfs.Plugin.Models;
     using SURFnet.Authentication.Adfs.Plugin.Properties;
     using SURFnet.Authentication.Adfs.Plugin.Services;
-    using SURFnet.Authentication.Core;
 
     /// <summary>
     /// The ADFS MFA Adapter.
@@ -47,22 +47,14 @@
             {
                 this.InitializeLogger();
                 this.log.Debug("Enter BeginAuthentication");
-                var url = Settings.Default.AuthenticationServiceUrl;
-                var authRequest = SamlService.CreateAuthnRequest(identityClaim, context.ContextId);
-
-                var request = new SecondFactorAuthRequest(httpListenerRequest.Url)
-                                  {
-                                      SamlRequest = SamlService.Deflate(authRequest),
-                                      SecondFactorEndpoint = Settings.Default.SecondFactorEndpoint
-                                  };
+                var authRequest = SamlService.CreateAuthnRequest(identityClaim, context.ContextId, httpListenerRequest.Url);
 
                 using (var cryptographicService = new CryptographicService())
                 {
                     this.log.DebugFormat("Signing AuthnRequest for {0}", context.ContextId);
-                    cryptographicService.SignSamlRequest(request);
+                    var signedXml = cryptographicService.SignSamlRequest(authRequest);
+                    return new AuthForm(Settings.Default.SecondFactorEndpoint, signedXml);
                 }
-
-                return new AuthForm(url, request);
             }
             catch (Exception ex)
             {
