@@ -210,11 +210,8 @@ function Update-ADFSConfiguration{
 
         $kentorConfiguration = $adfsConfiguration.ImportNode($pluginConfiguration.SelectSingleNode("/configuration/kentor.authServices"), $true)
         $kentorConfiguration.entityId = $config.ServiceProvider.EntityId
-        $kentorConfiguration.returnUrl = $config.ServiceProvider.AssertionConsumerServiceUrl
-        $kentorConfiguration.discoveryServiceUrl = $config.ServiceProvider.EntityId
         $idp = $kentorConfiguration.SelectSingleNode("/identityProviders/add")
         $idp.entityId = $config.IdentityProvider.EntityId
-        $idp.signOnUrl = $config.ServiceProvider.AssertionConsumerServiceUrl
         $idp.signingCertificate.findValue = $sfoCertificateThumbprint        
         $configuration.InsertAfter($kentorConfiguration, $sectionDeclaration)
         Write-Host -ForegroundColor Green "Written SAML configuration"
