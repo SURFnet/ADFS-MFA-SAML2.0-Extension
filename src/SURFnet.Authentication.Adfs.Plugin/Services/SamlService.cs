@@ -5,11 +5,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using System.IdentityModel.Tokens;
-    using System.IO;
-    using System.IO.Compression;
     using System.Linq;
     using System.Security.Claims;
-    using System.Text;
 
     using Kentor.AuthServices;
     using Kentor.AuthServices.Configuration;
@@ -17,9 +14,9 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
 
     using log4net;
 
+    using SURFnet.Authentication.Adfs.Plugin.Models;
     using SURFnet.Authentication.Adfs.Plugin.Properties;
     using SURFnet.Authentication.Adfs.Plugin.Repositories;
-    using SURFnet.Authentication.Core;
 
     /// <summary>
     /// Creates the SAML assertions and processes the response.
@@ -36,50 +33,28 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
         /// </summary>
         /// <param name="identityClaim">The identity claim.</param>
         /// <param name="authnRequestId">The AuthnRequest identifier.</param>
+        /// <param name="ascUri">The asc URI.</param>
         /// <returns>The authentication request.</returns>
-        public static Saml2AuthenticationSecondFactorRequest CreateAuthnRequest(Claim identityClaim, string authnRequestId)
+        public static Saml2AuthenticationSecondFactorRequest CreateAuthnRequest(Claim identityClaim, string authnRequestId, Uri ascUri)
         {
             var serviceproviderConfiguration = Kentor.AuthServices.Configuration.Options.FromConfiguration;
-            var identityProvider = GetIdentityProvider(serviceproviderConfiguration);
             Log.DebugFormat("Creating AuthnRequest for identity '{0}'", identityClaim.Value);
             var nameIdentifier = new Saml2NameIdentifier(GetNameId(identityClaim), new Uri("urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified"));
 
             var authnRequest = new Saml2AuthenticationSecondFactorRequest
             {
                 DestinationUrl = Settings.Default.SecondFactorEndpoint,
-                AssertionConsumerServiceUrl = identityProvider.SingleSignOnServiceUrl,
+                AssertionConsumerServiceUrl = ascUri,
                 Issuer = serviceproviderConfiguration.SPOptions.EntityId,
                 RequestedAuthnContext = new Saml2RequestedAuthnContext(Settings.Default.MinimalLoa, AuthnContextComparisonType.Exact),
                 Subject = new Saml2Subject(nameIdentifier),
             };
-
             authnRequest.SetId(authnRequestId);
+
             Log.InfoFormat("Created AuthnRequest for '{0}' with id '{1}'", identityClaim.Value, authnRequest.Id.Value);
             return authnRequest;
         }
-
-        /// <summary>
-        /// Deflates the specified request.
-        /// </summary>
-        /// <param name="request">The request.</param>
-        /// <returns>A base64 encoded deflated SAML authentication request.</returns>
-        public static string Deflate(Saml2AuthenticationSecondFactorRequest request)
-        {
-            Log.DebugFormat("Deflate AuthnRequest with id '{0}'", request.Id.Value);
-            using (var output = new MemoryStream())
-            {
-                using (var gzip = new DeflateStream(output, CompressionMode.Compress))
-                {
-                    using (var writer = new StreamWriter(gzip, Encoding.ASCII))
-                    {
-                        writer.Write(request.ToXml());
-                    }
-                }
-
-                return Convert.ToBase64String(output.ToArray());
-            }
-        }
-
+        
         /// <summary>
         /// Verifies the response and gets authentication claim from the response.
         /// </summary>

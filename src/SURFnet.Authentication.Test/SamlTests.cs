@@ -21,7 +21,12 @@
         public void ValidateSubject()
         {
             var claim = new Claim("nameid", "homeorganization.nl:useridentifier");
-            var request = SamlService.CreateAuthnRequest(claim, Guid.NewGuid().ToString());
+            var request = SamlService.CreateAuthnRequest(claim, Guid.NewGuid().ToString(), new Uri("https://mytest.nl"));
+            using (var service = new CryptographicService())
+            {
+                service.SignSamlRequest(request);
+            }
+
             var requestXml = request.ToXElement();
             var ns = XNamespace.Get("urn:oasis:names:tc:SAML:2.0:assertion");
 

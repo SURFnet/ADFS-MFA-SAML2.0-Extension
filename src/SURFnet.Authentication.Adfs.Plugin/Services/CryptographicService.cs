@@ -1,14 +1,15 @@
 ﻿namespace SURFnet.Authentication.Adfs.Plugin.Services
 {
     using System;
-    using System.Security.Cryptography;
     using System.Security.Cryptography.X509Certificates;
     using System.Text;
 
+    using Kentor.AuthServices;
+
     using log4net;
 
+    using SURFnet.Authentication.Adfs.Plugin.Models;
     using SURFnet.Authentication.Adfs.Plugin.Properties;
-    using SURFnet.Authentication.Core;
 
     /// <summary>
     /// Handles the signing.
@@ -24,6 +25,12 @@
         /// Used for logging.
         /// </summary>
         private readonly ILog log;
+
+        /// <summary>
+        /// Gets the signing algorithm for the SAML request.
+        /// </summary>=
+        /// <value>The signing algorithm.</value>
+        private string sigAlgoritm = "http://www.w3.org/2001/04/xmldsig-more#rsa-sha256";
 
         /// <summary>
         /// Contains the signing certificate.
@@ -45,12 +52,14 @@
         /// Signs the SAML request.
         /// </summary>
         /// <param name="authRequest">The authentication request.</param>
-        public void SignSamlRequest(SecondFactorAuthRequest authRequest)
+        /// <returns>Signed Xml.</returns>
+        public string SignSamlRequest(Saml2AuthenticationSecondFactorRequest authRequest)
         {
-            var tbs = $"SAMLRequest={Uri.EscapeDataString(authRequest.SamlRequest)}&SigAlg={Uri.EscapeDataString(authRequest.SigAlg)}";
-            var bytes = Encoding.ASCII.GetBytes(tbs);
-            var signature = this.Sign(bytes);
-            authRequest.SamlSignature = signature;
+            var xmlDoc = XmlHelpers.XmlDocumentFromString(authRequest.ToXml());
+            xmlDoc.Sign(this.signingCertificate, true, this.sigAlgoritm);
+            var xml = xmlDoc.OuterXml;
+            var encodedXml = Convert.ToBase64String(Encoding.UTF8.GetBytes(xml));
+            return encodedXml;
         }
 
         /// <summary>
@@ -108,7 +117,8 @@
         /// <returns>A certificate for signing the SAML authentication request.</returns>
         private X509Certificate2 GetCertificateWithPrivateKey(X509Store store)
         {
-            var certCollection = store.Certificates.Find(X509FindType.FindByThumbprint, Settings.Default.SpSigningCertificate, false);
+            var thumbprint = Settings.Default.SpSigningCertificate;
+            var certCollection = store.Certificates.Find(X509FindType.FindByThumbprint, thumbprint, false);
             if (certCollection.Count == 0)
             {
                 throw new Exception($"No certificate found with thumbprint '{Settings.Default.SpSigningCertificate}'");
@@ -121,19 +131,6 @@
             }
 
             return cert;
-        }
-
-        /// <summary>
-        /// Signs the specified bytes.
-        /// </summary>
-        /// <param name="bytes">The bytes.</param>
-        /// <returns>The base64 encoded signature.</returns>
-        private string Sign(byte[] bytes)
-        {
-            var hash = new SHA256Managed().ComputeHash(bytes);
-            var key = (RSACryptoServiceProvider)this.signingCertificate.PrivateKey;
-            var signature = key.SignHash(hash, CryptoConfig.MapNameToOID("SHA256"));
-            return Convert.ToBase64String(signature);
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace SURFnet.Authentication.Core
+﻿namespace SURFnet.Authentication.Adfs.Plugin.Models
 {
     using System.Diagnostics.CodeAnalysis;
     using System.IdentityModel.Tokens;

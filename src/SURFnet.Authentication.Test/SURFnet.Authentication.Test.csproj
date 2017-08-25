@@ -44,9 +44,8 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Kentor.AuthServices, Version=0.19.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\Kentor.AuthServices.0.19.0\lib\net45\Kentor.AuthServices.dll</HintPath>
+    <Reference Include="Kentor.AuthServices, Version=0.21.2.0, Culture=neutral, PublicKeyToken=07a7b17ac686a941, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Kentor.AuthServices.0.21.2\lib\net45\Kentor.AuthServices.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
@@ -78,16 +77,15 @@
       <Project>{7f165692-9e1e-4231-b3bf-3e3aed44b11a}</Project>
       <Name>SURFnet.Authentication.Adfs.Plugin</Name>
     </ProjectReference>
-    <ProjectReference Include="..\SURFnet.Authentication.Core\SURFnet.Authentication.Core.csproj">
-      <Project>{964a89b6-fd6d-4153-a489-40a9d7af50c2}</Project>
-      <Name>SURFnet.Authentication.Core</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Connected Services\" />
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
