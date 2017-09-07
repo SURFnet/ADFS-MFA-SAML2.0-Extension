@@ -1,4 +1,5 @@
-﻿function CopyTo-Gac{
+﻿#Script found at: https://github.com/SURFnet/ADFS-MFA-SAML2.0-Extension/tree/master/src/SURFnet.Authentication.Adfs.Plugin
+function CopyTo-Gac{
 
 	[Cmdletbinding()]
 	param(
