@@ -117,7 +117,6 @@
     <Content Include="Setup\Uninstall-SurfnetMfaPlugin.ps1">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <None Include="Setup\SetupPackage.zip" />
     <None Include="Setup\SurfnetMfaPluginConfiguration.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
