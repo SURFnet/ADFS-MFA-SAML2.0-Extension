@@ -63,11 +63,13 @@ namespace SURFnet.Authentication.Adfs.Plugin
             {
                 this.InitializeLogger();
                 this.log.Debug("Enter BeginAuthentication");
-                var authRequest = SamlService.CreateAuthnRequest(identityClaim, context.ContextId, httpListenerRequest.Url);
+
+                string authnRequestId = $"_{context.ContextId}";
+                var authRequest = SamlService.CreateAuthnRequest(identityClaim, authnRequestId, httpListenerRequest.Url);
 
                 using (var cryptographicService = new CryptographicService())
                 {
-                    this.log.DebugFormat("Signing AuthnRequest for {0}", context.ContextId);
+                    this.log.DebugFormat("Signing AuthnRequest with id {0}", authnRequestId);
                     var signedXml = cryptographicService.SignSamlRequest(authRequest);
                     return new AuthForm(Settings.Default.SecondFactorEndpoint, signedXml);
                 }
@@ -132,15 +134,16 @@ namespace SURFnet.Authentication.Adfs.Plugin
             try
             {
                 var response = SecondFactorAuthResponse.Deserialize(proofData, context);
-                this.log.InfoFormat("Received response for request with id '{0}'", context.ContextId);
-                var samlResponse = new Saml2Response(response.SamlResponse, new Saml2Id(context.ContextId));
+                string authnRequestId = $"_{ context.ContextId}";
+                this.log.InfoFormat("Received response for request with id '{0}'", authnRequestId);
+                var samlResponse = new Saml2Response(response.SamlResponse, new Saml2Id(authnRequestId));
                 if (samlResponse.Status != Saml2StatusCode.Success)
                 {
                     return new AuthFailedForm(samlResponse.StatusMessage);
                 }
 
                 claims = SamlService.VerifyResponseAndGetAuthenticationClaim(samlResponse);
-                this.log.InfoFormat("Successfully processed response for request with id '{0}'", context.ContextId);
+                this.log.InfoFormat("Successfully processed response for request with id '{0}'", authnRequestId);
                 return null;
             }
             catch (Exception ex)

@@ -75,7 +75,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Models
         /// <param name="id">The identifier.</param>
         public void SetId(string id)
         {
-            this.Id = new Saml2Id($"_{id}");
+            this.Id = new Saml2Id(id);
         }
     }
 }
