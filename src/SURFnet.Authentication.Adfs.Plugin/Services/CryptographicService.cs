@@ -105,7 +105,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
         /// </summary>
         private void LoadCertificate()
         {
-            this.log.DebugFormat("Search sigingin certificate with thumbprint '{0}' in LocalMachine store.", Settings.Default.SpSigningCertificate);
+            this.log.DebugFormat("Search siginging certificate with thumbprint '{0}' in the 'LocalMachine' 'My' store.", Settings.Default.SpSigningCertificate);
             var store = new X509Store(StoreName.My, StoreLocation.LocalMachine);
             store.Open(OpenFlags.ReadOnly);
             try
