@@ -63,6 +63,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
             {
                 this.InitializeLogger();
                 this.log.Debug("Enter BeginAuthentication");
+                this.log.DebugFormat("context.ActivityId='{0}'; context.ContextId='{1}'; conext.Lcid={2}", context.ActivityId, context.ContextId, context.Lcid);
 
                 string authnRequestId = $"_{context.ContextId}";
                 var authRequest = SamlService.CreateAuthnRequest(identityClaim, authnRequestId, httpListenerRequest.Url);
@@ -130,6 +131,15 @@ namespace SURFnet.Authentication.Adfs.Plugin
         public IAdapterPresentation TryEndAuthentication(IAuthenticationContext context, IProofData proofData, HttpListenerRequest request, out Claim[] claims)
         {
             this.log.Debug("Enter TryEndAuthentication");
+            this.log.DebugFormat("context.ActivityId='{0}'; context.ContextId='{1}'; conext.Lcid={2}", context.ActivityId, context.ContextId, context.Lcid);
+            foreach (var d in context.Data)
+            {
+                this.log.DebugFormat("conext.Data: '{0}'='{1}'", d.Key, d.Value);
+            }
+            foreach (var p in proofData.Properties)
+            {
+                this.log.DebugFormat("proofData.Properties: '{0}'='{1}'", p.Key, p.Value);
+            }
             claims = null;
             try
             {
@@ -143,6 +153,15 @@ namespace SURFnet.Authentication.Adfs.Plugin
                 }
 
                 claims = SamlService.VerifyResponseAndGetAuthenticationClaim(samlResponse);
+                foreach (var claim in claims)
+                {
+                    this.log.DebugFormat("claim.Issuer='{0}'; claim.OriginalIssuer='{1}; claim.Type='{2}'; claim.Value='{3}'",
+                        claim.Issuer, claim.OriginalIssuer, claim.Type, claim.Value);
+                    foreach (var p in claim.Properties)
+                    {
+                        this.log.DebugFormat("claim.Properties: '{0}'='{1}'", p.Key, p.Value);
+                    }
+                }
                 this.log.InfoFormat("Successfully processed response for request with id '{0}'", authnRequestId);
                 return null;
             }
@@ -177,6 +196,15 @@ namespace SURFnet.Authentication.Adfs.Plugin
                 sb.AppendLine($"{settingsProperty.Name} : '{Settings.Default[settingsProperty.Name]}'");
             }
             
+            sb.AppendLine("Plugin Metadata:");
+            foreach (var am in this.Metadata.AuthenticationMethods)
+            {
+                sb.AppendLine($"AuthenticationMethod: '{am}'");
+            }
+            foreach (var ic in this.Metadata.IdentityClaims)
+            {
+                sb.AppendLine($"IdentityClaim: '{ic}'");
+            }
             try
             {
                 var options = Kentor.AuthServices.Configuration.Options.FromConfiguration;
