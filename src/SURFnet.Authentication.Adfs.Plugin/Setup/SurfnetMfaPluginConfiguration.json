@@ -1,6 +1,5 @@
 {
   "Settings": {
-    "AuthenticationServiceUrl": "",
     "SecondFactorEndpoint": "",
     "MinimalLoa": "",
     "schacHomeOrganization": "",
@@ -9,8 +8,7 @@
   },
   "ServiceProvider": {
     "SigningCertificate": "",
-    "EntityId": "",
-    "AssertionConsumerServiceUrl": ""
+    "EntityId": ""
   },
   "IdentityProvider": {
     "EntityId": "",

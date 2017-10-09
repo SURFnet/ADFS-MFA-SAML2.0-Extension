@@ -1,71 +1,159 @@
 # ADFS-MFA-SAML2.0-Extension
-Extension to Microsoft ADFS 3.0 and 4.0 that performs remote Second Factor Authentication calls to Openconext using `SAML 2.0` with a `HTTP-Redirect` binding. 
 
-To create the ability to redirect the user to the Second Factor Endpoint and back to our plugin a extra service is necessary because of the encrypted context that is served by Microsoft ADFS. This encrypted context needs to be present on every authenticationrequest that comes from and goes to the ADFS Plugin. This service is used to relay the SAML AuthnRequest to the Second Factor Endpoint, save the encrypted context and post back the SAML Response from the Second Factor Endpoint with the AD FS context so that we can postback to the plugin. 
+This is a MFA extension for Microsoft ADFS 3.0 and 4.0 that authenticates a user's second factor in OpenConext Stepup. It uses the second factor only (SFO) endpoint of the Stepup-Gateway to authenticate the user.
 
 ## Installation
-### Precompiled version
-To install a precompiled version of the plugin, download [InstallPackage.zip](https://github.com/SURFnet/ADFS-MFA-SAML2.0-Extension/blob/master/src/SURFnet.Authentication.Adfs.Plugin/Setup/SetupPackage.zip). To install the package add the environment specific settings in [SurfnetMfaPluginConfiguration.json](https://github.com/SURFnet/ADFS-MFA-SAML2.0-Extension/blob/master/src/SURFnet.Authentication.Adfs.Plugin/Setup/SurfnetMfaPluginConfiguration.json) and run Install-SurfnetMfaPlugin.ps1 as an administrator. The installation process will restart the AD FS service several times and optionally generates a signing certificate. This depends on your input parameters.
 
-Do not forget to change your PowerShell ExecutionPolicy to unrestricted to install this plugin:
+### Requirements
+
+* This version of the plugin requires version 2.7.0 of the Stepup-Gateway
+* Installation of the ADFS-MFA extension on the ADFS Server requires domain administrator privileges
+* The installation script requires the PowerShell ExecutionPolicy to be set to "unrestricted"
+
+### Precompiled versions
+Precompiled versions of the extension can be downloaded from the [github releases page](https://github.com/SURFnet/ADFS-MFA-SAML2.0-Extension/releases). Note that these prebuild versions are targeted to SURFconext, and contain SURFconext specific configuration. There are two different versions of the extension that use different methods to authenticate to the Stepup-Gateway.
+
+| Version | Download link                                                                                                    | Description                                                                                                                     |
+|:--------|:-----------------------------------------------------------------------------------------------------------------|:--------------------------------------------------------------------------------------------------------------------------------|
+| 0.1     | [SetupPackage.zip](https://github.com/SURFnet/ADFS-MFA-SAML2.0-Extension/releases/download/0.1/SetupPackage.zip) | This release requires the "Authentication Service"                                                                              |
+| 0.2     | [SetupPackage.zip](https://github.com/SURFnet/ADFS-MFA-SAML2.0-Extension/releases/download/0.2/SetupPackage.zip) | This release works with the Stepup-Gateway directly and dus not use the AuthenticationService. It Requires Stepup-Gateway 2.7.0 |
+
+These instructions are for version 0.2.
+
+Unpack the .zip file on the ADFS server. If you have an ADFS farm, you will need to install the extension on each ADFS server in the farm.
+
+### Update SurfnetMfaPluginConfiguration.json
+
+You must update `SurfnetMfaPluginConfiguration.json` with configuration for your domain. Refer to the example file and description below.
+```json
+{
+  "Settings": {
+    "SecondFactorEndpoint": "https://sa-gw.surfconext.nl/second-factor-only/single-sign-on",
+    "MinimalLoa": "http://surfconext.nl/assurance/sfo-level2",
+    "schacHomeOrganization": "example.org",
+    "ActiveDirectoryName": "example.org",
+    "ActiveDirectoryUserIdAttribute": "sAMAccountName"
+  },
+  "ServiceProvider": {
+    "SigningCertificate": "",
+    "EntityId": "http://example.org/scsa-mfa-extension"
+  },
+  "IdentityProvider": {
+    "EntityId": "https://sa-gw.surfconext.nl/second-factor-only/metadata",
+    "Certificate": "sa-gw.surfconext.nl.crt"
+  }
+}
+```
+
+| Section          | Setting                        | Required | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+|:-----------------|:-------------------------------|:---------|:-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Settings         | SecondFactorEndpoint           | Yes      | The Assertion Consumer Service (ACL) location of the second factor only (SFO) endpoint of the Stepup-Gateway                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| Settings         | MinimalLoa                     | Yes      | The SFO level of assurance (LoA) identifier for authentication requests from the extension to the Stepup-Gateway                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| Settings         | schacHomeOrganization          | Yes      | The value of the schacHomeOrganization attribute of the institution. Must be the same value that was used in the `urn:mace:terena.org:attribute-def:schacHomeOrganization` attribute during authentication to Stepup-SelfService                                                                                                                                                                                                                                                                                                     |
+| Settings         | ActiveDirectoryName            | Yes      | The name of the Microsoft Active Directory (AD) that contains the accounts of the users that use the MFA extension. E.g. "example.org".                                                                                                                                                                                                                                                                                                                                                                                              |
+| Settings         | ActiveDirectoryUserIdAttribute | No      | Defaults to the value of the `http://schemas.microsoft.com/ws/2008/06/identity/claims/windowsaccountname` claim that is added by ADFS during primary authentication. Specify the name of an attribute in AD to read the userid from that AD attribute instead. The result must be same value that was used in the `urn:mace:dir:attribute-def:uid` attribute during authentication Stepup-SelfService                                        |
+| ServiceProvider | EntityId                        | Yes       | The SAML EntityID of the of the SAML Service Provider (SP) of the extension. We do _not recommend_ to reuse the EnitytID of the ADFS server. This is an identifier. We recommend that you us an identifier that is linked to a domain you control and that identifies the purpose of the SP. E.g. "http://example.org/scsa-mfa-extension". |
+| ServiceProvider  | SigningCertificate             | No       | Optional. If present this is the filename of a .pfx file that contains the SAML Signing certificate and RSA keypair of the SAML Service Provider (SP) of the extension. We do _not recommend_ to reuse the SAML signing or the TLS server certificate of the ADFS server here. When not present a new self signed X.509 certificate is created by the install script, and written to disk and to this configuration file so it can be used to install the extension on other ADFS servers in the farm, or to reinstall the extension |
+| IdentityProvider | EntityId                       | Yes      | The EntityID of the SFO endpoint of the Stepup-Gateway |
+| IdentityProvider | Certificate                    | Yes      | Filename of the file with the SAML Signing certificate of the Stepup-Gateway. |
+
+### Install the extension
+
+Run Install-SurfnetMfaPlugin.ps1 as a domain administrator from the power shell. The installation process will restart the AD FS service.
+
+The power muts have ExecutionPolicy "unrestricted":
 ```powershell
 Get-ExecutionPolicy
 Set-ExecutionPolicy unrestricted
 ```
-Then run the installation PowerShell script:
+
+Run the installation PowerShell script:
 ```powershell
-./Github/ADFS-MFA-SAML2.0-Extension/src/SURFnet.Authentication.Adfs.Plugin/Setup/SurfnetMfaPlugin.ps1
+SurfnetMfaPlugin.ps1
 ```
-And set the ExecutionPolicy back to its original state
+
+To set the ExecutionPolicy back to its original state
 ```powershell
 Set-ExectionPolicy restricted
 Get-ExecutionPolicy
 ```
 
-### Compiling
-Compile this project as normal. When building in release modus, a SetupPackage.zip file is created. Use this zip file to install the AD FS plugin on the AD FS server. You should only add the public key of your SFO endpoint to the zip and set the environment specific variables in the configuration file.
+### Known issues and troubleshooting
 
-## Configuration file
-```javascript
-{
-    "settings":
-    {
-        "AuthenticationServiceUrl": "https://<your authentication service url>/authentication/initiate",
-        "SecondFactorEndpoint": "<Your second factor endpoint>",
-        "MinimalLoa": "<The minimal LOA level required>",
-        "schacHomeOrganization": "<schacHomeOrganization>",
-        "ActiveDirectoryName": "<AD Name>",
-        "ActiveDirectoryUserIdAttribute": "<Attribute containing the user id>"
-    },
-    "ServiceProvider":
-    {
-        "SigningCertificate": "signing.myorganization.pfx",
-        "EntityId": "http://myorganization.com",
-        "AssertionConsumerServiceUrl": "https://<your authentication service url>/authenticate/consume-acs"
-    },
-    "IdentityProvider":
-    {
-        "EntityId": "<Second Factor Endpoint entityId>",
-        "Certificate": "Name of the .cert file from your Second Factor Endpoint"
-    }
-}
+#### Logging
+The Event Viewer contains two locations with log events that are useful for troubleshooting:
+
+1. "Application and Services Logs" --> "AD FS" --> "Admin"
+2. "Application and Services Logs" --> "AD FS Plugin"
+
+#### SurfnetMfaPluginConfiguration.config
+When running the install script again not all configuration from SurfnetMfaPluginConfiguration.json is applied. Workaround is to make the configuration changes manually in `C:\Windows\ADFS\SurfnetMfaPluginConfiguration.config`.
+
+The extension does not use ADFS for SAML authentication to the Stepup-Gateway, but uses the [KentorIT](https://github.com/Sustainsys/Saml2) library. SAML configuration for the extension is not set through the "AD FS Management" console.
+
+##### kentor.authServices
+The "kentor.authServices" section contains the configuration of the SAML Service Provider library that is used by the extension. This section contains the SAML configuration of the SFO endpoint on the Stepup-Gateway IdP and SAML Service Provider (SP) of the extension. The SAML signing certificate for the SP is not stored here, but is set in "SURFnet.Authentication.Adfs.Plugin.Properties.Settings"
+
+`findValue` contains the SHA-1 thumbprint of the SAML Signing certificate of the Stepup-Gateway IdP in the LocalMachine\My store of the user that runs the ADFS Service. Note that this thumbprint must be all uppercase. The other values were copied verbatim from the `SurfnetMfaPluginConfiguration.json` configuration file during the first installation of the plugin.
+
+```xml
+<kentor.authServices entityId="http://example.org/scsa-mfa-extension" returnUrl="" discoveryServiceUrl="">
+    <nameIdPolicy allowCreate="true" format="Unspecified" />
+    <identityProviders>
+      <add entityId="https://sa-gw.surfconext.nl/second-factor-only/metadata" signOnUrl="" binding="HttpPost" allowUnsolicitedAuthnResponse="false" wantAuthnRequestsSigned="true">
+        <signingCertificate storeName="My" storeLocation="LocalMachine" findValue="1F459B2A6E598FBE8B6AA2D0E41D020FB999A2FD" x509FindType="FindByThumbprint" />
+      </add>
+    </identityProviders>
+</kentor.authServices>
 ```
 
-## Configuration file explained
-|PropertyName |Required |DataType |Description|
-|-------------|---------|---------|-----------------------------------|
-|AuthenticationServiceUrl|Yes|URI|The URL of the SFO gateway. The SAML AuthnRequest is forwarded to this URL.|
-|SecondFactorEndpoint|yes|URI|The actual SFO endpoint.|
-|MinimalLoa|Yes|URI|Indicates the minimal Level of Assurance required for second factor authentication.|
-|schacHomeOrganization|Yes|String|The schacHomeOrganization that the institute uses.|
-|ActivateDirectoryName|No|String|The name of the Microsoft Active Directory. This property is required when the ActiveDirectoryUserIdAttribute contains a value.|
-|ActiveDirectoryUserIdAttribute|No|String|Openconext needs a NameIdentifier for the SFO endpoint. By default, the WindowsAccountName is used in conjunction with the schacHomeOrganization. If the UserId differs from the WindowsAccountName, the UserId is retrieved from the ActiveDirectory. This property contains the name of the attribute containing the UserId. Leave this property empty to use the WindowsAccountName|
-|ServiceProvider.SigningCertificate|No|String|When this property is left empty, the signing certificate is generated while installing the plugin. After generating the certificate, the name of the certificate is saved in this property for installation on other AD FS servers.|
-|ServiceProvider.EntityId|Yes|URI|The entity ID of your organization|
-|ServiceProvider.AssertionConsumerServiceUrl|Yes|URI|The SFO endpoint sends the SAML response message back to this URL.|
-|IdentityProvider.EntityId|Yes|URI|The entity ID of the SFO endpoint|
-|IdentityProvider.Certificate|Yes|string|The name of the .cert file of the SFO endpoint. This is used to verify the signing of the SAML Response|
+##### SURFnet.Authentication.Adfs.Plugin.Properties.Settings
 
-## Bugs and Features
-Our Pivotal Tracker for this project is accessible for everyone, please find it here:
+This section conains the configuration for the SAML Service Provider (SP) of the extension. This is the SP that handles authentication to the SFO IdP of the Stepup-Gateway. It also contain the settings that the extension needs to find the user requiring MFA in the local Active Directory to get the identifier for a user for Stepup-Gateway
+
+`SpSigningCertificate` contains the SHA-1 thumbprint of the SAML Signing certificate of the SP in the LocalMachine\My store of the user that runs the ADFS Service. The RSA keypair (i.e. the private key) of this certificate must be in the same store. Note that this thumbprint must be all uppercase.
+
+```xml
+<applicationSettings>
+    <SURFnet.Authentication.Adfs.Plugin.Properties.Settings>
+      <setting name="SecondFactorEndpoint" serializeAs="String">
+        <value>https://sa-gw.test2.surfconext.nl/second-factor-only/single-sign-on</value>
+      </setting>
+      <setting name="SpSigningCertificate" serializeAs="String">
+        <value>957F86DCE22461D89CC354B33106719AA27EEC50</value>
+      </setting>
+      <setting name="MinimalLoa" serializeAs="String">
+        <value>http://test2.surfconext.nl/assurance/sfo-level2</value>
+      </setting>
+      <setting name="schacHomeOrganization" serializeAs="String">
+        <value>institution-a.nl</value>
+      </setting>
+      <setting name="ActiveDirectoryName" serializeAs="String">
+        <value>d2012.test2.surfconext.nl</value>
+      </setting>
+      <setting name="ActiveDirectoryUserIdAttribute" serializeAs="String">
+        <value>EmployeeNumber</value>
+      </setting>
+    </SURFnet.Authentication.Adfs.Plugin.Properties.Settings>
+  </applicationSettings>
+```
+
+### Building from Source
+
+* This project uses the NuGet package manager. Before building you must Restore the NuGet packages (e.g. run "nuget restore" from the console).
+* The KentorIT library needs to be signed. Run "SolutionItems/SignKentorAuthLibrary.cmd"
+Compile this project as normal. When building in release modus, a SetupPackage.zip file is created. Use this zip file to install the AD FS plugin on the AD FS server. You should only add the public key of your SFO endpoint to the zip and set the environment specific variables in the configuration file.
+
+
+## Resources
+
+* Our Pivotal Tracker for this project is accessible for everyone, please find it here:
 https://www.pivotaltracker.com/n/projects/1950415
+
+* "Under the hood tour on Multi-Factor Authentication in ADFS" blog by Ramiro Calderon
+on MSDN: [Part 1](https://blogs.msdn.microsoft.com/ramical/2014/01/30/under-the-hood-tour-on-multi-factor-authentication-in-adfs-part-1-policy/) and [Part 2](https://blogs.msdn.microsoft.com/ramical/2014/02/18/under-the-hood-tour-on-multi-factor-authentication-in-adfs-part-2-mfa-aware-relying-parties/)
+* "External authentication providers in AD FS in Windows Server 2012 R2" blogs on MSDN by Jen Field: [Overview](https://blogs.msdn.microsoft.com/jenfieldmsft/2014/03/24/external-authentication-providers-in-ad-fs-in-windows-server-2012-r2-overview/), [Part 1](https://blogs.msdn.microsoft.com/jenfieldmsft/2014/03/24/build-your-own-external-authentication-provider-for-ad-fs-in-windows-server-2012-r2-walk-through-part-1/) and [Part 2](https://blogs.msdn.microsoft.com/jenfieldmsft/2014/03/24/build-your-own-external-authentication-provider-for-ad-fs-in-windows-server-2012-r2-walk-through-part-2/)
+
+* Stepup-Gateway documentation on GitHub https://github.com/OpenConext/Stepup-Gateway/blob/develop/docs/SAMLProxy.md
+
+* Description of Second Factor Only (SFO) Authentication in the SURFconext wiki: https://wiki.surfnet.nl/display/surfconextdev/Second+Factor+Only+%28SFO%29+Authentication

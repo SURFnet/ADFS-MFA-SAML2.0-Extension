@@ -1,7 +1,24 @@
-﻿namespace SURFnet.Authentication.Adfs.Plugin
+﻿/*
+* Copyright 2017 SURFnet bv, The Netherlands
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+
+namespace SURFnet.Authentication.Adfs.Plugin
 {
     using System;
     using System.Configuration;
+    using System.IdentityModel.Tokens;
     using System.Net;
     using System.Security.Claims;
     using System.Text;
@@ -12,9 +29,9 @@
 
     using Microsoft.IdentityServer.Web.Authentication.External;
 
+    using SURFnet.Authentication.Adfs.Plugin.Models;
     using SURFnet.Authentication.Adfs.Plugin.Properties;
     using SURFnet.Authentication.Adfs.Plugin.Services;
-    using SURFnet.Authentication.Core;
 
     /// <summary>
     /// The ADFS MFA Adapter.
@@ -46,21 +63,17 @@
             {
                 this.InitializeLogger();
                 this.log.Debug("Enter BeginAuthentication");
-                var url = Settings.Default.AuthenticationServiceUrl;
-                var authRequest = SamlService.CreateAuthnRequest(identityClaim);
-                var request = new SecondFactorAuthRequest(httpListenerRequest.Url)
-                                  {
-                                      SamlRequestId = authRequest.Id.Value,
-                                      SamlRequest = SamlService.Deflate(authRequest),
-                                      SecondFactorEndpoint = Settings.Default.SecondFactorEndpoint
-                                  };
+                this.log.DebugFormat("context.ActivityId='{0}'; context.ContextId='{1}'; conext.Lcid={2}", context.ActivityId, context.ContextId, context.Lcid);
+
+                string authnRequestId = $"_{context.ContextId}";
+                var authRequest = SamlService.CreateAuthnRequest(identityClaim, authnRequestId, httpListenerRequest.Url);
 
                 using (var cryptographicService = new CryptographicService())
                 {
-                    cryptographicService.SignSamlRequest(request);
+                    this.log.DebugFormat("Signing AuthnRequest with id {0}", authnRequestId);
+                    var signedXml = cryptographicService.SignSamlRequest(authRequest);
+                    return new AuthForm(Settings.Default.SecondFactorEndpoint, signedXml);
                 }
-
-                return new AuthForm(url, request);
             }
             catch (Exception ex)
             {
@@ -118,19 +131,38 @@
         public IAdapterPresentation TryEndAuthentication(IAuthenticationContext context, IProofData proofData, HttpListenerRequest request, out Claim[] claims)
         {
             this.log.Debug("Enter TryEndAuthentication");
+            this.log.DebugFormat("context.ActivityId='{0}'; context.ContextId='{1}'; conext.Lcid={2}", context.ActivityId, context.ContextId, context.Lcid);
+            foreach (var d in context.Data)
+            {
+                this.log.DebugFormat("conext.Data: '{0}'='{1}'", d.Key, d.Value);
+            }
+            foreach (var p in proofData.Properties)
+            {
+                this.log.DebugFormat("proofData.Properties: '{0}'='{1}'", p.Key, p.Value);
+            }
             claims = null;
             try
             {
-                var response = SecondFactorAuthResponse.Deserialize(proofData);
-                this.log.InfoFormat("Received response for request with id '{0}'", response.SamlRequestId.Value);
-                var samlResponse = new Saml2Response(response.SamlResponse, response.SamlRequestId);
+                var response = SecondFactorAuthResponse.Deserialize(proofData, context);
+                string authnRequestId = $"_{ context.ContextId}";
+                this.log.InfoFormat("Received response for request with id '{0}'", authnRequestId);
+                var samlResponse = new Saml2Response(response.SamlResponse, new Saml2Id(authnRequestId));
                 if (samlResponse.Status != Saml2StatusCode.Success)
                 {
                     return new AuthFailedForm(samlResponse.StatusMessage);
                 }
 
                 claims = SamlService.VerifyResponseAndGetAuthenticationClaim(samlResponse);
-                this.log.InfoFormat("Successfully processed response for request with id '{0}'", response.SamlRequestId.Value);
+                foreach (var claim in claims)
+                {
+                    this.log.DebugFormat("claim.Issuer='{0}'; claim.OriginalIssuer='{1}; claim.Type='{2}'; claim.Value='{3}'",
+                        claim.Issuer, claim.OriginalIssuer, claim.Type, claim.Value);
+                    foreach (var p in claim.Properties)
+                    {
+                        this.log.DebugFormat("claim.Properties: '{0}'='{1}'", p.Key, p.Value);
+                    }
+                }
+                this.log.InfoFormat("Successfully processed response for request with id '{0}'", authnRequestId);
                 return null;
             }
             catch (Exception ex)
@@ -164,6 +196,15 @@
                 sb.AppendLine($"{settingsProperty.Name} : '{Settings.Default[settingsProperty.Name]}'");
             }
             
+            sb.AppendLine("Plugin Metadata:");
+            foreach (var am in this.Metadata.AuthenticationMethods)
+            {
+                sb.AppendLine($"AuthenticationMethod: '{am}'");
+            }
+            foreach (var ic in this.Metadata.IdentityClaims)
+            {
+                sb.AppendLine($"IdentityClaim: '{ic}'");
+            }
             try
             {
                 var options = Kentor.AuthServices.Configuration.Options.FromConfiguration;
