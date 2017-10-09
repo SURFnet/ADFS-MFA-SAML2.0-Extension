@@ -65,17 +65,21 @@ namespace SURFnet.Authentication.Adfs.Plugin.Models
         /// <returns>A Second Factor Authentication Response.</returns>
         public static SecondFactorAuthResponse Deserialize(IProofData proofData, IAuthenticationContext context)
         {
-            if (!proofData.Properties.ContainsKey("Response"))
+            string responseParameter;
+            if (proofData.Properties.ContainsKey("_SAMLResponse"))
             {
-                throw new ArgumentException("Response");
+                responseParameter = "_SAMLResponse";
+            }
+            else if (proofData.Properties.ContainsKey("SAMLResponse"))
+            {
+                responseParameter = "SAMLResponse";
+            }
+            else
+            {
+                throw new ArgumentException("Missing '_SAMLResponse' or 'SAMLResponse' POST parameter");
             }
 
-            if (!proofData.Properties.ContainsKey("RequestId"))
-            {
-                throw new ArgumentException("RequestId");
-            }
-
-            var response = new SecondFactorAuthResponse(new Saml2Id($"_{context.ContextId}"), proofData.Properties["SAMLResponse"].ToString());
+            var response = new SecondFactorAuthResponse(new Saml2Id($"_{context.ContextId}"), proofData.Properties[responseParameter].ToString());
             return response;
         }
     }
