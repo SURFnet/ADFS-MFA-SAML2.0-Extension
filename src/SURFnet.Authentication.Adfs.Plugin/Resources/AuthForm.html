@@ -10,13 +10,11 @@
     <form method="post" name="loginform" id="loginForm" action="%FormUrl%">
         <input id="AuthMethod" type="hidden" name="AuthMethod" value="%AuthMethod%" />
         <input id="Context" type="hidden" name="Context" value="%Context%" />
-        <input id="request" type="hidden" name="request" value="%Request%" />
+        <input id="request" type="hidden" name="SAMLRequest" value="%SAMLRequest%" />
     </form>
 </div>
 <script type="text/javascript">
     setTimeout(function () {
-        var context = document.getElementById("Context");
-        context.value = escape(context.value);
             document.forms[0].submit();
         },
         0);

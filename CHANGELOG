@@ -1,0 +1,6 @@
+Version 0.1 (plugin version 1.0.0.0)
+Initial release
+
+Version 0.2 (plugin version 2.0.0.0)
+Allow the extension to work directly with Stepup-Gateway, removing the need for the "Authentication Services".
+Requires Stepup-Gateway version 2.7.0

@@ -1,4 +1,20 @@
-﻿namespace SURFnet.Authentication.Adfs.Plugin
+﻿/*
+* Copyright 2017 SURFnet bv, The Netherlands
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+
+namespace SURFnet.Authentication.Adfs.Plugin
 {
     using System;
 
@@ -8,19 +24,12 @@
 
     using Properties;
 
-    using SURFnet.Authentication.Core;
-
     /// <summary>
     /// The presentation form for the adapter.
     /// </summary>
     /// <seealso cref="Microsoft.IdentityServer.Web.Authentication.External.IAdapterPresentationForm" />
     public class AuthForm : IAdapterPresentationForm
     {
-        /// <summary>
-        /// The second factor request.
-        /// </summary>
-        private readonly SecondFactorAuthRequest request;
-
         /// <summary>
         /// The service URL.
         /// </summary>
@@ -32,16 +41,21 @@
         private readonly ILog log;
 
         /// <summary>
+        /// The signed XML.
+        /// </summary>
+        private readonly string signedXml;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="AuthForm" /> class.
         /// </summary>
         /// <param name="serviceUrl">The service URL.</param>
-        /// <param name="request">The request.</param>
-        public AuthForm(Uri serviceUrl, SecondFactorAuthRequest request)
+        /// <param name="signedXml">The signed XML.</param>
+        public AuthForm(Uri serviceUrl, string signedXml)
         {
             this.log = LogManager.GetLogger("AuthForm");
             this.log.Debug("Entering AuthForm.");
             this.serviceUrl = serviceUrl;
-            this.request = request;
+            this.signedXml = signedXml;
         }
 
         /// <summary>
@@ -51,11 +65,10 @@
         /// <returns>The form HTML.</returns>
         public string GetFormHtml(int lcid)
         {
-            var serializedRequest = this.request.Serialize();
-            this.log.DebugFormat("Rendering form for posting request to '{0}'.{1}Serialized Request:{2}", this.serviceUrl, Environment.NewLine, serializedRequest);
+            this.log.DebugFormat("Rendering form for posting request to '{0}'", this.serviceUrl);
             var form = Resources.AuthForm;
             form = form.Replace("%FormUrl%", this.serviceUrl.ToString());
-            form = form.Replace("%Request%", serializedRequest);
+            form = form.Replace("%SAMLRequest%", this.signedXml);
             return form;
         }
 
