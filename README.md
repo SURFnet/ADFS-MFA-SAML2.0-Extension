@@ -16,7 +16,7 @@ Precompiled versions of the extension can be downloaded from the [github release
 | Version | Download link                                                                                                    | Description                                                                                                                     |
 |:--------|:-----------------------------------------------------------------------------------------------------------------|:--------------------------------------------------------------------------------------------------------------------------------|
 | 0.1     | [SetupPackage.zip](https://github.com/SURFnet/ADFS-MFA-SAML2.0-Extension/releases/download/0.1/SetupPackage.zip) | This release requires the "Authentication Service"                                                                              |
-| 0.2     | [SetupPackage.zip](https://github.com/SURFnet/ADFS-MFA-SAML2.0-Extension/releases/download/0.2/SetupPackage.zip) | This release works with the Stepup-Gateway directly and dus not use the AuthenticationService. It Requires Stepup-Gateway 2.7.0 |
+| 0.2     | [SetupPackage.zip](https://github.com/SURFnet/ADFS-MFA-SAML2.0-Extension/releases/download/0.2/SetupPackage-0.2.zip) | This release works with the Stepup-Gateway directly and dus not use the AuthenticationService. It Requires Stepup-Gateway 2.7.0 |
 
 These instructions are for version 0.2.
 
