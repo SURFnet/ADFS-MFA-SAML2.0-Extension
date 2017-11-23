@@ -38,7 +38,7 @@
     <SignAssembly>true</SignAssembly>
   </PropertyGroup>
   <PropertyGroup>
-    <AssemblyOriginatorKeyFile>../../SolutionItems/SURFnet.Authentication.Adfs.Plugin.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>..\..\SolutionItems\SURFnet.Authentication.Adfs.Plugin.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <PropertyGroup>
     <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
@@ -157,8 +157,8 @@
   </ItemGroup>
   <Target Name="BuildPackage">
     <Message Importance="High" Text="Zipping files..." />
-    <Zip Files="@(Binaries);@(SetupFiles)" WorkingDirectory="$(TargetDir)" ZipFileName="$(ProjectDir)Setup\SetupPackage.zip" />
-    <Message Importance="High" Text="Created setup package: $(ProjectDir)Setup\SetupPackage.zip" />
+    <Zip Files="@(Binaries);@(SetupFiles)" WorkingDirectory="$(TargetDir)" ZipFileName="..\..\..\SetupPackage.zip" />
+    <Message Importance="High" Text="Created setup package" />
   </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
