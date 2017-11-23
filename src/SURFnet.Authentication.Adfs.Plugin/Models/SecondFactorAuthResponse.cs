@@ -36,8 +36,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Models
         private SecondFactorAuthResponse(Saml2Id saml2Id, string encodedSamlResponse)
         {
             this.InResponseToId = saml2Id;
-            var samlResponse = Encoding.ASCII.GetString(Convert.FromBase64String(encodedSamlResponse));
-            var xmlDocument = new XmlDocument { PreserveWhitespace = true };
+            var samlResponse = Encoding.UTF8.GetString(Convert.FromBase64String(encodedSamlResponse));
+            var xmlDocument = new XmlDocument { PreserveWhitespace = true, XmlResolver = null };
             xmlDocument.LoadXml(samlResponse);
             this.SamlResponse = xmlDocument.DocumentElement;
         }
