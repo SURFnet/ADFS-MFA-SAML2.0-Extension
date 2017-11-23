@@ -38,7 +38,7 @@
     <SignAssembly>true</SignAssembly>
   </PropertyGroup>
   <PropertyGroup>
-    <AssemblyOriginatorKeyFile>..\..\SolutionItems\SURFnet.Authentication.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>../../SolutionItems/SURFnet.Authentication.Adfs.Plugin.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <PropertyGroup>
     <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
