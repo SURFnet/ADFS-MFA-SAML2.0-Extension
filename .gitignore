@@ -243,3 +243,4 @@ ModelManifest.xml
 /src/Winvision.DotSettings
 /src/Settings.SourceAnalysis
 *.pubxml
+/SolutionItems/SURFnet.Authentication.Adfs.Plugin.snk
