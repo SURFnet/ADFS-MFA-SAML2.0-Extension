@@ -136,15 +136,17 @@ namespace SURFnet.Authentication.Adfs.Plugin
             {
                 this.log.DebugFormat("conext.Data: '{0}'='{1}'", d.Key, d.Value);
             }
+
             foreach (var p in proofData.Properties)
             {
                 this.log.DebugFormat("proofData.Properties: '{0}'='{1}'", p.Key, p.Value);
             }
+
             claims = null;
             try
             {
                 var response = SecondFactorAuthResponse.Deserialize(proofData, context);
-                string authnRequestId = $"_{ context.ContextId}";
+                var authnRequestId = $"_{ context.ContextId}";
                 this.log.InfoFormat("Received response for request with id '{0}'", authnRequestId);
                 var samlResponse = new Saml2Response(response.SamlResponse, new Saml2Id(authnRequestId));
                 if (samlResponse.Status != Saml2StatusCode.Success)
@@ -155,13 +157,18 @@ namespace SURFnet.Authentication.Adfs.Plugin
                 claims = SamlService.VerifyResponseAndGetAuthenticationClaim(samlResponse);
                 foreach (var claim in claims)
                 {
-                    this.log.DebugFormat("claim.Issuer='{0}'; claim.OriginalIssuer='{1}; claim.Type='{2}'; claim.Value='{3}'",
-                        claim.Issuer, claim.OriginalIssuer, claim.Type, claim.Value);
+                    this.log.DebugFormat(
+                        "claim.Issuer='{0}'; claim.OriginalIssuer='{1}; claim.Type='{2}'; claim.Value='{3}'",
+                        claim.Issuer,
+                        claim.OriginalIssuer,
+                        claim.Type,
+                        claim.Value);
                     foreach (var p in claim.Properties)
                     {
                         this.log.DebugFormat("claim.Properties: '{0}'='{1}'", p.Key, p.Value);
                     }
                 }
+
                 this.log.InfoFormat("Successfully processed response for request with id '{0}'", authnRequestId);
                 return null;
             }
