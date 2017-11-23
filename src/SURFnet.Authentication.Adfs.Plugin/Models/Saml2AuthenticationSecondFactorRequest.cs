@@ -18,6 +18,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Models
 {
     using System.Diagnostics.CodeAnalysis;
     using System.IdentityModel.Tokens;
+    using System.Linq;
     using System.Xml.Linq;
 
     using Kentor.AuthServices;
@@ -48,6 +49,13 @@ namespace SURFnet.Authentication.Adfs.Plugin.Models
         {
             var element = base.ToXElement();
             var ns = XNamespace.Get("urn:oasis:names:tc:SAML:2.0:assertion");
+
+            // Workaround to fix the wrong serialization of the AssertionConsumerServiceUrl
+            var el = element.Attributes().FirstOrDefault(n => n.Name.LocalName == "AssertionConsumerServiceURL");
+            if (el != null)
+            {
+                el.Value = this.AssertionConsumerServiceUrl.OriginalString;
+            }
 
             var issuer = element.Element(ns + "Issuer");
             if (issuer != null)

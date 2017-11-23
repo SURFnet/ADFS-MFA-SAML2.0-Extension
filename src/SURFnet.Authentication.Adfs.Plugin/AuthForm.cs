@@ -67,7 +67,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
         {
             this.log.DebugFormat("Rendering form for posting request to '{0}'", this.serviceUrl);
             var form = Resources.AuthForm;
-            form = form.Replace("%FormUrl%", this.serviceUrl.ToString());
+            form = form.Replace("%FormUrl%", System.Net.WebUtility.HtmlEncode(this.serviceUrl.ToString()));
             form = form.Replace("%SAMLRequest%", this.signedXml);
             return form;
         }
