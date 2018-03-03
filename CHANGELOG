@@ -1,3 +1,6 @@
+Version 2.0 (plugin version 1.0.0.0)
+Added MSI installer to deploy the setup files and PowerShell Module.
+
 Version 0.1 (plugin version 1.0.0.0)
 Initial release
 
