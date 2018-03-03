@@ -763,50 +763,6 @@
         }
         "Folder"
         {
-            "{1525181F-901A-416C-8A58-119130FE478E}:_0D0203348D6A4051A4671BA7194D3684"
-            {
-            "Name" = "8:#1914"
-            "AlwaysCreate" = "11:FALSE"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Property" = "8:SystemFolder"
-                "Folders"
-                {
-                    "{9EF0B969-E518-4E46-987F-47570745A589}:_65927ED6557B45CF86AB7F14F55A0070"
-                    {
-                    "Name" = "8:System32"
-                    "AlwaysCreate" = "11:FALSE"
-                    "Condition" = "8:"
-                    "Transitive" = "11:FALSE"
-                    "Property" = "8:_770C71EDD3C24622B3858CBB458A7F27"
-                        "Folders"
-                        {
-                            "{9EF0B969-E518-4E46-987F-47570745A589}:_1C0A81F7B12D4C87A1D1DD9910B7C39A"
-                            {
-                            "Name" = "8:WindowsPowerShell"
-                            "AlwaysCreate" = "11:FALSE"
-                            "Condition" = "8:"
-                            "Transitive" = "11:FALSE"
-                            "Property" = "8:_7D53A4FE678B4041A291A29D28CB4557"
-                                "Folders"
-                                {
-                                    "{9EF0B969-E518-4E46-987F-47570745A589}:_9177C11A5A63468780CF8348E57A02E5"
-                                    {
-                                    "Name" = "8:v1.0"
-                                    "AlwaysCreate" = "11:FALSE"
-                                    "Condition" = "8:"
-                                    "Transitive" = "11:FALSE"
-                                    "Property" = "8:_8B4FFE9918C44102BC2B3428E94C7084"
-                                        "Folders"
-                                        {
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
             "{3C67513D-01DD-4637-8A68-80971EB9504F}:_25CF5A09660D44D7968C83915B510EF8"
             {
             "DefaultLocation" = "8:c:\\SURFnetMFA"
@@ -924,7 +880,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:SURFnet.Authentication.Adfs.Plugin.Setup"
         "ProductCode" = "8:{417C559C-06D4-4136-91E2-A541D26AFBDD}"
-        "PackageCode" = "8:{4FDC286F-25C0-4FA1-BE17-16DBA8B81023}"
+        "PackageCode" = "8:{726AA9DA-2F05-4499-88E7-6C1B5362608B}"
         "UpgradeCode" = "8:{C4015A09-588F-4D72-86FA-E87041465529}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"

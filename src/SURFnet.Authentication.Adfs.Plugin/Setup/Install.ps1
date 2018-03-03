@@ -27,15 +27,15 @@ function Initialize-UserSettings()
 	$global:pfxPassword = $null;
 
 	#Defaults
-	$Settings_SecondFactorEndpoint_default			= "https://sa-gw.test2.surfconext.nl/second-factor-only/single-sign-on"
-	$Settings_MinimalLoa_default 		   			= "http://test2.surfconext.nl/assurance/sfo-level2"
-	$Settings_schacHomeOrganization_default 		= "institution-a.nl"
-	$Settings_ActiveDirectoryName_default   		= "$env:userdomain.test2.surfconext.nl"
-	$Settings_ActiveDirectoryUserIdAttribute_default= "EmployeeNumber"
-	$ServiceProvider_EntityId_default 			    = "http://adfs-2012.test2.surfconext.nl"                        
-	$ServiceProvider_SigningCertificate_default 	= "signing.d2012.test2.surfconext.nl.pfx"
-	$IdentityProvider_EntityId_default 				= "https://sa-gw.test2.surfconext.nl/second-factor-only/metadata"
-	$IdentityProvider_Certificate_default 			= "Stepup Gateway IdP.crt"
+	$Settings_SecondFactorEndpoint_default			= ""
+	$Settings_MinimalLoa_default 		   			= ""
+	$Settings_schacHomeOrganization_default 		= ""
+	$Settings_ActiveDirectoryName_default   		= ""
+	$Settings_ActiveDirectoryUserIdAttribute_default= ""
+	$ServiceProvider_EntityId_default 			    = ""                        
+	$ServiceProvider_SigningCertificate_default 	= ""
+	$IdentityProvider_EntityId_default 				= ""
+	$IdentityProvider_Certificate_default 			= ""
 	
 	#Ask for installation parameters
 	Write-Host -f yellow "1. Enter the Assertion Consumer Service (ACS) location of the second factor only (SFO) endpoint of the Stepup-Gateway."
