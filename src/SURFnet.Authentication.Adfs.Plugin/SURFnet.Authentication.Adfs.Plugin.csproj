@@ -97,17 +97,9 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
-    <None Include="Scripts\ADFSProviderPublisher\ADFSProviderPublisher.psd1" />
-    <None Include="Scripts\ADFSProviderPublisher\ADFSProviderPublisher.psm1" />
-    <None Include="Scripts\ADFSProviderPublisher\Copy-AuthProvider.ps1" />
-    <None Include="Scripts\ADFSProviderPublisher\CopyTo-Gac.ps1" />
-    <None Include="Scripts\ADFSProviderPublisher\Get-AssemblyVersion.ps1" />
-    <None Include="Scripts\ADFSProviderPublisher\Install-AuthProvider.ps1" />
-    <None Include="Scripts\ADFSProviderPublisher\Uninstall-AuthProvider.ps1" />
     <Content Include="Setup\SURFnet.Authentication.ADFS.MFA.Plugin.log4net">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <None Include="Scripts\Publish-AuthProvider.ps1" />
     <None Include="Setup\PowerShellModule\SURFnetMFA\Export-SigningCertificate.ps1" />
     <None Include="Setup\PowerShellModule\SURFnetMFA\Install-AuthProvider.ps1" />
     <None Include="Setup\PowerShellModule\SURFnetMFA\Install-EventLogForMfaPlugin.ps1" />
@@ -124,7 +116,6 @@
     <None Include="Setup\PowerShellModule\SURFnetMFA\Uninstall-EventLogForMfaPlugin.ps1" />
     <None Include="Setup\PowerShellModule\SURFnetMFA\Uninstall-Log4NetConfiguration.ps1" />
     <None Include="Setup\PowerShellModule\SURFnetMFA\Update-ADFSConfiguration.ps1" />
-    <None Include="Scripts\Update-AuthProvider.ps1" />
     <None Include="Setup\Install.ps1" />
     <None Include="Setup\Uninstall.ps1" />
   </ItemGroup>
