@@ -14,6 +14,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SURFnet.Authentication.Test
 EndProject
 Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "SURFnet.Authentication.Adfs.Plugin.Setup", "src\SURFnet.Authentication.Adfs.Plugin.Setup\SURFnet.Authentication.Adfs.Plugin.Setup.vdproj", "{86E14EF3-1FB2-4516-AD75-5DFB1EA79D26}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SURFnet.Authentication.Adfs.Plugin2", "src\SURFnet.Authentication.Adfs.Plugin2\SURFnet.Authentication.Adfs.Plugin2.csproj", "{484BB5BB-AF49-4B84-BC10-25DA343D7BC5}"
+EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "SURFnet.Authentication.Adfs.Plugin.Setup2", "src\SURFnet.Authentication.Adfs.Plugin.Setup2\SURFnet.Authentication.Adfs.Plugin.Setup2.vdproj", "{D6D3EBA8-DA43-4BC4-8A04-27A0039412B2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +43,18 @@ Global
 		{86E14EF3-1FB2-4516-AD75-5DFB1EA79D26}.Deploy|Any CPU.Build.0 = Debug
 		{86E14EF3-1FB2-4516-AD75-5DFB1EA79D26}.Release|Any CPU.ActiveCfg = Release
 		{86E14EF3-1FB2-4516-AD75-5DFB1EA79D26}.Release|Any CPU.Build.0 = Release
+		{484BB5BB-AF49-4B84-BC10-25DA343D7BC5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{484BB5BB-AF49-4B84-BC10-25DA343D7BC5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{484BB5BB-AF49-4B84-BC10-25DA343D7BC5}.Deploy|Any CPU.ActiveCfg = Debug|Any CPU
+		{484BB5BB-AF49-4B84-BC10-25DA343D7BC5}.Deploy|Any CPU.Build.0 = Debug|Any CPU
+		{484BB5BB-AF49-4B84-BC10-25DA343D7BC5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{484BB5BB-AF49-4B84-BC10-25DA343D7BC5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D6D3EBA8-DA43-4BC4-8A04-27A0039412B2}.Debug|Any CPU.ActiveCfg = Debug
+		{D6D3EBA8-DA43-4BC4-8A04-27A0039412B2}.Debug|Any CPU.Build.0 = Debug
+		{D6D3EBA8-DA43-4BC4-8A04-27A0039412B2}.Deploy|Any CPU.ActiveCfg = Debug
+		{D6D3EBA8-DA43-4BC4-8A04-27A0039412B2}.Deploy|Any CPU.Build.0 = Debug
+		{D6D3EBA8-DA43-4BC4-8A04-27A0039412B2}.Release|Any CPU.ActiveCfg = Release
+		{D6D3EBA8-DA43-4BC4-8A04-27A0039412B2}.Release|Any CPU.Build.0 = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
