@@ -108,15 +108,15 @@ function Update-ADFSConfiguration{
     }
  
     Write-Host -ForegroundColor Gray "Updating property Serviceprovider entityId from value '"$existingKentorConfig.entityId"' to '$ServiceProviderEntityId'"; 
-    $kentorConfig.entityId = $ServiceProviderEntityId
+    $kentorConfig.entityId = $ServiceProviderEntityId.toString()
         
     $idp = $kentorConfig.identityProviders.SelectSingleNode("add");
     
     Write-Host -ForegroundColor Gray "Updating property Identityprovider entityId from value '"$idp.entityId"' to '$IdentityProviderEntityId'";     
-    $idp.entityId = $IdentityProviderEntityId
+    $idp.entityId = $IdentityProviderEntityId.toString()
         
     Write-Host -ForegroundColor Gray "Updating property signingcertificate thumbprint from value '"$idp.signingCertificate.findValue"' to '$sfoCertificateThumbprint'"; 
-    $idp.signingCertificate.findValue = $sfoCertificateThumbprint
+    $idp.signingCertificate.findValue = $sfoCertificateThumbprint.toString()
         
     Write-Host -ForegroundColor Green "Finished writing service and identityprovider information"
 
@@ -149,7 +149,7 @@ function Update-ADFSConfiguration{
         }
 	    if($value){
             Write-Host -ForegroundColor Gray "Updating property "$setting.name" from value '"$setting.value"' to '$value'"; 
-		    $setting.value = $value
+		    $setting.value = $value.ToString()
 	    }
     }
     Write-Host -ForegroundColor Green "Finished writing AD FS configuration settings. Restarting AD FS service"
