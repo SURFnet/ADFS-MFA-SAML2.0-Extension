@@ -145,15 +145,15 @@
     <Error Condition="!Exists('..\..\packages\MSBuildTasks.1.5.0.235\build\MSBuildTasks.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\MSBuildTasks.1.5.0.235\build\MSBuildTasks.targets'))" />
   </Target>
   <ItemGroup>
-    <Binaries Include="D:\Projects\Winvision\SURFnet\ADFS-MFA-SAML2.0-Extension\src\SURFnet.Authentication.Adfs.Plugin\bin\Release\Kentor.AuthServices.dll" />
-    <Binaries Include="D:\Projects\Winvision\SURFnet\ADFS-MFA-SAML2.0-Extension\src\SURFnet.Authentication.Adfs.Plugin\bin\Release\log4net.dll" />
-    <Binaries Include="D:\Projects\Winvision\SURFnet\ADFS-MFA-SAML2.0-Extension\src\SURFnet.Authentication.Adfs.Plugin\bin\Release\SURFnet.Authentication.Adfs.Plugin.dll" />
-    <Binaries Include="D:\Projects\Winvision\SURFnet\ADFS-MFA-SAML2.0-Extension\src\SURFnet.Authentication.Adfs.Plugin\bin\Release\SURFnet.Authentication.Adfs.Plugin.dll.config" />
-    <SetupFiles Include="D:\Projects\Winvision\SURFnet\ADFS-MFA-SAML2.0-Extension\src\SURFnet.Authentication.Adfs.Plugin\bin\Release\Setup\Install-SurfnetMfaPlugin.ps1" />
-    <SetupFiles Include="D:\Projects\Winvision\SURFnet\ADFS-MFA-SAML2.0-Extension\src\SURFnet.Authentication.Adfs.Plugin\bin\Release\Setup\New-SelfSignedCertificateEx.ps1" />
-    <SetupFiles Include="D:\Projects\Winvision\SURFnet\ADFS-MFA-SAML2.0-Extension\src\SURFnet.Authentication.Adfs.Plugin\bin\Release\Setup\SURFnet.Authentication.ADFS.MFA.Plugin.log4net" />
-    <SetupFiles Include="D:\Projects\Winvision\SURFnet\ADFS-MFA-SAML2.0-Extension\src\SURFnet.Authentication.Adfs.Plugin\bin\Release\Setup\SurfnetMfaPluginConfiguration.json" />
-    <SetupFiles Include="D:\Projects\Winvision\SURFnet\ADFS-MFA-SAML2.0-Extension\src\SURFnet.Authentication.Adfs.Plugin\bin\Release\Setup\Uninstall-SurfnetMfaPlugin.ps1" />
+    <Binaries Include="$(ProjectDir)bin\Release\Kentor.AuthServices.dll" />
+    <Binaries Include="$(ProjectDir)bin\Release\log4net.dll" />
+    <Binaries Include="$(ProjectDir)bin\Release\SURFnet.Authentication.Adfs.Plugin.dll" />
+    <Binaries Include="$(ProjectDir)bin\Release\SURFnet.Authentication.Adfs.Plugin.dll.config" />
+    <SetupFiles Include="$(ProjectDir)bin\Release\Setup\Install-SurfnetMfaPlugin.ps1" />
+    <SetupFiles Include="$(ProjectDir)bin\Release\Setup\New-SelfSignedCertificateEx.ps1" />
+    <SetupFiles Include="$(ProjectDir)bin\Release\Setup\SURFnet.Authentication.ADFS.MFA.Plugin.log4net" />
+    <SetupFiles Include="$(ProjectDir)bin\Release\Setup\SurfnetMfaPluginConfiguration.json" />
+    <SetupFiles Include="$(ProjectDir)bin\Release\Setup\Uninstall-SurfnetMfaPlugin.ps1" />
   </ItemGroup>
   <Target Name="BuildPackage">
     <Message Importance="High" Text="Zipping files..." />
