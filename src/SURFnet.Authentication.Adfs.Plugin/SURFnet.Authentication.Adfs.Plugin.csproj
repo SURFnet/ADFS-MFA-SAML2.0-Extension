@@ -156,9 +156,13 @@
     <SetupFiles Include="$(ProjectDir)bin\Release\Setup\Uninstall-SurfnetMfaPlugin.ps1" />
   </ItemGroup>
   <Target Name="BuildPackage">
+    <GetAssemblyIdentity AssemblyFiles="$(ProjectDir)bin\Release\SURFnet.Authentication.Adfs.Plugin.dll">
+      <Output TaskParameter="Assemblies" ItemName="PluginAssemblyInfo" />
+    </GetAssemblyIdentity>
+    <Message Importance="normal" Text="%(PluginAssemblyInfo.Version)" />
     <Message Importance="High" Text="Zipping files..." />
-    <Zip Files="@(Binaries);@(SetupFiles)" WorkingDirectory="$(TargetDir)" ZipFileName="..\..\..\SetupPackage.zip" />
-    <Message Importance="High" Text="Created setup package" />
+    <Zip Files="@(Binaries);@(SetupFiles)" WorkingDirectory="$(TargetDir)" ZipFileName="$(TargetDir)/SetupPackage-%(PluginAssemblyInfo.Version).zip" />
+    <Message Importance="High" Text="Created setup package in $(TargetDir)" />
   </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
