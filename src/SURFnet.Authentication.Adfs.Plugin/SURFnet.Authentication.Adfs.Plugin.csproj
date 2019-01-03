@@ -156,7 +156,14 @@
     <SetupFiles Include="$(ProjectDir)bin\Release\Setup\Uninstall-SurfnetMfaPlugin.ps1" />
   </ItemGroup>
   <Target Name="BuildPackage">
-    <GetAssemblyIdentity AssemblyFiles="$(ProjectDir)bin\Release\SURFnet.Authentication.Adfs.Plugin.dll">
+    <GetAssemblyIdentity AssemblyFiles="$(ProjectDir)bin\$(Configuration)\Kentor.AuthServices.dll">
+      <Output TaskParameter="Assemblies" ItemName="KentorAssemblyInfo" />
+    </GetAssemblyIdentity>   
+    <XmlUpdate XmlFileName="$(ProjectDir)bin\$(Configuration)\SURFnet.Authentication.Adfs.Plugin.dll.config" 
+               XPath="/configuration/configSections/section[@name='kentor.authServices']/@type"
+               Value="Kentor.AuthServices.Configuration.KentorAuthServicesSection, Kentor.AuthServices, Version=%(KentorAssemblyInfo.Version), Culture=neutral, PublicKeyToken=%(KentorAssemblyInfo.PublicKeyToken)" />
+    <Message Importance="High" Text="Updating $(ProjectDir)bin\$(Configuration)\SURFnet.Authentication.Adfs.Plugin.dll.config with assembly identity of $(ProjectDir)bin\$(Configuration)\Kentor.AuthServices.dll: Version=%(KentorAssemblyInfo.Version), PublicKeyToken=%(KentorAssemblyInfo.PublicKeyToken)" />
+    <GetAssemblyIdentity AssemblyFiles="$(ProjectDir)bin\$(Configuration)\SURFnet.Authentication.Adfs.Plugin.dll">
       <Output TaskParameter="Assemblies" ItemName="PluginAssemblyInfo" />
     </GetAssemblyIdentity>
     <Message Importance="normal" Text="%(PluginAssemblyInfo.Version)" />
