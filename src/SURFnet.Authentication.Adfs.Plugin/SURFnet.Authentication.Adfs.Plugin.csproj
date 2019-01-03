@@ -166,10 +166,8 @@
     <GetAssemblyIdentity AssemblyFiles="$(ProjectDir)bin\$(Configuration)\SURFnet.Authentication.Adfs.Plugin.dll">
       <Output TaskParameter="Assemblies" ItemName="PluginAssemblyInfo" />
     </GetAssemblyIdentity>
-    <Message Importance="normal" Text="%(PluginAssemblyInfo.Version)" />
-    <Message Importance="High" Text="Zipping files..." />
-    <Zip Files="@(Binaries);@(SetupFiles)" WorkingDirectory="$(TargetDir)" ZipFileName="$(TargetDir)/SetupPackage-%(PluginAssemblyInfo.Version).zip" />
-    <Message Importance="High" Text="Created setup package in $(TargetDir)" />
+    <Zip Files="@(Binaries);@(SetupFiles)" WorkingDirectory="$(TargetDir)" ZipFileName="$(TargetDir)SetupPackage-%(PluginAssemblyInfo.Version).zip" />
+    <Message Importance="High" Text="Created $(TargetDir)SetupPackage-%(PluginAssemblyInfo.Version).zip" />
   </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
