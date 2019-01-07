@@ -266,7 +266,7 @@
         {
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_01A77C35EC8542AA99389379305627FA"
             {
-            "SourcePath" = "8:..\\SURFnet.Authentication.Adfs.Plugin2\\Setup\\PowerShellModule\\SURFnetMFA\\Remove-Certificates.ps1"
+            "SourcePath" = "8:..\\SURFnet.Authentication.Adfs.Plugin\\Setup\\PowerShellModule\\SURFnetMFA\\Remove-Certificates.ps1"
             "TargetName" = "8:Remove-Certificates.ps1"
             "Tag" = "8:"
             "Folder" = "8:_F31A1A1023C047F5A405D600FE822A4D"
@@ -286,7 +286,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_1AABD89DD99D437D89AEBC7BD9D271A9"
             {
-            "SourcePath" = "8:..\\SURFnet.Authentication.Adfs.Plugin2\\Setup\\PowerShellModule\\SURFnetMFA\\Remove-PluginFromADFSConfiguration.ps1"
+            "SourcePath" = "8:..\\SURFnet.Authentication.Adfs.Plugin\\Setup\\PowerShellModule\\SURFnetMFA\\Remove-PluginFromADFSConfiguration.ps1"
             "TargetName" = "8:Remove-PluginFromADFSConfiguration.ps1"
             "Tag" = "8:"
             "Folder" = "8:_F31A1A1023C047F5A405D600FE822A4D"
@@ -306,7 +306,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_202B581B18364424BBC17EF630801492"
             {
-            "SourcePath" = "8:..\\SURFnet.Authentication.Adfs.Plugin2\\Setup\\PowerShellModule\\SURFnetMFA\\New-AdfsConfigurationBackup.ps1"
+            "SourcePath" = "8:..\\SURFnet.Authentication.Adfs.Plugin\\Setup\\PowerShellModule\\SURFnetMFA\\New-AdfsConfigurationBackup.ps1"
             "TargetName" = "8:New-AdfsConfigurationBackup.ps1"
             "Tag" = "8:"
             "Folder" = "8:_F31A1A1023C047F5A405D600FE822A4D"
@@ -326,7 +326,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_2B6E8B19C8FF4EA5A793AC91C7C34F15"
             {
-            "SourcePath" = "8:..\\SURFnet.Authentication.Adfs.Plugin2\\Setup\\PowerShellModule\\SURFnetMFA\\Install-SfoCertificate.ps1"
+            "SourcePath" = "8:..\\SURFnet.Authentication.Adfs.Plugin\\Setup\\PowerShellModule\\SURFnetMFA\\Install-SfoCertificate.ps1"
             "TargetName" = "8:Install-SfoCertificate.ps1"
             "Tag" = "8:"
             "Folder" = "8:_F31A1A1023C047F5A405D600FE822A4D"
@@ -346,7 +346,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_2CBE774BD2434D128E5FC457C8363B87"
             {
-            "SourcePath" = "8:..\\SURFnet.Authentication.Adfs.Plugin2\\Setup\\PowerShellModule\\SURFnetMFA\\Uninstall-Log4NetConfiguration.ps1"
+            "SourcePath" = "8:..\\SURFnet.Authentication.Adfs.Plugin\\Setup\\PowerShellModule\\SURFnetMFA\\Uninstall-Log4NetConfiguration.ps1"
             "TargetName" = "8:Uninstall-Log4NetConfiguration.ps1"
             "Tag" = "8:"
             "Folder" = "8:_F31A1A1023C047F5A405D600FE822A4D"
@@ -417,7 +417,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_4757CED69197401C8F82C01F6C97A58E"
             {
-            "SourcePath" = "8:..\\SURFnet.Authentication.Adfs.Plugin2\\Setup\\SURFnet.Authentication.ADFS.MFA.Plugin.log4net"
+            "SourcePath" = "8:..\\SURFnet.Authentication.Adfs.Plugin\\Setup\\SURFnet.Authentication.ADFS.MFA.Plugin.log4net"
             "TargetName" = "8:SURFnet.Authentication.ADFS.MFA.Plugin.log4net"
             "Tag" = "8:"
             "Folder" = "8:_6B8D8202830A4872995CFF47A19A63BF"
@@ -437,7 +437,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_4F56C4BC2E404EB68AA1818FC9CAC076"
             {
-            "SourcePath" = "8:..\\SURFnet.Authentication.Adfs.Plugin2\\Setup\\PowerShellModule\\SURFnetMFA\\Install-AuthProvider.ps1"
+            "SourcePath" = "8:..\\SURFnet.Authentication.Adfs.Plugin\\Setup\\PowerShellModule\\SURFnetMFA\\Install-AuthProvider.ps1"
             "TargetName" = "8:Install-AuthProvider.ps1"
             "Tag" = "8:"
             "Folder" = "8:_F31A1A1023C047F5A405D600FE822A4D"
@@ -457,7 +457,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_62F48C7F08424457BF2A119899E77B48"
             {
-            "SourcePath" = "8:..\\SURFnet.Authentication.Adfs.Plugin2\\Setup\\PowerShellModule\\SURFnetMFA\\Install-SigningCertificate.ps1"
+            "SourcePath" = "8:..\\SURFnet.Authentication.Adfs.Plugin\\Setup\\PowerShellModule\\SURFnetMFA\\Install-SigningCertificate.ps1"
             "TargetName" = "8:Install-SigningCertificate.ps1"
             "Tag" = "8:"
             "Folder" = "8:_F31A1A1023C047F5A405D600FE822A4D"
@@ -477,7 +477,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_66B695994D5E431E9012590A2EC5284E"
             {
-            "SourcePath" = "8:..\\SURFnet.Authentication.Adfs.Plugin2\\Setup\\PowerShellModule\\SURFnetMFA\\SURFnetMFA.psm1"
+            "SourcePath" = "8:..\\SURFnet.Authentication.Adfs.Plugin\\Setup\\PowerShellModule\\SURFnetMFA\\SURFnetMFA.psm1"
             "TargetName" = "8:SURFnetMFA.psm1"
             "Tag" = "8:"
             "Folder" = "8:_F31A1A1023C047F5A405D600FE822A4D"
@@ -497,7 +497,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_72C9703A83634C3DBC3A709D1B543AD5"
             {
-            "SourcePath" = "8:..\\SURFnet.Authentication.Adfs.Plugin2\\Setup\\PowerShellModule\\SURFnetMFA\\Uninstall-AuthProvider.ps1"
+            "SourcePath" = "8:..\\SURFnet.Authentication.Adfs.Plugin\\Setup\\PowerShellModule\\SURFnetMFA\\Uninstall-AuthProvider.ps1"
             "TargetName" = "8:Uninstall-AuthProvider.ps1"
             "Tag" = "8:"
             "Folder" = "8:_F31A1A1023C047F5A405D600FE822A4D"
@@ -537,7 +537,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_94FB329849D24822BA51ECEED062A8C3"
             {
-            "SourcePath" = "8:..\\SURFnet.Authentication.Adfs.Plugin2\\Setup\\PowerShellModule\\SURFnetMFA\\SURFnetMFA.psd1"
+            "SourcePath" = "8:..\\SURFnet.Authentication.Adfs.Plugin\\Setup\\PowerShellModule\\SURFnetMFA\\SURFnetMFA.psd1"
             "TargetName" = "8:SURFnetMFA.psd1"
             "Tag" = "8:"
             "Folder" = "8:_F31A1A1023C047F5A405D600FE822A4D"
@@ -588,7 +588,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_A78AAE1F03FD40A493F1D79FD58EA0D7"
             {
-            "SourcePath" = "8:..\\SURFnet.Authentication.Adfs.Plugin2\\Setup\\PowerShellModule\\SURFnetMFA\\Update-ADFSConfiguration.ps1"
+            "SourcePath" = "8:..\\SURFnet.Authentication.Adfs.Plugin\\Setup\\PowerShellModule\\SURFnetMFA\\Update-ADFSConfiguration.ps1"
             "TargetName" = "8:Update-ADFSConfiguration.ps1"
             "Tag" = "8:"
             "Folder" = "8:_F31A1A1023C047F5A405D600FE822A4D"
@@ -608,7 +608,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_B10729B03F5644C2BF28B214BFFE3A88"
             {
-            "SourcePath" = "8:..\\SURFnet.Authentication.Adfs.Plugin2\\Setup\\PowerShellModule\\SURFnetMFA\\Uninstall-EventLogForMfaPlugin.ps1"
+            "SourcePath" = "8:..\\SURFnet.Authentication.Adfs.Plugin\\Setup\\PowerShellModule\\SURFnetMFA\\Uninstall-EventLogForMfaPlugin.ps1"
             "TargetName" = "8:Uninstall-EventLogForMfaPlugin.ps1"
             "Tag" = "8:"
             "Folder" = "8:_F31A1A1023C047F5A405D600FE822A4D"
@@ -628,7 +628,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_BC9674C80E884984997A774581D9513C"
             {
-            "SourcePath" = "8:..\\SURFnet.Authentication.Adfs.Plugin2\\Setup\\PowerShellModule\\SURFnetMFA\\Install-EventLogForMfaPlugin.ps1"
+            "SourcePath" = "8:..\\SURFnet.Authentication.Adfs.Plugin\\Setup\\PowerShellModule\\SURFnetMFA\\Install-EventLogForMfaPlugin.ps1"
             "TargetName" = "8:Install-EventLogForMfaPlugin.ps1"
             "Tag" = "8:"
             "Folder" = "8:_F31A1A1023C047F5A405D600FE822A4D"
@@ -679,7 +679,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_C9851461E36A4B53BAA42CBC8C2A454E"
             {
-            "SourcePath" = "8:..\\SURFnet.Authentication.Adfs.Plugin2\\Setup\\PowerShellModule\\SURFnetMFA\\Install-Log4NetConfiguration.ps1"
+            "SourcePath" = "8:..\\SURFnet.Authentication.Adfs.Plugin\\Setup\\PowerShellModule\\SURFnetMFA\\Install-Log4NetConfiguration.ps1"
             "TargetName" = "8:Install-Log4NetConfiguration.ps1"
             "Tag" = "8:"
             "Folder" = "8:_F31A1A1023C047F5A405D600FE822A4D"
@@ -699,7 +699,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_D198C5BCE41E44AFAD19293C495F606B"
             {
-            "SourcePath" = "8:..\\SURFnet.Authentication.Adfs.Plugin2\\Setup\\PowerShellModule\\SURFnetMFA\\New-SelfSignedCertificateEx.ps1"
+            "SourcePath" = "8:..\\SURFnet.Authentication.Adfs.Plugin\\Setup\\PowerShellModule\\SURFnetMFA\\New-SelfSignedCertificateEx.ps1"
             "TargetName" = "8:New-SelfSignedCertificateEx.ps1"
             "Tag" = "8:"
             "Folder" = "8:_F31A1A1023C047F5A405D600FE822A4D"
@@ -739,7 +739,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_E1269F1164824B0C815FF7A3D1CC7F59"
             {
-            "SourcePath" = "8:..\\SURFnet.Authentication.Adfs.Plugin2\\Setup\\PowerShellModule\\SURFnetMFA\\Export-SigningCertificate.ps1"
+            "SourcePath" = "8:..\\SURFnet.Authentication.Adfs.Plugin\\Setup\\PowerShellModule\\SURFnetMFA\\Export-SigningCertificate.ps1"
             "TargetName" = "8:Export-SigningCertificate.ps1"
             "Tag" = "8:"
             "Folder" = "8:_F31A1A1023C047F5A405D600FE822A4D"

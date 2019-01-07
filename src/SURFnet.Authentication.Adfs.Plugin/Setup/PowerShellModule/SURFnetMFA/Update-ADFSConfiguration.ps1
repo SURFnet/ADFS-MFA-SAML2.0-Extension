@@ -108,15 +108,15 @@ function Update-ADFSConfiguration{
     }
  
     Write-Host -ForegroundColor Gray "Updating property Serviceprovider entityId from value '"$existingKentorConfig.entityId"' to '$ServiceProviderEntityId'"; 
-    $kentorConfig.entityId = $ServiceProviderEntityId
+    $kentorConfig.'entityId' = $ServiceProviderEntityId
         
     $idp = $kentorConfig.identityProviders.SelectSingleNode("add");
     
     Write-Host -ForegroundColor Gray "Updating property Identityprovider entityId from value '"$idp.entityId"' to '$IdentityProviderEntityId'";     
-    $idp.entityId = $IdentityProviderEntityId
+    $idp.'entityId' = $IdentityProviderEntityId
         
     Write-Host -ForegroundColor Gray "Updating property signingcertificate thumbprint from value '"$idp.signingCertificate.findValue"' to '$sfoCertificateThumbprint'"; 
-    $idp.signingCertificate.findValue = $sfoCertificateThumbprint
+    $idp.signingCertificate.'findValue' = $sfoCertificateThumbprint
         
     Write-Host -ForegroundColor Green "Finished writing service and identityprovider information"
 
