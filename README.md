@@ -11,14 +11,11 @@ This is a MFA extension for Microsoft ADFS 3.0 and 4.0 that authenticates a user
 * The installation script requires the PowerShell ExecutionPolicy to be set to "unrestricted"
 
 ### Precompiled versions
-Precompiled versions of the extension can be downloaded from the [github releases page](https://github.com/SURFnet/ADFS-MFA-SAML2.0-Extension/releases). Note that these prebuild versions are targeted to SURFconext, and contain SURFconext specific configuration. There are two different versions of the extension that use different methods to authenticate to the Stepup-Gateway.
+Precompiled versions of the extension can be downloaded from the [github releases page](https://github.com/SURFnet/ADFS-MFA-SAML2.0-Extension/releases). Note that these prebuild versions are targeted to SURFsecureID, and contain SURFsecureID specific configuration. The 0.2 release can be used with the SURFsecureID Pilot and Production environments. 
 
-| Version | Download link                                                                                                    | Description                                                                                                                     |
-|:--------|:-----------------------------------------------------------------------------------------------------------------|:--------------------------------------------------------------------------------------------------------------------------------|
-| 0.1     | [SetupPackage.zip](https://github.com/SURFnet/ADFS-MFA-SAML2.0-Extension/releases/download/0.1/SetupPackage.zip) | This release requires the "Authentication Service"                                                                              |
-| 0.2     | [SetupPackage.zip](https://github.com/SURFnet/ADFS-MFA-SAML2.0-Extension/releases/download/0.2/SetupPackage-0.2.zip) | This release works with the Stepup-Gateway directly and dus not use the AuthenticationService. It Requires Stepup-Gateway 2.7.0 |
+Latest release 0.2 [SetupPackage-0.2.zip](https://github.com/SURFnet/ADFS-MFA-SAML2.0-Extension/releases/download/0.2/SetupPackage-0.2.zip)
 
-These instructions are for version 0.2.
+These instructions are for installing version 0.2 of the plugin.
 
 Unpack the .zip file on the ADFS server. If you have an ADFS farm, you will need to install the extension on each ADFS server in the farm.
 
