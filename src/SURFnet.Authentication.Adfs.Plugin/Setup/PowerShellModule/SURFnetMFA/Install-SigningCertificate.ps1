@@ -48,7 +48,7 @@ function Install-SigningCertificate{
 
     Write-Host -ForegroundColor green "Set Private Key read permissions"
     $fullPath = "$env:ProgramData\Microsoft\Crypto\RSA\MachineKeys\" + $selfSignedCertificate.PrivateKey.CspKeyContainerInfo.UniqueKeyContainerName
-    $acl = Get-Acl -Path $fullPath
+	$Acl = (Get-Item $fullPath).GetAccessControl('Access')    
 
     $saPermission = $AdfsServiceAccountName, "Read", "Allow"
     $saAccessRule=new-object System.Security.AccessControl.FileSystemAccessRule $saPermission

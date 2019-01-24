@@ -59,7 +59,7 @@ function Update-ADFSConfiguration{
             Write-Host -ForegroundColor Green "Found existing config section '"$sectiondeclaration.Name"' Skipping copy"
         }
         else{
-            Write-Host -ForegroundColor Green "Didn't found config section. Create config section:" $sectiondeclaration.Name
+            Write-Host -ForegroundColor Green "Didn't find config section. Create config section:" $sectiondeclaration.Name
             $itemToAdd = $adfsConfiguration.ImportNode($sectionDeclaration, $true);
             $newNode = $adfsConfiguration.configuration.configSections.AppendChild($itemToAdd)
         }
@@ -108,50 +108,56 @@ function Update-ADFSConfiguration{
     }
  
     Write-Host -ForegroundColor Gray "Updating property Serviceprovider entityId from value '"$existingKentorConfig.entityId"' to '$ServiceProviderEntityId'"; 
-    $kentorConfig.entityId = $ServiceProviderEntityId.toString()
+    $kentorConfig.'entityId' = $ServiceProviderEntityId
         
     $idp = $kentorConfig.identityProviders.SelectSingleNode("add");
     
     Write-Host -ForegroundColor Gray "Updating property Identityprovider entityId from value '"$idp.entityId"' to '$IdentityProviderEntityId'";     
-    $idp.entityId = $IdentityProviderEntityId.toString()
+    $idp.'entityId' = $IdentityProviderEntityId
         
     Write-Host -ForegroundColor Gray "Updating property signingcertificate thumbprint from value '"$idp.signingCertificate.findValue"' to '$sfoCertificateThumbprint'"; 
-    $idp.signingCertificate.findValue = $sfoCertificateThumbprint.toString()
+    $idp.signingCertificate.'findValue' = $sfoCertificateThumbprint
         
     Write-Host -ForegroundColor Green "Finished writing service and identityprovider information"
 
 
     $appSettingsElement = $adfsConfiguration.configuration.SelectSingleNode("applicationSettings")
     if($appSettingsElement -eq $null){
-        Write-Host -ForegroundColor Green "Didn't found AD FS plugin configuration. Adding configuration"
+        Write-Host -ForegroundColor Green "Didn't find AD FS plugin configuration. Adding configuration"
         $appSettingsElement = $adfsConfiguration.ImportNode($pluginConfiguration.SelectSingleNode("/configuration/applicationSettings"), $true)
         $adfsConfiguration.configuration.AppendChild($appSettingsElement)
     }
         
-    $appSettings = $appSettingsElement.SelectSingleNode($pluginAppSettingsElementName);
-    if($appSettings -eq $null){
-        Write-Host -ForegroundColor Green "Didn't found AD FS plugin configuration. Adding configuration for $pluginAppSettingsElementName"
-        $appSettings = $adfsConfiguration.ImportNode($pluginConfiguration.SelectSingleNode("/configuration/applicationSettings/$pluginAppSettingsElementName"), $true)
-        $appSettingsElement.AppendChild($appSettings)
-    }
+	$newappSettings = $appSettingsElement.SelectSingleNode($pluginAppSettingsElementName);
+	if($newappSettings -eq $null){
+	 Write-Host -ForegroundColor Green "Didn't find AD FS plugin configuration. Adding configuration for $pluginAppSettingsElementName"
+	 $newappsettings = $pluginConfiguration.SelectSingleNode("/configuration/applicationSettings/$pluginAppSettingsElementName")  
+	}
+	else
+	{
+	  $result=$appSettingsElement.RemoveChild($newappSettings)
+	}
 
-    foreach($setting in $appSettings.SelectNodes("//setting"))
-    {
-	    $value = $null
-        switch($setting.name)
-	    {
-		    'SecondFactorEndpoint'  			{ $value = $SecondFactorEndpoint }
-		    'MinimalLoa'			  			{ $value = $MinimalLoa }            			
-		    'schacHomeOrganization' 			{ $value = $schacHomeOrganization }            
-		    'ActiveDirectoryName'   			{ $value = $ActiveDirectoryName }
-            'ActiveDirectoryUserIdAttribute'  { $value = $ActiveDirectoryUserIdAttribute }            
-            'SpSigningCertificate'            { $value = $ServiceProviderCertificateThumbprint }
-        }
-	    if($value){
-            Write-Host -ForegroundColor Gray "Updating property "$setting.name" from value '"$setting.value"' to '$value'"; 
-		    $setting.value = $value.ToString()
-	    }
-    }
+	foreach($setting in $newappSettings.SelectNodes("//setting"))
+	{
+		$value = $null
+		switch($setting.name)
+		{
+			'SecondFactorEndpoint'  		  { $value = $SecondFactorEndpoint }
+			'MinimalLoa'			  		  { $value = $MinimalLoa } 			
+			'schacHomeOrganization' 		  { $value = $schacHomeOrganization } 
+			'ActiveDirectoryName'   		  { $value = $ActiveDirectoryName }
+			'ActiveDirectoryUserIdAttribute'  { $value = $ActiveDirectoryUserIdAttribute }            
+			'SpSigningCertificate'            { $value = $ServiceProviderCertificateThumbprint }
+		}
+		if($value){
+			Write-Host -ForegroundColor Gray "Updating property "$setting.name" from value '"$setting.value"' to '$value'"; 
+			$setting.value = $value
+		}
+	}
+
+	$newappSettings = $adfsConfiguration.ImportNode($newappsettings, $true)
+	$result=$appSettingsElement.AppendChild($newappSettings)
     Write-Host -ForegroundColor Green "Finished writing AD FS configuration settings. Restarting AD FS service"
 
     Stop-Service adfssrv -Force > $null
