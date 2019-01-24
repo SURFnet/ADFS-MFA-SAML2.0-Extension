@@ -27,15 +27,15 @@ function Initialize-UserSettings()
 	$global:pfxPassword = $null;
 
 	#Defaults
-	$Settings_SecondFactorEndpoint_default			= ""
-	$Settings_MinimalLoa_default 		   			= ""
-	$Settings_schacHomeOrganization_default 		= ""
-	$Settings_ActiveDirectoryName_default   		= ""
-	$Settings_ActiveDirectoryUserIdAttribute_default= ""
-	$ServiceProvider_EntityId_default 			    = ""                        
-	$ServiceProvider_SigningCertificate_default 	= ""
-	$IdentityProvider_EntityId_default 				= ""
-	$IdentityProvider_Certificate_default 			= ""
+	$Settings_SecondFactorEndpoint_default			= "https://sa-gw.test2.surfconext.nl/second-factor-only/single-sign-on"
+	$Settings_MinimalLoa_default 		   			= "http://test2.surfconext.nl/assurance/sfo-level2"
+	$Settings_schacHomeOrganization_default 		= "institution-a.nl"
+	$Settings_ActiveDirectoryName_default   		= "$($env:userdomain)"
+	$Settings_ActiveDirectoryUserIdAttribute_default= "EmployeeNumber"
+	$ServiceProvider_EntityId_default 			    = "http://adfs2-2012.test2.surfconext.nl"
+	$ServiceProvider_SigningCertificate_default 	= "signing.d2012.test2.surfconext.nl_password.pfx"
+	$IdentityProvider_EntityId_default 				= "https://sa-gw.test2.surfconext.nl/second-factor-only/metadata"
+	$IdentityProvider_Certificate_default 			= "gateway_saml_idp_test2.crt"
 	
 	#Ask for installation parameters
 	Write-Host -f yellow "1. Enter the Assertion Consumer Service (ACS) location of the Second Factor Only (SFO) endpoint of the SURFsecureID Gateway."
