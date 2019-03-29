@@ -11,13 +11,11 @@ This is a MFA extension for Microsoft ADFS 3.0 and 4.0 that authenticates a user
 * The installation script requires the PowerShell ExecutionPolicy to be set to "unrestricted"
 
 ### Precompiled versions
-Precompiled versions of the extension can be downloaded from the [github releases page](https://github.com/SURFnet/ADFS-MFA-SAML2.0-Extension/releases). Note that these prebuild versions are targeted to SURFsecureID, and contain SURFsecureID specific configuration. The 0.2 release can be used with the SURFsecureID Pilot and Production environments. 
+Precompiled versions of the extension can be downloaded from the [github releases page](https://github.com/SURFnet/ADFS-MFA-SAML2.0-Extension/releases). Note that these prebuild versions are targeted to SURFsecureID, and contain SURFsecureID specific configuration. The 1.0.1 release can be used with the SURFsecureID Test, Pilot and Production environments. 
 
-Latest release 0.2: [SetupPackage-0.2.zip](https://github.com/SURFnet/ADFS-MFA-SAML2.0-Extension/releases/download/0.2/SetupPackage-0.2.zip)
+Latest release 1.0.1: [SetupPackage-1.0.1.zip](https://github.com/SURFnet/ADFS-MFA-SAML2.0-Extension/releases/download/1.0.1/SetupPackage-1.0.1.zip)
 
-For use with the SURFsecureID TEST environment use pre-release [SetupPackage-1.0.1.zip](https://github.com/SURFnet/ADFS-MFA-SAML2.0-Extension/releases/download/1.0.1/SetupPackage-1.0.1.zip). This release also works with the Pilot and Production environments.
-
-These instructions are for installing version 0.2 (and 1.0.1) of the plugin.
+These instructions are for installing version 1.0.1 of the plugin.
 
 Unpack the .zip file on the ADFS server. If you have an ADFS farm, you will need to install the extension on each ADFS server in the farm.
 
