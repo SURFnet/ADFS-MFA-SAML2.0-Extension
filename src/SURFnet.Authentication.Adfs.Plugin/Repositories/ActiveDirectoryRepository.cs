@@ -38,7 +38,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Repositories
         {
             if (string.IsNullOrWhiteSpace(Settings.Default.ActiveDirectoryUserIdAttribute))
             {
-                return this.GetUserIdFromClaim(identityClaim);
+                throw new Exception(
+                    "The setting 'ActiveDirectoryUserIdAttribute' is not properly set in the application settings");
             }
 
             var userId = this.GetUserIdFromActiveDirectory(identityClaim);
@@ -52,12 +53,15 @@ namespace SURFnet.Authentication.Adfs.Plugin.Repositories
         /// <returns>The user id.</returns>
         private string GetUserIdFromActiveDirectory(Claim identityClaim)
         {
-            var ctx = new PrincipalContext(ContextType.Domain, Settings.Default.ActiveDirectoryName);
-            var currentUser = UserPrincipal.FindByIdentity(ctx, identityClaim.Value);
             string userId;
+            var domainName = identityClaim.Value.Split('\\')[0];
+            
+            var ctx = new PrincipalContext(ContextType.Domain, domainName);
+            var currentUser = UserPrincipal.FindByIdentity(ctx, identityClaim.Value);
 
             if (currentUser == null)
             {
+                // This should never happen, but just to be sure
                 throw new Exception($"User '{identityClaim.Value}' not found in active directory '{Settings.Default.ActiveDirectoryName}'");
             }
 
@@ -74,27 +78,6 @@ namespace SURFnet.Authentication.Adfs.Plugin.Repositories
                 }
 
                 userId = entry.Properties[Settings.Default.ActiveDirectoryUserIdAttribute].Value.ToString();
-            }
-
-            return userId;
-        }
-
-        /// <summary>
-        /// Gets the user identifier from claim.
-        /// </summary>
-        /// <param name="identityClaim">The identity claim. This can only be allowed identity claims. See metadata for more details.</param>
-        /// <returns>A user identifier.</returns>
-        private string GetUserIdFromClaim(Claim identityClaim)
-        {
-            var userId = identityClaim.Value;
-
-            // Only use identity claim if the ActiveDirectoryUserIdAtrtribute is left empty in the config file
-            if (string.IsNullOrWhiteSpace(Settings.Default.ActiveDirectoryUserIdAttribute))
-            {
-                if (identityClaim.Value.IndexOf('\\') > -1)
-                {
-                    userId = identityClaim.Value.Split('\\')[1];
-                }
             }
 
             return userId;
