@@ -539,7 +539,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:Kentor.AuthServices, Version=0.21.2.0, Culture=neutral, PublicKeyToken=40c669b8f0ea2c14, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:Kentor.AuthServices, Version=0.21.2.0, Culture=neutral, PublicKeyToken=3f3ecd9d2f3457f7, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_94571A8EDA25B2292073CFB7F70D99AB"
@@ -590,7 +590,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:SURFnet.Authentication.Adfs.Plugin, Version=1.0.0.0, Culture=nl-NL, PublicKeyToken=40c669b8f0ea2c14, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:SURFnet.Authentication.Adfs.Plugin, Version=1.0.0.0, Culture=nl-NL, PublicKeyToken=3f3ecd9d2f3457f7, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_97A8BA0647F9479C8BEDAF8BA44DF44E"
