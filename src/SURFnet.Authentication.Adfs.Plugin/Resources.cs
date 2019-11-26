@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Reflection;
 using Newtonsoft.Json;
@@ -41,11 +42,24 @@ namespace SURFnet.Authentication.Adfs.Plugin
             var assembly = Assembly.GetExecutingAssembly();
             var resourceName = $"SURFnet.Authentication.Adfs.Plugin.Resources.Labels.{lcid}.json";
 
+            var stream = assembly.GetManifestResourceStream(resourceName);
+            if (stream == null)
+            {
+                // Fallback to dutch
+                lcid = new CultureInfo("nl-nl").LCID;
+                resourceName = $"SURFnet.Authentication.Adfs.Plugin.Resources.Labels.{lcid}.json";
+                assembly.GetManifestResourceStream(resourceName);
+            }
+
+            if (stream == null)
+            {
+                throw new FileNotFoundException(
+                    $"Could not find a Labels file for the LCID {lcid}",
+                    $"Labels.{lcid}.json");
+            }
+
             Dictionary<string, string> labels;
-            using (var stream = assembly.GetManifestResourceStream(resourceName)
-                                ?? throw new FileNotFoundException(
-                                    $"Could not find a Labels file for the LCID {lcid}",
-                                    $"Labels.{lcid}.json"))
+            using (stream)
             using (var reader = new StreamReader(stream))
             {
                 var json = reader.ReadToEnd();
