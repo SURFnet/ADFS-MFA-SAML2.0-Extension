@@ -36,7 +36,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
     /// <summary>
     /// The ADFS MFA Adapter.
     /// </summary>
-    /// <seealso cref="Microsoft.IdentityServer.Web.Authentication.External.IAuthenticationAdapter" />
+    /// <seealso cref="IAuthenticationAdapter" />
     public class Adapter : IAuthenticationAdapter
     {
         /// <summary>
@@ -61,7 +61,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
         {
             try
             {
-                this.InitializeLogger();
+                this.InitializeLogger(context.ContextId);
                 this.log.Debug("Enter BeginAuthentication");
                 this.log.DebugFormat("context.ActivityId='{0}'; context.ContextId='{1}'; conext.Lcid={2}", context.ActivityId, context.ContextId, context.Lcid);
 
@@ -182,11 +182,15 @@ namespace SURFnet.Authentication.Adfs.Plugin
         /// <summary>
         /// Initializes the logger. This cannot be done in a lazy or constructor, because this throws an error while installing the plugin for the first time.
         /// </summary>
-        private void InitializeLogger()
+        private void InitializeLogger(string contextId)
         {
             if (this.log == null)
             {
                 this.log = LogManager.GetLogger("ADFS Plugin");
+                // TODO: Find out which one works better
+                // TODO: Maybe use this in the log4net appender pattern with %property{CorrelationId}
+                this.log.Logger.Repository.Properties["CorrelationId2"] = contextId;
+                LogicalThreadContext.Properties["CorrelationId"] = contextId;
                 this.LogCurrentConfiguration();
             }
         }
@@ -202,7 +206,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
             {
                 sb.AppendLine($"{settingsProperty.Name} : '{Settings.Default[settingsProperty.Name]}'");
             }
-            
+
             sb.AppendLine("Plugin Metadata:");
             foreach (var am in this.Metadata.AuthenticationMethods)
             {
@@ -223,7 +227,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
             {
                 sb.AppendLine($"Error while reading configuration file. Please enter Serviceprovider en IdentityProvider settings. Details: {ex.Message}");
             }
-            
+
             this.log.Info(sb);
         }
     }
