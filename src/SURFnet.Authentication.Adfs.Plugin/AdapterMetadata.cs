@@ -42,6 +42,8 @@ namespace SURFnet.Authentication.Adfs.Plugin
                                                      {
                                                          "http://test2.surfconext.nl/assurance/sfo-level2",
                                                          "http://test2.surfconext.nl/assurance/sfo-level3",
+                                                         "http://test.surfconext.nl/assurance/sfo-level2",
+                                                         "http://test.surfconext.nl/assurance/sfo-level3",
                                                          "http://pilot.surfconext.nl/assurance/sfo-level2",
                                                          "http://pilot.surfconext.nl/assurance/sfo-level3",
                                                          "http://surfconext.nl/assurance/sfo-level2",

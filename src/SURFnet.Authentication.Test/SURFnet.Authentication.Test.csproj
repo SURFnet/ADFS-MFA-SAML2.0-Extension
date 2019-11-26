@@ -44,7 +44,7 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Kentor.AuthServices, Version=0.21.2.0, Culture=neutral, PublicKeyToken=07a7b17ac686a941, processorArchitecture=MSIL">
+    <Reference Include="Kentor.AuthServices, Version=0.21.2.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Kentor.AuthServices.0.21.2\lib\net45\Kentor.AuthServices.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">

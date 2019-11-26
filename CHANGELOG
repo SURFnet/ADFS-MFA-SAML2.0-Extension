@@ -1,9 +1,19 @@
+Version 2.0.2
+Mergin branch 1.0 into 2.0.1
+
 Version 2.0 (plugin version 1.0.0.0)
 Added MSI installer to deploy the setup files and PowerShell Module.
 
-Version 0.1 (plugin version 1.0.0.0)
-Initial release
+Version 1.0.1
+Add LoA identifiers for the SURFsecureID public test environment
+
+Version 1.0
+First public release
+Fix issues that were found during security audit
 
 Version 0.2 (plugin version 2.0.0.0)
 Allow the extension to work directly with Stepup-Gateway, removing the need for the "Authentication Services".
 Requires Stepup-Gateway version 2.7.0
+
+Version 0.1 (plugin version 1.0.0.0)
+Initial release
