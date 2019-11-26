@@ -15,15 +15,14 @@
 */
 
 using System;
+using System.Configuration;
+using System.DirectoryServices;
+using System.DirectoryServices.AccountManagement;
 using System.Security.Claims;
+using SURFnet.Authentication.Adfs.Plugin.Properties;
 
 namespace SURFnet.Authentication.Adfs.Plugin.Repositories
 {
-    using System.DirectoryServices;
-    using System.DirectoryServices.AccountManagement;
-
-    using SURFnet.Authentication.Adfs.Plugin.Properties;
-
     /// <summary>
     /// Data access for the active directory.
     /// </summary>
@@ -33,16 +32,17 @@ namespace SURFnet.Authentication.Adfs.Plugin.Repositories
         /// Gets the user identifier for the given identity.
         /// </summary>
         /// <param name="identityClaim">The identity claim.</param>
-        /// <returns>A user id.</returns>
+        /// <returns>
+        /// The user identifier.
+        /// </returns>
         public string GetUserIdForIdentity(Claim identityClaim)
         {
             if (string.IsNullOrWhiteSpace(Settings.Default.ActiveDirectoryUserIdAttribute))
             {
-                throw new Exception(
-                    "The setting 'ActiveDirectoryUserIdAttribute' is not properly set in the application settings");
+                throw new Exception("The setting 'ActiveDirectoryUserIdAttribute' is not properly set in the application settings");
             }
 
-            var userId = this.GetUserIdFromActiveDirectory(identityClaim);
+            var userId = GetUserIdFromActiveDirectory(identityClaim);
             return userId;
         }
 
@@ -50,12 +50,14 @@ namespace SURFnet.Authentication.Adfs.Plugin.Repositories
         /// Gets the user identifier from active directory.
         /// </summary>
         /// <param name="identityClaim">The identity claim.</param>
-        /// <returns>The user id.</returns>
-        private string GetUserIdFromActiveDirectory(Claim identityClaim)
+        /// <returns>
+        /// The user identifier.
+        /// </returns>
+        private static string GetUserIdFromActiveDirectory(Claim identityClaim)
         {
             string userId;
             var domainName = identityClaim.Value.Split('\\')[0];
-            
+
             var ctx = new PrincipalContext(ContextType.Domain, domainName);
             var currentUser = UserPrincipal.FindByIdentity(ctx, identityClaim.Value);
 
