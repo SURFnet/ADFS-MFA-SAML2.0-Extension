@@ -79,18 +79,13 @@
     <Compile Include="Models\Saml2AuthenticationSecondFactorRequest.cs" />
     <Compile Include="Models\SecondFactorAuthResponse.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
     <Compile Include="Repositories\ActiveDirectoryRepository.cs" />
-    <Compile Include="Resources\Labels.cs" />
+    <Compile Include="Resources.cs" />
     <Compile Include="Services\CryptographicService.cs" />
     <Compile Include="Services\SamlService.cs" />
   </ItemGroup>
@@ -127,16 +122,10 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="lib\Microsoft.IdentityServer.Web.dll" />
-    <None Include="Resources\AuthForm.html" />
+    <EmbeddedResource Include="Resources\AuthForm.html" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\AuthFailedForm.html" />
+    <EmbeddedResource Include="Resources\AuthFailedForm.html" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

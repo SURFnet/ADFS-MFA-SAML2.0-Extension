@@ -1,6 +1,9 @@
 {
   "ERROR_0001": "Verificatie mislukt",
+  "ERROR_0002": "Er is een onherstelbare fout opgetreden. Probeer het opnieuw.",
+  "ERROR_0003": "De verificatie is mislukt vanwege de volgende reden:\n{0}",
   "NoJavascript": "Je hebt Javascript uitgeschakeld. Schakele Javascript in om verder te gaan.",
   "OneMomentPlease": "Een moment geduld alstublieft...",
-  "Working": "Bezig..."
+  "Working": "Bezig...",
+  "AuthenticationFailed": "Authenticatie mislukt"
 }

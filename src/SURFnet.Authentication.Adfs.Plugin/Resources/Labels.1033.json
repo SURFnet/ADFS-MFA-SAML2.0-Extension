@@ -1,6 +1,9 @@
 {
   "ERROR_0001": "Verification failed",
+  "ERROR_0002": "An unexpected error occured. Please try again.",
+  "ERROR_0003": "The verification failed because of the following reason:\n{0}",
   "NoJavascript": "You have disabled Javascript. Please enable it to continue.",
   "OneMomentPlease": "One moment please...",
-  "Working": "Working..."
+  "Working": "Working...",
+  "AuthenticationFailed": "Authentication failed"
 }

@@ -63,12 +63,11 @@ namespace SURFnet.Authentication.Adfs.Plugin
         public string GetFormHtml(int lcid)
         {
             this.log.DebugFormat("Rendering form for posting request to '{0}'", this.serviceUrl);
-            var labels = Resources.GetLabels(lcid); // TODO: Make this a property of this class, initialized for all supported LCIDs
-            var builder = new StringBuilder(Properties.Resources.AuthForm);
+            var builder = new StringBuilder(Resources.GetForm("AuthForm"));
             builder.Replace("%FormUrl%", System.Net.WebUtility.HtmlEncode(this.serviceUrl.ToString()));
             builder.Replace("%SAMLRequest%", this.signedXml);
-            builder.Replace("%NoJavascript%", labels["NoJavascript"]);
-            builder.Replace("%OneMomentPlease%", labels["OneMomentPlease"]);
+            builder.Replace("%NoJavascript%", Resources.GetLabel(lcid, "NoJavascript"));
+            builder.Replace("%OneMomentPlease%", Resources.GetLabel(lcid, "OneMomentPlease"));
             return builder.ToString();
         }
 
@@ -89,8 +88,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
         /// <returns>The page title.</returns>
         public string GetPageTitle(int lcid)
         {
-            var labels = Resources.GetLabels(lcid); // TODO: Make this a property of this class, initialized for all supported LCIDs
-            return labels["Working"];
+            return Resources.GetLabel(lcid, "Working");
         }
     }
 }

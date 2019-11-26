@@ -14,16 +14,15 @@
 * limitations under the License.
 */
 
+using System.Text;
+using Microsoft.IdentityServer.Web.Authentication.External;
+
 namespace SURFnet.Authentication.Adfs.Plugin
 {
-    using Microsoft.IdentityServer.Web.Authentication.External;
-
-    using Properties;
-
     /// <summary>
     /// The presentation form for the adapter.
     /// </summary>
-    /// <seealso cref="Microsoft.IdentityServer.Web.Authentication.External.IAdapterPresentationForm" />
+    /// <seealso cref="IAdapterPresentationForm" />
     public class AuthFailedForm : IAdapterPresentationForm
     {
         /// <summary>
@@ -36,7 +35,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
         /// </summary>
         public AuthFailedForm()
         {
-            
+
         }
 
         /// <summary>
@@ -55,15 +54,15 @@ namespace SURFnet.Authentication.Adfs.Plugin
         /// <returns>The form HTML.</returns>
         public string GetFormHtml(int lcid)
         {
-            var message = "Er is een onherstelbare fout opgetreden. Probeer het opnieuw.";
+            var message = Resources.GetLabel(lcid, "ERROR_0002");
             if (!string.IsNullOrWhiteSpace(this.statusMessage))
             {
-                message = $"De verificatie is mislukt vanwege de volgende reden:\n{this.statusMessage}";
+                message = Resources.GetLabel(lcid, "ERROR_0003", this.statusMessage);
             }
 
-            var form = Properties.Resources.AuthFailedForm;
-            form = form.Replace("{message}", message);
-            return form;
+            var builder = new StringBuilder(Resources.GetForm("AuthFailedForm"));
+            builder.Replace("{message}", message);
+            return builder.ToString();
         }
 
         /// <summary>
@@ -83,7 +82,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
         /// <returns>The page title.</returns>
         public string GetPageTitle(int lcid)
         {
-            return "Authentication failed";
+            return Resources.GetLabel(lcid, "AuthenticationFailed");
         }
     }
 }
