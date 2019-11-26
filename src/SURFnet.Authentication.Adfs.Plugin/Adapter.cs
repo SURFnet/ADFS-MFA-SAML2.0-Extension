@@ -63,7 +63,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
             {
                 this.InitializeLogger(context.ContextId);
                 this.log.Debug("Enter BeginAuthentication");
-                this.log.DebugFormat("context.ActivityId='{0}'; context.ContextId='{1}'; conext.Lcid={2}", context.ActivityId, context.ContextId, context.Lcid);
+                this.log.DebugFormat("context.ActivityId='{0}'; context.ContextId='{1}'; context.Lcid={2}", context.ActivityId, context.ContextId, context.Lcid);
 
                 string authnRequestId = $"_{context.ContextId}";
                 var authRequest = SamlService.CreateAuthnRequest(identityClaim, authnRequestId, httpListenerRequest.Url);
