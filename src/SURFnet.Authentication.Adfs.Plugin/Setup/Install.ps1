@@ -192,7 +192,7 @@ try
             
 
             if($global:ServiceProvider_SigningCertificate -eq $null -or $global:ServiceProvider_SigningCertificate -eq ""){
-			    $global:pfxPassword = Export-SigningCertificate $x509SigningCertificate.Thumbprint -ExportFilePath "$PSScriptroot\Certificates\"$x509SigningCertificate.DnsNameList[0].Unicode + ".pfx"
+			    $global:pfxPassword = Export-SigningCertificate $x509SigningCertificate.Thumbprint -ExportTo "$PSScriptroot\Certificates\"$x509SigningCertificate.DnsNameList[0].Unicode + ".pfx"
             }
 			
             Print-Summary $x509SigningCertificate $global:ServiceProvider_EntityId

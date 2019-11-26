@@ -61,7 +61,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
                 message = $"De verificatie is mislukt vanwege de volgende reden:\n{this.statusMessage}";
             }
 
-            var form = Resources.AuthFailedForm;
+            var form = Properties.Resources.AuthFailedForm;
             form = form.Replace("{message}", message);
             return form;
         }

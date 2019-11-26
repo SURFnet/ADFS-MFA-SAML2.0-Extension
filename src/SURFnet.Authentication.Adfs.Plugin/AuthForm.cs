@@ -14,20 +14,17 @@
 * limitations under the License.
 */
 
+using System;
+using System.Text;
+using log4net;
+using Microsoft.IdentityServer.Web.Authentication.External;
+
 namespace SURFnet.Authentication.Adfs.Plugin
 {
-    using System;
-
-    using log4net;
-
-    using Microsoft.IdentityServer.Web.Authentication.External;
-
-    using Properties;
-
     /// <summary>
     /// The presentation form for the adapter.
     /// </summary>
-    /// <seealso cref="Microsoft.IdentityServer.Web.Authentication.External.IAdapterPresentationForm" />
+    /// <seealso cref="IAdapterPresentationForm" />
     public class AuthForm : IAdapterPresentationForm
     {
         /// <summary>
@@ -66,10 +63,13 @@ namespace SURFnet.Authentication.Adfs.Plugin
         public string GetFormHtml(int lcid)
         {
             this.log.DebugFormat("Rendering form for posting request to '{0}'", this.serviceUrl);
-            var form = Resources.AuthForm;
-            form = form.Replace("%FormUrl%", System.Net.WebUtility.HtmlEncode(this.serviceUrl.ToString()));
-            form = form.Replace("%SAMLRequest%", this.signedXml);
-            return form;
+            var labels = Resources.GetLabels(lcid); // TODO: Make this a property of this class, initialized for all supported LCIDs
+            var builder = new StringBuilder(Properties.Resources.AuthForm);
+            builder.Replace("%FormUrl%", System.Net.WebUtility.HtmlEncode(this.serviceUrl.ToString()));
+            builder.Replace("%SAMLRequest%", this.signedXml);
+            builder.Replace("%NoJavascript%", labels["NoJavascript"]);
+            builder.Replace("%OneMomentPlease%", labels["OneMomentPlease"]);
+            return builder.ToString();
         }
 
         /// <summary>
@@ -89,7 +89,8 @@ namespace SURFnet.Authentication.Adfs.Plugin
         /// <returns>The page title.</returns>
         public string GetPageTitle(int lcid)
         {
-            return "Working...";
+            var labels = Resources.GetLabels(lcid); // TODO: Make this a property of this class, initialized for all supported LCIDs
+            return labels["Working"];
         }
     }
 }

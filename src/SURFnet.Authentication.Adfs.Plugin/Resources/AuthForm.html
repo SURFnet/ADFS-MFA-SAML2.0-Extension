@@ -1,10 +1,10 @@
 ﻿<noscript>
     <div id="noscript" class="groupMargin">
-        <p>Je hebt JavaScript uitgeschakeld. Schakel Javascript in om verder te gaan.</p>
+        <p>%NoJavascript%</p>
     </div>
 </noscript>
 <div id="intro" class="groupMargin">
-    <p>Een moment geduld aub...</p>
+    <p>%OneMomentPlease%</p>
 </div>
 <div id="loginArea">
     <form method="post" name="loginform" id="loginForm" action="%FormUrl%">
@@ -15,7 +15,6 @@
 </div>
 <script type="text/javascript">
     setTimeout(function () {
-            document.forms[0].submit();
-        },
-        0);
+        document.forms[0].submit();
+    }, 0);
 </script>

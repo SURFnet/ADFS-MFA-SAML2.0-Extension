@@ -56,6 +56,9 @@
       <HintPath>lib\Microsoft.IdentityServer.Web.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.DirectoryServices" />
@@ -87,6 +90,7 @@
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
     <Compile Include="Repositories\ActiveDirectoryRepository.cs" />
+    <Compile Include="Resources\Labels.cs" />
     <Compile Include="Services\CryptographicService.cs" />
     <Compile Include="Services\SamlService.cs" />
   </ItemGroup>
@@ -100,6 +104,8 @@
     <Content Include="Setup\SURFnet.Authentication.ADFS.MFA.Plugin.log4net">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <EmbeddedResource Include="Resources\Labels.1043.json" />
+    <EmbeddedResource Include="Resources\Labels.1033.json" />
     <None Include="Setup\PowerShellModule\SURFnetMFA\Export-SigningCertificate.ps1" />
     <None Include="Setup\PowerShellModule\SURFnetMFA\Install-AuthProvider.ps1" />
     <None Include="Setup\PowerShellModule\SURFnetMFA\Install-EventLogForMfaPlugin.ps1" />
