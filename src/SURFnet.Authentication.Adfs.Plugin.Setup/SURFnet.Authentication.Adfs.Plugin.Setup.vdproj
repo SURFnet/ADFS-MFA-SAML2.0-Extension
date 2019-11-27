@@ -599,7 +599,7 @@
                     "Attributes" = "3:512"
                     }
                 }
-            "SourcePath" = "8:..\\SURFnet.Authentication.Adfs.Plugin\\bin\\SURFnet.Authentication.Adfs.Plugin.dll"
+            "SourcePath" = "8:..\\SURFnet.Authentication.Adfs.Plugin\\bin\\Release\\SURFnet.Authentication.Adfs.Plugin.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_BAE17484051042E1AF52A700B51FE57E"
@@ -719,7 +719,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_D72015618AA24374A7BFC0AAFC4BD0C6"
             {
-            "SourcePath" = "8:..\\SURFnet.Authentication.Adfs.Plugin\\bin\\SURFnet.Authentication.Adfs.Plugin.dll.config"
+            "SourcePath" = "8:..\\SURFnet.Authentication.Adfs.Plugin\\bin\\Release\\SURFnet.Authentication.Adfs.Plugin.dll.config"
             "TargetName" = "8:pluginconfiguration.config"
             "Tag" = "8:"
             "Folder" = "8:_6B8D8202830A4872995CFF47A19A63BF"
