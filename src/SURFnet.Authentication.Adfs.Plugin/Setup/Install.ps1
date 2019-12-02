@@ -36,6 +36,57 @@ function Initialize-UserSettings()
 	$ServiceProvider_SigningCertificate_default 	= ""
 	$IdentityProvider_EntityId_default 				= ""
 	$IdentityProvider_Certificate_default 			= ""
+	$GwServer_default = 1
+
+	# Prepare default names and Endpoints
+	# TODO (for conversion/update: get from existing
+	#       get from ADFS hostname: endpoint and entityID [or ]
+	$ServiceProvider_EntityId_default = "http://adfs-2012.test2.surfconext.nl/stepup-mfa"
+	# TODO:  Must ask
+	$Settings_ActiveDirectoryUserIdAttribute_default= "employeeNumber"
+	$Settings_schacHomeOrganization_default 		= "institution-b.nl"
+	$Settings_ActiveDirectoryName_default   		= "niet-meer-nodig"
+
+
+	$needGWChoice = $true
+	$GwServer = 1
+	Write-Host -f yellow "0. Select the Stepup Gateway (1: Production, 2: Pilot, 3: Test, 4. Manual with Production defaults."
+	do {
+		$GwServer = read-host "Stepup Gateway choice? (default is $($GwServer_default))"
+        $GwServer = [int]$GwServer
+		if ( $GwServer -eq 0 ) {
+			$GwServer = $GwServer_default
+        }
+
+		switch ( $GwServer ) {
+			1 {
+				Write-Host -f red "   Choice 1 not yet implemented"
+				break
+			}
+			2 {
+				Write-Host -f red "   Choice 2 not yet implemented"
+				break
+			}
+			3 {
+				$Settings_MinimalLoa_default 		   			= "http://test.surfconext.nl/assurance/sfo-level2"
+				$ServiceProvider_SigningCertificate_default 	= ""
+				$Settings_SecondFactorEndpoint_default			= "https://sa-gw.test.surfconext.nl/second-factor-only/single-sign-on"
+				$IdentityProvider_EntityId_default 				= "https://sa-gw.test.surfconext.nl/second-factor-only/metadata"
+				$IdentityProvider_Certificate_default 			= "sa-gw.test.crt"
+				$needGWChoice = $false
+				break
+			}
+			4 {
+				Write-Host -f red "   Choice 4 not yet implemented"
+				break
+			}
+
+			default {
+				Write-Host -f red "   Invalid choice ($GwServer), valid: 1-4"
+				break
+			}
+		}
+	} while ( $needGWChoice )
 	
 	#Ask for installation parameters
 	Write-Host -f yellow "1. Enter the Assertion Consumer Service (ACS) location of the Second Factor Only (SFO) endpoint of the SURFsecureID Gateway."
@@ -69,6 +120,7 @@ function Initialize-UserSettings()
 	$global:IdentityProvider_EntityId 				= read-host "Identity  provider identity Id? (default is $($IdentityProvider_EntityId_default))"
 	
     Write-Host -f yellow "9. Enter the filename of the .crt file containing the SAML signing certificate of the SURFsecureID Gateway."
+    Write-Host -f yellow "   Nothing if there is already a singning certificate. Must be in the '$PSScriptroot'\Certificates directory."
 	$global:IdentityProvider_Certificate 			= read-host "Identity  provider certificate? (default is $($IdentityProvider_Certificate_default))"
 
 	if($global:Settings_SecondFactorEndpoint -eq ""){$global:Settings_SecondFactorEndpoint = $Settings_SecondFactorEndpoint_default}
@@ -129,6 +181,8 @@ function Verify-Installation{
 		
     }
     $global:adfsServiceAccount = $adfssrv.StartName
+
+	$global:AdfsProperties = Get-AdfsProperties
 }
 
 
@@ -192,7 +246,7 @@ try
             
 
             if($global:ServiceProvider_SigningCertificate -eq $null -or $global:ServiceProvider_SigningCertificate -eq ""){
-			    $global:pfxPassword = Export-SigningCertificate $x509SigningCertificate.Thumbprint -ExportTo "$PSScriptroot\Certificates\"$x509SigningCertificate.DnsNameList[0].Unicode + ".pfx"
+			    $global:pfxPassword = Export-SigningCertificate -CertificateThumbprint $x509SigningCertificate.Thumbprint -ExportTo "$PSScriptroot\Certificates\"+$x509SigningCertificate.DnsNameList[0].Unicode + ".pfx"
             }
 			
             Print-Summary $x509SigningCertificate $global:ServiceProvider_EntityId

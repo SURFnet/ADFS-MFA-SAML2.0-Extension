@@ -33,8 +33,10 @@ param(
     {
         if(Get-AdfsAuthenticationProvider -Name $ProviderName){
             $config = Get-AdfsGlobalAuthenticationPolicy
-		    $config.AdditionalAuthenticationProvider.Remove($providerName)
-		    Set-AdfsGlobalAuthenticationPolicy -AdditionalAuthenticationProvider $config.AdditionalAuthenticationProvider
+			$providers = $config.AdditionalAuthenticationProvider
+		    if ( $providers.Remove($providerName) ) {
+				Set-AdfsGlobalAuthenticationPolicy -AdditionalAuthenticationProvider $providers
+			}
             Unregister-AdfsAuthenticationProvider -Name $providerName -Confirm:$false
 		    Write-Host -ForegroundColor Green "Removed $providerName from AD FS server '$env:ComputerName'"    
         }

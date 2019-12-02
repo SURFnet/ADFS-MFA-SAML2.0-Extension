@@ -76,9 +76,7 @@ param(
 		
 
 		Write-Host -ForegroundColor Green "Install $ProviderName on $env:ComputerName"		
-
 		Write-Host -ForegroundColor Green "Register SURFnet MFA plugin"
-		Write-Host -ForegroundColor Green "Install $ProviderName on $env:ComputerName"
 		Register-AdfsAuthenticationProvider -TypeName $fullTypeName -Name $ProviderName
 
 		$deviceRegistrationService = Get-WmiObject win32_service |? {$_.name -eq "drs"}
@@ -86,9 +84,16 @@ param(
             Start-Service -Name drs > $null
         }
 
-		# Enable the provider in ADFS
-		Set-AdfsGlobalAuthenticationPolicy -AdditionalAuthenticationProvider $ProviderName
-
+		# Enable the provider in ADFS, it was not there so this cannot be a duplicate.
+		$authnPolicy = Get-AdfsGlobalAuthenticationPolicy
+		$providers = $authnPolicy.AdditionalAuthenticationProvider
+		if ( $providers.Contains($providerName)) {
+			Write-Host -ForegroundColor DarkYellow "'$ProviderName' already in GlobalAuthenticationPolicy" 
+		} else {
+			$providers.Add($providerName)
+			Set-AdfsGlobalAuthenticationPolicy -AdditionalAuthenticationProvider $providers
+		}
+		
 		Write-Host -ForegroundColor Green "SURFnet MFA plugin registered. Restarting AD FS"
 		Restart-Service -Name adfssrv -Force > $null
 		Write-Host -ForegroundColor Green "Finished publishing $ProviderName to $env:ComputerName"
