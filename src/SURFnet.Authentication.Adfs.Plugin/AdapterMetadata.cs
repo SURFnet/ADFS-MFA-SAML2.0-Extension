@@ -16,19 +16,16 @@
 
 namespace SURFnet.Authentication.Adfs.Plugin
 {
-    using System;
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using System.Globalization;
 
     using Microsoft.IdentityServer.Web.Authentication.External;
 
-    using SURFnet.Authentication.Adfs.Plugin.Properties;
-
     /// <summary>
     /// The adapter metadata.
     /// </summary>
-    /// <seealso cref="Microsoft.IdentityServer.Web.Authentication.External.IAuthenticationAdapterMetadata" />
+    /// <seealso cref="IAuthenticationAdapterMetadata" />
     public class AdapterMetadata : IAuthenticationAdapterMetadata
     {
         /// <summary>
@@ -78,48 +75,48 @@ namespace SURFnet.Authentication.Adfs.Plugin
         /// to determine the best language\locale to display to the user.
         /// </summary>
         /// <value>The available LCIDS.</value>
-        public int[] AvailableLcids => new[]
-                                           {
-                                               new CultureInfo("en-us").LCID
-                                           };
+        public int[] AvailableLcids => AdapterMetadata.availableLcids;
+
+        /// <summary>
+        /// Statically initializing the available LCIDs so they do not get created for every instance.
+        /// </summary>
+        private static readonly int[] availableLcids = new[]
+        {
+            new CultureInfo("en-us").LCID,
+            new CultureInfo("nl-nl").LCID
+        };
 
         /// <summary>
         /// Gets a Dictionary containing the set of localized descriptions (hover over help) of the provider, indexed by LCID. 
         /// These descriptions are displayed in the "choice page" offered to the user when there is more than one 
         /// secondary authentication provider available.
         /// </summary>
-        public Dictionary<int, string> Descriptions
+        public Dictionary<int, string> Descriptions => AdapterMetadata.descriptions;
+
+        /// <summary>
+        /// Statically initializing the descriptions so they do not get created for every instance.
+        /// </summary>
+        private static readonly Dictionary<int, string> descriptions = new Dictionary<int, string>
         {
-            get
-            {
-                var descriptions = new Dictionary<int, string>
-                                       {
-                                               {
-                                                   new CultureInfo("en-us").LCID, "SURFNet Second Factor Authentication."
-                                               }
-                                       };
-                return descriptions;
-            }
-        }
+            { new CultureInfo("en-us").LCID, Resources.GetLabel(1033, "Description") },
+            { new CultureInfo("nl-nl").LCID, Resources.GetLabel(1043, "Description") }
+        };
 
         /// <summary>
         /// Gets a Dictionary containing the set of localized friendly names of the provider, indexed by LCID. 
         /// These Friendly Names are displayed in the "choice page" offered to the user when there is more than 
         /// one secondary authentication provider available.
         /// </summary>
-        public Dictionary<int, string> FriendlyNames
+        public Dictionary<int, string> FriendlyNames => AdapterMetadata.friendlyNames;
+
+        /// <summary>
+        /// Statically initializing the friendly names so they do not get created for every instance.
+        /// </summary>
+        private static readonly Dictionary<int, string> friendlyNames = new Dictionary<int, string>
         {
-            get
-            {
-                var friendlyNames = new Dictionary<int, string>
-                                        {
-                                                {
-                                                    new CultureInfo("en-us").LCID, "SURFNet Second Factor Authentication."
-                                                }
-                                        };
-                return friendlyNames;
-            }
-        }
+            { new CultureInfo("en-us").LCID, Resources.GetLabel(1033, "FriendlyName") },
+            { new CultureInfo("nl-nl").LCID, Resources.GetLabel(1043, "FriendlyName") }
+        };
 
         /// <summary>
         /// Gets an indication whether or not the Authentication Adapter requires an Identity Claim or not.

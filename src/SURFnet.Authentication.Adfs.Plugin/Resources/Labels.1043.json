@@ -5,5 +5,7 @@
   "NoJavascript": "Je hebt Javascript uitgeschakeld. Schakele Javascript in om verder te gaan.",
   "OneMomentPlease": "Een moment geduld alstublieft...",
   "Working": "Bezig...",
-  "AuthenticationFailed": "Authenticatie mislukt"
+  "AuthenticationFailed": "Authenticatie mislukt",
+  "Description": "SURFNet Tweede Factor Authenticatie.",
+  "FriendlyName": "SURFNet Tweede Factor Authenticatie."
 }

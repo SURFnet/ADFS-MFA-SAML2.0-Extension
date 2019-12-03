@@ -5,5 +5,7 @@
   "NoJavascript": "You have disabled Javascript. Please enable it to continue.",
   "OneMomentPlease": "One moment please...",
   "Working": "Working...",
-  "AuthenticationFailed": "Authentication failed"
+  "AuthenticationFailed": "Authentication failed",
+  "Description": "SURFNet Second Factor Authentication.",
+  "FriendlyName": "SURFNet Second Factor Authentication."
 }
