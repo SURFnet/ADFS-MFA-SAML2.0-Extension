@@ -45,8 +45,8 @@ namespace SURFnet.Authentication.Adfs.Plugin
             var stream = assembly.GetManifestResourceStream(resourceName);
             if (stream == null)
             {
-                // Fallback to dutch
-                lcid = new CultureInfo("nl-nl").LCID;
+                // Fallback to english
+                lcid = new CultureInfo("en-us").LCID;
                 resourceName = $"SURFnet.Authentication.Adfs.Plugin.Resources.Labels.{lcid}.json";
                 assembly.GetManifestResourceStream(resourceName);
             }
