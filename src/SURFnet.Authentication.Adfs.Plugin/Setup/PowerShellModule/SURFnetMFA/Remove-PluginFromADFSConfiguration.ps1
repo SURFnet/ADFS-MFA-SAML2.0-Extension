@@ -91,8 +91,8 @@ function Remove-PluginFromADFSConfiguration{
 
     if($isFullRemoval -eq $true){
         Write-Host -ForegroundColor Green "Removing SFO endpoint configuration"
-        $identityProviderCertificateThumbprint = $adfsConfiguration.configuration.SelectSingleNode("kentor.authServices/identityProviders/add/signingCertificate").findValue
-        $adfsConfiguration.configuration.removeChild($adfsConfiguration.configuration.SelectSingleNode("kentor.authServices"))   | out-null
+        $identityProviderCertificateThumbprint = $adfsConfiguration.configuration.SelectSingleNode("sustainsys.saml2/identityProviders/add/signingCertificate").findValue
+        $adfsConfiguration.configuration.removeChild($adfsConfiguration.configuration.SelectSingleNode("sustainsys.saml2"))   | out-null
     }else{
         Write-Host -ForegroundColor Green "Skip removing of the SFO endpoint configuration, because this is not a complete removal due to another installed SURFnet MFA plugin"
     }

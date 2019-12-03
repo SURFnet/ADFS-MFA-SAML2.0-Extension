@@ -21,13 +21,13 @@ namespace SURFnet.Authentication.Adfs.Plugin.Models
     using System.Linq;
     using System.Xml.Linq;
 
-    using Kentor.AuthServices;
-    using Kentor.AuthServices.Saml2P;
+    using Sustainsys.Saml2;
+    using Sustainsys.Saml2.Saml2P;
 
     /// <summary>
     /// A special authentication request for the SURFconext Second Factor Endpoint.
     /// </summary>
-    /// <seealso cref="Kentor.AuthServices.Saml2P.Saml2AuthenticationRequest" />
+    /// <seealso cref="Sustainsys.Saml2.Saml2P.Saml2AuthenticationRequest" />
     [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "Reviewed. Suppression is OK here.")]
     public class Saml2AuthenticationSecondFactorRequest : Saml2AuthenticationRequest
     {

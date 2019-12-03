@@ -100,17 +100,17 @@ function Update-ADFSConfiguration{
 
     Write-Host -ForegroundColor Green "Written section declarations. Start upsert IDP settings"
         
-    $kentorConfig = $adfsConfiguration.configuration.SelectSingleNode("kentor.authServices");
-    if($kentorConfig -eq $null){
+    $SustainsysConfig = $adfsConfiguration.configuration.SelectSingleNode("sustainsys.saml2");
+    if($SustainsysConfig -eq $null){
         Write-Host -ForegroundColor Green "Didn't found IDP configuration. Adding configuration"
-        $kentorConfig = $adfsConfiguration.ImportNode($pluginConfiguration.configuration.SelectSingleNode("kentor.authServices"), $true)
-        $adfsConfiguration.configuration.AppendChild($kentorConfig) | out-null
+        $SustainsysConfig = $adfsConfiguration.ImportNode($pluginConfiguration.configuration.SelectSingleNode("sustainsys.saml2"), $true)
+        $adfsConfiguration.configuration.AppendChild($SustainsysConfig) | out-null
     }
  
     Write-Host -ForegroundColor Gray "Updating property Serviceprovider entityId from value '"$existingKentorConfig.entityId"' to '$ServiceProviderEntityId'"; 
-    $kentorConfig.'entityId' = $ServiceProviderEntityId
+    $SustainsysConfig.'entityId' = $ServiceProviderEntityId
         
-    $idp = $kentorConfig.identityProviders.SelectSingleNode("add");
+    $idp = $SustainsysConfig.identityProviders.SelectSingleNode("add");
     
     Write-Host -ForegroundColor Gray "Updating property Identityprovider entityId from value '"$idp.entityId"' to '$IdentityProviderEntityId'";     
     $idp.'entityId' = $IdentityProviderEntityId

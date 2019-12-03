@@ -24,9 +24,9 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
     using System.Linq;
     using System.Security.Claims;
 
-    using Kentor.AuthServices;
-    using Kentor.AuthServices.Configuration;
-    using Kentor.AuthServices.Saml2P;
+    using Sustainsys.Saml2;
+    using Sustainsys.Saml2.Configuration;
+    using Sustainsys.Saml2.Saml2P;
 
     using log4net;
 
@@ -53,7 +53,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
         /// <returns>The authentication request.</returns>
         public static Saml2AuthenticationSecondFactorRequest CreateAuthnRequest(Claim identityClaim, string authnRequestId, Uri ascUri)
         {
-            var serviceproviderConfiguration = Kentor.AuthServices.Configuration.Options.FromConfiguration;
+            var serviceproviderConfiguration = Sustainsys.Saml2.Configuration.Options.FromConfiguration;
             Log.DebugFormat("Creating AuthnRequest for identity '{0}'", identityClaim.Value);
             var nameIdentifier = new Saml2NameIdentifier(GetNameId(identityClaim), new Uri("urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified"));
 
@@ -79,7 +79,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
         public static Claim[] VerifyResponseAndGetAuthenticationClaim(Saml2Response samlResponse)
         {
             // The response is verified when the claims are retrieved.
-            var responseClaims = samlResponse.GetClaims(Kentor.AuthServices.Configuration.Options.FromConfiguration).ToList();
+            var responseClaims = samlResponse.GetClaims(Sustainsys.Saml2.Configuration.Options.FromConfiguration).ToList();
 
             var claims = new List<Claim>();
             foreach (var claimsIdentity in responseClaims)
