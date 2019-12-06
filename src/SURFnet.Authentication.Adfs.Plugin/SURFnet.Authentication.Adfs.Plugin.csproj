@@ -101,6 +101,7 @@
     </Content>
     <EmbeddedResource Include="Resources\Labels.1043.json" />
     <EmbeddedResource Include="Resources\Labels.1033.json" />
+    <None Include="Setup\SURFnet.Authentication.ADFS.MFA.Plugin.Environments.json" />
     <None Include="Setup\PowerShellModule\SURFnetMFA\Export-SigningCertificate.ps1" />
     <None Include="Setup\PowerShellModule\SURFnetMFA\Install-AuthProvider.ps1" />
     <None Include="Setup\PowerShellModule\SURFnetMFA\Install-EventLogForMfaPlugin.ps1" />

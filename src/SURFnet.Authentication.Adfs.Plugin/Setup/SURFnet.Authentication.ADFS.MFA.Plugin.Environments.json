@@ -1,0 +1,20 @@
+{
+  "Production": {
+    "MinimalLoa": "http://prod.surfconext.nl/assurance/sfo-level2",
+    "SecondFactorEndpoint": "https://sa-gw.prod.surfconext.nl/second-factor-only/single-sign-on",
+    "EntityId": "https://sa-gw.prod.surfconext.nl/second-factor-only/metadata",
+    "Certificate": "MIIPRODUCTION="
+  },
+  "Pilot": {
+    "MinimalLoa": "http://pilot.surfconext.nl/assurance/sfo-level2",
+    "SecondFactorEndpoint": "https://sa-gw.pilot.surfconext.nl/second-factor-only/single-sign-on",
+    "EntityId": "https://sa-gw.pilot.surfconext.nl/second-factor-only/metadata",
+    "Certificate": "MIIPILOT="
+  },
+  "Test": {
+    "MinimalLoa": "http://test.surfconext.nl/assurance/sfo-level2",
+    "SecondFactorEndpoint": "https://sa-gw.test.surfconext.nl/second-factor-only/single-sign-on",
+    "EntityId": "https://sa-gw.test.surfconext.nl/second-factor-only/metadata",
+    "Certificate": "MIITEST="
+  }
+}
