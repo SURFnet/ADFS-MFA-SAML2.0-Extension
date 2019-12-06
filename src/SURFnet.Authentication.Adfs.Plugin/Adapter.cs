@@ -23,7 +23,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
     using System.Security.Claims;
     using System.Text;
 
-    using Kentor.AuthServices.Saml2P;
+    using Sustainsys.Saml2.Saml2P;
 
     using log4net;
 
@@ -218,10 +218,10 @@ namespace SURFnet.Authentication.Adfs.Plugin
             }
             try
             {
-                var options = Kentor.AuthServices.Configuration.Options.FromConfiguration;
+                var options = Sustainsys.Saml2.Configuration.Options.FromConfiguration;
                 sb.AppendLine($"AssertionConsumerService: '{options.SPOptions.ReturnUrl.OriginalString}'");
-                sb.AppendLine($"ServiceProvider.EntityId: '{Kentor.AuthServices.Configuration.Options.FromConfiguration.SPOptions.EntityId.Id}'");
-                sb.AppendLine($"IdentityProvider.EntityId: '{SamlService.GetIdentityProvider(Kentor.AuthServices.Configuration.Options.FromConfiguration).EntityId.Id}'");
+                sb.AppendLine($"ServiceProvider.EntityId: '{Sustainsys.Saml2.Configuration.Options.FromConfiguration.SPOptions.EntityId.Id}'");
+                sb.AppendLine($"IdentityProvider.EntityId: '{SamlService.GetIdentityProvider(Sustainsys.Saml2.Configuration.Options.FromConfiguration).EntityId.Id}'");
             }
             catch (Exception ex)
             {

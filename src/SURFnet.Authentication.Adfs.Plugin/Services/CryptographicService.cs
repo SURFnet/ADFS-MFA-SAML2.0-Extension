@@ -20,7 +20,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
     using System.Security.Cryptography.X509Certificates;
     using System.Text;
 
-    using Kentor.AuthServices;
+    using Sustainsys.Saml2;
 
     using log4net;
 
@@ -96,7 +96,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
                 return;
             }
 
-            Kentor.AuthServices.Configuration.Options.GlobalEnableSha256XmlSignatures();
+            Sustainsys.Saml2.Configuration.Options.GlobalEnableSha256XmlSignatures();
             isSha265Enabled = true;
         }
 

@@ -10,8 +10,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionIt
 		SolutionItems\SignKentorAuthLibrary.cmd = SolutionItems\SignKentorAuthLibrary.cmd
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SURFnet.Authentication.Test", "src\SURFnet.Authentication.Test\SURFnet.Authentication.Test.csproj", "{F910F17B-758E-401E-8E30-08A95A4FE661}"
-EndProject
 Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "SURFnet.Authentication.Adfs.Plugin.Setup", "src\SURFnet.Authentication.Adfs.Plugin.Setup\SURFnet.Authentication.Adfs.Plugin.Setup.vdproj", "{86E14EF3-1FB2-4516-AD75-5DFB1EA79D26}"
 EndProject
 Global
@@ -27,12 +25,6 @@ Global
 		{7F165692-9E1E-4231-B3BF-3E3AED44B11A}.Deploy|Any CPU.Build.0 = Debug|Any CPU
 		{7F165692-9E1E-4231-B3BF-3E3AED44B11A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7F165692-9E1E-4231-B3BF-3E3AED44B11A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F910F17B-758E-401E-8E30-08A95A4FE661}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F910F17B-758E-401E-8E30-08A95A4FE661}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F910F17B-758E-401E-8E30-08A95A4FE661}.Deploy|Any CPU.ActiveCfg = Deploy|Any CPU
-		{F910F17B-758E-401E-8E30-08A95A4FE661}.Deploy|Any CPU.Build.0 = Deploy|Any CPU
-		{F910F17B-758E-401E-8E30-08A95A4FE661}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F910F17B-758E-401E-8E30-08A95A4FE661}.Release|Any CPU.Build.0 = Release|Any CPU
 		{86E14EF3-1FB2-4516-AD75-5DFB1EA79D26}.Debug|Any CPU.ActiveCfg = Debug
 		{86E14EF3-1FB2-4516-AD75-5DFB1EA79D26}.Debug|Any CPU.Build.0 = Debug
 		{86E14EF3-1FB2-4516-AD75-5DFB1EA79D26}.Deploy|Any CPU.ActiveCfg = Debug

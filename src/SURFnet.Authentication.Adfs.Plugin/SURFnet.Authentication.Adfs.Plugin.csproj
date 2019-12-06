@@ -44,9 +44,6 @@
     <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Kentor.AuthServices, Version=0.21.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Kentor.AuthServices.0.21.2\lib\net45\Kentor.AuthServices.dll</HintPath>
-    </Reference>
     <Reference Include="log4net, Version=2.0.8.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
       <HintPath>..\..\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
       <Private>True</Private>
@@ -58,6 +55,9 @@
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="Sustainsys.Saml2, Version=0.23.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Sustainsys.Saml2.0.23.0\lib\net45\Sustainsys.Saml2.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -90,7 +90,9 @@
     <Compile Include="Services\SamlService.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="app.config" />
+    <None Include="app.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -118,7 +120,7 @@
     <None Include="Setup\PowerShellModule\SURFnetMFA\Uninstall-EventLogForMfaPlugin.ps1" />
     <None Include="Setup\PowerShellModule\SURFnetMFA\Uninstall-Log4NetConfiguration.ps1" />
     <None Include="Setup\PowerShellModule\SURFnetMFA\Update-ADFSConfiguration.ps1" />
-	<!-- 
+    <!-- 
     <None Include="Setup\Install.ps1" />
     <None Include="Setup\Uninstall.ps1" />
 	-->
@@ -140,7 +142,7 @@
     <Error Condition="!Exists('..\..\packages\MSBuildTasks.1.5.0.235\build\MSBuildTasks.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\MSBuildTasks.1.5.0.235\build\MSBuildTasks.targets'))" />
   </Target>
   <ItemGroup>
-    <Binaries Include="$(ProjectDir)bin\Release\Kentor.AuthServices.dll" />
+    <Binaries Include="$(ProjectDir)bin\Release\Sustainsys.Saml2.dll" />
     <Binaries Include="$(ProjectDir)bin\Release\log4net.dll" />
     <Binaries Include="$(ProjectDir)bin\Release\SURFnet.Authentication.Adfs.Plugin.dll" />
     <Binaries Include="$(ProjectDir)bin\Release\SURFnet.Authentication.Adfs.Plugin.dll.config" />
@@ -149,13 +151,11 @@
     <SetupFiles Include="$(ProjectDir)Setup\Uninstall.ps1" />
   </ItemGroup>
   <Target Name="BuildPackage">
-    <GetAssemblyIdentity AssemblyFiles="$(ProjectDir)bin\$(Configuration)\Kentor.AuthServices.dll">
-      <Output TaskParameter="Assemblies" ItemName="KentorAssemblyInfo" />
-    </GetAssemblyIdentity>   
-    <XmlUpdate XmlFileName="$(ProjectDir)bin\$(Configuration)\SURFnet.Authentication.Adfs.Plugin.dll.config" 
-               XPath="/configuration/configSections/section[@name='kentor.authServices']/@type"
-               Value="Kentor.AuthServices.Configuration.KentorAuthServicesSection, Kentor.AuthServices, Version=%(KentorAssemblyInfo.Version), Culture=neutral, PublicKeyToken=%(KentorAssemblyInfo.PublicKeyToken)" />
-    <Message Importance="High" Text="Updating $(ProjectDir)bin\$(Configuration)\SURFnet.Authentication.Adfs.Plugin.dll.config with assembly identity of $(ProjectDir)bin\$(Configuration)\Kentor.AuthServices.dll: Version=%(KentorAssemblyInfo.Version), PublicKeyToken=%(KentorAssemblyInfo.PublicKeyToken)" />
+    <GetAssemblyIdentity AssemblyFiles="$(ProjectDir)bin\$(Configuration)\Sustainsys.Saml2.dll">
+      <Output TaskParameter="Assemblies" ItemName="SustainsysAssemblyInfo" />
+    </GetAssemblyIdentity>
+    <XmlUpdate XmlFileName="$(ProjectDir)bin\$(Configuration)\SURFnet.Authentication.Adfs.Plugin.dll.config" XPath="/configuration/configSections/section[@name='sustainsys.saml2']/@type" Value="Sustainsys.Saml2.Configuration.SustainsysSaml2Section, Sustainsys.Saml2, Version=%(SustainsysAssemblyInfo.Version), Culture=neutral, PublicKeyToken=%(SustainsysAssemblyInfo.PublicKeyToken)" />
+    <Message Importance="High" Text="Updating $(ProjectDir)bin\$(Configuration)\SURFnet.Authentication.Adfs.Plugin.dll.config with assembly identity of $(ProjectDir)bin\$(Configuration)\Sustainsys.Saml2.dll: Version=%(SustainsysAssemblyInfo.Version), PublicKeyToken=%(SustainsysAssemblyInfo.PublicKeyToken)" />
     <GetAssemblyIdentity AssemblyFiles="$(ProjectDir)bin\$(Configuration)\SURFnet.Authentication.Adfs.Plugin.dll">
       <Output TaskParameter="Assemblies" ItemName="PluginAssemblyInfo" />
     </GetAssemblyIdentity>
@@ -167,6 +167,6 @@
   <Target Name="BeforeBuild">
   </Target>-->
   <Target Name="AfterBuild">
-    <CallTarget Targets="BuildPackage" Condition="'$(Configuration)'=='Release'" />
+    <CallTarget Targets="BuildPackage" />
   </Target>
 </Project>
