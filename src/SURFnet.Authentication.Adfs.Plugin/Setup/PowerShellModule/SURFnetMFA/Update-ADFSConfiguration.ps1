@@ -1,41 +1,42 @@
-#####################################################################
-#Copyright 2017 SURFnet bv, The Netherlands
+###########################################################################
+# Copyright 2017 SURFnet bv, The Netherlands
 #
-#Licensed under the Apache License, Version 2.0 (the "License");
-#you may not use this file except in compliance with the License.
-#You may obtain a copy of the License at
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
 #
-#http://www.apache.org/licenses/LICENSE-2.0
+#     http://www.apache.org/licenses/LICENSE-2.0
 #
-#Unless required by applicable law or agreed to in writing, software
-#distributed under the License is distributed on an "AS IS" BASIS,
-#WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-#See the License for the specific language governing permissions and
-#limitations under the License.
-#####################################################################
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+###########################################################################
 
 $ErrorActionPreference = "Stop"
-function Update-ADFSConfiguration{
+
+function Update-ADFSConfiguration {
     Param(
-        [Parameter(Mandatory=$true, HelpMessage="Path to install directory")]
+        [Parameter(Mandatory = $true, HelpMessage = "Path to install directory")]
         $InstallDir,
-        [Parameter(Mandatory=$true, HelpMessage="Enter the entityId (Which is known to SURF)")]
+        [Parameter(Mandatory = $true, HelpMessage = "Enter the entityId (Which is known to SURF)")]
         $ServiceProviderEntityId,
-        [Parameter(Mandatory=$true, HelpMessage="Enter the entityId of the SFO endpoint")]    
+        [Parameter(Mandatory = $true, HelpMessage = "Enter the entityId of the SFO endpoint")]    
         $IdentityProviderEntityId,
-        [Parameter(Mandatory=$true, HelpMessage="Enter the thumbprint of the SFO certificate (public key)")]
+        [Parameter(Mandatory = $true, HelpMessage = "Enter the thumbprint of the SFO certificate (public key)")]
         $sfoCertificateThumbprint,
-        [Parameter(Mandatory=$true, HelpMessage="Enter the SFO endpoint address")]
+        [Parameter(Mandatory = $true, HelpMessage = "Enter the SFO endpoint address")]
         $SecondFactorEndpoint,
-        [Parameter(Mandatory=$true, HelpMessage="Enter the minimal LOA")]
+        [Parameter(Mandatory = $true, HelpMessage = "Enter the minimal LOA")]
         $MinimalLoa,
-        [Parameter(Mandatory=$true, HelpMessage="Enter your schacHomeOrganization (Which is known to SURF")]
+        [Parameter(Mandatory = $true, HelpMessage = "Enter your schacHomeOrganization (Which is known to SURF")]
         $schacHomeOrganization, 
-        [Parameter(Mandatory=$true, HelpMessage="Enter your active directory name")]
+        [Parameter(Mandatory = $true, HelpMessage = "Enter your active directory name")]
         $ActiveDirectoryName,
-        [Parameter(Mandatory=$true, HelpMessage="Enter the attibutename which contains the userID (Which is known to SURF)")]
+        [Parameter(Mandatory = $true, HelpMessage = "Enter the attibutename which contains the userID (Which is known to SURF)")]
         $ActiveDirectoryUserIdAttribute,
-        [Parameter(Mandatory=$true, HelpMessage="Enter the service provider certificate thumbprint")]
+        [Parameter(Mandatory = $true, HelpMessage = "Enter the service provider certificate thumbprint")]
         $ServiceProviderCertificateThumbprint
     )
 
@@ -52,13 +53,13 @@ function Update-ADFSConfiguration{
     $sectionDeclaration = $adfsConfiguration.SelectSingleNode("/configuration/configSections")
         
     $newSectionDeclarations = $pluginConfiguration.SelectSingleNode("/configuration/configSections")
-    foreach($sectionDeclaration in $newSectionDeclarations.section){ 
+    foreach ($sectionDeclaration in $newSectionDeclarations.section) { 
         Write-Host -ForegroundColor Green "Search config section: " $sectiondeclaration.Name
-        $existingSectionDeclaration = $adfsConfiguration.configuration.configSections.SelectSingleNode("section[@name='"+ $sectiondeclaration.Name+"']")
-        if($existingSectionDeclaration -ne $null){
+        $existingSectionDeclaration = $adfsConfiguration.configuration.configSections.SelectSingleNode("section[@name='" + $sectiondeclaration.Name + "']")
+        if ($existingSectionDeclaration -ne $null) {
             Write-Host -ForegroundColor Green "Found existing config section '"$sectiondeclaration.Name"' Skipping copy"
         }
-        else{
+        else {
             Write-Host -ForegroundColor Green "Didn't find config section. Create config section:" $sectiondeclaration.Name
             $itemToAdd = $adfsConfiguration.ImportNode($sectionDeclaration, $true);
             $newNode = $adfsConfiguration.configuration.configSections.AppendChild($itemToAdd)
@@ -67,41 +68,41 @@ function Update-ADFSConfiguration{
 
     Write-Host -ForegroundColor Green "Finished upsert of config sections. Starting upsert for config section groups".
                 
-    foreach($newSectionGroupDeclaration in $newSectionDeclarations.sectionGroup){
+    foreach ($newSectionGroupDeclaration in $newSectionDeclarations.sectionGroup) {
         Write-Host -ForegroundColor Green "Search config section group: "$newSectionGroupDeclaration.Name
 
-        $sectionGroupDeclaration = $adfsConfiguration.configuration.configSections.SelectSingleNode("sectionGroup[@name='"+ $newSectionGroupDeclaration.Name +"']")
-        if($sectionGroupDeclaration -eq $null){
+        $sectionGroupDeclaration = $adfsConfiguration.configuration.configSections.SelectSingleNode("sectionGroup[@name='" + $newSectionGroupDeclaration.Name + "']")
+        if ($sectionGroupDeclaration -eq $null) {
             Write-Host -ForegroundColor Green "Didn't found config section group. Create config section group including child sections: "$newSectionGroupDeclaration.Name
             $sectionGroupDeclaration = $adfsConfiguration.ImportNode($newSectionGroupDeclaration, $false)
             $adfsConfiguration.configuration.configSections.AppendChild($sectionGroupDeclaration) | out-null
 
         }
-            Write-Host -ForegroundColor Green "Found existing config section group '"$sectionGroupDeclaration.Name"'. Checking child sections"
+        Write-Host -ForegroundColor Green "Found existing config section group '"$sectionGroupDeclaration.Name"'. Checking child sections"
 
-            foreach($newGroupChild in $newSectionGroupDeclaration.section)
-            {
-                Write-Host -ForegroundColor Green "Search config section group child "$newGroupChild.Name
+        foreach ($newGroupChild in $newSectionGroupDeclaration.section) {
+            Write-Host -ForegroundColor Green "Search config section group child "$newGroupChild.Name
 
-                $existingGroupChild = $sectionGroupDeclaration.SelectSingleNode("section[@name='"+ $newGroupChild.Name +"']")
-                $pluginAppSettingsElementName = $newGroupChild.Name;
+            $existingGroupChild = $sectionGroupDeclaration.SelectSingleNode("section[@name='" + $newGroupChild.Name + "']")
+            $pluginAppSettingsElementName = $newGroupChild.Name;
 
-                if($existingGroupChild -ne $null){
-                    Write-Host -ForegroundColor Green "Found existing config section group child '"$newGroupChild.Name"' Skipping copy"
+            if ($existingGroupChild -ne $null) {
+                Write-Host -ForegroundColor Green "Found existing config section group child '"$newGroupChild.Name"' Skipping copy"
                         
-                }else{
-                    Write-Host -ForegroundColor Green "Didn't found config section group child. Create child: "$newGroupChild.Name" in "$sectionGroupDeclaration.Name
-                    $itemToAdd = $adfsConfiguration.ImportNode($newGroupChild, $true);
-                    $sectionGroupDeclaration.AppendChild($itemToAdd);
-                }
             }
+            else {
+                Write-Host -ForegroundColor Green "Didn't found config section group child. Create child: "$newGroupChild.Name" in "$sectionGroupDeclaration.Name
+                $itemToAdd = $adfsConfiguration.ImportNode($newGroupChild, $true);
+                $sectionGroupDeclaration.AppendChild($itemToAdd);
+            }
+        }
         
     }
 
     Write-Host -ForegroundColor Green "Written section declarations. Start upsert IDP settings"
         
     $SustainsysConfig = $adfsConfiguration.configuration.SelectSingleNode("sustainsys.saml2");
-    if($SustainsysConfig -eq $null){
+    if ($SustainsysConfig -eq $null) {
         Write-Host -ForegroundColor Green "Didn't found IDP configuration. Adding configuration"
         $SustainsysConfig = $adfsConfiguration.ImportNode($pluginConfiguration.configuration.SelectSingleNode("sustainsys.saml2"), $true)
         $adfsConfiguration.configuration.AppendChild($SustainsysConfig) | out-null
@@ -122,42 +123,39 @@ function Update-ADFSConfiguration{
 
 
     $appSettingsElement = $adfsConfiguration.configuration.SelectSingleNode("applicationSettings")
-    if($appSettingsElement -eq $null){
+    if ($appSettingsElement -eq $null) {
         Write-Host -ForegroundColor Green "Didn't find AD FS plugin configuration. Adding configuration"
         $appSettingsElement = $adfsConfiguration.ImportNode($pluginConfiguration.SelectSingleNode("/configuration/applicationSettings"), $true)
         $adfsConfiguration.configuration.AppendChild($appSettingsElement)
     }
         
-	$newappSettings = $appSettingsElement.SelectSingleNode($pluginAppSettingsElementName);
-	if($newappSettings -eq $null){
-	 Write-Host -ForegroundColor Green "Didn't find AD FS plugin configuration. Adding configuration for $pluginAppSettingsElementName"
-	 $newappsettings = $pluginConfiguration.SelectSingleNode("/configuration/applicationSettings/$pluginAppSettingsElementName")  
-	}
-	else
-	{
-	  $result=$appSettingsElement.RemoveChild($newappSettings)
-	}
+    $newappSettings = $appSettingsElement.SelectSingleNode($pluginAppSettingsElementName);
+    if ($newappSettings -eq $null) {
+        Write-Host -ForegroundColor Green "Didn't find AD FS plugin configuration. Adding configuration for $pluginAppSettingsElementName"
+        $newappsettings = $pluginConfiguration.SelectSingleNode("/configuration/applicationSettings/$pluginAppSettingsElementName")  
+    }
+    else {
+        $result = $appSettingsElement.RemoveChild($newappSettings)
+    }
 
-	foreach($setting in $newappSettings.SelectNodes("//setting"))
-	{
-		$value = $null
-		switch($setting.name)
-		{
-			'SecondFactorEndpoint'  		  { $value = $SecondFactorEndpoint }
-			'MinimalLoa'			  		  { $value = $MinimalLoa } 			
-			'schacHomeOrganization' 		  { $value = $schacHomeOrganization } 
-			'ActiveDirectoryName'   		  { $value = $ActiveDirectoryName }
-			'ActiveDirectoryUserIdAttribute'  { $value = $ActiveDirectoryUserIdAttribute }            
-			'SpSigningCertificate'            { $value = $ServiceProviderCertificateThumbprint }
-		}
-		if($value){
-			Write-Host -ForegroundColor Gray "Updating property "$setting.name" from value '"$setting.value"' to '$value'"; 
-			$setting.value = $value
-		}
-	}
+    foreach ($setting in $newappSettings.SelectNodes("//setting")) {
+        $value = $null
+        switch ($setting.name) {
+            'SecondFactorEndpoint' { $value = $SecondFactorEndpoint }
+            'MinimalLoa' { $value = $MinimalLoa } 			
+            'schacHomeOrganization' { $value = $schacHomeOrganization } 
+            'ActiveDirectoryName' { $value = $ActiveDirectoryName }
+            'ActiveDirectoryUserIdAttribute' { $value = $ActiveDirectoryUserIdAttribute }            
+            'SpSigningCertificate' { $value = $ServiceProviderCertificateThumbprint }
+        }
+        if ($value) {
+            Write-Host -ForegroundColor Gray "Updating property "$setting.name" from value '"$setting.value"' to '$value'"; 
+            $setting.value = $value
+        }
+    }
 
-	$newappSettings = $adfsConfiguration.ImportNode($newappsettings, $true)
-	$result=$appSettingsElement.AppendChild($newappSettings)
+    $newappSettings = $adfsConfiguration.ImportNode($newappsettings, $true)
+    $result = $appSettingsElement.AppendChild($newappSettings)
     Write-Host -ForegroundColor Green "Finished writing AD FS configuration settings. Restarting AD FS service"
 
     Stop-Service adfssrv -Force > $null
