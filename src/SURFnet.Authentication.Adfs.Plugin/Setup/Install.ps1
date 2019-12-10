@@ -109,12 +109,13 @@ function GetUserSettings() {
 	}
 }
 
-function GetAdfsProperties {
-	# Check if the user is an administrator
+function CheckIfRunningAsAdministrator {
 	if (([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator") -ne $true) {
 		throw "Cannot run script. Please run this script in administrator mode."
 	}
+}
 
+function GetAdfsServiceAccountName {
 	# Get the ADFS service
 	$adfssrv = Get-WmiObject win32_service | Where-Object { $_.name -eq "adfssrv" }
 
@@ -123,15 +124,13 @@ function GetAdfsProperties {
 		throw "No AD FS service found on this server. Please run this script locally at the target AD FS server."
 	}
 
-	# Return the properties
-	return @{
-		AdfsServiceAccount = $adfssrv.StartName;
-		AdfsProperties     = Get-AdfsProperties
-	}
+	# Return the start name of the adfs service
+	return $adfssrv.StartName
 }
 
 try {
-	$adfsProperties = GetAdfsProperties
+	CheckIfRunningAsAdministrator
+	$adfsServiceAccountName = GetAdfsServiceAccountName
 	if ($settings = GetUserSettings) {
 		Copy-Log4NetConfiguration -InstallDir $configDir
 
@@ -145,7 +144,7 @@ try {
 		}
 
 		Install-SigningCertificate `
-			-AccountName $adfsProperties.AdfsServiceAccount `
+			-AccountName $adfsServiceAccountName `
 			-Certificate $signingCertificate
 
 		$sfoCertificateThumbprint = Import-SfoCertificate `
