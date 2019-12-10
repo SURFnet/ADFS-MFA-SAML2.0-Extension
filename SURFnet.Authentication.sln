@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27130.2036
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29519.87
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SURFnet.Authentication.Adfs.Plugin", "src\SURFnet.Authentication.Adfs.Plugin\SURFnet.Authentication.Adfs.Plugin.csproj", "{7F165692-9E1E-4231-B3BF-3E3AED44B11A}"
 EndProject
@@ -11,6 +11,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionIt
 	EndProjectSection
 EndProject
 Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "SURFnet.Authentication.Adfs.Plugin.Setup", "src\SURFnet.Authentication.Adfs.Plugin.Setup\SURFnet.Authentication.Adfs.Plugin.Setup.vdproj", "{86E14EF3-1FB2-4516-AD75-5DFB1EA79D26}"
+	ProjectSection(ProjectDependencies) = postProject
+		{7F165692-9E1E-4231-B3BF-3E3AED44B11A} = {7F165692-9E1E-4231-B3BF-3E3AED44B11A}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
