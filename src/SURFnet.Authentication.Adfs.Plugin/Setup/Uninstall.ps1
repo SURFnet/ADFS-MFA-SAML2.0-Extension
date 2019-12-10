@@ -78,7 +78,7 @@ try {
 
         if ($details.FullUninstall -eq $true) {		
             Uninstall-Log4NetConfiguration
-            Uninstall-EventLogForMfaPlugin	
+            Remove-EventLogForMfaPlugin	
         }
 
         Uninstall-SurfnetMfaPluginApplication
