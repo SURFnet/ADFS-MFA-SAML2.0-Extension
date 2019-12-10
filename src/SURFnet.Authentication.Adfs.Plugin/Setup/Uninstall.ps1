@@ -77,7 +77,7 @@ try {
         }        
 
         if ($details.FullUninstall -eq $true) {		
-            Uninstall-Log4NetConfiguration
+            Remove-Log4NetConfiguration
             Remove-EventLogForMfaPlugin	
         }
 
