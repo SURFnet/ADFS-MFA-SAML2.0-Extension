@@ -29,6 +29,6 @@ function Export-SigningCertificate {
     Add-Type -AssemblyName System.Web
     $pfxPassword = [System.Web.Security.Membership]::GeneratePassword(16, 3)
     $pwd = ConvertTo-SecureString -String $pfxPassword -AsPlainText -Force
-    Get-ChildItem -Path cert:\localMachine\my\$CertificateThumbprint | Export-PfxCertificate -FilePath $ExportTo -Password $pwd    
+    Get-ChildItem -Path cert:\localMachine\my\$CertificateThumbprint | Export-PfxCertificate -FilePath $ExportTo -Password $pwd
     return $pwd
 }
