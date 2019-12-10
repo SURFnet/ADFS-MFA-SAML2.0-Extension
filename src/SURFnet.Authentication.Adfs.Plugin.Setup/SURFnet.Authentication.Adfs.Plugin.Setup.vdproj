@@ -69,6 +69,18 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_5D9462819C3649C28DB149F48693DC3C"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_6F3A6E8DFA1848CAB6FB868D27445A4D"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_75E756B64B4E4E79BE2F6A1A49410DF8"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -184,13 +196,13 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_1AB1D236EAA0490BE1D018F7EB0FD024"
+        "OwnerKey" = "8:_97A8BA0647F9479C8BEDAF8BA44DF44E"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_97A8BA0647F9479C8BEDAF8BA44DF44E"
+        "OwnerKey" = "8:_1AB1D236EAA0490BE1D018F7EB0FD024"
         "MsmSig" = "8:_UNDEFINED"
         }
     }
@@ -460,6 +472,46 @@
             "TargetName" = "8:Write-SigningCertificate.ps1"
             "Tag" = "8:"
             "Folder" = "8:_4CF0487BC59743E58683B5F228DAC2B5"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_5D9462819C3649C28DB149F48693DC3C"
+            {
+            "SourcePath" = "8:..\\SURFnet.Authentication.Adfs.Plugin\\Setup\\Functions.ps1"
+            "TargetName" = "8:Functions.ps1"
+            "Tag" = "8:"
+            "Folder" = "8:_25CF5A09660D44D7968C83915B510EF8"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_6F3A6E8DFA1848CAB6FB868D27445A4D"
+            {
+            "SourcePath" = "8:..\\SURFnet.Authentication.Adfs.Plugin\\Setup\\Configuration.ps1"
+            "TargetName" = "8:Configuration.ps1"
+            "Tag" = "8:"
+            "Folder" = "8:_25CF5A09660D44D7968C83915B510EF8"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
