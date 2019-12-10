@@ -26,6 +26,7 @@ Clear-Host
 $error.Clear()
 $date = Get-Date -f "yyyyMMdd.HHmmss"
 $configDir = "$PSScriptroot\Config"
+$certificateDir = "$PSScriptroot\Certificates"
 Start-Transcript "Log/Install-SurfnetMfaPlugin.$date.log"
 
 function GetUserSettings() {
@@ -95,14 +96,14 @@ function GetUserSettings() {
 	}
 
 	return @{
-		MinimalLoa = $environment.MinimalLoa;
-		SecondFactorEndpoint = $environment.SecondFactorEndpoint;
-		IdentityProvider_EntityId = $environment.EntityId;
-		IdentityProvider_Certificate = $environment.Certificate;
-		SchacHomeOrganization = $schacHomeOrganization;
-		ActiveDirectoryName = $activeDirectoryName;
-		ActiveDirectoryUserIdAttribute = $activeDirectoryUserIdAttribute;
-		ServiceProvider_EntityId = $serviceProviderEntityId;
+		MinimalLoa                         = $environment.MinimalLoa;
+		SecondFactorEndpoint               = $environment.SecondFactorEndpoint;
+		IdentityProvider_EntityId          = $environment.EntityId;
+		IdentityProvider_Certificate       = $environment.Certificate;
+		SchacHomeOrganization              = $schacHomeOrganization;
+		ActiveDirectoryName                = $activeDirectoryName;
+		ActiveDirectoryUserIdAttribute     = $activeDirectoryUserIdAttribute;
+		ServiceProvider_EntityId           = $serviceProviderEntityId;
 		ServiceProvider_SigningCertificate = $serviceProviderSigningCertificate;
 	}
 }
@@ -132,48 +133,49 @@ try {
 	$adfsProperties = @{AdfsServiceAccount = "TEMP" }
 	# $adfsProperties = GetAdfsProperties
 	if ($settings = GetUserSettings) {
-		if (Install-Log4NetConfiguration -InstallDir $configDir) {
-			$signingCertificate = Install-SigningCertificate `
-				-CertificateFile $settings.ServiceProvider_SigningCertificate `
-				-InstallDir "$PSScriptroot\Certificates" `
-				-AdfsServiceAccountName $adfsProperties.AdfsServiceAccount
+		Install-Log4NetConfiguration -InstallDir $configDir
 
-			$sfoCertificate = Install-SfoCertificate `
-				-InstallDir "$PSScriptroot\Certificates" `
-				-CertificateFile $settings.IdentityProvider_Certificate
+		$signingCertificate = Install-SigningCertificate `
+			-CertificateFile $settings.ServiceProvider_SigningCertificate `
+			-InstallDir $certificateDir `
+			-AdfsServiceAccountName $adfsProperties.AdfsServiceAccount
 
-			Install-EventLogForMfaPlugin
+		$sfoCertificate = Install-SfoCertificate `
+			-InstallDir $certificateDir `
+			-CertificateFile $settings.IdentityProvider_Certificate
 
-			Install-AuthProvider `
-				-InstallDir $PSScriptroot `
-				-ProviderName ADFS.SCSA `
-				-AssemblyName "SURFnet.Authentication.Adfs.Plugin.dll" `
-				-TypeName "SURFnet.Authentication.Adfs.Plugin.Adapter"
+		Install-EventLogForMfaPlugin
 
-			Update-ADFSConfiguration -InstallDir $configDir `
-				-ServiceProviderEntityId $settings.ServiceProvider_EntityId `
-				-IdentityProviderEntityId $settings.IdentityProvider_EntityId `
-				-SecondFactorEndpoint $settings.SecondFactorEndpoint `
-				-MinimalLoa $settings.MinimalLoa `
-				-schacHomeOrganization $settings.SchacHomeOrganization `
-				-ActiveDirectoryName $settings.ActiveDirectoryName `
-				-ActiveDirectoryUserIdAttribute $settings.ActiveDirectoryUserIdAttribute `
-				-sfoCertificateThumbprint $sfoCertificate.Thumbprint `
-				-ServiceProviderCertificateThumbprint $signingCertificate.Thumbprint            
+		Install-AuthProvider `
+			-InstallDir $PSScriptroot `
+			-ProviderName ADFS.SCSA `
+			-AssemblyName "SURFnet.Authentication.Adfs.Plugin.dll" `
+			-TypeName "SURFnet.Authentication.Adfs.Plugin.Adapter"
 
-			if ($null -eq $settings.ServiceProvider_SigningCertificate -or $settings.ServiceProvider_SigningCertificate -eq "") {
-				$pwd = Export-SigningCertificate -CertificateThumbprint $signingCertificate.Thumbprint -ExportTo "$PSScriptroot\Certificates\"+$signingCertificate.DnsNameList[0].Unicode + ".pfx"
-			}
-			
-			Write-Host ""
-			Write-Host ""
-			Write-Host ""
+		Update-ADFSConfiguration -InstallDir $configDir `
+			-ServiceProviderEntityId $settings.ServiceProvider_EntityId `
+			-IdentityProviderEntityId $settings.IdentityProvider_EntityId `
+			-SecondFactorEndpoint $settings.SecondFactorEndpoint `
+			-MinimalLoa $settings.MinimalLoa `
+			-schacHomeOrganization $settings.SchacHomeOrganization `
+			-ActiveDirectoryName $settings.ActiveDirectoryName `
+			-ActiveDirectoryUserIdAttribute $settings.ActiveDirectoryUserIdAttribute `
+			-sfoCertificateThumbprint $sfoCertificate.Thumbprint `
+			-ServiceProviderCertificateThumbprint $signingCertificate.Thumbprint            
 
-			Write-SigningCertificate `
-				-Certificate $signingCertificate `
-				-EntityId $settings.ServiceProvider_EntityId `
-				-Password $pwd
+		if ($null -eq $settings.ServiceProvider_SigningCertificate -or $settings.ServiceProvider_SigningCertificate -eq "") {
+			$exportCertificateTo = "$certificateDir\" + $signingCertificate.DnsNameList[0].Unicode + ".pfx"
+			$pwd = Export-SigningCertificate -CertificateThumbprint $signingCertificate.Thumbprint -ExportTo $exportCertificateTo
 		}
+			
+		Write-Host ""
+		Write-Host ""
+		Write-Host ""
+
+		Write-SigningCertificate `
+			-Certificate $signingCertificate `
+			-EntityId $settings.ServiceProvider_EntityId `
+			-Password $pwd
 	}
 }
 catch {
