@@ -16,7 +16,7 @@
 
 $ErrorActionPreference = "Stop"
 
-function Install-EventLogForMfaPlugin {
+function Add-EventLogForMfaPlugin {
     Param(
         [Parameter(Mandatory = $false)]
         [string]$LogName = "AD FS Plugin"

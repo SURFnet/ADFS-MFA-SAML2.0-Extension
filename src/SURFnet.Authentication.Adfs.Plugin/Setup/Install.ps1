@@ -133,7 +133,7 @@ try {
 	$adfsProperties = @{AdfsServiceAccount = "TEMP" }
 	# $adfsProperties = GetAdfsProperties
 	if ($settings = GetUserSettings) {
-		Install-Log4NetConfiguration -InstallDir $configDir
+		Copy-Log4NetConfiguration -InstallDir $configDir
 
 		$signingCertificate = Install-SigningCertificate `
 			-CertificateFile $settings.ServiceProvider_SigningCertificate `
@@ -144,7 +144,7 @@ try {
 			-InstallDir $certificateDir `
 			-CertificateFile $settings.IdentityProvider_Certificate
 
-		Install-EventLogForMfaPlugin
+		Add-EventLogForMfaPlugin
 
 		Install-AuthProvider `
 			-InstallDir $PSScriptroot `

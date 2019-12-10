@@ -16,7 +16,7 @@
 
 $ErrorActionPreference = "Stop"
 
-function Install-Log4NetConfiguration {
+function Copy-Log4NetConfiguration {
     Param(
         [Parameter(Mandatory = $true, HelpMessage = "Location of the Log4Net configuration")]
         [string]$ConfigDir
