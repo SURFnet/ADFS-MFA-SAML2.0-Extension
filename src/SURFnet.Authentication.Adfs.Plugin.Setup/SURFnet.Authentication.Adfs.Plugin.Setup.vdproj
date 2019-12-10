@@ -21,6 +21,18 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_01B7FE20E8ED4C568A4C6D7B8BB4CDB5"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_0629BC3D31BB4D03A388E78631222FA3"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_1AABD89DD99D437D89AEBC7BD9D271A9"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -29,6 +41,18 @@
         {
         "MsmKey" = "8:_1AB1D236EAA0490BE1D018F7EB0FD024"
         "OwnerKey" = "8:_97A8BA0647F9479C8BEDAF8BA44DF44E"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_1CB709C152DB44768D1E700823F033A2"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_1E4482EDF9794B358012E72CE1519D6B"
+        "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -57,7 +81,25 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_37C169F771514052BAABC24EE0B2E438"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_3FD70098D1B7469E8EB1C77B4CB5C0D9"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_4757CED69197401C8F82C01F6C97A58E"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_4E24FEC688474F73B016C4340B82BB25"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -93,7 +135,31 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_75E756B64B4E4E79BE2F6A1A49410DF8"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_7B62D378A34A482FA26045F3031C0E44"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_7D6281DE46A44CFF99837845D3FE0E47"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_81D4F02751AA4B148D947AE51A79369C"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_8A056C1960B045A694BB320E12F5EED2"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -106,6 +172,18 @@
         "Entry"
         {
         "MsmKey" = "8:_94FB329849D24822BA51ECEED062A8C3"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_95B5F4F0CE6B49B4B2555340974757C4"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_9772CBFB47B24431A190FEE90F9880F2"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -135,6 +213,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_C197ECF4649049A48C6994D1ACE52DAF"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_C9851461E36A4B53BAA42CBC8C2A454E"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -142,6 +226,12 @@
         "Entry"
         {
         "MsmKey" = "8:_D198C5BCE41E44AFAD19293C495F606B"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_D27B53E7C5064DC68F145C32724A6AF9"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -159,6 +249,30 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_E837183FFB6B4EA3AC74D6F51CD0CC01"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_FC016A31BBC341D2A37D5CC1573FA05C"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_FEFF9FED8D444C3198005630361D83CD"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_FF1FAB9B835745E087F26FAC622C0D74"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_94571A8EDA25B2292073CFB7F70D99AB"
         "MsmSig" = "8:_UNDEFINED"
@@ -166,13 +280,13 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_1AB1D236EAA0490BE1D018F7EB0FD024"
+        "OwnerKey" = "8:_97A8BA0647F9479C8BEDAF8BA44DF44E"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_97A8BA0647F9479C8BEDAF8BA44DF44E"
+        "OwnerKey" = "8:_1AB1D236EAA0490BE1D018F7EB0FD024"
         "MsmSig" = "8:_UNDEFINED"
         }
     }
@@ -290,6 +404,46 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_01B7FE20E8ED4C568A4C6D7B8BB4CDB5"
+            {
+            "SourcePath" = "8:..\\SURFnet.Authentication.Adfs.Plugin\\Setup\\SURFnetMFA\\Update-ADFSConfiguration.ps1"
+            "TargetName" = "8:Update-ADFSConfiguration.ps1"
+            "Tag" = "8:"
+            "Folder" = "8:_4CF0487BC59743E58683B5F228DAC2B5"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_0629BC3D31BB4D03A388E78631222FA3"
+            {
+            "SourcePath" = "8:..\\SURFnet.Authentication.Adfs.Plugin\\Setup\\SURFnetMFA\\Copy-Log4NetConfiguration.ps1"
+            "TargetName" = "8:Copy-Log4NetConfiguration.ps1"
+            "Tag" = "8:"
+            "Folder" = "8:_4CF0487BC59743E58683B5F228DAC2B5"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_1AABD89DD99D437D89AEBC7BD9D271A9"
             {
             "SourcePath" = "8:..\\SURFnet.Authentication.Adfs.Plugin\\Setup\\PowerShellModule\\SURFnetMFA\\Remove-PluginFromADFSConfiguration.ps1"
@@ -334,6 +488,46 @@
             "Register" = "3:1"
             "Exclude" = "11:FALSE"
             "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_1CB709C152DB44768D1E700823F033A2"
+            {
+            "SourcePath" = "8:..\\SURFnet.Authentication.Adfs.Plugin\\Setup\\SURFnetMFA\\Uninstall-AuthProvider.ps1"
+            "TargetName" = "8:Uninstall-AuthProvider.ps1"
+            "Tag" = "8:"
+            "Folder" = "8:_4CF0487BC59743E58683B5F228DAC2B5"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_1E4482EDF9794B358012E72CE1519D6B"
+            {
+            "SourcePath" = "8:..\\SURFnet.Authentication.Adfs.Plugin\\Setup\\SURFnetMFA\\Remove-Log4NetConfiguration.ps1"
+            "TargetName" = "8:Remove-Log4NetConfiguration.ps1"
+            "Tag" = "8:"
+            "Folder" = "8:_4CF0487BC59743E58683B5F228DAC2B5"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_202B581B18364424BBC17EF630801492"
@@ -416,12 +610,72 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_37C169F771514052BAABC24EE0B2E438"
+            {
+            "SourcePath" = "8:..\\SURFnet.Authentication.Adfs.Plugin\\Setup\\SURFnetMFA\\Remove-EventLogForMfaPlugin.ps1"
+            "TargetName" = "8:Remove-EventLogForMfaPlugin.ps1"
+            "Tag" = "8:"
+            "Folder" = "8:_4CF0487BC59743E58683B5F228DAC2B5"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_3FD70098D1B7469E8EB1C77B4CB5C0D9"
+            {
+            "SourcePath" = "8:..\\SURFnet.Authentication.Adfs.Plugin\\Setup\\SURFnetMFA\\Install-SigningCertificate.ps1"
+            "TargetName" = "8:Install-SigningCertificate.ps1"
+            "Tag" = "8:"
+            "Folder" = "8:_4CF0487BC59743E58683B5F228DAC2B5"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_4757CED69197401C8F82C01F6C97A58E"
             {
             "SourcePath" = "8:..\\SURFnet.Authentication.Adfs.Plugin\\Setup\\SURFnet.Authentication.ADFS.MFA.Plugin.log4net"
             "TargetName" = "8:SURFnet.Authentication.ADFS.MFA.Plugin.log4net"
             "Tag" = "8:"
             "Folder" = "8:_6B8D8202830A4872995CFF47A19A63BF"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_4E24FEC688474F73B016C4340B82BB25"
+            {
+            "SourcePath" = "8:..\\SURFnet.Authentication.Adfs.Plugin\\Setup\\SURFnetMFA\\Write-SigningCertificate.ps1"
+            "TargetName" = "8:Write-SigningCertificate.ps1"
+            "Tag" = "8:"
+            "Folder" = "8:_4CF0487BC59743E58683B5F228DAC2B5"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -536,12 +790,92 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_75E756B64B4E4E79BE2F6A1A49410DF8"
+            {
+            "SourcePath" = "8:..\\SURFnet.Authentication.Adfs.Plugin\\Setup\\SURFnetMFA\\Remove-Certificate.ps1"
+            "TargetName" = "8:Remove-Certificate.ps1"
+            "Tag" = "8:"
+            "Folder" = "8:_4CF0487BC59743E58683B5F228DAC2B5"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_7B62D378A34A482FA26045F3031C0E44"
             {
             "SourcePath" = "8:..\\SURFnet.Authentication.Adfs.Plugin\\Setup\\Install.ps1"
             "TargetName" = "8:Install.ps1"
             "Tag" = "8:"
             "Folder" = "8:_25CF5A09660D44D7968C83915B510EF8"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_7D6281DE46A44CFF99837845D3FE0E47"
+            {
+            "SourcePath" = "8:..\\SURFnet.Authentication.Adfs.Plugin\\Setup\\SURFnetMFA\\Import-SigningCertificate.ps1"
+            "TargetName" = "8:Import-SigningCertificate.ps1"
+            "Tag" = "8:"
+            "Folder" = "8:_4CF0487BC59743E58683B5F228DAC2B5"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_81D4F02751AA4B148D947AE51A79369C"
+            {
+            "SourcePath" = "8:..\\SURFnet.Authentication.Adfs.Plugin\\Setup\\SURFnetMFA\\SURFnetMFA.psm1"
+            "TargetName" = "8:SURFnetMFA.psm1"
+            "Tag" = "8:"
+            "Folder" = "8:_4CF0487BC59743E58683B5F228DAC2B5"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_8A056C1960B045A694BB320E12F5EED2"
+            {
+            "SourcePath" = "8:..\\SURFnet.Authentication.Adfs.Plugin\\Setup\\SURFnetMFA\\Install-AuthProvider.ps1"
+            "TargetName" = "8:Install-AuthProvider.ps1"
+            "Tag" = "8:"
+            "Folder" = "8:_4CF0487BC59743E58683B5F228DAC2B5"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -588,6 +922,46 @@
             "TargetName" = "8:SURFnetMFA.psd1"
             "Tag" = "8:"
             "Folder" = "8:_F31A1A1023C047F5A405D600FE822A4D"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_95B5F4F0CE6B49B4B2555340974757C4"
+            {
+            "SourcePath" = "8:..\\SURFnet.Authentication.Adfs.Plugin\\Setup\\SURFnetMFA\\Import-SfoCertificate.ps1"
+            "TargetName" = "8:Import-SfoCertificate.ps1"
+            "Tag" = "8:"
+            "Folder" = "8:_4CF0487BC59743E58683B5F228DAC2B5"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_9772CBFB47B24431A190FEE90F9880F2"
+            {
+            "SourcePath" = "8:..\\SURFnet.Authentication.Adfs.Plugin\\Setup\\SURFnetMFA\\New-AdfsConfigurationBackup.ps1"
+            "TargetName" = "8:New-AdfsConfigurationBackup.ps1"
+            "Tag" = "8:"
+            "Folder" = "8:_4CF0487BC59743E58683B5F228DAC2B5"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -693,6 +1067,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_C197ECF4649049A48C6994D1ACE52DAF"
+            {
+            "SourcePath" = "8:..\\SURFnet.Authentication.Adfs.Plugin\\Setup\\SURFnetMFA\\New-SigningCertificate.ps1"
+            "TargetName" = "8:New-SigningCertificate.ps1"
+            "Tag" = "8:"
+            "Folder" = "8:_4CF0487BC59743E58683B5F228DAC2B5"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_C9851461E36A4B53BAA42CBC8C2A454E"
             {
             "SourcePath" = "8:..\\SURFnet.Authentication.Adfs.Plugin\\Setup\\PowerShellModule\\SURFnetMFA\\Install-Log4NetConfiguration.ps1"
@@ -719,6 +1113,26 @@
             "TargetName" = "8:New-SelfSignedCertificateEx.ps1"
             "Tag" = "8:"
             "Folder" = "8:_F31A1A1023C047F5A405D600FE822A4D"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_D27B53E7C5064DC68F145C32724A6AF9"
+            {
+            "SourcePath" = "8:..\\SURFnet.Authentication.Adfs.Plugin\\Setup\\SURFnetMFA\\SURFnetMFA.psd1"
+            "TargetName" = "8:SURFnetMFA.psd1"
+            "Tag" = "8:"
+            "Folder" = "8:_4CF0487BC59743E58683B5F228DAC2B5"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -773,6 +1187,86 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_E837183FFB6B4EA3AC74D6F51CD0CC01"
+            {
+            "SourcePath" = "8:..\\SURFnet.Authentication.Adfs.Plugin\\Setup\\SURFnetMFA\\Add-EventLogForMfaPlugin.ps1"
+            "TargetName" = "8:Add-EventLogForMfaPlugin.ps1"
+            "Tag" = "8:"
+            "Folder" = "8:_4CF0487BC59743E58683B5F228DAC2B5"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_FC016A31BBC341D2A37D5CC1573FA05C"
+            {
+            "SourcePath" = "8:..\\SURFnet.Authentication.Adfs.Plugin\\Setup\\SURFnetMFA\\Export-SigningCertificate.ps1"
+            "TargetName" = "8:Export-SigningCertificate.ps1"
+            "Tag" = "8:"
+            "Folder" = "8:_4CF0487BC59743E58683B5F228DAC2B5"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_FEFF9FED8D444C3198005630361D83CD"
+            {
+            "SourcePath" = "8:..\\SURFnet.Authentication.Adfs.Plugin\\Setup\\SURFnetMFA\\Remove-PluginFromADFSConfiguration.ps1"
+            "TargetName" = "8:Remove-PluginFromADFSConfiguration.ps1"
+            "Tag" = "8:"
+            "Folder" = "8:_4CF0487BC59743E58683B5F228DAC2B5"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_FF1FAB9B835745E087F26FAC622C0D74"
+            {
+            "SourcePath" = "8:..\\SURFnet.Authentication.Adfs.Plugin\\Setup\\SURFnetMFA\\New-SelfSignedCertificateEx.ps1"
+            "TargetName" = "8:New-SelfSignedCertificateEx.ps1"
+            "Tag" = "8:"
+            "Folder" = "8:_4CF0487BC59743E58683B5F228DAC2B5"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
         }
         "FileType"
         {
@@ -789,6 +1283,17 @@
             "Property" = "8:TARGETDIR"
                 "Folders"
                 {
+                    "{9EF0B969-E518-4E46-987F-47570745A589}:_4CF0487BC59743E58683B5F228DAC2B5"
+                    {
+                    "Name" = "8:SURFnetMFA"
+                    "AlwaysCreate" = "11:FALSE"
+                    "Condition" = "8:"
+                    "Transitive" = "11:FALSE"
+                    "Property" = "8:_F101C713F500496C82DD60E394ACAFC8"
+                        "Folders"
+                        {
+                        }
+                    }
                     "{9EF0B969-E518-4E46-987F-47570745A589}:_6B8D8202830A4872995CFF47A19A63BF"
                     {
                     "Name" = "8:Config"
