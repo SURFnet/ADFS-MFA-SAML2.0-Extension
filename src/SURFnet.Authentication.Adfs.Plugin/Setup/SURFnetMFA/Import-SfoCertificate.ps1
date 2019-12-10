@@ -18,21 +18,21 @@ $ErrorActionPreference = "Stop"
 
 function Import-SfoCertificate {
     Param(
-        [Parameter(Mandatory = $true, HelpMessage = "Path to install directory")]
+        [Parameter(Mandatory = $true, HelpMessage = "Path to certificate directory")]
         [string]
-        $InstallDir,
+        $CertificateDir,
         [Parameter(Mandatory = $true, HelpMessage = "Name of the .cer file")]
         [string]
         $CertificateFile
     )
 
-    $certificatePath = Join-Path $InstallDir $CertificateFile
+    $certificatePath = Join-Path $CertificateDir $CertificateFile
 
     if (-not (Test-Path($certificatePath))) {
         throw "Missing SFO certificate ($certificatePath). Add the certificate and run the script again"
     }
     
-    $cert = Import-Certificate "$InstallDir\$CertificateFile" -CertStoreLocation Cert:\LocalMachine\My
+    $cert = Import-Certificate $certificatePath -CertStoreLocation Cert:\LocalMachine\My
     Write-Host -ForegroundColor Green "Imported certificate $CertificateFile on $env:ComputerName"
     return $cert.Thumbprint
 }
