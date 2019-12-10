@@ -105,6 +105,7 @@ function GetUserSettings() {
 		ActiveDirectoryUserIdAttribute     = $activeDirectoryUserIdAttribute;
 		ServiceProvider_EntityId           = $serviceProviderEntityId;
 		ServiceProvider_SigningCertificate = $serviceProviderSigningCertificate;
+		AutoGenerateSigningCertificate     = $serviceProviderSigningCertificate.Length -eq 0;
 	}
 }
 
@@ -134,9 +135,10 @@ try {
 	if ($settings = GetUserSettings) {
 		Copy-Log4NetConfiguration -InstallDir $configDir
 
-		if ($settings.ServiceProvider_SigningCertificate.Length -eq 0) {
+		if ($settings.AutoGenerateSigningCertificate) {
 			$signingCertificate = New-SigningCertificate
-		} else {
+		}
+		else {
 			$signingCertificate = Import-SigningCertificate `
 				-CertificateFile $settings.ServiceProvider_SigningCertificate `
 				-CertificateDir $certificateDir
@@ -158,7 +160,8 @@ try {
 			-AssemblyName "SURFnet.Authentication.Adfs.Plugin.dll" `
 			-TypeName "SURFnet.Authentication.Adfs.Plugin.Adapter"
 
-		Update-ADFSConfiguration -InstallDir $configDir `
+		Update-ADFSConfiguration `
+			-ConfigDir $configDir `
 			-ServiceProviderEntityId $settings.ServiceProvider_EntityId `
 			-IdentityProviderEntityId $settings.IdentityProvider_EntityId `
 			-SecondFactorEndpoint $settings.SecondFactorEndpoint `
@@ -169,19 +172,21 @@ try {
 			-sfoCertificateThumbprint $sfoCertificateThumbprint `
 			-ServiceProviderCertificateThumbprint $signingCertificate.Thumbprint            
 
-		if ($null -eq $settings.ServiceProvider_SigningCertificate -or $settings.ServiceProvider_SigningCertificate -eq "") {
+		if ($settings.AutoGenerateSigningCertificate) {
 			$exportCertificateTo = "$certificateDir\" + $signingCertificate.DnsNameList[0].Unicode + ".pfx"
-			$pwd = Export-SigningCertificate -CertificateThumbprint $signingCertificate.Thumbprint -ExportTo $exportCertificateTo
-		}
-			
-		Write-Host ""
-		Write-Host ""
-		Write-Host ""
+			$pwd = Export-SigningCertificate `
+				-CertificateThumbprint $signingCertificate.Thumbprint `
+				-ExportTo $exportCertificateTo
 
-		Write-SigningCertificate `
-			-Certificate $signingCertificate `
-			-EntityId $settings.ServiceProvider_EntityId `
-			-Password $pwd
+			Write-Host ""
+			Write-Host ""
+			Write-Host ""
+
+			Write-SigningCertificate `
+				-Certificate $signingCertificate `
+				-EntityId $settings.ServiceProvider_EntityId `
+				-Password $pwd
+		}
 	}
 }
 catch {
