@@ -15,78 +15,76 @@
 #####################################################################
 
 Import-Module SURFnetMFA
-cls
+Clear-Host
 $error.Clear()
-$date=get-date -f "yyyyMMdd.HHmmss"
+$date = get-date -f "yyyyMMdd.HHmmss"
 start-transcript "Log/Uninstall-SurfnetMfaPlugin.$($date).log"
 
 $ErrorActionPreference = "Stop"
 $global:adfsServiceAccount = $null
 
-function Verify{
-	if(([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator") -ne $true){
-		write-host -f red "Please run this script as an administrator."
-	}
+function Verify {
+    if (([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator") -ne $true) {
+        write-host -f red "Please run this script as an administrator."
+    }
 
-    $adfssrv = Get-WmiObject win32_service |? {$_.name -eq "adfssrv"}
-    if(!$adfssrv){
+    $adfssrv = Get-WmiObject win32_service | ? { $_.name -eq "adfssrv" }
+    if (!$adfssrv) {
         write-host -f red "No AD FS service found on this server. Please run script at the AD FS server."
-		return $false
+        return $false
     }
     $global:adfsServiceAccount = $adfssrv.StartName
-	return $true
+    return $true
 }
 
 
-function Uninstall-SurfnetMfaPluginApplication
-{
-	$uninstall32 = gci "HKLM:\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall" | foreach { gp $_.PSPath } | ? { $_ -match "SURFnet.Authentication.Adfs.Plugin.Setup" } | select UninstallString
-	$uninstall64 = gci "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall" | foreach { gp $_.PSPath } | ? { $_ -match "SURFnet.Authentication.Adfs.Plugin.Setup" } | select UninstallString
+function Uninstall-SurfnetMfaPluginApplication {
+    $uninstall32 = gci "HKLM:\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall" | foreach { gp $_.PSPath } | ? { $_ -match "SURFnet.Authentication.Adfs.Plugin.Setup" } | select UninstallString
+    $uninstall64 = gci "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall" | foreach { gp $_.PSPath } | ? { $_ -match "SURFnet.Authentication.Adfs.Plugin.Setup" } | select UninstallString
 
-	if ($uninstall64) {
-	    $uninstall64 = $uninstall64.UninstallString -Replace "msiexec.exe","" -Replace "/I","" -Replace "/X",""
-	    $uninstall64 = $uninstall64.Trim()
-	    Write "Uninstalling..."
-	    start-process "msiexec.exe" -arg "/X $uninstall64 /qb" -Wait
+    if ($uninstall64) {
+        $uninstall64 = $uninstall64.UninstallString -Replace "msiexec.exe", "" -Replace "/I", "" -Replace "/X", ""
+        $uninstall64 = $uninstall64.Trim()
+        Write "Uninstalling..."
+        start-process "msiexec.exe" -arg "/X $uninstall64 /qb" -Wait
     }
-	if ($uninstall32) {
-	    $uninstall32 = $uninstall32.UninstallString -Replace "msiexec.exe","" -Replace "/I","" -Replace "/X",""
-	    $uninstall32 = $uninstall32.Trim()
-	    Write "Uninstalling..."
-	    start-process "msiexec.exe" -arg "/X $uninstall32 /qb" -Wait
+    if ($uninstall32) {
+        $uninstall32 = $uninstall32.UninstallString -Replace "msiexec.exe", "" -Replace "/I", "" -Replace "/X", ""
+        $uninstall32 = $uninstall32.Trim()
+        Write "Uninstalling..."
+        start-process "msiexec.exe" -arg "/X $uninstall32 /qb" -Wait
     }
 }
 
-try{
-    if(Verify)
-	{		
-        $PluginUninstallDetails = Remove-PluginFromADFSConfiguration -InstallDir $PSScriptRoot
-		Uninstall-AuthProvider -InstallDir $PSScriptRoot -ProviderName ADFS.SCSA -IsFullUninstall $PluginUninstallDetails.FullUninstall
+try {
+    if (Verify) {		
+        $details = Remove-PluginFromADFSConfiguration -ConfigDir "$PSScriptRoot\Config"
+        Uninstall-AuthProvider -InstallDir $PSScriptRoot -ProviderName ADFS.SCSA -IsFullUninstall $details.FullUninstall
         $removeSigningCert = $true
-        if($PluginUninstallDetails.FullUninstall -eq $false)
-        {
+        if ($details.FullUninstall -eq $false) {
             Write-Host -f yellow "Current uninstallation is not a full uninstallation, because other SURFnet MFA plugins are installed."
             Write-Host -f yellow "If you setup a seperate signing certificate for the other plugin, you should remove the signing certificate for the plugin currently uninstalled."
-            $removeSigningCert = read-host ("Do you want to remove signing certificate with thumprint "+ $PluginUninstallDetails.signingCertificateThumbprint +" (Y/N)") -eq  "Y"
+            $removeSigningCert = read-host ("Do you want to remove signing certificate with thumprint " + $details.SigningCertificateThumbprint + " (Y/N)") -eq  "Y"
         }
 
-        if($PluginUninstallDetails.FullUninstall -eq $true){
-            Remove-Certificates -SfoCertificateThumbprint $PluginUninstallDetails.IdentityProviderCertificateThumbprint -ServiceProviderCertificateThumbprint $PluginUninstallDetails.SigningCertificateThumbprint
-        }else{
-            if($PluginUninstallDetails.FullUninstall -eq $false -and $removeSigningCert){
-                Remove-Certificates -ServiceProviderCertificateThumbprint $PluginUninstallDetails.SigningCertificateThumbprint
+        if ($details.FullUninstall -eq $true) {
+            Remove-Certificates -SfoCertificateThumbprint $details.IdentityProviderCertificateThumbprint -ServiceProviderCertificateThumbprint $details.SigningCertificateThumbprint
+        }
+        else {
+            if ($details.FullUninstall -eq $false -and $removeSigningCert) {
+                Remove-Certificates -ServiceProviderCertificateThumbprint $details.SigningCertificateThumbprint
             }
         }        
 
-        if($PluginUninstallDetails.FullUninstall -eq $true){		
+        if ($details.FullUninstall -eq $true) {		
             Uninstall-Log4NetConfiguration
             Uninstall-EventLogForMfaPlugin	
         }
 
-		Uninstall-SurfnetMfaPluginApplication
-	}
+        Uninstall-SurfnetMfaPluginApplication
+    }
 }
-catch{
+catch {
     Write-Host -ForegroundColor Red "Error while uninstalling plugin:" $_.Exception.Message
 }
 
