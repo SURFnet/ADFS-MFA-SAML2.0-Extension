@@ -69,6 +69,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_5B1C3DF9A85B406E85DA97D7A01F2198"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_62F48C7F08424457BF2A119899E77B48"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -160,13 +166,13 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_97A8BA0647F9479C8BEDAF8BA44DF44E"
+        "OwnerKey" = "8:_1AB1D236EAA0490BE1D018F7EB0FD024"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_1AB1D236EAA0490BE1D018F7EB0FD024"
+        "OwnerKey" = "8:_97A8BA0647F9479C8BEDAF8BA44DF44E"
         "MsmSig" = "8:_UNDEFINED"
         }
     }
@@ -311,11 +317,6 @@
             "AssemblyAsmDisplayName" = "8:log4net, Version=2.0.8.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
-                    "_1AB1D236EAA0490BE1D018F7EB0FD024"
-                    {
-                    "Name" = "8:log4net.DLL"
-                    "Attributes" = "3:512"
-                    }
                 }
             "SourcePath" = "8:log4net.DLL"
             "TargetName" = "8:"
@@ -455,6 +456,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_5B1C3DF9A85B406E85DA97D7A01F2198"
+            {
+            "SourcePath" = "8:..\\SURFnet.Authentication.Adfs.Plugin\\Setup\\SURFnet.Authentication.ADFS.MFA.Plugin.Environments.json"
+            "TargetName" = "8:SURFnet.Authentication.ADFS.MFA.Plugin.Environments.json"
+            "Tag" = "8:"
+            "Folder" = "8:_25CF5A09660D44D7968C83915B510EF8"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_62F48C7F08424457BF2A119899E77B48"
             {
             "SourcePath" = "8:..\\SURFnet.Authentication.Adfs.Plugin\\Setup\\PowerShellModule\\SURFnetMFA\\Install-SigningCertificate.ps1"
@@ -542,11 +563,6 @@
             "AssemblyAsmDisplayName" = "8:Kentor.AuthServices, Version=0.21.2.0, Culture=neutral, PublicKeyToken=3f3ecd9d2f3457f7, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
-                    "_94571A8EDA25B2292073CFB7F70D99AB"
-                    {
-                    "Name" = "8:Kentor.AuthServices.DLL"
-                    "Attributes" = "3:512"
-                    }
                 }
             "SourcePath" = "8:Kentor.AuthServices.DLL"
             "TargetName" = "8:"
@@ -590,7 +606,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:SURFnet.Authentication.Adfs.Plugin, Version=1.0.0.0, Culture=nl-NL, PublicKeyToken=3f3ecd9d2f3457f7, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:SURFnet.Authentication.Adfs.Plugin, Version=2.0.0.0, Culture=neutral, PublicKeyToken=3f3ecd9d2f3457f7, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_97A8BA0647F9479C8BEDAF8BA44DF44E"

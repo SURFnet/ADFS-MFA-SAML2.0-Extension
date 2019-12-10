@@ -50,7 +50,7 @@ function ToArray {
 }
 
 function GetEnvironments() {
-	$environments = Get-Content $configurationFile | ConvertFrom-Json
+	$environments = Get-Content $configurationFile -Raw | ConvertFrom-Json
 	$environmentKeys = $environments.PSObject.Properties
 	if ($environmentKeys.Name.Length -eq 0) {
 		Write-ErrorMessage "The environment configuration file '$configurationFile' does not contain any environments"
