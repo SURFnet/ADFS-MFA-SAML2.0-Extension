@@ -19,20 +19,20 @@ $ErrorActionPreference = "Stop"
 function New-SigningCertificate {
     Param(
         [Parameter(Mandatory = $false)]
-        [string]$DnsName = "signing." + $Env:USERDNSDOMAIN.ToLower() # Generate a default name for the signing certificate
+        [string]$Name = "signing." + $Env:USERDNSDOMAIN.ToLower() # Generate a default name for the signing certificate
     )
     
     # Check if this certificate is already present
-    $selfSignedCertificate = Get-ChildItem Cert:\LocalMachine\My -DnsName $DnsName
+    $selfSignedCertificate = Get-ChildItem Cert:\LocalMachine\My -DnsName $Name
     if ($selfSignedCertificate) {
         # If it is, make sure to use the first one and notify the user of this
         $selfSignedCertificate = $selfSignedCertificate[0]
-        Write-Host -ForegroundColor DarkYellow "Certificate with DNS name '$DnsName' already exists. Using this certificate:`n$selfSignedCertificate"
+        Write-Host -ForegroundColor DarkYellow "Certificate with name '$Name' already exists. Using this certificate:`n$selfSignedCertificate"
     }
     else {
         # If it is not present, create it
         $null = New-SelfSignedCertificateEx `
-            -Subject "CN=$DnsName" `
+            -Subject "CN=$Name" `
             -KeyUsage DigitalSignature `
             -StoreLocation "LocalMachine" `
             -ProviderName "Microsoft Enhanced RSA and AES Cryptographic Provider" `
@@ -41,7 +41,7 @@ function New-SigningCertificate {
             -NotAfter (Get-Date).AddYears(5)
 
         # Get this certificate with private key
-        $selfSignedCertificate = Get-ChildItem Cert:\LocalMachine\My -DnsName $DnsName
+        $selfSignedCertificate = Get-ChildItem Cert:\LocalMachine\My -DnsName $Name
     }
 
     # Return this certificate
