@@ -20,54 +20,20 @@ function Install-SigningCertificate {
     Param(
         [Parameter(Mandatory = $true)]
         [string]
-        $AdfsServiceAccountName,
-        [Parameter(Mandatory = $false)]
-        [string]        
-        $CertificateFile,
-        [Parameter(Mandatory = $false)]
-        [string]
-        $InstallDir
+        $AccountName,
+        [Parameter(Mandatory = $true)]
+        [System.Security.Cryptography.X509Certificates.X509Certificate2]
+        $Certificate
     )
-   
-    if ($CertificateFile) {
-        $certificatePassword = Read-host "Please enter the password for $CertificateFile" -AsSecureString
-        $selfSignedCertificate = Import-PfxCertificate `
-            -FilePath "$InstallDir\$CertificateFile" `
-            -CertStoreLocation Cert:\LocalMachine\My `
-            -Exportable `
-            -Password $certificatePassword
-    }
-    else {
-        $dnsName = "signing." + $env:userdnsdomain.ToLower()
-        
-        $selfSignedCertificate = Get-ChildItem Cert:\LocalMachine\My -DnsName $dnsName
-        if ($selfSignedCertificate) {
-            $selfSignedCertificate = $selfSignedCertificate[0]
-            Write-Host -ForegroundColor DarkYellow "Certificate with DnsName $dnsName already exists. Using this certificate:`n$selfSignedCertificate"
-        }
-        else {
-            $selfSignedCertificate = New-SelfSignedCertificateEx `
-                -Subject "CN=$dnsName" `
-                -KeyUsage DigitalSignature `
-                -StoreLocation "LocalMachine" `
-                -ProviderName "Microsoft Enhanced RSA and AES Cryptographic Provider" `
-                -Exportable `
-                -SignatureAlgorithm SHA256 `
-                -NotAfter (Get-Date).AddYears(5)
-            # Get certificate with private key
-            $selfSignedCertificate = Get-ChildItem Cert:\LocalMachine\My -DnsName $dnsName 
-        }
-    }
 
-    Write-Host -ForegroundColor Green "Set Private Key read permissions"
-    $fullPath = "$env:ProgramData\Microsoft\Crypto\RSA\MachineKeys\" + $selfSignedCertificate.PrivateKey.CspKeyContainerInfo.UniqueKeyContainerName
-    $Acl = (Get-Item $fullPath).GetAccessControl('Access')
+    Write-Host -ForegroundColor Green "Setting Private Key Read permissions"
+    $fullPath = "$env:ProgramData\Microsoft\Crypto\RSA\MachineKeys\" + $Certificate.PrivateKey.CspKeyContainerInfo.UniqueKeyContainerName
+    $acl = (Get-Item $fullPath).GetAccessControl('Access')
 
-    $saPermission = $AdfsServiceAccountName, "Read", "Allow"
-    $saAccessRule = new-object System.Security.AccessControl.FileSystemAccessRule $saPermission
+    $saPermission = $AccountName, "Read", "Allow"
+    $saAccessRule = New-Object System.Security.AccessControl.FileSystemAccessRule $saPermission
     $acl.AddAccessRule($saAccessRule)
 
     Set-Acl $fullPath $acl
-    Write-Host -ForegroundColor green "Successfully set ACL on private key for $AdfsServiceAccountName"
-    return $selfSignedCertificate
+    Write-Host -ForegroundColor Green "Successfully set ACL on private key for $AccountName"
 }

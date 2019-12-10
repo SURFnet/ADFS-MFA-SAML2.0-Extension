@@ -130,17 +130,22 @@ function GetAdfsProperties {
 }
 
 try {
-	$adfsProperties = @{AdfsServiceAccount = "TEMP" }
-	# $adfsProperties = GetAdfsProperties
+	$adfsProperties = GetAdfsProperties
 	if ($settings = GetUserSettings) {
 		Copy-Log4NetConfiguration -InstallDir $configDir
 
-		$signingCertificate = Install-SigningCertificate `
-			-CertificateFile $settings.ServiceProvider_SigningCertificate `
-			-InstallDir $certificateDir `
-			-AdfsServiceAccountName $adfsProperties.AdfsServiceAccount
+		if ($settings.ServiceProvider_SigningCertificate.Length -eq 0) {
+			$signingCertificate = New-SigningCertificate
+		} else {
+			$signingCertificate = Import-SigningCertificate `
+				-CertificateFile $settings.ServiceProvider_SigningCertificate `
+				-CertificateDir $certificateDir
+		}
 
-		$sfoCertificateThumbprint = Install-SfoCertificate `
+		Install-SigningCertificate `
+			-AccountName $adfsProperties.AdfsServiceAccount `
+			-Certificate $signingCertificate
+
 		$sfoCertificateThumbprint = Import-SfoCertificate `
 			-InstallDir $certificateDir `
 			-CertificateFile $settings.IdentityProvider_Certificate
