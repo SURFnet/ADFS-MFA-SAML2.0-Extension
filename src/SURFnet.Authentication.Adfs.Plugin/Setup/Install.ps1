@@ -140,7 +140,7 @@ try {
 			-InstallDir $certificateDir `
 			-AdfsServiceAccountName $adfsProperties.AdfsServiceAccount
 
-		$sfoCertificate = Install-SfoCertificate `
+		$sfoCertificateThumbprint = Install-SfoCertificate `
 			-InstallDir $certificateDir `
 			-CertificateFile $settings.IdentityProvider_Certificate
 
@@ -160,7 +160,7 @@ try {
 			-schacHomeOrganization $settings.SchacHomeOrganization `
 			-ActiveDirectoryName $settings.ActiveDirectoryName `
 			-ActiveDirectoryUserIdAttribute $settings.ActiveDirectoryUserIdAttribute `
-			-sfoCertificateThumbprint $sfoCertificate.Thumbprint `
+			-sfoCertificateThumbprint $sfoCertificateThumbprint `
 			-ServiceProviderCertificateThumbprint $signingCertificate.Thumbprint            
 
 		if ($null -eq $settings.ServiceProvider_SigningCertificate -or $settings.ServiceProvider_SigningCertificate -eq "") {
