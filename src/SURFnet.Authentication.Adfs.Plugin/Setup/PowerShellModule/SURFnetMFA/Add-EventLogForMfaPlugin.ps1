@@ -22,12 +22,12 @@ function Add-EventLogForMfaPlugin {
         [string]$LogName = "AD FS Plugin"
     )
     
-    $logFileExists = Get-EventLog -list | Where-Object { $_.logdisplayname -eq $logName } 
+    $logFileExists = Get-EventLog -list | Where-Object { $_.logdisplayname -eq $LogName } 
     if ($logFileExists) {
         Write-Host -ForegroundColor Green "Eventlog already exists. Skipping creating new eventlog"		
     }
     else {		
-        New-EventLog -Source "ADFS Plugin" -LogName $logName
-        Write-Host -ForegroundColor Green "Created eventlog '$logname'"
+        New-EventLog -Source "ADFS Plugin" -LogName $LogName
+        Write-Host -ForegroundColor Green "Created eventlog '$LogName'"
     }
 }
