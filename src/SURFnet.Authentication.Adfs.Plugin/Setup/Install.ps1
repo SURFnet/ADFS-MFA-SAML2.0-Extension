@@ -142,7 +142,7 @@ try {
 				-InstallDir "$PSScriptroot\Certificates" `
 				-CertificateFile $settings.IdentityProvider_Certificate
 
-			Install-EventLogForMfaPlugin -LiteralPath $configDir
+			Install-EventLogForMfaPlugin
 
 			Install-AuthProvider `
 				-InstallDir $PSScriptroot `
