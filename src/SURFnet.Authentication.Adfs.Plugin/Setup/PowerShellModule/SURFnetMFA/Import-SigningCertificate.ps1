@@ -23,12 +23,12 @@ function Import-SigningCertificate {
         $CertificateFile,
         [Parameter(Mandatory = $true)]
         [string]
-        $InstallDir
+        $CertificateDir
     )
    
     $certificatePassword = Read-Host "Please enter the password for $CertificateFile" -AsSecureString
     $selfSignedCertificate = Import-PfxCertificate `
-        -FilePath "$InstallDir\$CertificateFile" `
+        -FilePath "$CertificateDir\$CertificateFile" `
         -CertStoreLocation Cert:\LocalMachine\My `
         -Exportable `
         -Password $certificatePassword
