@@ -16,21 +16,15 @@
 
 $ErrorActionPreference = "Stop"
 
-function Remove-Certificates {
+function Remove-Certificate {
     Param(
+        [Parameter(Mandatory = $true)]
         [string]
-        $SfoCertificateThumbprint,
-        [string]
-        $ServiceProviderCertificateThumbprint
+        $CertificateThumbprint
     )    
 	
-    if ($SfoCertificateThumbprint) {
-        Remove-Item -Path cert:\localMachine\my\$SfoCertificateThumbprint
-        Write-Host -ForegroundColor Green "Removed SFO certificate with thumbprint $SfoCertificateThumbprint"
-    }
-
-    if ($ServiceProviderCertificateThumbprint) {
-        Remove-Item -Path cert:\localMachine\my\$ServiceProviderCertificateThumbprint
-        Write-Host -ForegroundColor Green "Removed signing certificate with thumbprint $ServiceProviderCertificateThumbprint"
+    if ($CertificateThumbprint) {
+        Remove-Item -Path cert:\localMachine\my\$CertificateThumbprint
+        Write-Host -ForegroundColor Green "Removed certificate with thumbprint $CertificateThumbprint"
     }
 }
