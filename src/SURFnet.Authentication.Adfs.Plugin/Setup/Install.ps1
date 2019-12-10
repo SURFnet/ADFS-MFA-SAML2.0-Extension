@@ -141,6 +141,7 @@ try {
 			-AdfsServiceAccountName $adfsProperties.AdfsServiceAccount
 
 		$sfoCertificateThumbprint = Install-SfoCertificate `
+		$sfoCertificateThumbprint = Import-SfoCertificate `
 			-InstallDir $certificateDir `
 			-CertificateFile $settings.IdentityProvider_Certificate
 

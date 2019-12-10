@@ -16,7 +16,7 @@
 
 $ErrorActionPreference = "Stop"
 
-function Install-SfoCertificate {
+function Import-SfoCertificate {
     Param(
         [Parameter(Mandatory = $true, HelpMessage = "Path to install directory")]
         [string]
