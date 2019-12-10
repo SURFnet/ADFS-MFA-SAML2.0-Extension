@@ -98,14 +98,16 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
-    <Content Include="Setup\SURFnet.Authentication.ADFS.MFA.Plugin.log4net">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <EmbeddedResource Include="Resources\Labels.1043.json" />
     <EmbeddedResource Include="Resources\Labels.1033.json" />
     <None Include="Setup\Configuration.ps1" />
+    <Content Include="Setup\Config\SURFnet.Authentication.ADFS.MFA.Plugin.Environments.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Setup\Config\SURFnet.Authentication.ADFS.MFA.Plugin.log4net">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <None Include="Setup\Functions.ps1" />
-    <None Include="Setup\SURFnet.Authentication.ADFS.MFA.Plugin.Environments.json" />
     <None Include="Setup\SURFnetMFA\Add-EventLogForMfaPlugin.ps1" />
     <None Include="Setup\SURFnetMFA\Copy-Log4NetConfiguration.ps1" />
     <None Include="Setup\SURFnetMFA\Export-SigningCertificate.ps1" />
