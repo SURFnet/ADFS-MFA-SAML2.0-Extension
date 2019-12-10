@@ -16,7 +16,12 @@
 
 $ErrorActionPreference = "Stop"
 
-function Install-EventLogForMfaPlugin($logName = "AD FS Plugin") {
+function Install-EventLogForMfaPlugin {
+    Param(
+        [Parameter(Mandatory = $false)]
+        [string]$LogName = "AD FS Plugin"
+    )
+    
     $logFileExists = Get-EventLog -list | Where-Object { $_.logdisplayname -eq $logName } 
     if ($logFileExists) {
         Write-Host -ForegroundColor Green "Eventlog already exists. Skipping creating new eventlog"		
