@@ -75,6 +75,7 @@ function GetUserSettings() {
 	Write-GoodMessage "===================================== Installation Configuration Summary =========================================="
 	Write-WarningMessage "Installation settings"
 	Write-GoodMessage  "Location of SFO endpoint from SURFsecureID Gateway        : $($environment.SecondFactorEndpoint)"
+	Write-GoodMessage  "Authentication methods' base URI                          : $($environment.AuthenticationServiceUrl)"
 	Write-GoodMessage  "Minimum LoA for authentication requests                   : $($environment.MinimalLoa)"
 	Write-GoodMessage  "schacHomeOrganization attribute of your institution       : $schacHomeOrganization"
 	Write-GoodMessage  "AD userid attribute                                       : $activeDirectoryUserIdAttribute"
@@ -93,6 +94,7 @@ function GetUserSettings() {
 
 	return @{
 		MinimalLoa                         = $environment.MinimalLoa;
+		AuthenticationServiceUrl           = $environment.AuthenticationServiceUrl;
 		SecondFactorEndpoint               = $environment.SecondFactorEndpoint;
 		IdentityProvider_EntityId          = $environment.EntityId;
 		IdentityProvider_Certificate       = $environment.Certificate;
@@ -160,6 +162,7 @@ try {
 			-IdentityProviderEntityId $settings.IdentityProvider_EntityId `
 			-SecondFactorEndpoint $settings.SecondFactorEndpoint `
 			-MinimalLoa $settings.MinimalLoa `
+			-AuthenticationServiceUrl $settings.AuthenticationServiceUrl `
 			-schacHomeOrganization $settings.SchacHomeOrganization `
 			-ActiveDirectoryUserIdAttribute $settings.ActiveDirectoryUserIdAttribute `
 			-sfoCertificateThumbprint $sfoCertificateThumbprint `

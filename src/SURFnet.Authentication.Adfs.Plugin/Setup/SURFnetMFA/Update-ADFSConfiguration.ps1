@@ -30,6 +30,8 @@ function Update-ADFSConfiguration {
         $SecondFactorEndpoint,
         [Parameter(Mandatory = $true, HelpMessage = "Enter the minimal LOA")]
         $MinimalLoa,
+        [Parameter(Mandatory = $true, HelpMessage = "Enter the authentication methods' base URI")]
+        $AuthenticationServiceUrl,
         [Parameter(Mandatory = $true, HelpMessage = "Enter your schacHomeOrganization (Which is known to SURF")]
         $schacHomeOrganization, 
         [Parameter(Mandatory = $true, HelpMessage = "Enter the attibutename which contains the userID (Which is known to SURF)")]
@@ -137,7 +139,8 @@ function Update-ADFSConfiguration {
         $value = $null
         switch ($setting.name) {
             'SecondFactorEndpoint' { $value = $SecondFactorEndpoint }
-            'MinimalLoa' { $value = $MinimalLoa } 			
+            'MinimalLoa' { $value = $MinimalLoa }
+            'AuthenticationServiceUrl' { $value = $AuthenticationServiceUrl }
             'schacHomeOrganization' { $value = $schacHomeOrganization }
             'ActiveDirectoryUserIdAttribute' { $value = $ActiveDirectoryUserIdAttribute }            
             'SpSigningCertificate' { $value = $ServiceProviderCertificateThumbprint }
