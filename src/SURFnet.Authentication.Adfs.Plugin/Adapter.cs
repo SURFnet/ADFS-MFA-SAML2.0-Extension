@@ -161,8 +161,6 @@ namespace SURFnet.Authentication.Adfs.Plugin
                     return new AuthFailedForm(samlResponse.StatusMessage);
                 }
 
-                var x = new Claim("type", "value");
-                var c = new Claim("http://schemas.microsoft.com/ws/2008/06/identity/claims/authenticationmethod", "http://example.com/myauthenticationmethod1");
                 claims = SamlService.VerifyResponseAndGetAuthenticationClaim(samlResponse);
                 foreach (var claim in claims)
                 {
