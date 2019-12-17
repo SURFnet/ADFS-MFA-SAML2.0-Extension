@@ -15,7 +15,6 @@
 */
 
 using System;
-using System.Configuration;
 using System.DirectoryServices;
 using System.DirectoryServices.AccountManagement;
 using System.Security.Claims;
@@ -64,7 +63,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Repositories
             if (currentUser == null)
             {
                 // This should never happen, but just to be sure
-                throw new Exception($"User '{identityClaim.Value}' not found in active directory '{Settings.Default.ActiveDirectoryName}'");
+                throw new Exception($"User '{identityClaim.Value}' not found in active directory for domain '{domainName}'");
             }
 
             using (var entry = currentUser.GetUnderlyingObject() as DirectoryEntry)

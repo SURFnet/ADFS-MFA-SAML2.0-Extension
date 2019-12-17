@@ -20,8 +20,5 @@
     <Setting Name="ActiveDirectoryUserIdAttribute" Type="System.String" Scope="Application">
       <Value Profile="(Default)" />
     </Setting>
-    <Setting Name="ActiveDirectoryName" Type="System.String" Scope="Application">
-      <Value Profile="(Default)" />
-    </Setting>
   </Settings>
 </SettingsFile>
