@@ -44,9 +44,9 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
 
         /// <summary>
         /// Gets the signing algorithm for the SAML request.
-        /// </summary>=
+        /// </summary>
         /// <value>The signing algorithm.</value>
-        private string sigAlgoritm = "http://www.w3.org/2001/04/xmldsig-more#rsa-sha256";
+        private const string SigningAlgorithm = "http://www.w3.org/2001/04/xmldsig-more#rsa-sha256";
 
         /// <summary>
         /// Contains the signing certificate.
@@ -58,7 +58,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
         /// </summary>
         public CryptographicService()
         {
-            this.EnableSha256Support();
+            EnableSha256Support();
 
             this.log = LogManager.GetLogger("CryptographicService");
             this.LoadCertificate();
@@ -68,11 +68,13 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
         /// Signs the SAML request.
         /// </summary>
         /// <param name="authRequest">The authentication request.</param>
-        /// <returns>Signed Xml.</returns>
+        /// <returns>
+        /// The signed XML.
+        /// </returns>
         public string SignSamlRequest(Saml2AuthenticationSecondFactorRequest authRequest)
         {
             var xmlDoc = XmlHelpers.XmlDocumentFromString(authRequest.ToXml());
-            xmlDoc.Sign(this.signingCertificate, true, this.sigAlgoritm);
+            xmlDoc.Sign(this.signingCertificate, true, SigningAlgorithm);
             var xml = xmlDoc.OuterXml;
             var encodedXml = Convert.ToBase64String(Encoding.UTF8.GetBytes(xml));
             return encodedXml;
@@ -87,20 +89,6 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
         }
 
         /// <summary>
-        /// To enable SHA256 signatures in the SAML Library we need to enable this only once.
-        /// </summary>
-        private void EnableSha256Support()
-        {
-            if (isSha265Enabled)
-            {
-                return;
-            }
-
-            Sustainsys.Saml2.Configuration.Options.GlobalEnableSha256XmlSignatures();
-            isSha265Enabled = true;
-        }
-
-        /// <summary>
         /// Loads the signing certificate.
         /// </summary>
         private void LoadCertificate()
@@ -110,7 +98,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
             store.Open(OpenFlags.ReadOnly);
             try
             {
-                var cert = this.GetCertificateWithPrivateKey(store);
+                var cert = GetCertificateWithPrivateKey(store);
                 this.signingCertificate = cert;
                 this.log.DebugFormat("Found signing certificate with thumbprint '{0}'", Settings.Default.SpSigningCertificate);
             }
@@ -127,11 +115,30 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
         }
 
         /// <summary>
+        /// To enable SHA256 signatures in the SAML Library we need to enable this only once.
+        /// </summary>
+        private static void EnableSha256Support()
+        {
+            if (isSha265Enabled)
+            {
+                return;
+            }
+
+            Sustainsys.Saml2.Configuration.Options.GlobalEnableSha256XmlSignatures();
+            isSha265Enabled = true;
+        }
+
+        /// <summary>
         /// Gets the certificate with private key.
         /// </summary>
         /// <param name="store">The certificate store.</param>
-        /// <returns>A certificate for signing the SAML authentication request.</returns>
-        private X509Certificate2 GetCertificateWithPrivateKey(X509Store store)
+        /// <returns>
+        /// A certificate for signing the SAML authentication request.
+        /// </returns>
+        /// <exception cref="Exception">
+        /// Thrown when no certificate was found with the specified thumbprint or when it does not have a private key.
+        /// </exception>
+        private static X509Certificate2 GetCertificateWithPrivateKey(X509Store store)
         {
             var thumbprint = Settings.Default.SpSigningCertificate;
             var certCollection = store.Certificates.Find(X509FindType.FindByThumbprint, thumbprint, false);

@@ -14,10 +14,9 @@
 * limitations under the License.
 */
 
-using System;
-
 namespace SURFnet.Authentication.Adfs.Plugin.Services
 {
+    using System;
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using System.IdentityModel.Tokens;
@@ -50,18 +49,32 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
         /// <param name="identityClaim">The identity claim.</param>
         /// <param name="authnRequestId">The AuthnRequest identifier.</param>
         /// <param name="ascUri">The asc URI.</param>
-        /// <returns>The authentication request.</returns>
+        /// <returns>
+        /// The authentication request.
+        /// </returns>
         public static Saml2AuthenticationSecondFactorRequest CreateAuthnRequest(Claim identityClaim, string authnRequestId, Uri ascUri)
         {
-            var serviceproviderConfiguration = Sustainsys.Saml2.Configuration.Options.FromConfiguration;
             Log.DebugFormat("Creating AuthnRequest for identity '{0}'", identityClaim.Value);
+
+            var samlConfiguration = Options.FromConfiguration;
+            if (samlConfiguration == null)
+            {
+                throw new Exception("The SAML configuration could not be loaded");
+            }
+
+            var spConfiguration = samlConfiguration?.SPOptions;
+            if (spConfiguration == null)
+            {
+                throw new Exception("The service provider section of the SAML configuration could not be loaded");
+            }
+
             var nameIdentifier = new Saml2NameIdentifier(GetNameId(identityClaim), new Uri("urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified"));
 
             var authnRequest = new Saml2AuthenticationSecondFactorRequest
             {
                 DestinationUrl = Settings.Default.SecondFactorEndpoint,
                 AssertionConsumerServiceUrl = ascUri,
-                Issuer = serviceproviderConfiguration.SPOptions.EntityId,
+                Issuer = spConfiguration.EntityId,
                 RequestedAuthnContext = new Saml2RequestedAuthnContext(Settings.Default.MinimalLoa, AuthnContextComparisonType.Exact),
                 Subject = new Saml2Subject(nameIdentifier),
             };
@@ -70,7 +83,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
             Log.InfoFormat("Created AuthnRequest for '{0}' with id '{1}'", identityClaim.Value, authnRequest.Id.Value);
             return authnRequest;
         }
-        
+
         /// <summary>
         /// Verifies the response and gets authentication claim from the response.
         /// </summary>
