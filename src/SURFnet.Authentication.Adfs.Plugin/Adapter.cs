@@ -29,6 +29,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
 
     using Microsoft.IdentityServer.Web.Authentication.External;
 
+    using SURFnet.Authentication.Adfs.Plugin.Extensions;
     using SURFnet.Authentication.Adfs.Plugin.Models;
     using SURFnet.Authentication.Adfs.Plugin.Properties;
     using SURFnet.Authentication.Adfs.Plugin.Services;
@@ -48,7 +49,12 @@ namespace SURFnet.Authentication.Adfs.Plugin
         /// Gets the metadata.
         /// </summary>
         /// <value>The metadata.</value>
-        public IAuthenticationAdapterMetadata Metadata => new AdapterMetadata();
+        public IAuthenticationAdapterMetadata Metadata
+        {
+            get
+            {
+                return new AdapterMetadata();
+            }
 
         /// <summary>
         /// Begins the authentication.
@@ -56,8 +62,11 @@ namespace SURFnet.Authentication.Adfs.Plugin
         /// <param name="identityClaim">The identity claim.</param>
         /// <param name="httpListenerRequest">The HTTP listener request.</param>
         /// <param name="context">The context.</param>
-        /// <returns>A presentation form.</returns>
-        public IAdapterPresentation BeginAuthentication(Claim identityClaim, HttpListenerRequest httpListenerRequest, IAuthenticationContext context)
+        /// <returns>
+        /// A presentation form.
+        /// </returns>
+        public IAdapterPresentation BeginAuthentication(Claim identityClaim, HttpListenerRequest httpListenerRequest,
+            IAuthenticationContext context)
         {
             try
             {
@@ -65,19 +74,19 @@ namespace SURFnet.Authentication.Adfs.Plugin
                 this.log.Debug("Enter BeginAuthentication");
                 this.log.DebugFormat("context.ActivityId='{0}'; context.ContextId='{1}'; context.Lcid={2}", context.ActivityId, context.ContextId, context.Lcid);
 
-                string authnRequestId = $"_{context.ContextId}";
-                var authRequest = SamlService.CreateAuthnRequest(identityClaim, authnRequestId, httpListenerRequest.Url);
+                var requestId = $"_{context.ContextId}";
+                var authRequest = SamlService.CreateAuthnRequest(identityClaim, requestId, httpListenerRequest.Url);
 
                 using (var cryptographicService = new CryptographicService())
                 {
-                    this.log.DebugFormat("Signing AuthnRequest with id {0}", authnRequestId);
+                    this.log.DebugFormat("Signing AuthnRequest with id {0}", requestId);
                     var signedXml = cryptographicService.SignSamlRequest(authRequest);
                     return new AuthForm(Settings.Default.SecondFactorEndpoint, signedXml);
                 }
             }
             catch (Exception ex)
             {
-                this.log.ErrorFormat("Error while initiating authentication:{0}", ex);
+                this.log.ErrorFormat("Error while initiating authentication: {0}", ex.Message);
                 return new AuthFailedForm();
             }
         }
@@ -87,7 +96,9 @@ namespace SURFnet.Authentication.Adfs.Plugin
         /// </summary>
         /// <param name="identityClaim">The identity claim.</param>
         /// <param name="context">The context.</param>
-        /// <returns><c>true</c> if [is available for user]; otherwise, <c>false</c>.</returns>
+        /// <returns>
+        /// <c>true</c> if this method of authentication is available for the user; otherwise, <c>false</c>.
+        /// </returns>
         public bool IsAvailableForUser(Claim identityClaim, IAuthenticationContext context)
         {
             return true;
@@ -113,47 +124,50 @@ namespace SURFnet.Authentication.Adfs.Plugin
         /// </summary>
         /// <param name="request">The request.</param>
         /// <param name="ex">The exception details.</param>
-        /// <returns>The presentation form.</returns>
+        /// <returns>
+        /// The presentation form.
+        /// </returns>
         public IAdapterPresentation OnError(HttpListenerRequest request, ExternalAuthenticationException ex)
         {
-            this.log.ErrorFormat("Error occured:{0}", ex);
-            return new AuthFailedForm();
+            this.log.ErrorFormat("Error occured: {0}", ex.Message);
+            return new AuthFailedForm(ex.Message);
         }
 
         /// <summary>
-        /// Validates the SAML response and set the necessary claims.
+        /// Validates the SAML response and sets the necessary claims, if the response was valid.
         /// </summary>
         /// <param name="context">The context.</param>
         /// <param name="proofData">The post back data.</param>
         /// <param name="request">The request.</param>
         /// <param name="claims">The claims.</param>
-        /// <returns>A form if the the validation fails or claims if the validation succeeds.</returns>
-        public IAdapterPresentation TryEndAuthentication(IAuthenticationContext context, IProofData proofData, HttpListenerRequest request, out Claim[] claims)
+        /// <returns>
+        /// A form if the the validation fails or claims if the validation succeeds.
+        /// </returns>
+        public IAdapterPresentation TryEndAuthentication(IAuthenticationContext context, IProofData proofData,
+            HttpListenerRequest request, out Claim[] claims)
         {
-            this.log.Debug("Enter TryEndAuthentication");
-            this.log.DebugFormat("context.ActivityId='{0}'; context.ContextId='{1}'; conext.Lcid={2}", context.ActivityId, context.ContextId, context.Lcid);
-            foreach (var d in context.Data)
-            {
-                this.log.DebugFormat("conext.Data: '{0}'='{1}'", d.Key, d.Value);
-            }
+            var requestId = $"_{ context.ContextId}";
 
-            foreach (var p in proofData.Properties)
-            {
-                this.log.DebugFormat("proofData.Properties: '{0}'='{1}'", p.Key, p.Value);
-            }
+            this.log.Debug("Enter TryEndAuthentication");
+            this.log.DebugFormat("context.ActivityId='{0}'; context.ContextId='{1}'; conext.Lcid={2}",
+                context.ActivityId, context.ContextId, context.Lcid);
+
+            this.log.DebugLogDictionary(context.Data, "context.Data");
+            this.log.DebugLogDictionary(proofData.Properties, "proofData.Properties");
 
             claims = null;
             try
             {
                 var response = SecondFactorAuthResponse.Deserialize(proofData, context);
-                var authnRequestId = $"_{ context.ContextId}";
-                this.log.InfoFormat("Received response for request with id '{0}'", authnRequestId);
-                var samlResponse = new Saml2Response(response.SamlResponse, new Saml2Id(authnRequestId));
+                this.log.InfoFormat("Received response for request with id '{0}'", requestId);
+                var samlResponse = new Saml2Response(response.SamlResponse, new Saml2Id(requestId));
                 if (samlResponse.Status != Saml2StatusCode.Success)
                 {
                     return new AuthFailedForm(samlResponse.StatusMessage);
                 }
 
+                var x = new Claim("type", "value");
+                var c = new Claim("http://schemas.microsoft.com/ws/2008/06/identity/claims/authenticationmethod", "http://example.com/myauthenticationmethod1");
                 claims = SamlService.VerifyResponseAndGetAuthenticationClaim(samlResponse);
                 foreach (var claim in claims)
                 {
@@ -169,30 +183,33 @@ namespace SURFnet.Authentication.Adfs.Plugin
                     }
                 }
 
-                this.log.InfoFormat("Successfully processed response for request with id '{0}'", authnRequestId);
+                this.log.InfoFormat("Successfully processed response for request with id '{0}'", requestId);
                 return null;
             }
             catch (Exception ex)
             {
-                this.log.ErrorFormat("Error while processing the saml response. Details: {0}", ex);
+                this.log.ErrorFormat("Error while processing the saml response. Details: {0}", ex.Message);
                 return new AuthFailedForm();
             }
         }
 
         /// <summary>
-        /// Initializes the logger. This cannot be done in a lazy or constructor, because this throws an error while installing the plugin for the first time.
+        /// Initializes the logger. This cannot be done in a lazy or constructor, because this throws an error while
+        /// installing the plugin for the first time.
         /// </summary>
         private void InitializeLogger(string contextId)
         {
-            if (this.log == null)
+            if (this.log != null)
             {
-                this.log = LogManager.GetLogger("ADFS Plugin");
-                // TODO: Find out which one works better
-                // TODO: Maybe use this in the log4net appender pattern with %property{CorrelationId}
-                this.log.Logger.Repository.Properties["CorrelationId2"] = contextId;
-                LogicalThreadContext.Properties["CorrelationId"] = contextId;
-                this.LogCurrentConfiguration();
+                return;
             }
+
+            this.log = LogManager.GetLogger("ADFS Plugin");
+            // TODO: Find out which one works better
+            // TODO: Maybe use this in the log4net appender pattern with %property{CorrelationId}
+            this.log.Logger.Repository.Properties["CorrelationId2"] = contextId;
+            LogicalThreadContext.Properties["CorrelationId"] = contextId;
+            this.LogCurrentConfiguration();
         }
 
         /// <summary>
@@ -225,7 +242,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
             }
             catch (Exception ex)
             {
-                sb.AppendLine($"Error while reading configuration file. Please enter Serviceprovider en IdentityProvider settings. Details: {ex.Message}");
+                sb.AppendLine($"Error while reading configuration file. Please enter ServiceProvider and IdentityProvider settings. Details: {ex.Message}");
             }
 
             this.log.Info(sb);

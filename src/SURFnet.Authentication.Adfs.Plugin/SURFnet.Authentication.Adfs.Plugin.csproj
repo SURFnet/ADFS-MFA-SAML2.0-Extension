@@ -76,6 +76,7 @@
     <Compile Include="Adapter.cs" />
     <Compile Include="AuthFailedForm.cs" />
     <Compile Include="AuthForm.cs" />
+    <Compile Include="Extensions\LogExtensions.cs" />
     <Compile Include="Models\Saml2AuthenticationSecondFactorRequest.cs" />
     <Compile Include="Models\SecondFactorAuthResponse.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
