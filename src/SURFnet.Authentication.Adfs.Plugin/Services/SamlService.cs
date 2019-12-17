@@ -85,27 +85,40 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
         }
 
         /// <summary>
-        /// Verifies the response and gets authentication claim from the response.
+        /// Verifies the response and gets the first claim of the requested type from the response.
         /// </summary>
         /// <param name="samlResponse">The SAML response.</param>
-        /// <returns>The authentication claim.</returns>
-        public static Claim[] VerifyResponseAndGetAuthenticationClaim(Saml2Response samlResponse)
+        /// <param name="claimType">The type of claim to look for.</param>
+        /// <returns>
+        /// The authentication claim.
+        /// </returns>
+        public static Claim[] VerifyResponseAndGetAuthenticationClaim(Saml2Response samlResponse,
+            string claimType = "http://schemas.microsoft.com/ws/2008/06/identity/claims/authenticationmethod")
         {
             // The response is verified when the claims are retrieved.
-            var responseClaims = samlResponse.GetClaims(Sustainsys.Saml2.Configuration.Options.FromConfiguration).ToList();
+            var responseClaims = samlResponse.GetClaims(Options.FromConfiguration).ToList();
 
-            var claims = new List<Claim>();
-            foreach (var claimsIdentity in responseClaims)
-            {
-                var authClaim = claimsIdentity.Claims.FirstOrDefault(c => c.Type.Equals("http://schemas.microsoft.com/ws/2008/06/identity/claims/authenticationmethod"));
-                if (authClaim != null)
-                {
-                    claims.Add(authClaim);
-                    break;
-                }
-            }
+            // TODO: Why was a loop used if only the first result was ever returned (see: 'break')?
+            // var claims = new List<Claim>();
+            // foreach (var claimsIdentity in responseClaims)
+            // {
+            //     var authClaim = claimsIdentity.Claims.FirstOrDefault(c => c.Type.Equals("http://schemas.microsoft.com/ws/2008/06/identity/claims/authenticationmethod"));
+            //     if (authClaim != null)
+            //     {
+            //         claims.Add(authClaim);
+            //         break;
+            //     }
+            // }
+            //
+            // return claims;
 
-            return claims.ToArray();
+            // Get the first response claim where the type is right
+            var authClaim = responseClaims
+                .Select(claimsIdentity => claimsIdentity.Claims.FirstOrDefault(c =>
+                    c.Type.Equals(claimType)))
+                .FirstOrDefault(a => a != null);
+
+            return authClaim == null ? new Claim[0] : new[] { authClaim };
         }
 
         /// <summary>

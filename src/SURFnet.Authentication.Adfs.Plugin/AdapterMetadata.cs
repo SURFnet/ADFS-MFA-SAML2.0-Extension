@@ -22,6 +22,8 @@ namespace SURFnet.Authentication.Adfs.Plugin
 
     using Microsoft.IdentityServer.Web.Authentication.External;
 
+    using SURFnet.Authentication.Adfs.Plugin.Properties;
+
     /// <summary>
     /// The adapter metadata.
     /// </summary>
@@ -35,16 +37,15 @@ namespace SURFnet.Authentication.Adfs.Plugin
         /// one of the methods listed in this property, the authentication attempt will fail.
         /// </summary>
         /// <value>The allowed authentication methods.</value>
-        public string[] AuthenticationMethods => new[]
+        public string[] AuthenticationMethods => AdapterMetadata.authenticationMethods;
+
+        /// <summary>
+        /// Statically initializing the allowed authentication methods so they do not get created for every instance.
+        /// </summary>
+        private static readonly string[] authenticationMethods =
         {
-            "http://test2.surfconext.nl/assurance/sfo-level2",
-            "http://test2.surfconext.nl/assurance/sfo-level3",
-            "http://test.surfconext.nl/assurance/sfo-level2",
-            "http://test.surfconext.nl/assurance/sfo-level3",
-            "http://pilot.surfconext.nl/assurance/sfo-level2",
-            "http://pilot.surfconext.nl/assurance/sfo-level3",
-            "http://surfconext.nl/assurance/sfo-level2",
-            "http://surfconext.nl/assurance/sfo-level3"
+            $"{Settings.Default.AuthenticationServiceUrl}/assurance/sfo-level2",
+            $"{Settings.Default.AuthenticationServiceUrl}/assurance/sfo-level3"
         };
 
         /// <summary>
