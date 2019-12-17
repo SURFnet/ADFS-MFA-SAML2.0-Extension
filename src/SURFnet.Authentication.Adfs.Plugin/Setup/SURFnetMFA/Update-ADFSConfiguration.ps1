@@ -32,8 +32,6 @@ function Update-ADFSConfiguration {
         $MinimalLoa,
         [Parameter(Mandatory = $true, HelpMessage = "Enter your schacHomeOrganization (Which is known to SURF")]
         $schacHomeOrganization, 
-        [Parameter(Mandatory = $true, HelpMessage = "Enter your active directory name")]
-        $ActiveDirectoryName,
         [Parameter(Mandatory = $true, HelpMessage = "Enter the attibutename which contains the userID (Which is known to SURF)")]
         $ActiveDirectoryUserIdAttribute,
         [Parameter(Mandatory = $true, HelpMessage = "Enter the service provider certificate thumbprint")]
@@ -140,8 +138,7 @@ function Update-ADFSConfiguration {
         switch ($setting.name) {
             'SecondFactorEndpoint' { $value = $SecondFactorEndpoint }
             'MinimalLoa' { $value = $MinimalLoa } 			
-            'schacHomeOrganization' { $value = $schacHomeOrganization } 
-            'ActiveDirectoryName' { $value = $ActiveDirectoryName }
+            'schacHomeOrganization' { $value = $schacHomeOrganization }
             'ActiveDirectoryUserIdAttribute' { $value = $ActiveDirectoryUserIdAttribute }            
             'SpSigningCertificate' { $value = $ServiceProviderCertificateThumbprint }
         }
