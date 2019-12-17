@@ -49,12 +49,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
         /// Gets the metadata.
         /// </summary>
         /// <value>The metadata.</value>
-        public IAuthenticationAdapterMetadata Metadata
-        {
-            get
-            {
-                return new AdapterMetadata();
-            }
+        public IAuthenticationAdapterMetadata Metadata => new AdapterMetadata();
 
         /// <summary>
         /// Begins the authentication.
