@@ -155,7 +155,7 @@
     <Binaries Include="$(ProjectDir)bin\$(Configuration)\SURFnet.Authentication.Adfs.Plugin.dll" />
     <Binaries Include="$(ProjectDir)bin\$(Configuration)\SURFnet.Authentication.Adfs.Plugin.dll.config" />
     <SetupFiles Include="$(ProjectDir)Setup\Install.ps1" />
-    <SetupFiles Include="$(ProjectDir)bin\$(Configuration)\Setup\SURFnet.Authentication.ADFS.MFA.Plugin.log4net" />
+    <SetupFiles Include="$(ProjectDir)Setup\Config\SURFnet.Authentication.ADFS.MFA.Plugin.log4net" />
     <SetupFiles Include="$(ProjectDir)Setup\Uninstall.ps1" />
   </ItemGroup>
   <Target Name="BuildPackage">
