@@ -17,7 +17,7 @@
 namespace SURFnet.Authentication.Adfs.Plugin.Models
 {
     using System.Diagnostics.CodeAnalysis;
-    using System.IdentityModel.Tokens;
+    using Microsoft.IdentityModel.Tokens.Saml2;
     using System.Linq;
     using System.Xml.Linq;
 

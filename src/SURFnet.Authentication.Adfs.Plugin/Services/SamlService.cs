@@ -19,7 +19,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
     using System;
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
-    using System.IdentityModel.Tokens;
+    using Microsoft.IdentityModel.Tokens.Saml2;
     using System.Linq;
     using System.Security.Claims;
 

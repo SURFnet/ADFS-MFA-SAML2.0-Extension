@@ -18,7 +18,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
 {
     using System;
     using System.Configuration;
-    using System.IdentityModel.Tokens;
+    using Microsoft.IdentityModel.Tokens.Saml2;
     using System.Net;
     using System.Security.Claims;
     using System.Text;

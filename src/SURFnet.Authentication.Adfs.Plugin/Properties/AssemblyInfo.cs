@@ -51,8 +51,8 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyVersion("2.0.0.0")]
 // Shows as "Product version" in the File Explorer
 [assembly: AssemblyInformationalVersion("2.1.0.0")]
-// Shows as "Product version" in the File Explorer
-[assembly: AssemblyFileVersion("2.0.2.9")]
+// Shows as "File version" in the File Explorer
+[assembly: AssemblyFileVersion("2.0.2.10")]
 
 // 
 [assembly: log4net.Config.XmlConfigurator(ConfigFile = "SURFnet.Authentication.ADFS.MFA.Plugin.log4net")]

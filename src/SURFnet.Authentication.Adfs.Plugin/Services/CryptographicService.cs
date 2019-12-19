@@ -124,7 +124,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
                 return;
             }
 
-            Sustainsys.Saml2.Configuration.Options.GlobalEnableSha256XmlSignatures();
+            /// TODO: Doublecheck if indeed now default if not specified in config (Plem)
+            //Sustainsys.Saml2.Configuration.Options.GlobalEnableSha256XmlSignatures();
             isSha265Enabled = true;
         }
 
