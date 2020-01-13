@@ -133,9 +133,9 @@ namespace SURFnet.Authentication.Adfs.Plugin.Configuration
                     institutionConfig.ActiveDirectoryUserIdAttribute = section.Institution.ActiveDirectoryUserIdAttribute;
 
                     localSPConfig.SPSigningCertificate = section.LocalSP.SPSigningCertificate;
-                    localSPConfig.MinimalLoa = section.LocalSP.MinimalLoa;
+                    localSPConfig.MinimalLoa = new Uri(section.LocalSP.MinimalLoa);
 
-                    stepUpIdPConfig.SecondFactorEndPoint = section.StepUpIdP.SecondFactorEndpoint;
+                    stepUpIdPConfig.SecondFactorEndPoint = new Uri(section.StepUpIdP.SecondFactorEndpoint);
 
                     didAll = true;
                     if (rc != null)

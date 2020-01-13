@@ -26,6 +26,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
 
     using SURFnet.Authentication.Adfs.Plugin.Models;
     using SURFnet.Authentication.Adfs.Plugin.Properties;
+    using SURFnet.Authentication.Adfs.Plugin.Configuration;
 
     /// <summary>
     /// Handles the signing.
@@ -93,18 +94,20 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
         /// </summary>
         private void LoadCertificate()
         {
-            this.log.DebugFormat("Search siginging certificate with thumbprint '{0}' in the 'LocalMachine' 'My' store.", Settings.Default.SpSigningCertificate);
+            string linewidthsaver = StepUpConfig.Current.LocalSPConfig.SPSigningCertificate;
+
+            this.log.DebugFormat("Search siginging certificate with thumbprint '{0}' in the 'LocalMachine' 'My' store.", linewidthsaver);
             var store = new X509Store(StoreName.My, StoreLocation.LocalMachine);
             store.Open(OpenFlags.ReadOnly);
             try
             {
                 var cert = GetCertificateWithPrivateKey(store);
                 this.signingCertificate = cert;
-                this.log.DebugFormat("Found signing certificate with thumbprint '{0}'", Settings.Default.SpSigningCertificate);
+                this.log.DebugFormat("Found signing certificate with thumbprint '{0}'", linewidthsaver);
             }
             catch (Exception e)
             {
-                this.log.ErrorFormat("Error while loading signing certificate. Details: {0}", e);
+                this.log.FatalFormat("Error while loading signing certificate. Details: {0}", e);
                 throw;
             }
             finally
@@ -141,17 +144,18 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
         /// </exception>
         private static X509Certificate2 GetCertificateWithPrivateKey(X509Store store)
         {
-            var thumbprint = Settings.Default.SpSigningCertificate;
+            var thumbprint = StepUpConfig.Current.LocalSPConfig.SPSigningCertificate;
+
             var certCollection = store.Certificates.Find(X509FindType.FindByThumbprint, thumbprint, false);
             if (certCollection.Count == 0)
             {
-                throw new Exception($"No certificate found with thumbprint '{Settings.Default.SpSigningCertificate}'");
+                throw new Exception($"No certificate found with thumbprint '{thumbprint}'");
             }
 
             var cert = certCollection[0];
             if (!cert.HasPrivateKey)
             {
-                throw new Exception($"Certificate with thumbprint '{Settings.Default.SpSigningCertificate}' doesn't have a private key.");
+                throw new Exception($"Certificate with thumbprint '{thumbprint}' doesn't have a private key.");
             }
 
             return cert;

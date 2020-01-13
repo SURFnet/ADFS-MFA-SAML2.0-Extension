@@ -32,6 +32,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
     using SURFnet.Authentication.Adfs.Plugin.Models;
     using SURFnet.Authentication.Adfs.Plugin.Properties;
     using SURFnet.Authentication.Adfs.Plugin.Repositories;
+    using SURFnet.Authentication.Adfs.Plugin.Configuration;
 
     /// <summary>
     /// Creates the SAML assertions and processes the response.
@@ -72,10 +73,10 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
 
             var authnRequest = new Saml2AuthenticationSecondFactorRequest
             {
-                DestinationUrl = Settings.Default.SecondFactorEndpoint,
+                DestinationUrl = StepUpConfig.Current.StepUpIdPConfig.SecondFactorEndPoint,
                 AssertionConsumerServiceUrl = ascUri,
                 Issuer = spConfiguration.EntityId,
-                RequestedAuthnContext = new Saml2RequestedAuthnContext(Settings.Default.MinimalLoa, AuthnContextComparisonType.Minimum),
+                RequestedAuthnContext = new Saml2RequestedAuthnContext(StepUpConfig.Current.LocalSPConfig.MinimalLoa, AuthnContextComparisonType.Minimum),
                 Subject = new Saml2Subject(nameIdentifier),
             };
             authnRequest.SetId(authnRequestId);
@@ -151,7 +152,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
         private static string GetNameId(Claim identityClaim)
         {
             var repository = new ActiveDirectoryRepository();
-            var nameid = $"urn:collab:person:{Settings.Default.schacHomeOrganization}:{repository.GetUserIdForIdentity(identityClaim)}";
+            var nameid = $"urn:collab:person:{StepUpConfig.Current.InstitutionConfig.SchacHomeOrganization}:{repository.GetUserIdForIdentity(identityClaim)}";
 
             nameid = nameid.Replace('@', '_');
             return nameid;

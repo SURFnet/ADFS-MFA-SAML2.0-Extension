@@ -18,17 +18,21 @@ using System;
 using System.DirectoryServices;
 using System.DirectoryServices.AccountManagement;
 using System.Security.Claims;
+using SURFnet.Authentication.Adfs.Plugin.Configuration;
 using SURFnet.Authentication.Adfs.Plugin.Properties;
 
 namespace SURFnet.Authentication.Adfs.Plugin.Repositories
 {
     /// <summary>
     /// Data access for the active directory.
+    /// TODO: this could all be static... Why an instance?
+    /// Unless we want to store something like a logging interface....
     /// </summary>
     public class ActiveDirectoryRepository
     {
         /// <summary>
         /// Gets the user identifier for the given identity.
+        /// TODO: can remove this..... Unless...
         /// </summary>
         /// <param name="identityClaim">The identity claim.</param>
         /// <returns>
@@ -36,7 +40,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Repositories
         /// </returns>
         public string GetUserIdForIdentity(Claim identityClaim)
         {
-            if (string.IsNullOrWhiteSpace(Settings.Default.ActiveDirectoryUserIdAttribute))
+            if (string.IsNullOrWhiteSpace(StepUpConfig.Current.InstitutionConfig.ActiveDirectoryUserIdAttribute))
             {
                 throw new Exception("The setting 'ActiveDirectoryUserIdAttribute' is not properly set in the application settings");
             }
@@ -55,6 +59,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Repositories
         private static string GetUserIdFromActiveDirectory(Claim identityClaim)
         {
             string userId;
+            string linewidthsaver = StepUpConfig.Current.InstitutionConfig.ActiveDirectoryUserIdAttribute;
+
             var domainName = identityClaim.Value.Split('\\')[0];
 
             var ctx = new PrincipalContext(ContextType.Domain, domainName);
@@ -73,12 +79,12 @@ namespace SURFnet.Authentication.Adfs.Plugin.Repositories
                     throw new Exception("Cannot get the properties from active directory. Reason: it's not a DirectoryEntry type");
                 }
 
-                if (!entry.Properties.Contains(Settings.Default.ActiveDirectoryUserIdAttribute))
+                if (!entry.Properties.Contains(linewidthsaver))
                 {
-                    throw new Exception($"Property '{Settings.Default.ActiveDirectoryUserIdAttribute}' not found in the active directory. Please add the property or update the plugin configuration");
+                    throw new Exception($"Property '{linewidthsaver}' not found in the active directory. Please add the property or update the plugin configuration");
                 }
 
-                userId = entry.Properties[Settings.Default.ActiveDirectoryUserIdAttribute].Value.ToString();
+                userId = entry.Properties[linewidthsaver].Value.ToString();
             }
 
             return userId;

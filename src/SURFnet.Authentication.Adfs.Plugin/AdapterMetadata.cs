@@ -23,6 +23,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
     using Microsoft.IdentityServer.Web.Authentication.External;
 
     using SURFnet.Authentication.Adfs.Plugin.Properties;
+    using SURFnet.Authentication.Adfs.Plugin.Configuration;
 
     /// <summary>
     /// The adapter metadata.
@@ -44,8 +45,8 @@ namespace SURFnet.Authentication.Adfs.Plugin
         /// </summary>
         private static readonly string[] authenticationMethods =
         {
-            $"{Settings.Default.AuthenticationServiceUrl}/assurance/sfo-level2",
-            $"{Settings.Default.AuthenticationServiceUrl}/assurance/sfo-level3"
+            $"http://{StepUpConfig.Current.StepUpIdPConfig.SecondFactorEndPoint.Host}/assurance/sfo-level2",
+            $"http://{StepUpConfig.Current.StepUpIdPConfig.SecondFactorEndPoint.Host}/assurance/sfo-level3"
         };
 
         /// <summary>

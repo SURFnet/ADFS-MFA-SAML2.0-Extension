@@ -8,6 +8,6 @@ namespace SURFnet.Authentication.Adfs.Plugin.Configuration
 {
     public class StepUpIdPConfig
     {
-        public string SecondFactorEndPoint { get; set; }
+        public Uri SecondFactorEndPoint { get; set; }
     }
 }

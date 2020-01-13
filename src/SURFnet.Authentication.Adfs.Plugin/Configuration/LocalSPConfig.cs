@@ -9,6 +9,6 @@ namespace SURFnet.Authentication.Adfs.Plugin.Configuration
     public class LocalSPConfig
     {
         public string SPSigningCertificate { get; set; }
-        public string MinimalLoa { get; set; }
+        public Uri MinimalLoa { get; set; }
     }
 }

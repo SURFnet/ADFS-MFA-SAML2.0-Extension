@@ -140,7 +140,8 @@ namespace SURFnet.Authentication.Adfs.Plugin
                 {
                     this.log.DebugFormat("Signing AuthnRequest with id {0}", requestId);
                     var signedXml = cryptographicService.SignSamlRequest(authRequest);
-                    return new AuthForm(Settings.Default.SecondFactorEndpoint, signedXml);
+                    // Changed to new config reader
+                    return new AuthForm(StepUpConfig.Current.StepUpIdPConfig.SecondFactorEndPoint, signedXml);
                 }
             }
             catch (Exception ex)
@@ -372,17 +373,18 @@ namespace SURFnet.Authentication.Adfs.Plugin
         {
             var sb = new StringBuilder();
             sb.AppendLine("Current plugin configuration");
-            foreach (SettingsProperty settingsProperty in Settings.Default.Properties)
-            {
-                sb.AppendLine($"{settingsProperty.Name} : '{Settings.Default[settingsProperty.Name]}'");
-            }
+            // Changed to new config reader
+            //foreach (SettingsProperty settingsProperty in Settings.Default.Properties)
+            //{
+            //    sb.AppendLine($"{settingsProperty.Name} : '{Settings.Default[settingsProperty.Name]}'");
+            //}
 
             var tmp = StepUpConfig.Current;
             sb.AppendLine($"SchacHomeOrganization: {tmp.InstitutionConfig.SchacHomeOrganization}");
             sb.AppendLine($"ActiveDirectoryUserIdAttribute: {tmp.InstitutionConfig.ActiveDirectoryUserIdAttribute}");
             sb.AppendLine($"SPSigningCertificate: {tmp.LocalSPConfig.SPSigningCertificate}");
-            sb.AppendLine($"MinimalLoa: {tmp.LocalSPConfig.MinimalLoa}");
-            sb.AppendLine($"SecondFactorEndPoint: {tmp.StepUpIdPConfig.SecondFactorEndPoint}");
+            sb.AppendLine($"MinimalLoa: {tmp.LocalSPConfig.MinimalLoa.OriginalString}");
+            sb.AppendLine($"SecondFactorEndPoint: {tmp.StepUpIdPConfig.SecondFactorEndPoint.OriginalString}");
 
             sb.AppendLine("Plugin Metadata:");
             foreach (var am in this.Metadata.AuthenticationMethods)
