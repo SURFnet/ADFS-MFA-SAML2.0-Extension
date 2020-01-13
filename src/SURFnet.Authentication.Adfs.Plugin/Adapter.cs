@@ -35,6 +35,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
     using SURFnet.Authentication.Adfs.Plugin.Services;
     using System.IO;
     using System.Reflection;
+    using SURFnet.Authentication.Adfs.Plugin.Configuration;
 
     /// <summary>
     /// The ADFS MFA Adapter.
@@ -42,6 +43,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
     /// <seealso cref="IAuthenticationAdapter" />
     public class Adapter : IAuthenticationAdapter
     {
+        static readonly ILog masterLogInterface;
         static readonly string AdfsDir;
         static Adapter()
         {
@@ -50,9 +52,55 @@ namespace SURFnet.Authentication.Adfs.Plugin
 
             // preload log4net, we want to use it from anywhere.
             Assembly.LoadFrom(Path.Combine(AdfsDir, "log4net.dll"));
+            masterLogInterface = LogManager.GetLogger("ADFS Plugin");
             // preload Newtonsoft.Json
             Assembly.LoadFrom(Path.Combine(AdfsDir, "Newtonsoft.Json.dll"));
             // no need to preload Sustainsys.Saml2, because adapter metadata does not call it.
+
+            // we do want to read our own configuration before the Registration CmdLet reads our metadata
+            ReadConfigurationFromSection();
+        }
+
+        private static void ReadConfigurationFromSection()
+        {
+            var adapterAssembly = Assembly.GetExecutingAssembly();
+            string mycfgpath = adapterAssembly.Location+".config";
+            try
+            {
+                var map = new ExeConfigurationFileMap() { ExeConfigFilename = mycfgpath };
+                var cfg = ConfigurationManager.OpenMappedExeConfiguration(map, ConfigurationUserLevel.None);
+                if ( cfg != null )
+                {
+                    try
+                    {
+                        var mysection = (StepUpSection)cfg.GetSection(StepUpSection.AdapterSectionName);
+                        if (mysection == null)
+                        {
+                            masterLogInterface.Fatal("GetSection returned null: "+ StepUpSection.AdapterSectionName);
+                        }
+                        else
+                        {
+                            StepUpConfig.Section = mysection;
+                            if ( StepUpConfig.Current == null )
+                            {
+                                masterLogInterface.Fatal(StepUpConfig.GetErrors());
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        masterLogInterface.Fatal(ex.ToString());
+                    }
+                }
+                else
+                {
+                    masterLogInterface.Fatal("OpenMappedExeConfiguration returned null: "+ mycfgpath);
+                }
+            }
+            catch (Exception ex)
+            {
+                masterLogInterface.Fatal(ex.ToString());
+            }
         }
 
         /// <summary>
@@ -131,13 +179,14 @@ namespace SURFnet.Authentication.Adfs.Plugin
         static object LogInitLock = new object();
         private void InitializeLogger()
         {
+            // TODO: this is now old. Change!
             if ( this.log == null)
             {
                 lock( LogInitLock )
                 {
                     if (this.log == null)
                     {
-                        this.log = LogManager.GetLogger("ADFS Plugin");
+                        this.log = masterLogInterface;
                     }
                 }
             }
@@ -327,6 +376,13 @@ namespace SURFnet.Authentication.Adfs.Plugin
             {
                 sb.AppendLine($"{settingsProperty.Name} : '{Settings.Default[settingsProperty.Name]}'");
             }
+
+            var tmp = StepUpConfig.Current;
+            sb.AppendLine($"SchacHomeOrganization: {tmp.InstitutionConfig.SchacHomeOrganization}");
+            sb.AppendLine($"ActiveDirectoryUserIdAttribute: {tmp.InstitutionConfig.ActiveDirectoryUserIdAttribute}");
+            sb.AppendLine($"SPSigningCertificate: {tmp.LocalSPConfig.SPSigningCertificate}");
+            sb.AppendLine($"MinimalLoa: {tmp.LocalSPConfig.MinimalLoa}");
+            sb.AppendLine($"SecondFactorEndPoint: {tmp.StepUpIdPConfig.SecondFactorEndPoint}");
 
             sb.AppendLine("Plugin Metadata:");
             foreach (var am in this.Metadata.AuthenticationMethods)
