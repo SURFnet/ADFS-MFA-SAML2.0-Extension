@@ -33,6 +33,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
     using SURFnet.Authentication.Adfs.Plugin.Models;
     using SURFnet.Authentication.Adfs.Plugin.Properties;
     using SURFnet.Authentication.Adfs.Plugin.Services;
+    using System.IO;
 
     /// <summary>
     /// The ADFS MFA Adapter.
@@ -61,13 +62,14 @@ namespace SURFnet.Authentication.Adfs.Plugin
         /// A presentation form.
         /// </returns>
         public IAdapterPresentation BeginAuthentication(Claim identityClaim, HttpListenerRequest httpListenerRequest,
-            IAuthenticationContext context)
+                IAuthenticationContext context)
         {
             try
             {
-                this.InitializeLogger(context.ContextId);
+                this.PrepareCorrelatedLogger(context.ContextId);
                 this.log.Debug("Enter BeginAuthentication");
-                this.log.DebugFormat("context.ActivityId='{0}'; context.ContextId='{1}'; context.Lcid={2}", context.ActivityId, context.ContextId, context.Lcid);
+                this.log.DebugFormat("context.ActivityId='{0}'; context.ContextId='{1}'; context.Lcid={2}",
+                        context.ActivityId, context.ContextId, context.Lcid);
 
                 var requestId = $"_{context.ContextId}";
                 var authRequest = SamlService.CreateAuthnRequest(identityClaim, requestId, httpListenerRequest.Url);
@@ -105,10 +107,108 @@ namespace SURFnet.Authentication.Adfs.Plugin
         /// <param name="configData">The configuration data.</param>
         public void OnAuthenticationPipelineLoad(IAuthenticationMethodConfigData configData)
         {
+            InitializeLogger();
+            ConfigureSustainsys();
+
+            this.LogConfigOnce(this.log);
+        }
+
+        static bool ConfigLogged = false;
+        static object LogInitLock = new object();
+        private void InitializeLogger()
+        {
+            if ( this.log == null)
+            {
+                lock( LogInitLock )
+                {
+                    if (this.log == null)
+                    {
+                        this.log = LogManager.GetLogger("ADFS Plugin");
+                    }
+                }
+            }
+        }
+
+        private void LogConfigOnce(ILog localLog)
+        {
+            /// This logs the configuration only once per ADFS server startup.
+            /// Using the local ILog instance. With an instance method.  :-)
+            /// In fact the protection is not really required because the *current* ADFS server
+            /// initializes instances sequentially.
+
+            if (localLog == null)
+                throw new ApplicationException("Must first initiale a logger, only the call");
+
+            if ( ConfigLogged == false ) 
+            {
+                lock ( LogInitLock )
+                {
+                    if (ConfigLogged == false)
+                    {
+                        LogCurrentConfiguration();
+                    }
+
+                    ConfigLogged = true;
+                }
+            }
+        }
+
+        static bool SustainSysConfigured = false;
+        static object SustainSysLock = new object();
+        private void ConfigureSustainsys()
+        {
+            /// instance method (for the ILog), but static lock, making it once per ADFS server.
+
+            // The common test/lock/test pattern
+            if ( SustainSysConfigured == false )
+            {
+                lock ( SustainSysLock )
+                {
+                    if (SustainSysConfigured == false)
+                    {
+                        try
+                        {
+                            string exePathSustainsys = Path.Combine(
+                                Environment.GetFolderPath(Environment.SpecialFolder.Windows),
+                                "ADFS",
+                                "Sustainsys.Saml2.dll");
+                            var configuration = ConfigurationManager.OpenExeConfiguration(exePathSustainsys);
+                            if (configuration != null)
+                            {
+                                Sustainsys.Saml2.Configuration.SustainsysSaml2Section.Configuration = configuration;
+
+                                // Call now to localize/isolate parsing errors.
+                                // TODO: should catch too!
+                                try
+                                {
+                                    var tmp = Sustainsys.Saml2.Configuration.Options.FromConfiguration;
+                                }
+                                catch (Exception ex)
+                                {
+                                    log.Fatal("Accessing Sustainsys configuration failed", ex);
+                                }
+                            }
+                            else
+                            {
+                                log.Fatal("Fatal OpenExeConfiguration(Sustainsys) returns null");
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            log.Fatal("Fatal Sustainsys OpenExeConfiguration method call", ex);
+                        }
+
+                        // catch1, log catch in OpenExeConfiguration
+                    }
+
+                    SustainSysConfigured = true;  // set to true, even on errors otherwise it will wrap the EventLog.
+                }
+            }
         }
 
         /// <summary>
         /// Called when the authentication pipeline is unloaded.
+        /// Do not assume that there is a proper match between "load" and "unload". Different ADFS versions have different bugs...
         /// </summary>
         public void OnAuthenticationPipelineUnload()
         {
@@ -190,19 +290,17 @@ namespace SURFnet.Authentication.Adfs.Plugin
         /// Initializes the logger. This cannot be done in a lazy or constructor, because this throws an error while
         /// installing the plugin for the first time.
         /// </summary>
-        private void InitializeLogger(string contextId)
+        private void PrepareCorrelatedLogger(string contextId)
         {
-            if (this.log != null)
-            {
-                return;
-            }
+            //if (this.log != null)
+            //{
+            //    return;
+            //}
 
-            this.log = LogManager.GetLogger("ADFS Plugin");
             // TODO: Find out which one works better
             // TODO: Maybe use this in the log4net appender pattern with %property{CorrelationId}
             this.log.Logger.Repository.Properties["CorrelationId2"] = contextId;
             LogicalThreadContext.Properties["CorrelationId"] = contextId;
-            this.LogCurrentConfiguration();
         }
 
         /// <summary>
