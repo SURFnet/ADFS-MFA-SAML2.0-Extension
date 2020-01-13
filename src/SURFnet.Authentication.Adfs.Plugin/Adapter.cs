@@ -34,6 +34,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
     using SURFnet.Authentication.Adfs.Plugin.Properties;
     using SURFnet.Authentication.Adfs.Plugin.Services;
     using System.IO;
+    using System.Reflection;
 
     /// <summary>
     /// The ADFS MFA Adapter.
@@ -41,6 +42,19 @@ namespace SURFnet.Authentication.Adfs.Plugin
     /// <seealso cref="IAuthenticationAdapter" />
     public class Adapter : IAuthenticationAdapter
     {
+        static readonly string AdfsDir;
+        static Adapter()
+        {
+            AdfsDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows),
+                                "ADFS");
+
+            // preload log4net, we want to use it from anywhere.
+            Assembly.LoadFrom(Path.Combine(AdfsDir, "log4net.dll"));
+            // preload Newtonsoft.Json
+            Assembly.LoadFrom(Path.Combine(AdfsDir, "Newtonsoft.Json.dll"));
+            // no need to preload Sustainsys.Saml2, because adapter metadata does not call it.
+        }
+
         /// <summary>
         /// Used for logging.
         /// </summary>
@@ -178,7 +192,6 @@ namespace SURFnet.Authentication.Adfs.Plugin
                                 Sustainsys.Saml2.Configuration.SustainsysSaml2Section.Configuration = configuration;
 
                                 // Call now to localize/isolate parsing errors.
-                                // TODO: should catch too!
                                 try
                                 {
                                     var tmp = Sustainsys.Saml2.Configuration.Options.FromConfiguration;
@@ -197,8 +210,6 @@ namespace SURFnet.Authentication.Adfs.Plugin
                         {
                             log.Fatal("Fatal Sustainsys OpenExeConfiguration method call", ex);
                         }
-
-                        // catch1, log catch in OpenExeConfiguration
                     }
 
                     SustainSysConfigured = true;  // set to true, even on errors otherwise it will wrap the EventLog.
@@ -208,7 +219,8 @@ namespace SURFnet.Authentication.Adfs.Plugin
 
         /// <summary>
         /// Called when the authentication pipeline is unloaded.
-        /// Do not assume that there is a proper match between "load" and "unload". Different ADFS versions have different bugs...
+        /// Do not assume that there is a proper match between "load" and "unload".
+        /// Different ADFS versions have different bugs...
         /// </summary>
         public void OnAuthenticationPipelineUnload()
         {
@@ -287,6 +299,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
         }
 
         /// <summary>
+        /// TODO: This is old comment! Change it
         /// Initializes the logger. This cannot be done in a lazy or constructor, because this throws an error while
         /// installing the plugin for the first time.
         /// </summary>
