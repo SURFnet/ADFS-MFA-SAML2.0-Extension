@@ -36,6 +36,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
     using System.IO;
     using System.Reflection;
     using SURFnet.Authentication.Adfs.Plugin.Configuration;
+    using System.Collections.Generic;
 
     /// <summary>
     /// The ADFS MFA Adapter.
@@ -43,63 +44,155 @@ namespace SURFnet.Authentication.Adfs.Plugin
     /// <seealso cref="IAuthenticationAdapter" />
     public class Adapter : IAuthenticationAdapter
     {
-        static readonly ILog masterLogInterface;
-        static readonly string AdfsDir;
+        //static readonly ILog masterLogInterface;
+
         static Adapter()
         {
-            AdfsDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows),
-                                "ADFS");
+            if (RegistrationLog.IsRegistration)
+            {
+                string AdfsDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), "ADFS");
+                RegistrationLog.WriteLine(AdfsDir);
+                string minimalLoa = RegistryConfiguration.GetMinimalLoa();
+                if (string.IsNullOrWhiteSpace(minimalLoa))
+                {
+                    RegistrationLog.WriteLine("Failed to get configuration from Registry");
+                }
+                else
+                    StepUpConfig.PreSet(minimalLoa);
+            }
+
+
+            // can we get to <appSettings>?
+            //string minimalLoa = ConfigurationManager.AppSettings["MinimalLoa"];
+            //if ( string.IsNullOrWhiteSpace(minimalLoa) )
+            //{
+            //    RegistrationLog.WriteLine("No <appSettigs> for MinimalLoa");
+            //}
+            //else
+            //{
+            //    // Yes, we can initialize differently!
+            //    RegistrationLog.WriteLine("Yes, we can initialize differently!");
+            //}
 
             // preload log4net, we want to use it from anywhere.
-            Assembly.LoadFrom(Path.Combine(AdfsDir, "log4net.dll"));
-            masterLogInterface = LogManager.GetLogger("ADFS Plugin");
+            //if ( PreloadAssembly(AdfsDir, "log4net.dll") == 0)
+            //{
+            //    masterLogInterface = LogManager.GetLogger("ADFS Plugin");
+            //    RegistrationLog.WriteLine("Logger initialized");
+            //}
             // preload Newtonsoft.Json
-            Assembly.LoadFrom(Path.Combine(AdfsDir, "Newtonsoft.Json.dll"));
+            //if (PreloadAssembly(AdfsDir, "Newtonsoft.Json.dll") == 0 )
+            //{
+            //}
             // no need to preload Sustainsys.Saml2, because adapter metadata does not call it.
 
+            RegistrationLog.Flush();
+
             // we do want to read our own configuration before the Registration CmdLet reads our metadata
-            ReadConfigurationFromSection();
+            if ( false == RegistrationLog.IsRegistration ) 
+                ReadConfigurationFromSection();
+
+            RegistrationLog.WriteLine("Exit from static constructor");
         }
 
+        static private List<Exception> exceptions = new List<Exception>(2);
+
+        private static int PreloadAssembly(string mypath, string assemblyfile)
+        {
+            int rc = 0;
+
+            string fullpath = Path.Combine(mypath, assemblyfile);
+            try
+            {
+                var assembly = Assembly.LoadFrom(fullpath);
+                RegistrationLog.WriteLine(fullpath+" result: "+assembly.Location);
+            }
+            catch (Exception ex)
+            {
+                RegistrationLog.WriteLine("Preloading: " + fullpath);
+                RegistrationLog.WriteLine(ex.ToString());
+                RegistrationLog.NewLine();
+                exceptions.Add(ex);
+                rc = -1;
+            }
+
+            return rc;
+        }
+
+        /// <summary>
+        /// We *must* load this at Registration time. Therefor we cannot referencec
+        /// external dependencies. They would lead to load errors!
+        /// </summary>
         private static void ReadConfigurationFromSection()
         {
+            // TODO: never runs at Registration time!!!
+
             var adapterAssembly = Assembly.GetExecutingAssembly();
             string mycfgpath = adapterAssembly.Location+".config";
+            if (RegistrationLog.IsRegistration)
+                { RegistrationLog.WriteLine($"Will try my configuration at: {mycfgpath}"); RegistrationLog.Flush(); }
+
             try
             {
                 var map = new ExeConfigurationFileMap() { ExeConfigFilename = mycfgpath };
                 var cfg = ConfigurationManager.OpenMappedExeConfiguration(map, ConfigurationUserLevel.None);
                 if ( cfg != null )
                 {
+                    if (RegistrationLog.IsRegistration)
+                        { RegistrationLog.WriteLine($"Have a Configuration instance: {cfg.FilePath}"); RegistrationLog.Flush(); }
+
                     try
                     {
                         var mysection = (StepUpSection)cfg.GetSection(StepUpSection.AdapterSectionName);
                         if (mysection == null)
                         {
-                            masterLogInterface.Fatal("GetSection returned null: "+ StepUpSection.AdapterSectionName);
+                            if (RegistrationLog.IsRegistration)
+                            { RegistrationLog.WriteLine($"GetSection returned null: {StepUpSection.AdapterSectionName}"); RegistrationLog.Flush(); }
+                            //masterLogInterface.Fatal("GetSection returned null: "+ StepUpSection.AdapterSectionName);
                         }
                         else
                         {
-                            StepUpConfig.Section = mysection;
-                            if ( StepUpConfig.Current == null )
+                            StepUpConfig.Reload( mysection);
+
+                            if (StepUpConfig.Current == null)
                             {
-                                masterLogInterface.Fatal(StepUpConfig.GetErrors());
+
+                                if (RegistrationLog.IsRegistration)
+                                {
+                                    RegistrationLog.WriteLine("StepUpConfig.Current still null!");
+                                    RegistrationLog.WriteLine(StepUpConfig.GetErrors());
+                                    //masterLogInterface.Fatal(StepUpConfig.GetErrors());
+                                }
+
+                            }
+                            else
+                            {
+                                if (RegistrationLog.IsRegistration)
+                                {
+                                    RegistrationLog.WriteLine($"From config, MinimalLoa: {StepUpConfig.Current.LocalSPConfig.MinimalLoa}");
+                                }
                             }
                         }
                     }
                     catch (Exception ex)
                     {
-                        masterLogInterface.Fatal(ex.ToString());
+                        if (RegistrationLog.IsRegistration)
+                            RegistrationLog.WriteLine(ex.ToString());
+                        //masterLogInterface.Fatal(ex.ToString());
                     }
                 }
                 else
                 {
-                    masterLogInterface.Fatal("OpenMappedExeConfiguration returned null: "+ mycfgpath);
+                    if (RegistrationLog.IsRegistration)
+                        RegistrationLog.WriteLine($"OpenMappedExeConfiguration returned null: {mycfgpath}");
+                    //masterLogInterface.Fatal("OpenMappedExeConfiguration returned null: "+ mycfgpath);
                 }
             }
             catch (Exception ex)
             {
-                masterLogInterface.Fatal(ex.ToString());
+                if (RegistrationLog.IsRegistration)
+                    RegistrationLog.WriteLine(ex.ToString());
+                //masterLogInterface.Fatal(ex.ToString());
             }
         }
 
@@ -109,10 +202,10 @@ namespace SURFnet.Authentication.Adfs.Plugin
         private ILog log;
 
         /// <summary>
-        /// Gets the metadata.
+        /// Gets the metadata Singleton.
         /// </summary>
         /// <value>The metadata.</value>
-        public IAuthenticationAdapterMetadata Metadata => new AdapterMetadata();
+        public IAuthenticationAdapterMetadata Metadata => AdapterMetadata.Instance;
 
         /// <summary>
         /// Begins the authentication.
@@ -180,14 +273,14 @@ namespace SURFnet.Authentication.Adfs.Plugin
         static object LogInitLock = new object();
         private void InitializeLogger()
         {
-            // TODO: this is now old. Change!
+            // TODO: Logging is not final fix this!
             if ( this.log == null)
             {
                 lock( LogInitLock )
                 {
                     if (this.log == null)
                     {
-                        this.log = masterLogInterface;
+                        this.log = LogManager.GetLogger("ADFS Plugin"); //masterLogInterface;
                     }
                 }
             }
@@ -395,12 +488,14 @@ namespace SURFnet.Authentication.Adfs.Plugin
             {
                 sb.AppendLine($"IdentityClaim: '{ic}'");
             }
+
+            sb.AppendLine("Sustainsys.Saml2 configuration:");
             try
             {
                 var options = Sustainsys.Saml2.Configuration.Options.FromConfiguration;
-                sb.AppendLine($"AssertionConsumerService: '{options.SPOptions.ReturnUrl.OriginalString}'");
-                sb.AppendLine($"ServiceProvider.EntityId: '{Sustainsys.Saml2.Configuration.Options.FromConfiguration.SPOptions.EntityId.Id}'");
-                sb.AppendLine($"IdentityProvider.EntityId: '{SamlService.GetIdentityProvider(Sustainsys.Saml2.Configuration.Options.FromConfiguration).EntityId.Id}'");
+                // sb.AppendLine($"AssertionConsumerService: '{options.SPOptions.ReturnUrl.OriginalString}'");
+                sb.AppendLine($"ServiceProvider.EntityId: '{options.SPOptions.EntityId.Id}'");
+                sb.AppendLine($"IdentityProvider.EntityId: '{SamlService.GetIdentityProvider(options).EntityId.Id}'");
             }
             catch (Exception ex)
             {

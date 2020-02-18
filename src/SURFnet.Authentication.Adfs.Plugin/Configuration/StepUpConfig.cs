@@ -27,11 +27,11 @@ namespace SURFnet.Authentication.Adfs.Plugin.Configuration
         /// and then GetSection(). Do catch exceptions and check null returns before
         /// inserting it here.
         /// </summary>
-        public static StepUpSection Section { get; set; }
+        public static StepUpSection Section { get; private set; }
 
         private static bool initialized = false;
         private static readonly object initLock = new object();
-        private static StepUpConfig current;     // the real configuration
+        private static StepUpConfig current;     // the real configuration Singleton
 
         private StepUpConfig() {}
 
@@ -51,7 +51,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Configuration
         }
 
         /// <summary>
-        /// Reloads/Resets a configuration. For testing or updates in a running ADFS server.
+        /// Reloads a configuration from a new section. For testing or updates in a running ADFS server.
         /// </summary>
         /// <param name="section">null (for AppDomain reload) or your specific section.</param>
         /// <returns>The new Current, must test it for null!</returns>
@@ -63,7 +63,30 @@ namespace SURFnet.Authentication.Adfs.Plugin.Configuration
                 Section = section;
                 current = null;
             }
-            return Current;
+
+            return Current;  // This will initialize.
+        }
+
+        /// <summary>
+        /// Set a configuration at Registration (or test) time.
+        /// Experimental/POC.........
+        ///     Might get more parameters and better mechanism later.
+        /// </summary>
+        /// <param name="cfg"></param>
+        static public void PreSet(string minimalLoa)
+        {
+            StepUpConfig regSetupCfg = new StepUpConfig()
+            {
+                LocalSPConfig = new LocalSPConfig()
+                                { MinimalLoa = new Uri(minimalLoa) }
+            };
+
+            lock (initLock)
+            {
+                Section = null;
+                current = regSetupCfg;
+                initialized = true;
+            }
         }
 
         private static StepUpConfig Initialize()
@@ -97,7 +120,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Configuration
                         }
                     } // else something has already set a StepUpSection
 
-                    if ( Section != null )   // only if there is a valid section
+                    if ( Section != null )   // Fill the Singleton only if there is a valid section
                         current = Create(Section);
 
                     initialized = true; // don't read again, also not on errors

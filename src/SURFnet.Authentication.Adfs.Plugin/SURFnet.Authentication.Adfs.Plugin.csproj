@@ -122,6 +122,7 @@
     <Compile Include="Configuration\InstitutionElement.cs" />
     <Compile Include="Configuration\LocalSPConfig.cs" />
     <Compile Include="Configuration\LocalSPElement.cs" />
+    <Compile Include="Configuration\RegistryConfiguration.cs" />
     <Compile Include="Configuration\StepUpConfig.cs" />
     <Compile Include="Configuration\StepUpIdPConfig.cs" />
     <Compile Include="Configuration\StepUpIdPElement.cs" />
@@ -138,6 +139,7 @@
     <Compile Include="Repositories\ActiveDirectoryRepository.cs" />
     <Compile Include="Resources.cs" />
     <Compile Include="Services\CryptographicService.cs" />
+    <Compile Include="Services\RegistrationLog.cs" />
     <Compile Include="Services\SamlService.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -178,6 +180,9 @@
     <None Include="Setup\SURFnetMFA\Uninstall-AuthProvider.ps1" />
     <None Include="Setup\SURFnetMFA\Update-ADFSConfiguration.ps1" />
     <None Include="Setup\SURFnetMFA\Write-SigningCertificate.ps1" />
+    <None Include="Sustainsys.Saml2.dll.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <!-- TMP to avoid tw references. When the zip reference goes away, enable here.
     <None Include="Setup\Install.ps1" />
     <None Include="Setup\Uninstall.ps1" />

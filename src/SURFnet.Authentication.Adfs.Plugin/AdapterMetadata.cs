@@ -27,10 +27,24 @@ namespace SURFnet.Authentication.Adfs.Plugin
 
     /// <summary>
     /// The adapter metadata.
+    /// This data must be valid at Registration time. The Registration CmdLet will ask for
+    /// this metadata and store it in the ADFS database. After that it is hard to modify it.
+    /// Do realize that regular registration from a PowerShell cmd prompt is from the PowerShell
+    /// AppDomain. Reading configuration is non-trivial at registration time.
+    /// So most of the time this data is readonly static.
+    /// 
+    /// However we do change this based on the configuration, which we do read from special places.
     /// </summary>
     /// <seealso cref="IAuthenticationAdapterMetadata" />
     public class AdapterMetadata : IAuthenticationAdapterMetadata
     {
+        // See: Jon Skeet
+        private static readonly AdapterMetadata instance = new AdapterMetadata();
+        static AdapterMetadata() { } // to make it lazy.
+        private AdapterMetadata() { } // hide constructor from the world
+        static public AdapterMetadata Instance { get { return instance; } } // property to return the Singleton
+
+
         /// <summary>
         /// Returns an array of strings containing URIs indicating the set of authentication methods implemented by the adapter
         /// AD FS requires that, if authentication is successful, the method actually employed will be returned by the
@@ -45,8 +59,11 @@ namespace SURFnet.Authentication.Adfs.Plugin
         /// </summary>
         private static readonly string[] authenticationMethods =
         {
-            $"http://{StepUpConfig.Current.StepUpIdPConfig.SecondFactorEndPoint.Host}/assurance/sfo-level2",
-            $"http://{StepUpConfig.Current.StepUpIdPConfig.SecondFactorEndPoint.Host}/assurance/sfo-level3"
+            $"http://{StepUpConfig.Current.LocalSPConfig.MinimalLoa.Host}/assurance/sfo-level2",
+            $"http://{StepUpConfig.Current.LocalSPConfig.MinimalLoa.Host}/assurance/sfo-level3"
+            // Temp to avoid null ptr at Regisration time
+            //"http://test.surfconext.nl/assurance/sfo-level2",
+            //"http://test.surfconext.nl/assurance/sfo-level3"
         };
 
         /// <summary>
@@ -106,8 +123,10 @@ namespace SURFnet.Authentication.Adfs.Plugin
         /// </summary>
         private static readonly Dictionary<int, string> descriptions = new Dictionary<int, string>
         {
-            { new CultureInfo("en-us").LCID, Resources.GetLabel(1033, "Description") },
-            { new CultureInfo("nl-nl").LCID, Resources.GetLabel(1043, "Description") }
+            { new CultureInfo("en-us").LCID,
+                "SURFNet Second Factor Authentication will aks for extra credentials" /*Resources.GetLabel(1033, "Description")*/ },
+            { new CultureInfo("nl-nl").LCID,
+                "SURFNet Tweede Factor Authenticatie zal om extra authenticatie middelen vragen." /*Resources.GetLabel(1043, "Description")*/ }
         };
 
         /// <summary>
@@ -123,8 +142,8 @@ namespace SURFnet.Authentication.Adfs.Plugin
         /// </summary>
         private static readonly Dictionary<int, string> friendlyNames = new Dictionary<int, string>
         {
-            { new CultureInfo("en-us").LCID, Resources.GetLabel(1033, "FriendlyName") },
-            { new CultureInfo("nl-nl").LCID, Resources.GetLabel(1043, "FriendlyName") }
+            { new CultureInfo("en-us").LCID, "SURFNet Second Factor Authentication" /*Resources.GetLabel(1033, "FriendlyName")*/ },
+            { new CultureInfo("nl-nl").LCID, "SURFNet Tweede Factor Authenticatie" /*Resources.GetLabel(1043, "FriendlyName")*/ }
         };
 
         /// <summary>
