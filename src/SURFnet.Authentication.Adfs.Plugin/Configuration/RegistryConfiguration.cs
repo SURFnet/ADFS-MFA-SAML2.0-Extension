@@ -1,9 +1,20 @@
-﻿using Microsoft.Win32;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿/*
+* Copyright 2017 SURFnet bv, The Netherlands
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+
+using Microsoft.Win32;
 
 namespace SURFnet.Authentication.Adfs.Plugin.Configuration
 {
@@ -22,61 +33,79 @@ namespace SURFnet.Authentication.Adfs.Plugin.Configuration
     /// </summary>
     public class RegistryConfiguration
     {
-        private const string myRoot = "Software\\Surfnet\\Authentication\\ADFS\\Plugin";
-        private const string defaultName = "ADFS.SCSA";
-        private const string registrationValue = "Registration";
+        /// <summary>
+        /// My root.
+        /// </summary>
+        private const string PluginRootKey = "Software\\Surfnet\\Authentication\\ADFS\\Plugin";
 
-        public string PluginRoot { get; private set; } = myRoot;
+        /// <summary>
+        /// The default name.
+        /// </summary>
+        private const string DefaultName = "ADFS.SCSA";
 
-        static public string GetMinimalLoa()
+        /// <summary>
+        /// The registration value.
+        /// </summary>
+        private const string RegistrationValue = "Registration";
+
+        public string PluginRoot { get; private set; } = PluginRootKey;
+
+        /// <summary>
+        /// Gets the minimal loa.
+        /// </summary>
+        /// <returns>System.String.</returns>
+        public static string GetMinimalLoa()
         {
-            string rc = null;
-
-            RegistryKey tmp = new RegistryConfiguration().GetMyPluginRoot();
-            if (tmp != null)
+            var root = new RegistryConfiguration().GetSurfNetPluginRoot();
+            if (root == null)
             {
-                tmp = tmp.OpenSubKey("LocalSP");
-                if ( tmp != null )
-                {
-                    object o = tmp.GetValue("MinimalLoa");
-                    if (o != null)
-                        rc = (string)o;
-                }
+                return null;
+            }
+
+            root = root.OpenSubKey("LocalSP");
+            var value = root?.GetValue("MinimalLoa");
+            
+            var rc = string.Empty;
+            if (value != null)
+            {
+                rc = (string) value;
             }
 
             return rc;
         }
 
-        public RegistryKey GetMyPluginRoot()
+        /// <summary>
+        /// Gets the surf net plugin root.
+        /// </summary>
+        /// <returns>RegistryKey.</returns>
+        public RegistryKey GetSurfNetPluginRoot()
         {
             RegistryKey rc = null;
-            RegistryKey pluginbase = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64);
+            var pluginbase = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64);
 
             try
             {
-                RegistryKey tmp = pluginbase.OpenSubKey(PluginRoot);
-                if (tmp != null)
+                var subKey = pluginbase.OpenSubKey(PluginRoot);
+                if (subKey != null)
                 {
-                    pluginbase = tmp; // at the base of the plugin(s)
+                    pluginbase = subKey; // at the base of the plugin(s)
 
-                    string registration = defaultName;
+                    var registration = DefaultName;
                     if (pluginbase.ValueCount > 0)
                     {
                         // if there is a "Registration" value, switch to it.
-                        object o = tmp.GetValue(registrationValue);
-                        if (o != null)
-                            registration = (string)o;
+                        var value = subKey.GetValue(RegistrationValue);
+                        if (value != null)
+                        {
+                            registration = (string)value;
+                        }
                     }
 
                     PluginRoot += "\\" + registration;
 
                     // goto the real configuration
-                    rc = tmp.OpenSubKey(registration);
+                    rc = subKey.OpenSubKey(registration);
                 }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.ToString());
             }
             finally
             {
@@ -84,39 +113,6 @@ namespace SURFnet.Authentication.Adfs.Plugin.Configuration
             }
 
             return rc;
-        }
-
-        /// <summary>
-        /// Create the required keys (if not there) and optionally adds a "Registration" value.
-        /// </summary>
-        public RegistryKey RegisterMyPluginRoot(string name, bool setvalue = false)
-        {
-
-            return null;
-        }
-
-        public void PrintKeys(RegistryKey key)
-        {
-            var list = key.GetSubKeyNames();
-
-            foreach (string keyname in list)
-            {
-                Console.WriteLine(keyname);
-            }
-        }
-
-        public void PrintValues(RegistryKey key)
-        {
-            if (key.ValueCount > 0)
-            {
-                var list = key.GetValueNames();
-
-                for (int i = 0; i < key.ValueCount; i++)
-                {
-                    string name = list[i];
-                    Console.WriteLine($"  {name} = {key.GetValue(name).ToString()}");
-                }
-            }
         }
     }
 }

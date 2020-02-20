@@ -25,10 +25,14 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
         {
             DateTime utcnow = DateTime.UtcNow;
             Assembly host = Assembly.GetEntryAssembly();
-            if (host.Location.Contains("Microsoft.IdentityServer.ServiceHost"))
+            if (host?.Location.Contains("Microsoft.IdentityServer.ServiceHost") ?? false)
+            {
                 IsRegistration = false;
+            }
             else
+            {
                 IsRegistration = true;
+            }
 
             if ( IsRegistration )
             {
@@ -46,10 +50,11 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
 
                 Assembly me = Assembly.GetExecutingAssembly();
                 WriteLine($"FullName: {me.FullName}");
-                Console.WriteLine($"AssemblyVersion: {me.GetName().Version.ToString()}");
+                WriteLine($"AssemblyVersion: {me.GetName().Version.ToString()}");
                 FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(me.Location);
                 string fileversion = fvi.FileVersion;
-                Console.WriteLine($"FileVersion: {fileversion}");
+                WriteLine($"FileVersion: {fileversion}");
+
                 fs.Flush();
             }
         }
@@ -72,7 +77,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
                 fs.WriteLine();
         }
 
-        static public void Flush()
+        static public void  Flush()
         {
             if (fs != null)
                 fs.Flush();

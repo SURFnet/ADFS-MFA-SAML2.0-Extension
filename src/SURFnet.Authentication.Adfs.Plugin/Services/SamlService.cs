@@ -17,7 +17,6 @@
 namespace SURFnet.Authentication.Adfs.Plugin.Services
 {
     using System;
-    using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using Microsoft.IdentityModel.Tokens.Saml2;
     using System.Linq;
@@ -29,10 +28,9 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
 
     using log4net;
 
-    using SURFnet.Authentication.Adfs.Plugin.Models;
-    using SURFnet.Authentication.Adfs.Plugin.Properties;
-    using SURFnet.Authentication.Adfs.Plugin.Repositories;
-    using SURFnet.Authentication.Adfs.Plugin.Configuration;
+    using Models;
+    using Repositories;
+    using Configuration;
 
     /// <summary>
     /// Creates the SAML assertions and processes the response.
@@ -63,7 +61,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
                 throw new Exception("The SAML configuration could not be loaded");
             }
 
-            var spConfiguration = samlConfiguration?.SPOptions;
+            var spConfiguration = samlConfiguration.SPOptions;
             if (spConfiguration == null)
             {
                 throw new Exception("The service provider section of the SAML configuration could not be loaded");
@@ -76,7 +74,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
                 DestinationUrl = StepUpConfig.Current.StepUpIdPConfig.SecondFactorEndPoint,
                 AssertionConsumerServiceUrl = ascUri,
                 Issuer = spConfiguration.EntityId,
-                RequestedAuthnContext = new Saml2RequestedAuthnContext(StepUpConfig.Current.LocalSPConfig.MinimalLoa, AuthnContextComparisonType.Minimum),
+                RequestedAuthnContext = new Saml2RequestedAuthnContext(StepUpConfig.Current.LocalSpConfig.MinimalLoa, AuthnContextComparisonType.Minimum),
                 Subject = new Saml2Subject(nameIdentifier),
             };
             authnRequest.SetId(authnRequestId);
@@ -151,8 +149,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
         /// <returns>A name identifier.</returns>
         private static string GetNameId(Claim identityClaim)
         {
-            var repository = new ActiveDirectoryRepository();
-            var nameid = $"urn:collab:person:{StepUpConfig.Current.InstitutionConfig.SchacHomeOrganization}:{repository.GetUserIdForIdentity(identityClaim)}";
+            var nameid = $"urn:collab:person:{StepUpConfig.Current.InstitutionConfig.SchacHomeOrganization}:{ActiveDirectoryRepository.GetUserIdForIdentity(identityClaim)}";
 
             nameid = nameid.Replace('@', '_');
             return nameid;

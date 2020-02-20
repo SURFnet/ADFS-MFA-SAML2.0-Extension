@@ -59,8 +59,8 @@ namespace SURFnet.Authentication.Adfs.Plugin
         /// </summary>
         private static readonly string[] authenticationMethods =
         {
-            $"http://{StepUpConfig.Current.LocalSPConfig.MinimalLoa.Host}/assurance/sfo-level2",
-            $"http://{StepUpConfig.Current.LocalSPConfig.MinimalLoa.Host}/assurance/sfo-level3"
+            $"http://{StepUpConfig.Current.LocalSpConfig.MinimalLoa.Host}/assurance/sfo-level2",
+            $"http://{StepUpConfig.Current.LocalSpConfig.MinimalLoa.Host}/assurance/sfo-level3"
             // Temp to avoid null ptr at Regisration time
             //"http://test.surfconext.nl/assurance/sfo-level2",
             //"http://test.surfconext.nl/assurance/sfo-level3"
@@ -93,7 +93,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
         /// Returns the name of the provider that will be shown in the AD FS management UI (not visible to end users).
         /// </summary>
         /// <value>The name of the admin.</value>
-        public string AdminName => "ADFS.SCSA";
+        public string AdminName => $"ADFS.SCSA {AdapterVersion.FileVersion}";
 
         /// <summary>
         /// Gets an array indicating which languages are supported by the provider. AD FS uses this information

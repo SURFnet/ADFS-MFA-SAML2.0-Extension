@@ -17,6 +17,7 @@
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using SURFnet.Authentication.Adfs.Plugin;
 
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
@@ -48,11 +49,11 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("2.0.0.0")]
+[assembly: AssemblyVersion("1.0.1.0")]
 // Shows as "Product version" in the File Explorer
-[assembly: AssemblyInformationalVersion("2.1.0.0")]
+[assembly: AssemblyInformationalVersion(AdapterVersion.ProductVersion)]
 // Shows as "File version" in the File Explorer
-[assembly: AssemblyFileVersion("2.0.2.10")]
+[assembly: AssemblyFileVersion(AdapterVersion.FileVersion)]
 
 // 
 [assembly: log4net.Config.XmlConfigurator(ConfigFile = "SURFnet.Authentication.ADFS.MFA.Plugin.log4net")]

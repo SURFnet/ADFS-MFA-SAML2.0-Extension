@@ -94,7 +94,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
         /// </summary>
         private void LoadCertificate()
         {
-            string linewidthsaver = StepUpConfig.Current.LocalSPConfig.SPSigningCertificate;
+            string linewidthsaver = StepUpConfig.Current.LocalSpConfig.SPSigningCertificate;
 
             this.log.DebugFormat("Search siginging certificate with thumbprint '{0}' in the 'LocalMachine' 'My' store.", linewidthsaver);
             var store = new X509Store(StoreName.My, StoreLocation.LocalMachine);
@@ -144,7 +144,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
         /// </exception>
         private static X509Certificate2 GetCertificateWithPrivateKey(X509Store store)
         {
-            var thumbprint = StepUpConfig.Current.LocalSPConfig.SPSigningCertificate;
+            var thumbprint = StepUpConfig.Current.LocalSpConfig.SPSigningCertificate;
 
             var certCollection = store.Certificates.Find(X509FindType.FindByThumbprint, thumbprint, false);
             if (certCollection.Count == 0)

@@ -116,6 +116,7 @@
   <ItemGroup>
     <Compile Include="AdapterMetadata.cs" />
     <Compile Include="Adapter.cs" />
+    <Compile Include="AdapterVersion.cs" />
     <Compile Include="AuthFailedForm.cs" />
     <Compile Include="AuthForm.cs" />
     <Compile Include="Configuration\InstitutionConfig.cs" />

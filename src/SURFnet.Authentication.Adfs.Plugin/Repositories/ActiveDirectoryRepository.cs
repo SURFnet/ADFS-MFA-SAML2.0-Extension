@@ -19,16 +19,13 @@ using System.DirectoryServices;
 using System.DirectoryServices.AccountManagement;
 using System.Security.Claims;
 using SURFnet.Authentication.Adfs.Plugin.Configuration;
-using SURFnet.Authentication.Adfs.Plugin.Properties;
 
 namespace SURFnet.Authentication.Adfs.Plugin.Repositories
 {
     /// <summary>
     /// Data access for the active directory.
-    /// TODO: this could all be static... Why an instance?
-    /// Unless we want to store something like a logging interface....
     /// </summary>
-    public class ActiveDirectoryRepository
+    public static class ActiveDirectoryRepository
     {
         /// <summary>
         /// Gets the user identifier for the given identity.
@@ -38,28 +35,10 @@ namespace SURFnet.Authentication.Adfs.Plugin.Repositories
         /// <returns>
         /// The user identifier.
         /// </returns>
-        public string GetUserIdForIdentity(Claim identityClaim)
-        {
-            if (string.IsNullOrWhiteSpace(StepUpConfig.Current.InstitutionConfig.ActiveDirectoryUserIdAttribute))
-            {
-                throw new Exception("The setting 'ActiveDirectoryUserIdAttribute' is not properly set in the application settings");
-            }
-
-            var userId = GetUserIdFromActiveDirectory(identityClaim);
-            return userId;
-        }
-
-        /// <summary>
-        /// Gets the user identifier from active directory.
-        /// </summary>
-        /// <param name="identityClaim">The identity claim.</param>
-        /// <returns>
-        /// The user identifier.
-        /// </returns>
-        private static string GetUserIdFromActiveDirectory(Claim identityClaim)
+        public static string GetUserIdForIdentity(Claim identityClaim)
         {
             string userId;
-            string linewidthsaver = StepUpConfig.Current.InstitutionConfig.ActiveDirectoryUserIdAttribute;
+            var linewidthsaver = StepUpConfig.Current.InstitutionConfig.ActiveDirectoryUserIdAttribute;
 
             var domainName = identityClaim.Value.Split('\\')[0];
 
