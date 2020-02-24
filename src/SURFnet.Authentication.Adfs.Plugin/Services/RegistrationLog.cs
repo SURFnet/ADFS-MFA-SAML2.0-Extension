@@ -61,7 +61,10 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
             var utcnow = DateTime.UtcNow;
 
             // TODO: Decide on a proper location!
-            var logName = $@"{Environment.SpecialFolder.Windows}\ADFS\StepUp.RegistrationLog.txt";
+            //var logName = $@"{Environment.SpecialFolder.Windows}\ADFS\StepUp.RegistrationLog.txt";
+            /// TODO: tijdelijk FF terug naar hardcoded want bovenstaande geeft: C:\windows\system32\Windows\ADFS\StepUp.RegistrationLog.txt
+            /// En hoort/moet bovendien PathCombine te gebruiken.
+            var logName = "C:\\Windows\\ADFS\\StepUp.RegistrationLog.txt";
             var x = new FileStream(logName, FileMode.Create, FileAccess.Write, FileShare.Read);
             fs = new StreamWriter(x);
 
@@ -69,7 +72,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
             WriteLine($"GetEntryAssembly().Location: '{Assembly.GetEntryAssembly()?.Location}'");
             WriteLine($"DateTime: {utcnow} (Z)");
 
-            WriteLine($"GetCallingAssembly().Location: '{Assembly.GetEntryAssembly()?.Location}'");
+            WriteLine($"GetCallingAssembly().Location: '{Assembly.GetCallingAssembly()?.Location}'");
 
             var me = Assembly.GetExecutingAssembly();
             WriteLine($"FullName: {me.FullName}");
