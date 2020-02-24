@@ -124,7 +124,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
             try
             {
                 var options = Sustainsys.Saml2.Configuration.Options.FromConfiguration;
-                sb.AppendLine($"AssertionConsumerService: '{options.SPOptions.ReturnUrl.OriginalString}'"); //todo:#162476774
+                sb.AppendLine($"AssertionConsumerService: '{options.SPOptions.ReturnUrl.OriginalString}'"); //todo:#162476774 testen: moet poortnummer bij zitten
                 sb.AppendLine($"ServiceProvider.EntityId: '{options.SPOptions.EntityId.Id}'");
                 sb.AppendLine($"IdentityProvider.EntityId: '{SamlService.GetIdentityProvider(options).EntityId.Id}'");
             }

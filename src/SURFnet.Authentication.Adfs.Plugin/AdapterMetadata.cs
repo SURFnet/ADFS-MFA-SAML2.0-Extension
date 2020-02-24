@@ -54,7 +54,6 @@ namespace SURFnet.Authentication.Adfs.Plugin
 
         public static AdapterMetadata Instance => instance; // property to return the Singleton
 
-
         /// <summary>
         /// Returns an array of strings containing URIs indicating the set of authentication methods implemented by the adapter
         /// AD FS requires that, if authentication is successful, the method actually employed will be returned by the

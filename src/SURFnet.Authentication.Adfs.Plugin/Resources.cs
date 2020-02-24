@@ -34,8 +34,6 @@ namespace SURFnet.Authentication.Adfs.Plugin
         /// </exception>
         public static Dictionary<string, string> GetLabels(int lcid)
         {
-            //todo:: else -> fallback to english. Check other places in the code
-            //default checken bij Pieter
             if (Labels.ContainsKey(lcid))
             {
                 return Labels[lcid];

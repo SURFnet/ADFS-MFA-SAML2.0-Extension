@@ -103,7 +103,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Configuration
         /// <returns>The new Current, must test it for null!</returns>
         public static StepUpConfig Reload(StepUpSection section)
         {
-            lock ( InitLock )
+            lock (InitLock)
             {
                 initialized = false;
                 Section = section;
@@ -179,7 +179,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Configuration
         {
             try
             {
-                Section = (StepUpSection) ConfigurationManager.GetSection(StepUpSection.AdapterSectionName);
+                Section = (StepUpSection)ConfigurationManager.GetSection(StepUpSection.AdapterSectionName);
                 if (Section == null)
                 {
                     initErrors.AppendLine("ConfigurationManager.GetSection on AppDomain returned null");
@@ -201,48 +201,54 @@ namespace SURFnet.Authentication.Adfs.Plugin.Configuration
         /// <returns>Null on error, otherwise a valid StepUpConfig instance.</returns>
         private static StepUpConfig Create(StepUpSection section)
         {
-            var rc = new StepUpConfig();  // initialization, but set to null on error.
+            StepUpConfig rc = null;
             var institutionConfig = new InstitutionConfig();
             var localSpConfig = new LocalSPConfig();
             var stepUpIdPConfig = new StepUpIdPConfig();
 
-            // Loop over all properties while catching and reporting.
-            // This is the first access, so it will throw on errors. Catch and report them all to
-            // help fixing all problems at once...
-            var didAll = false;
-            while (didAll == false)   
+            var succeedded = true;
+            succeedded &= TrySetConfigSetting(section.Institution.SchacHomeOrganization, institutionConfig.SchacHomeOrganization);
+            succeedded &= TrySetConfigSetting(section.Institution.ActiveDirectoryUserIdAttribute, institutionConfig.ActiveDirectoryUserIdAttribute);
+            succeedded &= TrySetConfigSetting(section.LocalSP.SPSigningCertificate, localSpConfig.SPSigningCertificate);
+            succeedded &= TrySetConfigSetting(new Uri(section.LocalSP.MinimalLoa), localSpConfig.MinimalLoa);
+            succeedded &= TrySetConfigSetting(new Uri(section.StepUpIdP.SecondFactorEndpoint), stepUpIdPConfig.SecondFactorEndPoint);
+
+            if (succeedded)
             {
-                try
+                rc = new StepUpConfig
                 {
-                    institutionConfig.SchacHomeOrganization = section.Institution.SchacHomeOrganization;
-                    institutionConfig.ActiveDirectoryUserIdAttribute = section.Institution.ActiveDirectoryUserIdAttribute;
-
-                    localSpConfig.SPSigningCertificate = section.LocalSP.SPSigningCertificate;
-                    localSpConfig.MinimalLoa = new Uri(section.LocalSP.MinimalLoa);
-
-                    stepUpIdPConfig.SecondFactorEndPoint = new Uri(section.StepUpIdP.SecondFactorEndpoint);
-
-                    didAll = true;
-                    if (rc != null)
-                    {
-                        // apparently no errors now set properties
-                        rc.InstitutionConfig = institutionConfig;
-                        rc.LocalSpConfig = localSpConfig;
-                        rc.StepUpIdPConfig = stepUpIdPConfig;
-                    }
-                }
-                catch (Exception ex)
-                {
-                    // Keep on catching, for possibly multiple errors.
-                    initErrors.AppendLine(ex.ToString());
-                    rc = null;
-                }
-
-                //todo:: possible infinite loop. If if fails why would it be successfull at the second round?
-
-            } // while
+                    InstitutionConfig = institutionConfig,
+                    LocalSpConfig = localSpConfig,
+                    StepUpIdPConfig = stepUpIdPConfig
+                };
+            }
 
             return rc;
+        }
+
+        /// <summary>
+        /// Tries to set set configuration setting. Any error will be written to the errorlog, but won't stop the plugin execution.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="source">The source.</param>
+        /// <param name="destination">The destination.</param>
+        /// <returns><c>true</c> if the configuration (source) is successfully read, <c>false</c> otherwise.</returns>
+        // ReSharper disable once RedundantAssignment
+        // ReSharper disable once UnusedParameter.Local
+        private static bool TrySetConfigSetting<T>(T source, T destination)
+        {
+            //TODO: test this.
+            try
+            {
+                // ReSharper disable once RedundantAssignment
+                destination = source;
+                return true;
+            }
+            catch (Exception ex)
+            {
+                initErrors.AppendLine(ex.ToString());
+                return false;
+            }
         }
 
         /// <summary>
