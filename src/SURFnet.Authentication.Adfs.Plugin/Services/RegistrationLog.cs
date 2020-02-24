@@ -63,7 +63,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
             // TODO: Decide on a proper location!
             //var logName = $@"{Environment.SpecialFolder.Windows}\ADFS\StepUp.RegistrationLog.txt";
             /// TODO: tijdelijk FF terug naar hardcoded want bovenstaande geeft: C:\windows\system32\Windows\ADFS\StepUp.RegistrationLog.txt
-            /// En hoort/moet bovendien PathCombine te gebruiken.
+            /// Hints:
+            /// En hoort/moet bovendien PathCombine te gebruiken. See static constructor van Adapter.....
             var logName = "C:\\Windows\\ADFS\\StepUp.RegistrationLog.txt";
             var x = new FileStream(logName, FileMode.Create, FileAccess.Write, FileShare.Read);
             fs = new StreamWriter(x);

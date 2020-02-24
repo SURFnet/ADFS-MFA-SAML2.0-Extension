@@ -46,7 +46,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
         /// <summary>
         /// Lock for initializing the sustain system.
         /// </summary>
-        static readonly object SustainSysLock = new object();
+        private static readonly object SustainSysLock = new object();
 
         /// <summary>
         /// Initializes static members of the <see cref="Adapter"/> class.
@@ -55,8 +55,10 @@ namespace SURFnet.Authentication.Adfs.Plugin
         {
             if (RegistrationLog.IsRegistration)
             {
+                // Not running under ADFS. I.e. test or registration context.....
                 try
                 {
+                    // we do want to read our own configuration before the Registration CmdLet reads our metadata
                     var adfsDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), "ADFS");
                     RegistrationLog.WriteLine(adfsDir);
                     var minimalLoa = RegistryConfiguration.GetMinimalLoa();
@@ -73,15 +75,24 @@ namespace SURFnet.Authentication.Adfs.Plugin
                 {
                     RegistrationLog.WriteLine($"Failed to load minimal LOA. Details: '{e.GetBaseException().Message}'");
                 }
+                RegistrationLog.WriteLine("Finishing static Adapter constructor");
+                RegistrationLog.Flush();
             }
             else
             {
-                // we do want to read our own configuration before the Registration CmdLet reads our metadata
+                // Running in ADFS AppDomain
+                LogService.InitializeLogger();
                 ReadConfigurationFromSection();
+                ConfigureSustainsys();
+
+                LogService.LogConfigOnce(AdapterMetadata.Instance);
             }
 
-            RegistrationLog.WriteLine("Exit from static constructor");
-            RegistrationLog.Flush();
+        }
+
+        public Adapter()
+        {
+            LogService.PrepareCorrelatedLogger("000", "000");  // otherwise formatter will fail
         }
 
         /// <summary>
@@ -134,6 +145,9 @@ namespace SURFnet.Authentication.Adfs.Plugin
         /// </returns>
         public bool IsAvailableForUser(Claim identityClaim, IAuthenticationContext context)
         {
+            // Officially we should check here if the user has the proper attribute in the AD to do Stepup.
+            // But we do not do that until the BeginAuthentication. Which is wrong.....
+
             LogService.PrepareCorrelatedLogger(context.ContextId, context.ActivityId);
             return true;
         }
@@ -144,10 +158,6 @@ namespace SURFnet.Authentication.Adfs.Plugin
         /// <param name="configData">The configuration data.</param>
         public void OnAuthenticationPipelineLoad(IAuthenticationMethodConfigData configData)
         {
-            LogService.InitializeLogger();
-            ConfigureSustainsys();
-
-            LogService.LogConfigOnce(this.Metadata);
         }
 
         /// <summary>
@@ -232,7 +242,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
         /// <summary>
         /// Configures the sustainsys once per ADFS server.
         /// </summary>
-        private void ConfigureSustainsys()
+        private static void ConfigureSustainsys()
         {
             if (sustainSysConfigured == false)
             {
@@ -250,7 +260,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
         /// <summary>
         /// Initializes the sustain system.
         /// </summary>
-        private void InitializeSustainSys()
+        private static void InitializeSustainSys()
         {
             try
             {

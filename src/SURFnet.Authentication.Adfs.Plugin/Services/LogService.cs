@@ -44,7 +44,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
         /// </summary>
         public static void InitializeLogger()
         {
-            // TODO: Logging is not final fix this!
+            // TODO: Logging is not final, need to fix this!
             if (Log == null)
             {
                 lock (LogInitLock)
@@ -52,7 +52,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
                     if (Log == null)
                     {
                         Log = LogManager.GetLogger("ADFS Plugin"); //masterLogInterface;
-                        SetDesiredLogLevel();
+                        PrepareCorrelatedLogger("000", "000");  // for static constructor of adapter
+                        // SetDesiredLogLevel();
                     }
                 }
             }
