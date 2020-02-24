@@ -26,12 +26,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
     using Microsoft.IdentityModel.Tokens.Saml2;
     using System.Net;
     using System.Security.Claims;
-    using System.Text;
-
     using Sustainsys.Saml2.Saml2P;
-
-    using log4net;
-
     using Microsoft.IdentityServer.Web.Authentication.External;
 
     using System.IO;
@@ -43,22 +38,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
     /// <seealso cref="IAuthenticationAdapter" />
     public class Adapter : IAuthenticationAdapter
     {
-        /// <summary>
-        /// Used for logging.
-        /// </summary>
-        private ILog log;
-
-        /// <summary>
-        /// True when one of the instances logged the initial configuration.
-        /// </summary>
-        private static bool configLogged;
-
-        /// <summary>
-        /// The log initialize lock.
-        /// </summary>
-        private static readonly object LogInitLock = new object();
-
-        /// <summary>
+       /// <summary>
         /// Indicates whether the sustain sys is initialized.
         /// </summary>
         private static bool sustainSysConfigured;
@@ -123,23 +103,23 @@ namespace SURFnet.Authentication.Adfs.Plugin
         {
             try
             {
-                PrepareCorrelatedLogger(context.ContextId, context.ActivityId);
-                this.log.Debug("Enter BeginAuthentication");
-                this.log.DebugFormat("context.Lcid={0}", context.Lcid);
+                LogService.PrepareCorrelatedLogger(context.ContextId, context.ActivityId);
+                LogService.Log.Debug("Enter BeginAuthentication");
+                LogService.Log.DebugFormat("context.Lcid={0}", context.Lcid);
 
                 var requestId = $"_{context.ContextId}";
                 var authRequest = SamlService.CreateAuthnRequest(identityClaim, requestId, httpListenerRequest.Url);
-
+                
                 using (var cryptographicService = new CryptographicService())
                 {
-                    this.log.DebugFormat("Signing AuthnRequest with id {0}", requestId);
+                    LogService.Log.DebugFormat("Signing AuthnRequest with id {0}", requestId);
                     var signedXml = cryptographicService.SignSamlRequest(authRequest);
                     return new AuthForm(StepUpConfig.Current.StepUpIdPConfig.SecondFactorEndPoint, signedXml);
                 }
             }
             catch (Exception ex)
             {
-                this.log.ErrorFormat("Error while initiating authentication: {0}", ex.Message);
+                LogService.Log.ErrorFormat("Error while initiating authentication: {0}", ex.Message);
                 return new AuthFailedForm();
             }
         }
@@ -154,7 +134,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
         /// </returns>
         public bool IsAvailableForUser(Claim identityClaim, IAuthenticationContext context)
         {
-            PrepareCorrelatedLogger(context.ContextId, context.ActivityId);
+            LogService.PrepareCorrelatedLogger(context.ContextId, context.ActivityId);
             return true;
         }
 
@@ -164,10 +144,10 @@ namespace SURFnet.Authentication.Adfs.Plugin
         /// <param name="configData">The configuration data.</param>
         public void OnAuthenticationPipelineLoad(IAuthenticationMethodConfigData configData)
         {
-            InitializeLogger();
+            LogService.InitializeLogger();
             ConfigureSustainsys();
 
-            this.LogConfigOnce();
+            LogService.LogConfigOnce(this.Metadata);
         }
 
         /// <summary>
@@ -189,7 +169,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
         /// </returns>
         public IAdapterPresentation OnError(HttpListenerRequest request, ExternalAuthenticationException ex)
         {
-            this.log.ErrorFormat("Error occured: {0}", ex.Message);
+            LogService.Log.ErrorFormat("Error occured: {0}", ex.Message);
             return new AuthFailedForm(ex.Message);
         }
 
@@ -206,18 +186,18 @@ namespace SURFnet.Authentication.Adfs.Plugin
         public IAdapterPresentation TryEndAuthentication(IAuthenticationContext context, IProofData proofData, HttpListenerRequest request, out Claim[] claims)
         {
             var requestId = $"_{ context.ContextId}";
-
-            this.log.Debug("Enter TryEndAuthentication");
-            this.log.DebugFormat("conext.Lcid={0}", context.Lcid);
-
-            this.log.DebugLogDictionary(context.Data, "context.Data");
-            this.log.DebugLogDictionary(proofData.Properties, "proofData.Properties");
+            LogService.PrepareCorrelatedLogger(context.ContextId, context.ActivityId);
+            LogService.Log.Debug("Enter TryEndAuthentication");
+            LogService.Log.DebugFormat("context.Lcid={0}", context.Lcid);
+            
+            LogService.Log.DebugLogDictionary(context.Data, "context.Data");
+            LogService.Log.DebugLogDictionary(proofData.Properties, "proofData.Properties");
 
             claims = null;
             try
             {
                 var response = SecondFactorAuthResponse.Deserialize(proofData, context);
-                this.log.InfoFormat("Received response for request with id '{0}'", requestId);
+                LogService.Log.DebugFormat("Received response for request with id '{0}'", requestId);
                 var samlResponse = new Saml2Response(response.SamlResponse, new Saml2Id(requestId));
                 if (samlResponse.Status != Saml2StatusCode.Success)
                 {
@@ -227,7 +207,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
                 claims = SamlService.VerifyResponseAndGetAuthenticationClaim(samlResponse);
                 foreach (var claim in claims)
                 {
-                    this.log.DebugFormat(
+                    LogService.Log.DebugFormat(
                         "claim.Issuer='{0}'; claim.OriginalIssuer='{1}; claim.Type='{2}'; claim.Value='{3}'",
                         claim.Issuer,
                         claim.OriginalIssuer,
@@ -235,56 +215,17 @@ namespace SURFnet.Authentication.Adfs.Plugin
                         claim.Value);
                     foreach (var p in claim.Properties)
                     {
-                        this.log.DebugFormat("claim.Properties: '{0}'='{1}'", p.Key, p.Value);
+                        LogService.Log.DebugFormat("claim.Properties: '{0}'='{1}'", p.Key, p.Value);
                     }
                 }
 
-                this.log.InfoFormat("Successfully processed response for request with id '{0}'", requestId);
+                LogService.Log.DebugFormat("Successfully processed response for request with id '{0}'", requestId);
                 return null;
             }
             catch (Exception ex)
             {
-                this.log.ErrorFormat("Error while processing the saml response. Details: {0}", ex.Message);
+                LogService.Log.ErrorFormat("Error while processing the saml response. Details: {0}", ex.Message);
                 return new AuthFailedForm();
-            }
-        }
-
-        /// <summary>
-        /// Initializes the logger once.
-        /// </summary>
-        private void InitializeLogger()
-        {
-            // TODO: Logging is not final fix this!
-            if (this.log == null)
-            {
-                lock (LogInitLock)
-                {
-                    if (this.log == null)
-                    {
-                        this.log = LogManager.GetLogger("ADFS Plugin"); //masterLogInterface;
-                    }
-                }
-            }
-        }
-
-        /// <summary>
-        /// This logs the configuration only once per ADFS server startup.
-        /// Using the local ILog instance. With an instance method.  :-)
-        /// In fact the protection is not really required because the *current* ADFS server
-        /// initializes instances sequentially.
-        /// </summary>
-        private void LogConfigOnce()
-        {
-            if (configLogged == false)
-            {
-                lock (LogInitLock)
-                {
-                    if (configLogged == false)
-                    {
-                        LogCurrentConfiguration();
-                        configLogged = true;
-                    }
-                }
             }
         }
 
@@ -328,69 +269,16 @@ namespace SURFnet.Authentication.Adfs.Plugin
                 }
                 catch (Exception ex)
                 {
-                    log.Fatal("Accessing Sustainsys configuration failed", ex);
+                    LogService.Log.Fatal("Accessing Sustainsys configuration failed", ex);
                 }
             }
             catch (Exception ex)
             {
-                log.Fatal("Fatal Sustainsys OpenExeConfiguration method call", ex);
+                LogService.Log.Fatal("Fatal Sustainsys OpenExeConfiguration method call", ex);
                 throw; //todo: Need to rethrow?
             }
         }
-
-        /// <summary>
-        /// Appends the context and activity id to each log line.
-        /// </summary>
-        /// <param name="contextId">The context identifier.</param>
-        /// <param name="activityId">The activity identifier.</param>
-        private static void PrepareCorrelatedLogger(string contextId, string activityId)
-        {
-            LogicalThreadContext.Properties["contextId"] = contextId;
-            LogicalThreadContext.Properties["activityId"] = activityId;
-        }
-
-        /// <summary>
-        /// Logs the current configuration for troubleshooting purposes.
-        /// </summary>
-        private void LogCurrentConfiguration()
-        {
-            var sb = new StringBuilder();
-            sb.AppendLine("Current plugin configuration");
-            sb.AppendLine($"SchacHomeOrganization: {StepUpConfig.Current.InstitutionConfig.SchacHomeOrganization}");
-            sb.AppendLine($"ActiveDirectoryUserIdAttribute: {StepUpConfig.Current.InstitutionConfig.ActiveDirectoryUserIdAttribute}");
-            sb.AppendLine($"SPSigningCertificate: {StepUpConfig.Current.LocalSpConfig.SPSigningCertificate}");
-            sb.AppendLine($"MinimalLoa: {StepUpConfig.Current.LocalSpConfig.MinimalLoa.OriginalString}");
-            sb.AppendLine($"SecondFactorEndPoint: {StepUpConfig.Current.StepUpIdPConfig.SecondFactorEndPoint.OriginalString}");
-
-            sb.AppendLine("Plugin Metadata:");
-            sb.AppendLine($"File version: {AdapterVersion.FileVersion}");
-            sb.AppendLine($"Product version: {AdapterVersion.ProductVersion}");
-            foreach (var am in this.Metadata.AuthenticationMethods)
-            {
-                sb.AppendLine($"AuthenticationMethod: '{am}'");
-            }
-            foreach (var ic in this.Metadata.IdentityClaims)
-            {
-                sb.AppendLine($"IdentityClaim: '{ic}'");
-            }
-
-            sb.AppendLine("Sustainsys.Saml2 configuration:");
-            try
-            {
-                var options = Sustainsys.Saml2.Configuration.Options.FromConfiguration;
-                sb.AppendLine($"AssertionConsumerService: '{options.SPOptions.ReturnUrl.OriginalString}'"); //todo:#162476774
-                sb.AppendLine($"ServiceProvider.EntityId: '{options.SPOptions.EntityId.Id}'");
-                sb.AppendLine($"IdentityProvider.EntityId: '{SamlService.GetIdentityProvider(options).EntityId.Id}'");
-            }
-            catch (Exception ex)
-            {
-                sb.AppendLine($"Error while reading configuration file. Please enter ServiceProvider and IdentityProvider settings. Details: {ex.Message}");
-                //todo: Needs rethrow?
-            }
-
-            this.log.Info(sb);
-        }
-
+        
         /// <summary>
         /// Reads the configuration from section.
         /// </summary>

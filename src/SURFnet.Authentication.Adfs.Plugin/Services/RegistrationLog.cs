@@ -1,18 +1,36 @@
-﻿using System;
-using System.Collections.Generic;
+﻿/*
+* Copyright 2017 SURFnet bv, The Netherlands
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SURFnet.Authentication.Adfs.Plugin.Services
 {
     public class RegistrationLog
     {
-        private static StreamWriter fs = null;
-        private static readonly string LogName;
+        /// <summary>
+        /// The stream writer.
+        /// </summary>
+        private static StreamWriter fs;
 
+        /// <summary>
+        /// Indicated whether the plugin is registered (by PowerShell) or is running in AD FS context.
+        /// </summary>
         public static readonly bool IsRegistration;
 
         /// <summary>
@@ -23,8 +41,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
         /// </summary>
         static RegistrationLog()
         {
-            DateTime utcnow = DateTime.UtcNow;
-            Assembly host = Assembly.GetEntryAssembly();
+            var host = Assembly.GetEntryAssembly();
             if (host?.Location.Contains("Microsoft.IdentityServer.ServiceHost") ?? false)
             {
                 IsRegistration = false;
@@ -32,58 +49,76 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
             else
             {
                 IsRegistration = true;
-            }
-
-            if ( IsRegistration )
-            {
-                // TODO: Decide on a proper location!
-                LogName = "C:\\Windows\\ADFS\\StepUp.RegistrationLog.txt";
-                var x = new FileStream(LogName, FileMode.Create, FileAccess.Write, FileShare.Read);
-                fs = new StreamWriter(x);
-
-                // write time and date and assembly properties
-                WriteLine($"GetEntryAssembly().Location: {Assembly.GetEntryAssembly().Location}");
-                WriteLine($"DateTime: {utcnow.ToString()} (Z)");
-
-                Assembly caller = Assembly.GetCallingAssembly();
-                WriteLine($"GetCallingAssembly().Location: {Assembly.GetEntryAssembly().Location}");
-
-                Assembly me = Assembly.GetExecutingAssembly();
-                WriteLine($"FullName: {me.FullName}");
-                WriteLine($"AssemblyVersion: {me.GetName().Version.ToString()}");
-                FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(me.Location);
-                string fileversion = fvi.FileVersion;
-                WriteLine($"FileVersion: {fileversion}");
-
-                fs.Flush();
+                LogRegistrationDebugInfo();
             }
         }
 
-        static public void WriteLine(string s)
+        /// <summary>
+        /// Logs the registration debug information.
+        /// </summary>
+        private static void LogRegistrationDebugInfo()
         {
-            if ( fs != null )
-                fs.WriteLine(s);
+            var utcnow = DateTime.UtcNow;
+
+            // TODO: Decide on a proper location!
+            var logName = $@"{Environment.SpecialFolder.Windows}\ADFS\StepUp.RegistrationLog.txt";
+            var x = new FileStream(logName, FileMode.Create, FileAccess.Write, FileShare.Read);
+            fs = new StreamWriter(x);
+
+            // write time and date and assembly properties
+            WriteLine($"GetEntryAssembly().Location: '{Assembly.GetEntryAssembly()?.Location}'");
+            WriteLine($"DateTime: {utcnow} (Z)");
+
+            WriteLine($"GetCallingAssembly().Location: '{Assembly.GetEntryAssembly()?.Location}'");
+
+            var me = Assembly.GetExecutingAssembly();
+            WriteLine($"FullName: {me.FullName}");
+            WriteLine($"AssemblyVersion: {me.GetName().Version}");
+            var assemblyVersion = FileVersionInfo.GetVersionInfo(me.Location);
+            var fileversion = assemblyVersion.FileVersion;
+            WriteLine($"FileVersion: {fileversion}");
+
+            fs.Flush();
         }
 
-        static public void Write(string s)
+        /// <summary>
+        /// Writes the line to the registration log.
+        /// </summary>
+        /// <param name="s">The s.</param>
+        public static void WriteLine(string s)
         {
-            if (fs != null)
-                fs.Write(s);
+            fs?.WriteLine(s);
         }
 
-        static public void NewLine()
+        /// <summary>
+        /// Writes the specified message to the registration log.
+        /// </summary>
+        /// <param name="s">The s.</param>
+        public static void Write(string s)
         {
-            if (fs != null)
-                fs.WriteLine();
+            fs?.Write(s);
         }
 
-        static public void  Flush()
+        /// <summary>
+        /// Creates new line in the registration log.
+        /// </summary>
+        public static void NewLine()
         {
-            if (fs != null)
-                fs.Flush();
+            fs?.WriteLine();
         }
 
-        static public void Close()
+        /// <summary>
+        /// Flushes stream to the registration log.
+        /// </summary>
+        public static void  Flush()
+        {
+            fs?.Flush();
+        }
+
+        /// <summary>
+        /// Closes the stream.
+        /// </summary>
+        public static void Close()
         {
             fs.Close();
             fs = null;

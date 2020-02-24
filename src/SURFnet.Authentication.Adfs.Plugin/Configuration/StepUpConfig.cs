@@ -157,8 +157,11 @@ namespace SURFnet.Authentication.Adfs.Plugin.Configuration
                         LoadConfigFromDefaultAppDomain();
                     } // else something has already set a StepUpSection
 
-                    if ( Section != null )   // Fill the Singleton only if there is a valid section
+                    if (Section != null)
+                    {
+                        // Fill the Singleton only if there is a valid section
                         current = Create(Section);
+                    }
 
                     initialized = true; // don't read again, also not on errors
                 }

@@ -22,7 +22,6 @@ namespace SURFnet.Authentication.Adfs.Plugin
 
     using Microsoft.IdentityServer.Web.Authentication.External;
 
-    using SURFnet.Authentication.Adfs.Plugin.Properties;
     using SURFnet.Authentication.Adfs.Plugin.Configuration;
 
     /// <summary>
@@ -38,11 +37,22 @@ namespace SURFnet.Authentication.Adfs.Plugin
     /// <seealso cref="IAuthenticationAdapterMetadata" />
     public class AdapterMetadata : IAuthenticationAdapterMetadata
     {
-        // See: Jon Skeet
+        /// <summary>
+        /// The instance. See: Jon Skeet
+        /// </summary>
         private static readonly AdapterMetadata instance = new AdapterMetadata();
+
+        /// <summary>
+        /// Initializes static members of the <see cref="AdapterMetadata"/> class.
+        /// </summary>
         static AdapterMetadata() { } // to make it lazy.
+
+        /// <summary>
+        /// Prevents a default instance of the <see cref="AdapterMetadata"/> class from being created.
+        /// </summary>
         private AdapterMetadata() { } // hide constructor from the world
-        static public AdapterMetadata Instance { get { return instance; } } // property to return the Singleton
+
+        public static AdapterMetadata Instance => instance; // property to return the Singleton
 
 
         /// <summary>

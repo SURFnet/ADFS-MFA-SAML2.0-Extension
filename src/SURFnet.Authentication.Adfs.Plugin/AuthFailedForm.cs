@@ -28,7 +28,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
         /// <summary>
         /// The status message.
         /// </summary>
-        private string statusMessage;
+        private readonly string statusMessage;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AuthFailedForm"/> class.

@@ -140,6 +140,7 @@
     <Compile Include="Repositories\ActiveDirectoryRepository.cs" />
     <Compile Include="Resources.cs" />
     <Compile Include="Services\CryptographicService.cs" />
+    <Compile Include="Services\LogService.cs" />
     <Compile Include="Services\RegistrationLog.cs" />
     <Compile Include="Services\SamlService.cs" />
   </ItemGroup>

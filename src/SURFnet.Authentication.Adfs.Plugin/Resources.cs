@@ -41,6 +41,16 @@ namespace SURFnet.Authentication.Adfs.Plugin
                 return Labels[lcid];
             }
 
+            return LoadLabelsFromResourceFile(lcid);
+        }
+
+        /// <summary>
+        /// Loads the labels from resource file.
+        /// </summary>
+        /// <param name="lcid">The lcid.</param>
+        /// <returns>The labels for the given lcid (or default fallback of lcid isn't found).</returns>
+        private static Dictionary<string, string> LoadLabelsFromResourceFile(int lcid)
+        {
             var assembly = Assembly.GetExecutingAssembly();
             var resourceName = $"SURFnet.Authentication.Adfs.Plugin.Resources.Labels.{lcid}.json";
 
@@ -50,7 +60,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
                 // Fallback to english
                 lcid = new CultureInfo("en-us").LCID;
                 resourceName = $"SURFnet.Authentication.Adfs.Plugin.Resources.Labels.{lcid}.json";
-                assembly.GetManifestResourceStream(resourceName);
+                stream = assembly.GetManifestResourceStream(resourceName);
             }
 
             if (stream == null)
@@ -60,17 +70,36 @@ namespace SURFnet.Authentication.Adfs.Plugin
                     $"Labels.{lcid}.json");
             }
 
+            if (Labels.ContainsKey(lcid))
+            {
+                return Labels[lcid];
+            }
+
+            var labels = ReadLabelsFromFile(lcid, stream);
+            return labels;
+        }
+
+        /// <summary>
+        /// Reads the labels from file.
+        /// </summary>
+        /// <param name="lcid">The lcid.</param>
+        /// <param name="stream">The stream.</param>
+        /// <returns>The labels.</returns>
+        private static Dictionary<string, string> ReadLabelsFromFile(int lcid, Stream stream)
+        {
             Dictionary<string, string> labels;
             using (stream)
-            using (var reader = new StreamReader(stream))
             {
-                var json = reader.ReadToEnd();
-                labels = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
-                if (labels == null)
+                using (var reader = new StreamReader(stream))
                 {
-                    throw new FileNotFoundException(
-                        $"Labels file for the LCID {lcid} is empty or in an unsupported format",
-                        $"Labels.{lcid}.json");
+                    var json = reader.ReadToEnd();
+                    labels = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
+                    if (labels == null)
+                    {
+                        throw new FileNotFoundException(
+                            $"Labels file for the LCID {lcid} is empty or in an unsupported format",
+                            $"Labels.{lcid}.json");
+                    }
                 }
             }
 
