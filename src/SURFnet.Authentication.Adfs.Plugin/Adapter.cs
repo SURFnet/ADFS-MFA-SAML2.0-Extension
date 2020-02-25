@@ -48,23 +48,34 @@ namespace SURFnet.Authentication.Adfs.Plugin
         /// </summary>
         private static readonly object SustainSysLock = new object();
 
+        internal static readonly string AdfsDir;
+
         /// <summary>
         /// Initializes static members of the <see cref="Adapter"/> class.
         /// </summary>
         static Adapter()
         {
+#if DEBUG
+            // While testing and debugging, assume that everything is in the same directory as the adapter.
+            // Which is also true in the ADFS AppDomain, in our current deployment.
+            string myassemblyname = Assembly.GetExecutingAssembly().Location;
+            AdfsDir = Path.GetDirectoryName(myassemblyname);
+#else
+            AdfsDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), "ADFS");
+#endif
+
             if (RegistrationLog.IsRegistration)
             {
                 // Not running under ADFS. I.e. test or registration context.....
                 try
                 {
                     // we do want to read our own configuration before the Registration CmdLet reads our metadata
-                    var adfsDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), "ADFS");
-                    RegistrationLog.WriteLine(adfsDir);
+                    RegistrationLog.WriteLine(AdfsDir);
                     var minimalLoa = RegistryConfiguration.GetMinimalLoa();
                     if (string.IsNullOrWhiteSpace(minimalLoa))
                     {
-                        RegistrationLog.WriteLine("Failed to get configuration from Registry");
+                        RegistrationLog.WriteLine("Failed to get configuration from Registry, using test url.");
+                        StepUpConfig.PreSet("http://test.surfconext.nl/assurance/sfo-level2");
                     }
                     else
                     {
@@ -81,18 +92,25 @@ namespace SURFnet.Authentication.Adfs.Plugin
             else
             {
                 // Running in ADFS AppDomain
-                LogService.InitializeLogger();
-                ReadConfigurationFromSection();
-                ConfigureSustainsys();
-
-                LogService.LogConfigOnce(AdapterMetadata.Instance);
+                ConfigureDependencies();
             }
 
         }
 
-        public Adapter()
+        /// <summary>
+        /// Called by static constructor and by testcode outside ADFS environment (to simulate static constructor).
+        /// After this method call, other parts of the adapter can be tested without ADFS.
+        /// </summary>
+        static public void ConfigureDependencies()
         {
-            LogService.PrepareCorrelatedLogger("000", "000");  // otherwise formatter will fail
+            LogService.InitializeLogger();
+            LogService.PrepareCorrelatedLogger("000", "000");
+
+            ReadConfigurationFromSection();  // read Adapter configuration
+
+            ConfigureSustainsys(); // read Sustainsys configuration
+
+            LogService.LogConfigOnce(AdapterMetadata.Instance);
         }
 
         /// <summary>
@@ -264,10 +282,8 @@ namespace SURFnet.Authentication.Adfs.Plugin
         {
             try
             {
-                var exePathSustainsys = Path.Combine(
-                    Environment.GetFolderPath(Environment.SpecialFolder.Windows),
-                    "ADFS",
-                    "Sustainsys.Saml2.dll");
+                string exePathSustainsys;
+                exePathSustainsys = Path.Combine(AdfsDir, "Sustainsys.Saml2.dll");
                 var configuration = ConfigurationManager.OpenExeConfiguration(exePathSustainsys);
 
                 Sustainsys.Saml2.Configuration.SustainsysSaml2Section.Configuration = configuration;

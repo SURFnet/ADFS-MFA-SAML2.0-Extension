@@ -159,6 +159,9 @@
     <Content Include="Setup\Config\SURFnet.Authentication.ADFS.MFA.Plugin.Environments.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="SURFnet.Authentication.ADFS.MFA.Plugin.log4net">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <None Include="Setup\Functions.ps1" />
     <None Include="Setup\SURFnetMFA\Add-EventLogForMfaPlugin.ps1" />
     <None Include="Setup\SURFnetMFA\Copy-Log4NetConfiguration.ps1" />
@@ -209,7 +212,6 @@
     <Binaries Include="$(ProjectDir)bin\$(Configuration)\SURFnet.Authentication.Adfs.Plugin.dll" />
     <Binaries Include="$(ProjectDir)bin\$(Configuration)\SURFnet.Authentication.Adfs.Plugin.dll.config" />
     <SetupFiles Include="$(ProjectDir)Setup\Install.ps1" />
-    <SetupFiles Include="$(ProjectDir)Setup\Config\SURFnet.Authentication.ADFS.MFA.Plugin.log4net" />
     <SetupFiles Include="$(ProjectDir)Setup\Uninstall.ps1" />
   </ItemGroup>
   <Target Name="BuildPackage">
