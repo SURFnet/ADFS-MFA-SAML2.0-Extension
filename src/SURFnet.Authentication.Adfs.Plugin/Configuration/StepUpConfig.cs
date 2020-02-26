@@ -94,7 +94,16 @@ namespace SURFnet.Authentication.Adfs.Plugin.Configuration
         /// Returns the singleton with the StepUp configuration.
         /// If it returns null (which is fatal), then use GetErrors() for the error string(s).
         /// </summary>
-        public static StepUpConfig Current => initialized ? current : Initialize();
+        static public StepUpConfig Current
+        {
+            get
+            {
+                if (initialized)
+                    return current; // already there
+                else
+                    return Initialize(); // Create one
+            }
+        }
 
         /// <summary>
         /// Reloads a configuration from a new section. For testing or updates in a running ADFS server.
@@ -105,9 +114,9 @@ namespace SURFnet.Authentication.Adfs.Plugin.Configuration
         {
             lock (InitLock)
             {
-                initialized = false;
                 Section = section;
                 current = null;
+                initialized = false;
             }
 
             return Current;  // This will initialize.
@@ -143,7 +152,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Configuration
         /// <returns>StepUpConfig.</returns>
         private static StepUpConfig Initialize()
         {
-            // is already tested (now lock and retest here)
+            // "initialized" was already tested (now lock and retest here)
             StepUpConfig rc;
             lock (InitLock)
             {
@@ -206,14 +215,29 @@ namespace SURFnet.Authentication.Adfs.Plugin.Configuration
             var localSpConfig = new LocalSPConfig();
             var stepUpIdPConfig = new StepUpIdPConfig();
 
-            var succeedded = true;
-            succeedded &= TrySetConfigSetting(section.Institution.SchacHomeOrganization, institutionConfig.SchacHomeOrganization);
-            succeedded &= TrySetConfigSetting(section.Institution.ActiveDirectoryUserIdAttribute, institutionConfig.ActiveDirectoryUserIdAttribute);
-            succeedded &= TrySetConfigSetting(section.LocalSP.SPSigningCertificate, localSpConfig.SPSigningCertificate);
-            succeedded &= TrySetConfigSetting(new Uri(section.LocalSP.MinimalLoa), localSpConfig.MinimalLoa);
-            succeedded &= TrySetConfigSetting(new Uri(section.StepUpIdP.SecondFactorEndpoint), stepUpIdPConfig.SecondFactorEndPoint);
+            var founderrors = false;
+            try
+            {
+                institutionConfig.SchacHomeOrganization = TrySetConfigSetting(section.Institution.SchacHomeOrganization, ref founderrors);
+                institutionConfig.ActiveDirectoryUserIdAttribute = TrySetConfigSetting(section.Institution.ActiveDirectoryUserIdAttribute, ref founderrors);
+                localSpConfig.SPSigningCertificate = TrySetConfigSetting(section.LocalSP.SPSigningCertificate, ref founderrors);
+                // now uris
+                localSpConfig.MinimalLoa = TrySetConfigUri(section.LocalSP.MinimalLoa, ref founderrors);
+                stepUpIdPConfig.SecondFactorEndPoint = TrySetConfigUri(section.StepUpIdP.SecondFactorEndpoint, ref founderrors);
+            }
+            catch (Exception ex)
+            {
+                // This will now stop at the first error...
 
-            if (succeedded)
+                // Fetching it from the section may throw on property access.
+                // Because it is all string, it will not. Unless a validation triggers.
+                // And besides that, the new Uri(string) constructor can throw...
+                // Which is now cought in TrySetConfigUri()
+                founderrors = true;
+                initErrors.AppendLine(ex.ToString());
+            }
+
+            if (founderrors == false)
             {
                 rc = new StepUpConfig
                 {
@@ -221,6 +245,23 @@ namespace SURFnet.Authentication.Adfs.Plugin.Configuration
                     LocalSpConfig = localSpConfig,
                     StepUpIdPConfig = stepUpIdPConfig
                 };
+            }
+
+            return rc;
+        }
+
+        private static Uri TrySetConfigUri(string source, ref bool founderrors)
+        {
+            Uri rc = null;
+
+            try
+            {
+                rc = new Uri(source);
+            }
+            catch (Exception ex)
+            {
+                founderrors = true;
+                initErrors.AppendLine(ex.ToString());
             }
 
             return rc;
@@ -235,20 +276,23 @@ namespace SURFnet.Authentication.Adfs.Plugin.Configuration
         /// <returns><c>true</c> if the configuration (source) is successfully read, <c>false</c> otherwise.</returns>
         // ReSharper disable once RedundantAssignment
         // ReSharper disable once UnusedParameter.Local
-        private static bool TrySetConfigSetting<T>(T source, T destination)
+        private static T TrySetConfigSetting<T>(T source, ref bool founderrors) where T : class
         {
-            //TODO: test this.
+            T rc = null;
+
             try
             {
-                // ReSharper disable once RedundantAssignment
-                destination = source;
-                return true;
+                rc = source;
             }
             catch (Exception ex)
             {
+                // I dont think this can ever throw...
+                // Assigning a reference to a reference of the same type (no compile errors)
+                founderrors = true;
                 initErrors.AppendLine(ex.ToString());
-                return false;
             }
+
+            return rc;
         }
 
         /// <summary>

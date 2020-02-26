@@ -98,19 +98,30 @@ namespace SURFnet.Authentication.Adfs.Plugin
         }
 
         /// <summary>
-        /// Called by static constructor and by testcode outside ADFS environment (to simulate static constructor).
+        /// Called by static constructor and by testcode outside ADFS environment (to simulate static constructor under ADFS).
         /// After this method call, other parts of the adapter can be tested without ADFS.
         /// </summary>
         static public void ConfigureDependencies()
         {
             LogService.InitializeLogger();
-            LogService.PrepareCorrelatedLogger("000", "000");
+            LogService.PrepareCorrelatedLogger("CfgDependencies", "CfgDependencies");
+#if DEBUG
+            LogService.Log.Info("Logging initialized");
+#endif
 
-            ReadConfigurationFromSection();  // read Adapter configuration
+            try
+            {
+                ReadConfigurationFromSection();  // read Adapter configuration
 
-            ConfigureSustainsys(); // read Sustainsys configuration
+                ConfigureSustainsys(); // read Sustainsys configuration
 
-            LogService.LogConfigOnce(AdapterMetadata.Instance);
+                LogService.LogConfigOnce(AdapterMetadata.Instance);
+            }
+            catch ( Exception ex )
+            {
+                LogService.Log.Fatal(ex.ToString());
+                // TODO: should retrow or something
+            }
         }
 
         /// <summary>
@@ -295,43 +306,53 @@ namespace SURFnet.Authentication.Adfs.Plugin
                 }
                 catch (Exception ex)
                 {
-                    LogService.Log.Fatal("Accessing Sustainsys configuration failed", ex);
+                    LogService.Log.Fatal("Accessing Sustainsys configuration failed \r\n"+ex.ToString());
                 }
             }
             catch (Exception ex)
             {
-                LogService.Log.Fatal("Fatal Sustainsys OpenExeConfiguration method call", ex);
+                LogService.Log.Fatal("Fatal Sustainsys OpenExeConfiguration method call\r\n" + ex.ToString());
                 throw; //todo: Need to rethrow?
             }
         }
-        
+
         /// <summary>
         /// Reads the configuration from section.
         /// </summary>
         private static void ReadConfigurationFromSection()
         {
-            if (RegistrationLog.IsRegistration)
-            {
-                return;
-            }
-
             var adapterAssembly = Assembly.GetExecutingAssembly();
             var assemblyConfigPath = adapterAssembly.Location + ".config";
 
-            var map = new ExeConfigurationFileMap
+            try
             {
-                ExeConfigFilename = assemblyConfigPath
-            };
-            var cfg = ConfigurationManager.OpenMappedExeConfiguration(map, ConfigurationUserLevel.None);
-
-            var stepUpSection = (StepUpSection)cfg.GetSection(StepUpSection.AdapterSectionName);
-            if (stepUpSection != null)
-            {
-                StepUpConfig.Reload(stepUpSection);
-                if (StepUpConfig.Current == null)
+                var map = new ExeConfigurationFileMap
                 {
-                    throw new ApplicationException($"Cannot load Stepup config. Details: '{StepUpConfig.GetErrors()}'");
+                    ExeConfigFilename = assemblyConfigPath
+                };
+                var cfg = ConfigurationManager.OpenMappedExeConfiguration(map, ConfigurationUserLevel.None);
+
+                var stepUpSection = (StepUpSection)cfg.GetSection(StepUpSection.AdapterSectionName);
+                if (stepUpSection != null)
+                {
+                    StepUpConfig.Reload(stepUpSection);
+                    if (StepUpConfig.Current == null)
+                    {
+                        // Write to our StepUp eventlog?
+                        LogService.Log.Fatal(StepUpConfig.GetErrors());
+
+                        // deliberately a throw to get it into the ADFS log
+                        // throw new ApplicationException($"Cannot load Stepup config. Details: '{StepUpConfig.GetErrors()}'");
+                        // outer catch would not give it to ADFS.
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                // TODO: consider what and where to log, it is totally fatal.
+                // Both: OpenMappedExeConfiguration()  and  GetSection() may throw.
+                // They will throw if there are configuration errors. Catch seperately?
+                throw new ApplicationException(ex.ToString());
             }
         }
 

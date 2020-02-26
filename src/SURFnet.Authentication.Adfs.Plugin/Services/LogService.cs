@@ -102,6 +102,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
         public static void LogCurrentConfiguration(IAuthenticationAdapterMetadata metadata)
         {
             var sb = new StringBuilder();
+            sb.AppendLine($"File version: {AdapterVersion.FileVersion}");
+            sb.AppendLine($"Product version: {AdapterVersion.ProductVersion}");
             sb.AppendLine("Current plugin configuration");
             sb.AppendLine($"SchacHomeOrganization: {StepUpConfig.Current.InstitutionConfig.SchacHomeOrganization}");
             sb.AppendLine($"ActiveDirectoryUserIdAttribute: {StepUpConfig.Current.InstitutionConfig.ActiveDirectoryUserIdAttribute}");
@@ -110,8 +112,6 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
             sb.AppendLine($"SecondFactorEndPoint: {StepUpConfig.Current.StepUpIdPConfig.SecondFactorEndPoint.OriginalString}");
 
             sb.AppendLine("Plugin Metadata:");
-            sb.AppendLine($"File version: {AdapterVersion.FileVersion}");
-            sb.AppendLine($"Product version: {AdapterVersion.ProductVersion}");
             foreach (var am in metadata.AuthenticationMethods)
             {
                 sb.AppendLine($"AuthenticationMethod: '{am}'");
@@ -125,9 +125,13 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
             try
             {
                 var options = Sustainsys.Saml2.Configuration.Options.FromConfiguration;
-                sb.AppendLine($"AssertionConsumerService: '{options.SPOptions.ReturnUrl.OriginalString}'"); //todo:#162476774 testen: moet poortnummer bij zitten
+                //todo:#162476774 testen: moet poortnummer bij zitten
+                // Dat gaat over iets heel anders en zeker niet de returnUrl.
+                // Het gaat om wat er doorgegeven wordt aan Surfnet, niet om wat er in de eventlog komt.
+                //sb.AppendLine($"AssertionConsumerService: '{options.SPOptions.ReturnUrl.OriginalString}'"); 
                 sb.AppendLine($"ServiceProvider.EntityId: '{options.SPOptions.EntityId.Id}'");
                 sb.AppendLine($"IdentityProvider.EntityId: '{SamlService.GetIdentityProvider(options).EntityId.Id}'");
+                // TODO: we need moere: also signing cert of Stepup gatway.
             }
             catch (Exception ex)
             {
