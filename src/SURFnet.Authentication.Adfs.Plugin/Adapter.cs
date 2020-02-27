@@ -14,23 +14,24 @@
 * limitations under the License.
 */
 
-using SURFnet.Authentication.Adfs.Plugin.Configuration;
-using SURFnet.Authentication.Adfs.Plugin.Extensions;
-using SURFnet.Authentication.Adfs.Plugin.Models;
-using SURFnet.Authentication.Adfs.Plugin.Services;
-
 namespace SURFnet.Authentication.Adfs.Plugin
 {
     using System;
     using System.Configuration;
-    using Microsoft.IdentityModel.Tokens.Saml2;
+    using System.IO;
     using System.Net;
+    using System.Reflection;
     using System.Security.Claims;
-    using Sustainsys.Saml2.Saml2P;
+
+    using Microsoft.IdentityModel.Tokens.Saml2;
     using Microsoft.IdentityServer.Web.Authentication.External;
 
-    using System.IO;
-    using System.Reflection;
+    using SURFnet.Authentication.Adfs.Plugin.Configuration;
+    using SURFnet.Authentication.Adfs.Plugin.Extensions;
+    using SURFnet.Authentication.Adfs.Plugin.Models;
+    using SURFnet.Authentication.Adfs.Plugin.Services;
+
+    using Sustainsys.Saml2.Saml2P;
 
     /// <summary>
     /// The ADFS MFA Adapter.
@@ -38,18 +39,21 @@ namespace SURFnet.Authentication.Adfs.Plugin
     /// <seealso cref="IAuthenticationAdapter" />
     public class Adapter : IAuthenticationAdapter
     {
-       /// <summary>
-        /// Indicates whether the sustain sys is initialized.
+        /// <summary>
+        /// The adfs dir.
         /// </summary>
-        private static bool sustainSysConfigured;
+        internal static readonly string AdfsDir;
 
         /// <summary>
         /// Lock for initializing the sustain system.
         /// </summary>
         private static readonly object SustainSysLock = new object();
 
-        internal static readonly string AdfsDir;
-
+        /// <summary>
+        /// Indicates whether the sustain sys is initialized.
+        /// </summary>
+        private static bool sustainSysConfigured;
+        
         /// <summary>
         /// Initializes static members of the <see cref="Adapter"/> class.
         /// </summary>
@@ -58,7 +62,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
 #if DEBUG
             // While testing and debugging, assume that everything is in the same directory as the adapter.
             // Which is also true in the ADFS AppDomain, in our current deployment.
-            string myassemblyname = Assembly.GetExecutingAssembly().Location;
+            var myassemblyname = Assembly.GetExecutingAssembly().Location;
             AdfsDir = Path.GetDirectoryName(myassemblyname);
 #else
             AdfsDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), "ADFS");
@@ -94,14 +98,13 @@ namespace SURFnet.Authentication.Adfs.Plugin
                 // Running in ADFS AppDomain
                 ConfigureDependencies();
             }
-
         }
 
         /// <summary>
         /// Called by static constructor and by testcode outside ADFS environment (to simulate static constructor under ADFS).
         /// After this method call, other parts of the adapter can be tested without ADFS.
         /// </summary>
-        static public void ConfigureDependencies()
+        public static void ConfigureDependencies()
         {
             LogService.InitializeLogger();
             LogService.PrepareCorrelatedLogger("CfgDependencies", "CfgDependencies");
@@ -117,7 +120,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
 
                 LogService.LogConfigOnce(AdapterMetadata.Instance);
             }
-            catch ( Exception ex )
+            catch (Exception ex)
             {
                 LogService.Log.Fatal(ex.ToString());
                 // TODO: should retrow or something
@@ -149,7 +152,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
 
                 var requestId = $"_{context.ContextId}";
                 var authRequest = SamlService.CreateAuthnRequest(identityClaim, requestId, httpListenerRequest.Url);
-                
+
                 using (var cryptographicService = new CryptographicService())
                 {
                     LogService.Log.DebugFormat("Signing AuthnRequest with id {0}", requestId);
@@ -176,7 +179,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
         {
             // Officially we should check here if the user has the proper attribute in the AD to do Stepup.
             // But we do not do that until the BeginAuthentication. Which is wrong.....
-
+   
             LogService.PrepareCorrelatedLogger(context.ContextId, context.ActivityId);
             return true;
         }
@@ -228,7 +231,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
             LogService.PrepareCorrelatedLogger(context.ContextId, context.ActivityId);
             LogService.Log.Debug("Enter TryEndAuthentication");
             LogService.Log.DebugFormat("context.Lcid={0}", context.Lcid);
-            
+
             LogService.Log.DebugLogDictionary(context.Data, "context.Data");
             LogService.Log.DebugLogDictionary(proofData.Properties, "proofData.Properties");
 
@@ -306,7 +309,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
                 }
                 catch (Exception ex)
                 {
-                    LogService.Log.Fatal("Accessing Sustainsys configuration failed \r\n"+ex.ToString());
+                    LogService.Log.Fatal("Accessing Sustainsys configuration failed \r\n" + ex.ToString());
                 }
             }
             catch (Exception ex)

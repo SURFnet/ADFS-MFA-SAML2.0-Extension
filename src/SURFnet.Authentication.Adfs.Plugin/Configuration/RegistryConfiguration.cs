@@ -49,12 +49,6 @@ namespace SURFnet.Authentication.Adfs.Plugin.Configuration
         /// </summary>
         private const string RegistrationValue = "Registration";
 
-        /// <summary>
-        /// The allowed log levels.
-        /// </summary>
-        private static readonly List<string> AllowedLogLevels = new List<string> { "ALL", "DEBUG", "INFO", "WARN", "ERROR", "FATAL", "OFF" };
-
-
         public string PluginRoot { get; private set; } = PluginRootKey;
 
         /// <summary>
@@ -79,42 +73,6 @@ namespace SURFnet.Authentication.Adfs.Plugin.Configuration
             }
 
             return rc;
-        }
-
-        /// <summary>
-        /// Gets the log level.
-        /// </summary>
-        /// <returns>System.String.</returns>
-        public static string GetLogLevel()
-        {
-            var root = new RegistryConfiguration().GetSurfNetPluginRoot();
-            if (root == null)
-            {
-                return null;
-            }
-
-            root = root.OpenSubKey("LogLevel");
-            var value = root?.GetValue("LogLevel");
-
-            var rc = string.Empty;
-            if (value != null)
-            {
-                rc = (string)value;
-            }
-
-            rc = ValidateLogLevel(rc);
-
-            return rc;
-        }
-
-        /// <summary>
-        /// Validates the log level in the registery against the allowd log levels for this plugin.
-        /// </summary>
-        /// <param name="rc">The rc.</param>
-        /// <returns>System.String.</returns>
-        private static string ValidateLogLevel(string rc)
-        {
-            return rc != null && AllowedLogLevels.Contains(rc.ToUpper()) ? rc : "ERROR";
         }
 
         /// <summary>

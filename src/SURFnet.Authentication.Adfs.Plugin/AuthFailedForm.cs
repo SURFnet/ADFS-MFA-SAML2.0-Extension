@@ -62,6 +62,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
 
             var builder = new StringBuilder(Resources.GetForm("AuthFailedForm"));
             builder.Replace("{message}", message);
+            builder.Replace("%ERROR_0001%", Resources.GetLabel(lcid, "ERROR_0001"));
             return builder.ToString();
         }
 

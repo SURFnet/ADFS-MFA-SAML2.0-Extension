@@ -60,22 +60,6 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
         }
 
         /// <summary>
-        /// Sets the desired log level based on the registery value.
-        /// </summary>
-        public static void SetDesiredLogLevel()
-        {
-            var level = RegistryConfiguration.GetLogLevel();
-            var repos = LogManager.GetAllRepositories();
-            foreach (var repo in repos)
-            {
-                OptionConverter.ConvertStringTo(typeof(Level), level);
-                var r = (Hierarchy)repo;
-                r.Root.Level = r.LevelMap[level] ;
-                r.RaiseConfigurationChanged(EventArgs.Empty);
-            }
-        }
-
-        /// <summary>
         /// This logs the configuration only once per ADFS server startup.
         /// Using the local ILog instance. With an instance method.  :-)
         /// In fact the protection is not really required because the *current* ADFS server
@@ -141,6 +125,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
 
             Log.Info(sb);
         }
+
         /// <summary>
         /// Appends the context and activity id to each log line.
         /// </summary>
