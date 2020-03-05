@@ -18,6 +18,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Configuration
 {
     using Microsoft.Win32;
 
+    using SURFnet.Authentication.Adfs.Plugin.Exceptions;
+
     /// <summary>
     /// Registration time only class.
     /// Root: HKLM\Software\Surfnet\Authentication\ADFS\Plugin
@@ -63,17 +65,13 @@ namespace SURFnet.Authentication.Adfs.Plugin.Configuration
             var root = new RegistryConfiguration().GetSurfNetPluginRoot();
             if (root == null)
             {
-                return null;
+                throw new InvalidConfigurationException("Missing Surfnet authentication configuration in the registery");
             }
 
             root = root.OpenSubKey("LocalSP");
             var value = root?.GetValue("MinimalLoa");
 
-            var rc = string.Empty;
-            if (value != null)
-            {
-                rc = (string)value;
-            }
+            var rc = (string)value ?? throw new InvalidConfigurationException("Missing setting MinimalLoa in registery in subkey LocalSP");
 
             return rc;
         }
@@ -89,7 +87,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Configuration
 
             try
             {
-                var subKey = pluginbase.OpenSubKey(PluginRoot);
+                var subKey = pluginbase.OpenSubKey(this.PluginRoot);
                 if (subKey != null)
                 {
                     pluginbase = subKey; // at the base of the plugin(s)

@@ -27,6 +27,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
     using Microsoft.IdentityServer.Web.Authentication.External;
 
     using SURFnet.Authentication.Adfs.Plugin.Configuration;
+    using SURFnet.Authentication.Adfs.Plugin.Exceptions;
     using SURFnet.Authentication.Adfs.Plugin.Extensions;
     using SURFnet.Authentication.Adfs.Plugin.Models;
     using SURFnet.Authentication.Adfs.Plugin.Services;
@@ -53,7 +54,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
         /// Indicates whether the sustain sys is initialized.
         /// </summary>
         private static bool sustainSysConfigured;
-        
+
         /// <summary>
         /// Initializes static members of the <see cref="Adapter"/> class.
         /// </summary>
@@ -76,19 +77,17 @@ namespace SURFnet.Authentication.Adfs.Plugin
                     // we do want to read our own configuration before the Registration CmdLet reads our metadata
                     RegistrationLog.WriteLine(AdfsDir);
                     var minimalLoa = RegistryConfiguration.GetMinimalLoa();
-                    if (string.IsNullOrWhiteSpace(minimalLoa))
-                    {
-                        RegistrationLog.WriteLine("Failed to get configuration from Registry, using test url.");
-                        StepUpConfig.PreSet("http://test.surfconext.nl/assurance/sfo-level2");
-                    }
-                    else
-                    {
-                        StepUpConfig.PreSet(minimalLoa);
-                    }
+                    StepUpConfig.PreSet(minimalLoa);
+
+                }
+                catch (InvalidConfigurationException)
+                {
+                    RegistrationLog.WriteLine("Failed to get configuration from Registry, using test url.");
+                    StepUpConfig.PreSet("http://test.surfconext.nl/assurance/sfo-level2");
                 }
                 catch (Exception e)
                 {
-                    RegistrationLog.WriteLine($"Failed to load minimal LOA. Details: '{e.GetBaseException().Message}'");
+                    RegistrationLog.WriteLine($"Failed to load minimal LOA. Details: '{e.GetBaseException()}'");
                 }
 
                 RegistrationLog.WriteLine("Finishing static Adapter constructor");
@@ -100,7 +99,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
                 ConfigureDependencies();
             }
         }
-        
+
         /// <summary>
         /// Gets the metadata Singleton.
         /// </summary>
@@ -130,7 +129,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
             catch (Exception ex)
             {
                 LogService.Log.Fatal(ex.ToString());
-                // TODO: should retrow or something
+                throw;
             }
         }
 
@@ -161,10 +160,23 @@ namespace SURFnet.Authentication.Adfs.Plugin
                     return new AuthForm(StepUpConfig.Current.StepUpIdPConfig.SecondFactorEndPoint, signedXml);
                 }
             }
+            catch (SurfNetException ex)
+            {
+                if (ex.IsTransient)
+                {
+                    LogService.Log.WarnFormat("Transient error while initiating authentication: {0}", ex);
+                }
+                else
+                {
+                    LogService.Log.FatalFormat("Fatal error while initiating authentication: {0}", ex);
+                }
+
+                return new AuthFailedForm(ex.IsTransient, ex.MessageResourceId, context.ContextId, context.ActivityId);
+            }
             catch (Exception ex)
             {
-                LogService.Log.ErrorFormat("Error while initiating authentication: {0}", ex.Message);
-                return new AuthFailedForm();
+                LogService.Log.FatalFormat("Unexpexted error while initiating authentication: {0}", ex);
+                return new AuthFailedForm(false, Constants.DefaultErrorMessageResourcerId, context.ContextId, context.ActivityId);
             }
         }
 
@@ -180,7 +192,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
         {
             // Officially we should check here if the user has the proper attribute in the AD to do Stepup.
             // But we do not do that until the BeginAuthentication. Which is wrong.....
-   
+
             LogService.PrepareCorrelatedLogger(context.ContextId, context.ActivityId);
             return true;
         }
@@ -212,8 +224,9 @@ namespace SURFnet.Authentication.Adfs.Plugin
         /// </returns>
         public IAdapterPresentation OnError(HttpListenerRequest request, ExternalAuthenticationException ex)
         {
-            LogService.Log.ErrorFormat("Error occured: {0}", ex.Message);
-            return new AuthFailedForm(ex.Message);
+            LogService.PrepareCorrelatedLogger(ex.Context.ContextId, ex.Context.ActivityId);
+            LogService.Log.ErrorFormat("Error occured: {0}", ex);
+            return new AuthFailedForm(false, Constants.DefaultErrorMessageResourcerId, ex.Context.ContextId, ex.Context.ActivityId);
         }
 
         /// <summary>
@@ -244,7 +257,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
                 var samlResponse = new Saml2Response(response.SamlResponse, new Saml2Id(requestId));
                 if (samlResponse.Status != Saml2StatusCode.Success)
                 {
-                    return new AuthFailedForm(samlResponse.StatusMessage);
+                    return new AuthFailedForm(false, Constants.DefaultVerificationFailedResourcerId, context.ContextId, context.ActivityId);
                 }
 
                 claims = SamlService.VerifyResponseAndGetAuthenticationClaim(samlResponse);
@@ -267,8 +280,8 @@ namespace SURFnet.Authentication.Adfs.Plugin
             }
             catch (Exception ex)
             {
-                LogService.Log.ErrorFormat("Error while processing the saml response. Details: {0}", ex.Message);
-                return new AuthFailedForm();
+                LogService.Log.FatalFormat("Error while processing the saml response. Details: {0}", ex.Message);
+                return new AuthFailedForm(false, Constants.DefaultErrorMessageResourcerId, context.ContextId, context.ActivityId);
             }
         }
 
@@ -297,26 +310,16 @@ namespace SURFnet.Authentication.Adfs.Plugin
         {
             try
             {
-                string exePathSustainsys;
-                exePathSustainsys = Path.Combine(AdfsDir, "Sustainsys.Saml2.dll");
+                var exePathSustainsys = Path.Combine(AdfsDir, "Sustainsys.Saml2.dll");
                 var configuration = ConfigurationManager.OpenExeConfiguration(exePathSustainsys);
-
                 Sustainsys.Saml2.Configuration.SustainsysSaml2Section.Configuration = configuration;
-
+                
                 // Call now to localize/isolate parsing errors.
-                try
-                {
-                    var unused = Sustainsys.Saml2.Configuration.Options.FromConfiguration;
-                }
-                catch (Exception ex)
-                {
-                    LogService.Log.Fatal($"Accessing Sustainsys configuration failed \r\n {ex}");
-                }
+                var unused = Sustainsys.Saml2.Configuration.Options.FromConfiguration;
             }
             catch (Exception ex)
             {
-                LogService.Log.Fatal("Fatal Sustainsys OpenExeConfiguration method call\r\n" + ex.ToString());
-                throw; //todo: Need to rethrow?
+                throw new InvalidConfigurationException("Accessing Sustainsys configuration failed", ex);
             }
         }
 
@@ -328,37 +331,24 @@ namespace SURFnet.Authentication.Adfs.Plugin
             var adapterAssembly = Assembly.GetExecutingAssembly();
             var assemblyConfigPath = adapterAssembly.Location + ".config";
 
-            try
+            var map = new ExeConfigurationFileMap
             {
-                var map = new ExeConfigurationFileMap
-                {
-                    ExeConfigFilename = assemblyConfigPath
-                };
-                var cfg = ConfigurationManager.OpenMappedExeConfiguration(map, ConfigurationUserLevel.None);
+                ExeConfigFilename = assemblyConfigPath
+            };
+            var cfg = ConfigurationManager.OpenMappedExeConfiguration(map, ConfigurationUserLevel.None);
 
-                var stepUpSection = (StepUpSection)cfg.GetSection(StepUpSection.AdapterSectionName);
-                if (stepUpSection != null)
-                {
-                    StepUpConfig.Reload(stepUpSection);
-                    if (StepUpConfig.Current == null)
-                    {
-                        // Write to our StepUp eventlog?
-                        LogService.Log.Fatal(StepUpConfig.GetErrors());
-
-                        // deliberately a throw to get it into the ADFS log
-                        // throw new ApplicationException($"Cannot load Stepup config. Details: '{StepUpConfig.GetErrors()}'");
-                        // outer catch would not give it to ADFS.
-                    }
-                }
+            var stepUpSection = (StepUpSection)cfg.GetSection(StepUpSection.AdapterSectionName);
+            if (stepUpSection == null)
+            {
+                throw new InvalidConfigurationException($"Missing StepUp configuration. Expected config at '{assemblyConfigPath}'");
             }
-            catch (Exception ex)
+
+            StepUpConfig.Reload(stepUpSection);
+            if (StepUpConfig.Current == null)
             {
-                // TODO: consider what and where to log, it is totally fatal.
-                // Both: OpenMappedExeConfiguration()  and  GetSection() may throw.
-                // They will throw if there are configuration errors. Catch seperately?
-                throw new ApplicationException(ex.ToString());
+                LogService.Log.Fatal(StepUpConfig.GetErrors());
+                throw new InvalidConfigurationException($"Cannot load StepUp config. Details: '{StepUpConfig.GetErrors()}'");
             }
         }
-
     }
 }

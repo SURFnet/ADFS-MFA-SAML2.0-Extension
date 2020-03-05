@@ -128,6 +128,11 @@
     <Compile Include="Configuration\StepUpIdPConfig.cs" />
     <Compile Include="Configuration\StepUpIdPElement.cs" />
     <Compile Include="Configuration\StepUpSection.cs" />
+    <Compile Include="Constants.cs" />
+    <Compile Include="Exceptions\StepUpExceptions.cs" />
+    <Compile Include="Exceptions\ActiveDirectoryConfigurationException.cs" />
+    <Compile Include="Exceptions\InvalidConfigurationException.cs" />
+    <Compile Include="Exceptions\SurfNetException.cs" />
     <Compile Include="Extensions\LogExtensions.cs" />
     <Compile Include="Models\Saml2AuthenticationSecondFactorRequest.cs" />
     <Compile Include="Models\SecondFactorAuthResponse.cs" />

@@ -75,10 +75,23 @@ namespace SURFnet.Authentication.Adfs.Plugin
             {
                 return key;
             }
-            
-            return formattedValues != null
-                ? string.Format(label, formattedValues)
-                : label;
+
+            var result = label;
+
+            if (formattedValues != null)
+            {
+                try
+                {
+                    result = string.Format(label, formattedValues);
+                }
+                catch
+                {
+                    // Return just the unformatted label if there's an error with formatting the label
+                    result = label;
+                }
+            }
+
+            return result;
         }
 
         /// <summary>

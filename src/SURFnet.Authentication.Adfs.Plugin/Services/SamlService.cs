@@ -31,6 +31,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
 
     using Repositories;
 
+    using SURFnet.Authentication.Adfs.Plugin.Exceptions;
+
     using Sustainsys.Saml2;
     using Sustainsys.Saml2.Configuration;
     using Sustainsys.Saml2.Saml2P;
@@ -61,13 +63,13 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
             var samlConfiguration = Options.FromConfiguration;
             if (samlConfiguration == null)
             {
-                throw new Exception("The SAML configuration could not be loaded");
+                throw new InvalidConfigurationException("ERROR_0002", "The SAML configuration could not be loaded");
             }
 
             var spConfiguration = samlConfiguration.SPOptions;
             if (spConfiguration == null)
             {
-                throw new Exception("The service provider section of the SAML configuration could not be loaded");
+                throw new InvalidConfigurationException("ERROR_0002", "The service provider section of the SAML configuration could not be loaded");
             }
 
             var nameIdentifier = new Saml2NameIdentifier(GetNameId(identityClaim), new Uri("urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified"));
@@ -119,12 +121,12 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
             var providers = serviceProviderConfiguration.IdentityProviders.KnownIdentityProviders.ToList();
             if (providers.Count == 0)
             {
-                throw new Exception("No identity providers found. Add the SURFConext identity provider before using Second Factor Authentication");
+                throw new InvalidConfigurationException("ERROR_0002", "No identity providers found. Add the SURFConext identity provider before using Second Factor Authentication");
             }
 
             if (providers.Count > 1)
             {
-                throw new Exception("Too many identity providers found. Add only the SURFConext identity provider");
+                throw new InvalidConfigurationException("ERROR_0002", "Too many identity providers found. Add only the SURFConext identity provider");
             }
 
             return providers[0];
