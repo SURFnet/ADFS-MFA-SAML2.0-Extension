@@ -38,7 +38,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
         /// The log initialize lock.
         /// </summary>
         private static readonly object LogInitLock = new object();
-        
+
         /// <summary>
         /// Initializes the logger once.
         /// </summary>
@@ -65,6 +65,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
         /// In fact the protection is not really required because the *current* ADFS server
         /// initializes instances sequentially.
         /// </summary>
+        /// <param name="metadata">The metadata.</param>
         public static void LogConfigOnce(IAuthenticationAdapterMetadata metadata)
         {
             if (configLogged == false)
@@ -83,6 +84,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
         /// <summary>
         /// Logs the current configuration for troubleshooting purposes.
         /// </summary>
+        /// <param name="metadata">The metadata.</param>
         public static void LogCurrentConfiguration(IAuthenticationAdapterMetadata metadata)
         {
             var sb = new StringBuilder();
@@ -100,6 +102,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
             {
                 sb.AppendLine($"AuthenticationMethod: '{am}'");
             }
+
             foreach (var ic in metadata.IdentityClaims)
             {
                 sb.AppendLine($"IdentityClaim: '{ic}'");
@@ -109,10 +112,6 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
             try
             {
                 var options = Sustainsys.Saml2.Configuration.Options.FromConfiguration;
-                //todo:#162476774 testen: moet poortnummer bij zitten
-                // Dat gaat over iets heel anders en zeker niet de returnUrl.
-                // Het gaat om wat er doorgegeven wordt aan Surfnet, niet om wat er in de eventlog komt.
-                //sb.AppendLine($"AssertionConsumerService: '{options.SPOptions.ReturnUrl.OriginalString}'"); 
                 sb.AppendLine($"ServiceProvider.EntityId: '{options.SPOptions.EntityId.Id}'");
                 sb.AppendLine($"IdentityProvider.EntityId: '{SamlService.GetIdentityProvider(options).EntityId.Id}'");
                 // TODO: we need moere: also signing cert of Stepup gatway.

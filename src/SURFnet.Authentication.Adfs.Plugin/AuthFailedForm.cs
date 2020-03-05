@@ -14,11 +14,12 @@
 * limitations under the License.
 */
 
-using System.Text;
-using Microsoft.IdentityServer.Web.Authentication.External;
-
 namespace SURFnet.Authentication.Adfs.Plugin
 {
+    using System.Text;
+
+    using Microsoft.IdentityServer.Web.Authentication.External;
+
     /// <summary>
     /// The presentation form for the adapter.
     /// </summary>
@@ -35,7 +36,6 @@ namespace SURFnet.Authentication.Adfs.Plugin
         /// </summary>
         public AuthFailedForm()
         {
-
         }
 
         /// <summary>

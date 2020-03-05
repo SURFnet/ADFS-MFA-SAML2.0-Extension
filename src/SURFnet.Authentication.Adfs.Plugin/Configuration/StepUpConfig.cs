@@ -14,12 +14,12 @@
 * limitations under the License.
 */
 
-using System;
-using System.Configuration;
-using System.Text;
-
 namespace SURFnet.Authentication.Adfs.Plugin.Configuration
 {
+    using System;
+    using System.Configuration;
+    using System.Text;
+
     /// <summary>
     /// This class implements a singleton with the StepUp Adapter configuration.
     /// Just call the static property 'Current' and there it is.
@@ -35,19 +35,11 @@ namespace SURFnet.Authentication.Adfs.Plugin.Configuration
     /// </summary>
     public class StepUpConfig
     {
+        /// <summary>
         /// Each time an error occurs, store it here.
         /// After Initialize() it will be available through the GetErrors() method.
-        private static StringBuilder initErrors;
-
-        /// <summary>
-        /// This property is for the StepUpSection.
-        /// It is public to enable overriding the location of the config file,
-        /// by inserting the ConfigurationSection. Otherwise it will read from the AppDomain.
-        /// If needed (non-standard names), do use an Open[Mapped]ExeConfiguration() variant
-        /// and then GetSection(). Do catch exceptions and check null returns before
-        /// inserting it here.
         /// </summary>
-        public static StepUpSection Section { get; private set; }
+        private static StringBuilder initErrors;
 
         /// <summary>
         /// Indicate whether the StepUp config is initialized.
@@ -72,6 +64,16 @@ namespace SURFnet.Authentication.Adfs.Plugin.Configuration
         }
 
         /// <summary>
+        /// This property is for the StepUpSection.
+        /// It is public to enable overriding the location of the config file,
+        /// by inserting the ConfigurationSection. Otherwise it will read from the AppDomain.
+        /// If needed (non-standard names), do use an Open[Mapped]ExeConfiguration() variant
+        /// and then GetSection(). Do catch exceptions and check null returns before
+        /// inserting it here.
+        /// </summary>
+        public static StepUpSection Section { get; private set; }
+
+        /// <summary>
         /// Gets the institution configuration.
         /// </summary>
         /// <value>The institution configuration.</value>
@@ -89,19 +91,22 @@ namespace SURFnet.Authentication.Adfs.Plugin.Configuration
         /// <value>The step up identity provider configuration.</value>
         public StepUpIdPConfig StepUpIdPConfig { get; private set; }
 
-
         /// <summary>
         /// Returns the singleton with the StepUp configuration.
         /// If it returns null (which is fatal), then use GetErrors() for the error string(s).
         /// </summary>
-        static public StepUpConfig Current
+        public static StepUpConfig Current
         {
             get
             {
                 if (initialized)
+                {
                     return current; // already there
+                }
                 else
+                {
                     return Initialize(); // Create one
+                }
             }
         }
 
@@ -147,9 +152,18 @@ namespace SURFnet.Authentication.Adfs.Plugin.Configuration
         }
 
         /// <summary>
+        /// Gets the errors.
+        /// </summary>
+        /// <returns>The errors.</returns>
+        public static string GetErrors()
+        {
+            return initErrors.ToString();
+        }
+
+        /// <summary>
         /// Initializes the StepUp configuration.
         /// </summary>
-        /// <returns>StepUpConfig.</returns>
+        /// <returns>The StepUp Configuration.</returns>
         private static StepUpConfig Initialize()
         {
             // "initialized" was already tested (now lock and retest here)
@@ -216,14 +230,74 @@ namespace SURFnet.Authentication.Adfs.Plugin.Configuration
             var stepUpIdPConfig = new StepUpIdPConfig();
 
             var founderrors = false;
+
             try
             {
-                institutionConfig.SchacHomeOrganization = TrySetConfigSetting(section.Institution.SchacHomeOrganization, ref founderrors);
-                institutionConfig.ActiveDirectoryUserIdAttribute = TrySetConfigSetting(section.Institution.ActiveDirectoryUserIdAttribute, ref founderrors);
-                localSpConfig.SPSigningCertificate = TrySetConfigSetting(section.LocalSP.SPSigningCertificate, ref founderrors);
-                // now uris
-                localSpConfig.MinimalLoa = TrySetConfigUri(section.LocalSP.MinimalLoa, ref founderrors);
-                stepUpIdPConfig.SecondFactorEndPoint = TrySetConfigUri(section.StepUpIdP.SecondFactorEndpoint, ref founderrors);
+                institutionConfig.SchacHomeOrganization = section.Institution.SchacHomeOrganization;
+            }
+            catch (Exception ex)
+            {
+                // This will now stop at the first error...
+
+                // Fetching it from the section may throw on property access.
+                // Because it is all string, it will not. Unless a validation triggers.
+                // And besides that, the new Uri(string) constructor can throw...
+                // Which is now cought in TrySetConfigUri()
+                founderrors = true;
+                initErrors.AppendLine(ex.ToString());
+            }
+
+            try
+            {
+                institutionConfig.ActiveDirectoryUserIdAttribute = section.Institution.ActiveDirectoryUserIdAttribute;
+            }
+            catch (Exception ex)
+            {
+                // This will now stop at the first error...
+
+                // Fetching it from the section may throw on property access.
+                // Because it is all string, it will not. Unless a validation triggers.
+                // And besides that, the new Uri(string) constructor can throw...
+                // Which is now cought in TrySetConfigUri()
+                founderrors = true;
+                initErrors.AppendLine(ex.ToString());
+            }
+
+            try
+            {
+                localSpConfig.SPSigningCertificate = section.LocalSP.SPSigningCertificate;
+            }
+            catch (Exception ex)
+            {
+                // This will now stop at the first error...
+
+                // Fetching it from the section may throw on property access.
+                // Because it is all string, it will not. Unless a validation triggers.
+                // And besides that, the new Uri(string) constructor can throw...
+                // Which is now cought in TrySetConfigUri()
+                founderrors = true;
+                initErrors.AppendLine(ex.ToString());
+            }
+
+            try
+            {
+                localSpConfig.MinimalLoa = new Uri(section.LocalSP.MinimalLoa);
+            }
+            catch (Exception ex)
+            {
+                // This will now stop at the first error...
+
+                // Fetching it from the section may throw on property access.
+                // Because it is all string, it will not. Unless a validation triggers.
+                // And besides that, the new Uri(string) constructor can throw...
+                // Which is now cought in TrySetConfigUri()
+                founderrors = true;
+                initErrors.AppendLine(ex.ToString());
+            }
+
+            try
+            {
+                stepUpIdPConfig.SecondFactorEndPoint = new Uri(section.StepUpIdP.SecondFactorEndpoint);
             }
             catch (Exception ex)
             {
@@ -248,60 +322,6 @@ namespace SURFnet.Authentication.Adfs.Plugin.Configuration
             }
 
             return rc;
-        }
-
-        private static Uri TrySetConfigUri(string source, ref bool founderrors)
-        {
-            Uri rc = null;
-
-            try
-            {
-                rc = new Uri(source);
-            }
-            catch (Exception ex)
-            {
-                founderrors = true;
-                initErrors.AppendLine(ex.ToString());
-            }
-
-            return rc;
-        }
-
-        /// <summary>
-        /// Tries to set set configuration setting. Any error will be written to the errorlog, but won't stop the plugin execution.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="source">The source.</param>
-        /// <param name="destination">The destination.</param>
-        /// <returns><c>true</c> if the configuration (source) is successfully read, <c>false</c> otherwise.</returns>
-        // ReSharper disable once RedundantAssignment
-        // ReSharper disable once UnusedParameter.Local
-        private static T TrySetConfigSetting<T>(T source, ref bool founderrors) where T : class
-        {
-            T rc = null;
-
-            try
-            {
-                rc = source;
-            }
-            catch (Exception ex)
-            {
-                // I dont think this can ever throw...
-                // Assigning a reference to a reference of the same type (no compile errors)
-                founderrors = true;
-                initErrors.AppendLine(ex.ToString());
-            }
-
-            return rc;
-        }
-
-        /// <summary>
-        /// Gets the errors.
-        /// </summary>
-        /// <returns>The errors.</returns>
-        public static string GetErrors()
-        {
-            return initErrors.ToString();
         }
     }
 }

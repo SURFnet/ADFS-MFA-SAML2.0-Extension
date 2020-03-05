@@ -14,13 +14,16 @@
 * limitations under the License.
 */
 
-using System;
-using System.Diagnostics;
-using System.IO;
-using System.Reflection;
-
 namespace SURFnet.Authentication.Adfs.Plugin.Services
 {
+    using System;
+    using System.Diagnostics;
+    using System.IO;
+    using System.Reflection;
+
+    /// <summary>
+    /// Class RegistrationLog.
+    /// </summary>
     public class RegistrationLog
     {
         /// <summary>
@@ -59,11 +62,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
         private static void LogRegistrationDebugInfo()
         {
             var utcnow = DateTime.UtcNow;
-
             // TODO: Decide on a proper location!
-            //var logName = $@"{Environment.SpecialFolder.Windows}\ADFS\StepUp.RegistrationLog.txt";
-            /// TODO: bovenstaande geeft: C:\windows\system32\Windows\ADFS\StepUp.RegistrationLog.txt en dat werkte natuurlijk niet.
-            /// En hoort/moet bovendien Path.Combine te gebruiken. See static constructor van Adapter.....
             var logName = Path.Combine(Adapter.AdfsDir, "StepUp.RegistrationLog.txt");
 
             var x = new FileStream(logName, FileMode.Create, FileAccess.Write, FileShare.Read);

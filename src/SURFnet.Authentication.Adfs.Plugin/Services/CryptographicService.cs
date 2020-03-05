@@ -20,13 +20,12 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
     using System.Security.Cryptography.X509Certificates;
     using System.Text;
 
-    using Sustainsys.Saml2;
-
     using log4net;
 
-    using SURFnet.Authentication.Adfs.Plugin.Models;
-    using SURFnet.Authentication.Adfs.Plugin.Properties;
     using SURFnet.Authentication.Adfs.Plugin.Configuration;
+    using SURFnet.Authentication.Adfs.Plugin.Models;
+
+    using Sustainsys.Saml2;
 
     /// <summary>
     /// Handles the signing.

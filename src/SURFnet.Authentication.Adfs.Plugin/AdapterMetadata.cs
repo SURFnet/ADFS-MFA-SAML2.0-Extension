@@ -52,6 +52,10 @@ namespace SURFnet.Authentication.Adfs.Plugin
         /// </summary>
         private AdapterMetadata() { } // hide constructor from the world
 
+        /// <summary>
+        /// Gets the instance.
+        /// </summary>
+        /// <value>The instance.</value>
         public static AdapterMetadata Instance => instance; // property to return the Singleton
 
         /// <summary>
@@ -115,7 +119,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
         /// Statically initializing the available LCIDs so they do not get created for every instance.
         /// </summary>
         private static readonly int[] availableLcids = {
-            new CultureInfo("en-us").LCID,
+        new CultureInfo("en-us").LCID,
             new CultureInfo("nl-nl").LCID
         };
 

@@ -90,6 +90,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
                 {
                     RegistrationLog.WriteLine($"Failed to load minimal LOA. Details: '{e.GetBaseException().Message}'");
                 }
+
                 RegistrationLog.WriteLine("Finishing static Adapter constructor");
                 RegistrationLog.Flush();
             }
@@ -99,6 +100,12 @@ namespace SURFnet.Authentication.Adfs.Plugin
                 ConfigureDependencies();
             }
         }
+        
+        /// <summary>
+        /// Gets the metadata Singleton.
+        /// </summary>
+        /// <value>The metadata.</value>
+        public IAuthenticationAdapterMetadata Metadata => AdapterMetadata.Instance;
 
         /// <summary>
         /// Called by static constructor and by testcode outside ADFS environment (to simulate static constructor under ADFS).
@@ -126,12 +133,6 @@ namespace SURFnet.Authentication.Adfs.Plugin
                 // TODO: should retrow or something
             }
         }
-
-        /// <summary>
-        /// Gets the metadata Singleton.
-        /// </summary>
-        /// <value>The metadata.</value>
-        public IAuthenticationAdapterMetadata Metadata => AdapterMetadata.Instance;
 
         /// <summary>
         /// Begins the authentication.
@@ -309,7 +310,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
                 }
                 catch (Exception ex)
                 {
-                    LogService.Log.Fatal("Accessing Sustainsys configuration failed \r\n" + ex.ToString());
+                    LogService.Log.Fatal($"Accessing Sustainsys configuration failed \r\n {ex}");
                 }
             }
             catch (Exception ex)

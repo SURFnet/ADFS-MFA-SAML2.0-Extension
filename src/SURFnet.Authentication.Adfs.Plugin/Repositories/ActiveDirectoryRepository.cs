@@ -14,14 +14,15 @@
 * limitations under the License.
 */
 
-using System;
-using System.DirectoryServices;
-using System.DirectoryServices.AccountManagement;
-using System.Security.Claims;
-using SURFnet.Authentication.Adfs.Plugin.Configuration;
-
 namespace SURFnet.Authentication.Adfs.Plugin.Repositories
 {
+    using System;
+    using System.DirectoryServices;
+    using System.DirectoryServices.AccountManagement;
+    using System.Security.Claims;
+
+    using SURFnet.Authentication.Adfs.Plugin.Configuration;
+
     /// <summary>
     /// Data access for the active directory.
     /// </summary>

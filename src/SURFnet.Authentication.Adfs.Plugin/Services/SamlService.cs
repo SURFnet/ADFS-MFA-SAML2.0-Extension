@@ -18,19 +18,22 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
 {
     using System;
     using System.Diagnostics.CodeAnalysis;
-    using Microsoft.IdentityModel.Tokens.Saml2;
     using System.Linq;
     using System.Security.Claims;
+
+    using Configuration;
+
+    using log4net;
+
+    using Microsoft.IdentityModel.Tokens.Saml2;
+
+    using Models;
+
+    using Repositories;
 
     using Sustainsys.Saml2;
     using Sustainsys.Saml2.Configuration;
     using Sustainsys.Saml2.Saml2P;
-
-    using log4net;
-
-    using Models;
-    using Repositories;
-    using Configuration;
 
     /// <summary>
     /// Creates the SAML assertions and processes the response.
@@ -91,25 +94,10 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
         /// <returns>
         /// The authentication claim.
         /// </returns>
-        public static Claim[] VerifyResponseAndGetAuthenticationClaim(Saml2Response samlResponse,
-            string claimType = "http://schemas.microsoft.com/ws/2008/06/identity/claims/authenticationmethod")
+        public static Claim[] VerifyResponseAndGetAuthenticationClaim(Saml2Response samlResponse, string claimType = "http://schemas.microsoft.com/ws/2008/06/identity/claims/authenticationmethod")
         {
             // The response is verified when the claims are retrieved.
             var responseClaims = samlResponse.GetClaims(Options.FromConfiguration).ToList();
-
-            // TODO: Why was a loop used if only the first result was ever returned (see: 'break')?
-            // var claims = new List<Claim>();
-            // foreach (var claimsIdentity in responseClaims)
-            // {
-            //     var authClaim = claimsIdentity.Claims.FirstOrDefault(c => c.Type.Equals("http://schemas.microsoft.com/ws/2008/06/identity/claims/authenticationmethod"));
-            //     if (authClaim != null)
-            //     {
-            //         claims.Add(authClaim);
-            //         break;
-            //     }
-            // }
-            //
-            // return claims;
 
             // Get the first response claim where the type is right
             var authClaim = responseClaims
@@ -117,7 +105,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
                     c.Type.Equals(claimType)))
                 .FirstOrDefault(a => a != null);
 
-            return authClaim == null ? new Claim[0] : new[] { authClaim };
+            return authClaim == null ? Array.Empty<Claim>() : new[] { authClaim };
         }
 
         /// <summary>

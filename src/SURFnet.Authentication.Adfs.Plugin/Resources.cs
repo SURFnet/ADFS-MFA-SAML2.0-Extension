@@ -1,11 +1,28 @@
-﻿using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
-using System.Reflection;
-using Newtonsoft.Json;
+﻿/*
+* Copyright 2017 SURFnet bv, The Netherlands
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
 
 namespace SURFnet.Authentication.Adfs.Plugin
 {
+    using System.Collections.Generic;
+    using System.Globalization;
+    using System.IO;
+    using System.Reflection;
+
+    using Newtonsoft.Json;
+
     /// <summary>
     /// A provider for resource files.
     /// </summary>
@@ -40,6 +57,58 @@ namespace SURFnet.Authentication.Adfs.Plugin
             }
 
             return LoadLabelsFromResourceFile(lcid);
+        }
+
+        /// <summary>
+        /// Gets a single label from the necessary resource files.
+        /// </summary>
+        /// <param name="lcid">The LCID (language identifier).</param>
+        /// <param name="key">The resource identifier.</param>
+        /// <param name="formattedValues">Values to insert into string.Format, if supplied.</param>
+        /// <returns>
+        /// The resource value.
+        /// </returns>
+        public static string GetLabel(int lcid, string key, params object[] formattedValues)
+        {
+            var labels = GetLabels(lcid);
+            if (!labels.TryGetValue(key, out var label))
+            {
+                return key;
+            }
+            
+            return formattedValues != null
+                ? string.Format(label, formattedValues)
+                : label;
+        }
+
+        /// <summary>
+        /// Gets a form for a specified form name.
+        /// </summary>
+        /// <param name="formName">The name of the form.</param>
+        /// <returns>
+        /// A form as a HTML string.
+        /// </returns>
+        /// <exception cref="FileNotFoundException">Thrown when the form file could not be found.</exception>
+        public static string GetForm(string formName)
+        {
+            if (Forms.ContainsKey(formName))
+            {
+                return Forms[formName];
+            }
+
+            var assembly = Assembly.GetExecutingAssembly();
+            var resourceName = $"SURFnet.Authentication.Adfs.Plugin.Resources.{formName}.html";
+
+            using (var stream = assembly.GetManifestResourceStream(resourceName)
+                                ?? throw new FileNotFoundException(
+                                    $"Could not find the Form file {formName}.html",
+                                    $"{formName}.html"))
+            using (var reader = new StreamReader(stream))
+            {
+                var form = reader.ReadToEnd();
+                Forms.Add(formName, form);
+                return form;
+            }
         }
 
         /// <summary>
@@ -103,58 +172,6 @@ namespace SURFnet.Authentication.Adfs.Plugin
 
             Labels.Add(lcid, labels);
             return labels;
-        }
-
-        /// <summary>
-        /// Gets a single label from the necessary resource files.
-        /// </summary>
-        /// <param name="lcid">The LCID (language identifier).</param>
-        /// <param name="key">The resource identifier.</param>
-        /// <param name="formattedValues">Values to insert into string.Format, if supplied.</param>
-        /// <returns>
-        /// The resource value.
-        /// </returns>
-        public static string GetLabel(int lcid, string key, params object[] formattedValues)
-        {
-            var labels = GetLabels(lcid);
-            if (!labels.TryGetValue(key, out var label))
-            {
-                return key;
-            }
-            
-            return formattedValues != null
-                ? string.Format(label, formattedValues)
-                : label;
-        }
-
-        /// <summary>
-        /// Gets a form for a specified form name.
-        /// </summary>
-        /// <param name="formName">The name of the form.</param>
-        /// <returns>
-        /// A form as a HTML string.
-        /// </returns>
-        /// <exception cref="FileNotFoundException">Thrown when the form file could not be found.</exception>
-        public static string GetForm(string formName)
-        {
-            if (Forms.ContainsKey(formName))
-            {
-                return Forms[formName];
-            }
-
-            var assembly = Assembly.GetExecutingAssembly();
-            var resourceName = $"SURFnet.Authentication.Adfs.Plugin.Resources.{formName}.html";
-
-            using (var stream = assembly.GetManifestResourceStream(resourceName)
-                                ?? throw new FileNotFoundException(
-                                    $"Could not find the Form file {formName}.html",
-                                    $"{formName}.html"))
-            using (var reader = new StreamReader(stream))
-            {
-                var form = reader.ReadToEnd();
-                Forms.Add(formName, form);
-                return form;
-            }
         }
     }
 }

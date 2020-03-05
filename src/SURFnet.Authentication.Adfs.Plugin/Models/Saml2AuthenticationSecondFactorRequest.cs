@@ -17,9 +17,10 @@
 namespace SURFnet.Authentication.Adfs.Plugin.Models
 {
     using System.Diagnostics.CodeAnalysis;
-    using Microsoft.IdentityModel.Tokens.Saml2;
     using System.Linq;
     using System.Xml.Linq;
+
+    using Microsoft.IdentityModel.Tokens.Saml2;
 
     using Sustainsys.Saml2;
     using Sustainsys.Saml2.Saml2P;

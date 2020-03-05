@@ -14,11 +14,10 @@
 * limitations under the License.
 */
 
-using System.Collections.Generic;
-using Microsoft.Win32;
-
 namespace SURFnet.Authentication.Adfs.Plugin.Configuration
 {
+    using Microsoft.Win32;
+
     /// <summary>
     /// Registration time only class.
     /// Root: HKLM\Software\Surfnet\Authentication\ADFS\Plugin
@@ -49,12 +48,16 @@ namespace SURFnet.Authentication.Adfs.Plugin.Configuration
         /// </summary>
         private const string RegistrationValue = "Registration";
 
+        /// <summary>
+        /// Gets the plugin root.
+        /// </summary>
+        /// <value>The plugin root.</value>
         public string PluginRoot { get; private set; } = PluginRootKey;
 
         /// <summary>
         /// Gets the minimal loa.
         /// </summary>
-        /// <returns>System.String.</returns>
+        /// <returns>The minimal LOA.</returns>
         public static string GetMinimalLoa()
         {
             var root = new RegistryConfiguration().GetSurfNetPluginRoot();
@@ -78,7 +81,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Configuration
         /// <summary>
         /// Gets the surf net plugin root.
         /// </summary>
-        /// <returns>RegistryKey.</returns>
+        /// <returns>The RegistryKey.</returns>
         public RegistryKey GetSurfNetPluginRoot()
         {
             RegistryKey rc = null;
@@ -102,7 +105,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Configuration
                         }
                     }
 
-                    PluginRoot += "\\" + registration;
+                    this.PluginRoot += "\\" + registration;
 
                     // goto the real configuration
                     rc = subKey.OpenSubKey(registration);

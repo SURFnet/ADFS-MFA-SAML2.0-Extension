@@ -14,11 +14,12 @@
 * limitations under the License.
 */
 
-using System.Collections.Generic;
-using log4net;
-
 namespace SURFnet.Authentication.Adfs.Plugin.Extensions
 {
+    using System.Collections.Generic;
+
+    using log4net;
+
     /// <summary>
     /// Class LogExtensions.
     /// </summary>

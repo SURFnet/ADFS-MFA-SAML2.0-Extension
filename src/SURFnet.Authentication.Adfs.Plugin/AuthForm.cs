@@ -14,13 +14,15 @@
 * limitations under the License.
 */
 
-using System;
-using System.Text;
-using log4net;
-using Microsoft.IdentityServer.Web.Authentication.External;
-
 namespace SURFnet.Authentication.Adfs.Plugin
 {
+    using System;
+    using System.Text;
+
+    using log4net;
+
+    using Microsoft.IdentityServer.Web.Authentication.External;
+
     /// <summary>
     /// The presentation form for the adapter.
     /// </summary>
