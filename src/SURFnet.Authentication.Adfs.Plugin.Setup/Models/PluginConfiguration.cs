@@ -39,7 +39,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Models
         /// Gets or sets the signing certificate service provider.
         /// </summary>
         /// <value>The signing certificate service provider.</value>
-        public string SigningCertificateServiceProvider { get; set; }
+        public string PluginSigningCertificate { get; set; }
 
         /// <summary>
         /// Gets or sets the minimal loa.

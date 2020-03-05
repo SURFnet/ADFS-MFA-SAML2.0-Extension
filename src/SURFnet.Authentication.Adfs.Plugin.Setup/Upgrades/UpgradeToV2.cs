@@ -17,6 +17,7 @@
 namespace SURFnet.Authentication.Adfs.Plugin.Setup.Upgrades
 {
     using System;
+    using System.Text;
 
     using SURFnet.Authentication.Adfs.Plugin.Setup.Models;
     using SURFnet.Authentication.Adfs.Plugin.Setup.Services;
@@ -103,7 +104,17 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Upgrades
         private void PrintCurrentConfiguration(PluginConfiguration existingpluginConfig, SustainSysConfiguration sustainSysConfig)
         {
             Console.WriteLine("------------------------ADFS config----------------------");
-
+            Console.WriteLine($"schacHomeOrganization: {existingpluginConfig.SchacHomeOrganization}");
+            Console.WriteLine($"activeDirectoryUserIdAttribute: {existingpluginConfig.ActiveDirectoryUserIdAttribute}");
+            Console.WriteLine($"plugin signing certificate: {existingpluginConfig.PluginSigningCertificate}");
+            Console.WriteLine($"minimalLoa: {existingpluginConfig.MinimalLoa}");
+            Console.WriteLine($"secondFactorEndPoint: {existingpluginConfig.SecondFactorEndPoint}");
+            Console.WriteLine($"StepUp entityId: {sustainSysConfig.EntityId}");
+            Console.WriteLine($"IDP entityId: {sustainSysConfig.Provider.EntityId}");
+            Console.WriteLine($"IDP certificate identifier: {sustainSysConfig.Provider.SigningCertificateId}");
+            Console.WriteLine($"IDP certificate store: {sustainSysConfig.Provider.CertificateStoreName}");
+            Console.WriteLine($"IDP certificate location: {sustainSysConfig.Provider.CertificateLocation}");
+            Console.WriteLine($"IDP certificate find by: {sustainSysConfig.Provider.FindBy}");
             Console.WriteLine("------------------------END ADFS config------------------");
         }
     }

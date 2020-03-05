@@ -40,6 +40,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                 var upgrade = new UpgradeToV2();
                 upgrade.Execute();
             }
+
+            Console.WriteLine($"Finished upgrade from version '{VersionDetector.InstalledVersion}' to '{VersionDetector.NewVersion}'");
         }
     }
 }

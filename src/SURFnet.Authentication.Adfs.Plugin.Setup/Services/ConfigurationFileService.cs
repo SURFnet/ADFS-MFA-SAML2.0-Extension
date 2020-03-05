@@ -64,7 +64,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
             var nameAttribute = XName.Get("name");
             result.SchacHomeOrganization = settings.FirstOrDefault(s => s.Attribute(nameAttribute)?.Value.Equals("schacHomeOrganization") ?? false)?.Value;
             result.ActiveDirectoryUserIdAttribute = settings.FirstOrDefault(s => s.Attribute(nameAttribute)?.Value.Equals("ActiveDirectoryUserIdAttribute") ?? false)?.Value;
-            result.SigningCertificateServiceProvider = settings.FirstOrDefault(s => s.Attribute(nameAttribute)?.Value.Equals("SpSigningCertificate") ?? false)?.Value;
+            result.PluginSigningCertificate = settings.FirstOrDefault(s => s.Attribute(nameAttribute)?.Value.Equals("SpSigningCertificate") ?? false)?.Value;
             result.MinimalLoa = settings.FirstOrDefault(s => s.Attribute(nameAttribute)?.Value.Equals("MinimalLoa") ?? false)?.Value;
             result.SecondFactorEndPoint = settings.FirstOrDefault(s => s.Attribute(nameAttribute)?.Value.Equals("SecondFactorEndpoint") ?? false)?.Value;
             
