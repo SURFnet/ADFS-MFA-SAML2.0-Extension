@@ -17,6 +17,8 @@
 namespace SURFnet.Authentication.Adfs.Plugin.Setup.Upgrades
 {
     using System;
+    using System.Collections.Generic;
+    using System.Linq;
     using System.Text;
 
     using SURFnet.Authentication.Adfs.Plugin.Setup.Models;
@@ -42,11 +44,42 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Upgrades
 
             var service = new AssemblyService();
             service.RemoveAssembliesFromGac();
-            
+
             fileService.CopyOutputToAdFsDirectory();
-            
+
             server.ReRegisterPlugin();
             server.StartAdFsService();
+        }
+        
+        /// <summary>
+        /// Reads the user input as int.
+        /// </summary>
+        /// <param name="minRange">The minimum range.</param>
+        /// <param name="maxRange">The maximum range.</param>
+        /// <returns>The user input.</returns>
+        private static int ReadUserInputAsInt(int minRange, int maxRange)
+        {
+            bool isInvalid;
+            var value = 0;
+            do
+            {
+                isInvalid = false;
+                var input = Console.ReadKey();
+                Console.WriteLine();
+                if (!char.IsNumber(input.KeyChar) || !int.TryParse(input.KeyChar.ToString(), out value))
+                {
+                    Console.WriteLine($"Enter a numeric value");
+                    isInvalid = true;
+                }
+                else if (value < minRange || value > maxRange)
+                {
+                    Console.WriteLine($"Enter a value between {minRange} and {maxRange}");
+                    isInvalid = true;
+                }
+            }
+            while (isInvalid);
+
+            return value;
         }
 
         /// <summary>
@@ -57,26 +90,22 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Upgrades
         {
             Console.WriteLine($"Reading existing ADFS config");
             var config = new ConfigurationFileService(fileService);
+
+            var pluginSettings = new List<Setting>();
+            var stepUpSettings = new List<Setting>();
+
             PluginConfiguration existingPluginConfig = null;
             SustainSysConfiguration existingSustainSysConfig = null;
 
-            var keepOldConfig = false;
-
             if (!VersionDetector.IsCleanInstall())
             {
-                existingPluginConfig = config.ExtractPluginConfiguration();
-                existingSustainSysConfig = config.ExtractSustainSysConfiguration();
-                this.PrintCurrentConfiguration(existingPluginConfig, existingSustainSysConfig);
-                Console.WriteLine("Continue with current settings? Y/N");
-                keepOldConfig = Console.ReadKey().Key == ConsoleKey.Y;
+                pluginSettings = config.ExtractPluginConfigurationFromAdfsConfig();
+                stepUpSettings = config.ExtractSustainSysConfigurationFromAdfsConfig();
+                var defaultConfigValues = config.LoadDefaults();
+                this.ValidateStepUpConfiguration(stepUpSettings, defaultConfigValues);
+                this.ValidatePluginSettings(pluginSettings);
             }
-            
-            if (!keepOldConfig)
-            {
-                Console.WriteLine("Please answer the following questions to add the new configuration:");
-                existingPluginConfig = this.EnterPluginConfiguration();
-                existingSustainSysConfig = this.EnterSustainSysConfiguration();
-            }
+
 
             config.CreatePluginConfigurationFile(existingPluginConfig);
             config.CreateSustainSysConfigFile(existingSustainSysConfig);
@@ -84,38 +113,92 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Upgrades
         }
 
         /// <summary>
-        /// Aks the user for the SustainSys configuration.
+        /// Validates the plugin settings.
         /// </summary>
-        /// <returns>SustainSysConfiguration.</returns>
-        private SustainSysConfiguration EnterSustainSysConfiguration()
+        /// <param name="pluginSettings">The plugin settings.</param>
+        private void ValidatePluginSettings(List<Setting> pluginSettings)
         {
-            throw new NotImplementedException();
+            Console.WriteLine("Validate the configuration for the ADFS plugin");
+            Console.WriteLine("------------------------ADFS Plugin config----------------------");
+            foreach (var setting in pluginSettings.Where(s => s.IsConfigurable))
+            {
+                Console.WriteLine();
+                Console.WriteLine($"Enter a value for setting {setting.FriendlyName}");
+                Console.WriteLine(setting.Description);
+                Console.WriteLine($"Current value: {setting.CurrentValue}.");
+                Console.Write("Press Enter to continue with current value. Press N to supply a new value:");
+                var input = Console.ReadKey();
+
+                Console.WriteLine();
+                if (!input.Key.Equals(ConsoleKey.Enter))
+                {
+                    string newValue;
+                    do
+                    {
+                        Console.Write($"Enter new value: ");
+                        newValue = Console.ReadLine();
+                        if (string.IsNullOrWhiteSpace(newValue) && setting.IsMandatory)
+                        {
+                            Console.WriteLine($"Property {setting.FriendlyName} is required. Please enter a value.");
+                        }
+                    }
+                    while (string.IsNullOrWhiteSpace(newValue) && setting.IsMandatory);
+                }
+
+                Console.WriteLine(string.Empty);
+            }
+
+            Console.WriteLine("------------------------End ADFS Plugin config------------------");
         }
 
         /// <summary>
-        /// Aks the user for the plugin configuration.
+        /// Prints the current configuration.
         /// </summary>
-        /// <returns>PluginConfiguration.</returns>
-        private PluginConfiguration EnterPluginConfiguration()
+        /// <param name="settings">The settings.</param>
+        /// <param name="defaultValues">The default values.</param>
+        private void ValidateStepUpConfiguration(List<Setting> settings, List<Dictionary<string, string>> defaultValues)
         {
-            throw new NotImplementedException();
-        }
+            Console.WriteLine("------------------------StepUp config----------------------");
+            var curEntityId = settings.FirstOrDefault(s => s.InternalName.Equals(StepUpConstants.InternalNames.EntityId));
 
-        private void PrintCurrentConfiguration(PluginConfiguration existingpluginConfig, SustainSysConfiguration sustainSysConfig)
-        {
-            Console.WriteLine("------------------------ADFS config----------------------");
-            Console.WriteLine($"schacHomeOrganization: {existingpluginConfig.SchacHomeOrganization}");
-            Console.WriteLine($"activeDirectoryUserIdAttribute: {existingpluginConfig.ActiveDirectoryUserIdAttribute}");
-            Console.WriteLine($"plugin signing certificate: {existingpluginConfig.PluginSigningCertificate}");
-            Console.WriteLine($"minimalLoa: {existingpluginConfig.MinimalLoa}");
-            Console.WriteLine($"secondFactorEndPoint: {existingpluginConfig.SecondFactorEndPoint}");
-            Console.WriteLine($"StepUp entityId: {sustainSysConfig.EntityId}");
-            Console.WriteLine($"IDP entityId: {sustainSysConfig.Provider.EntityId}");
-            Console.WriteLine($"IDP certificate identifier: {sustainSysConfig.Provider.SigningCertificateId}");
-            Console.WriteLine($"IDP certificate store: {sustainSysConfig.Provider.CertificateStoreName}");
-            Console.WriteLine($"IDP certificate location: {sustainSysConfig.Provider.CertificateLocation}");
-            Console.WriteLine($"IDP certificate find by: {sustainSysConfig.Provider.FindBy}");
-            Console.WriteLine("------------------------END ADFS config------------------");
+            if (curEntityId != null)
+            {
+                var curEnvironment = defaultValues.FirstOrDefault(s => s[StepUpConstants.FriendlyNames.EntityId].Equals(curEntityId.CurrentValue));
+                if (curEnvironment != null)
+                {
+                    Console.WriteLine("We've found an active configuration:");
+                    Console.WriteLine($"Current environment: {curEnvironment["Type"]}");
+                }
+            }
+
+            Console.WriteLine("Do you want to reconfigure or connect to a new environment? (Y/N)");
+            var input = Console.ReadKey();
+
+            Console.WriteLine();
+            if (input.Key.Equals(ConsoleKey.Y))
+            {
+                Console.WriteLine("Which environment do you want to connect to?");
+                for (var i = 0; i < defaultValues.Count; i++)
+                {
+                    Console.WriteLine($"{i}. {defaultValues[i]["Type"]}");
+                }
+
+                var environment = defaultValues[ReadUserInputAsInt(0, defaultValues.Count - 1)];
+                foreach (var defaultSetting in environment)
+                {
+                    var curSetting = settings.FirstOrDefault(s => s.FriendlyName.Equals(defaultSetting.Key));
+                    if (curSetting != null)
+                    {
+                        curSetting.NewValue = defaultSetting.Value;
+                    }
+                }
+
+                Console.WriteLine($"Written new configuration.");
+            }
+
+            Console.WriteLine("------------------------End StepUp config------------------");
+            Console.WriteLine();
+            Console.WriteLine();
         }
     }
 }

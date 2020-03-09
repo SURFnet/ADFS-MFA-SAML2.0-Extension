@@ -6,6 +6,20 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="SURFnet.Authentication.ADFS.MFA.Plugin.Environments.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="config\SURFnet.Authentication.ADFS.MFA.Plugin.Environments.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\SURFnet.Authentication.Adfs.Plugin\SURFnet.Authentication.Adfs.Plugin.csproj" />
   </ItemGroup>
 

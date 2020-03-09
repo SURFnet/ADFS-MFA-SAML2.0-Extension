@@ -1,0 +1,38 @@
+[
+  {
+    "Type": "Production",
+    "AuthenticationServiceUrl": "http://surfconext.nl",
+    "MinimalLoa": "http://surfconext.nl/assurance/sfo-level2",
+    "StepupGatewaySSOLocation": "https://sa-gw.surfconext.nl/second-factor-only/single-sign-on",
+    "StepupGatewayEntityID": "https://sa-gw.surfconext.nl/second-factor-only/metadata",
+    "StepupGatewaySigningCertificate": "MIICsjCCAZoCCQDHN3+HzElEDDANBgkqhkiG9w0BAQUFADAbMRkwFwYDVQQDFBBnYXRld2F5X3NhbWxfaWRwMB4XDTE1MDcyMzEyMTUxOVoXDTIwMDcyMTEyMTUxOVowGzEZMBcGA1UEAxQQZ2F0ZXdheV9zYW1sX2lkcDCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBALK/JwHWd5JftXYKO9qcTQ4dfKEnl35oJj6PlEyR6gpikdpgm2OY/zy4e7vcXfBChedVF3OUI4rRDWCz4yXT2sldzjuIyONJfA86xva5lxDARqT/+gRBuZ2pyMTb0okvl1G9ZlAjPumVH14591rp6OGT5TJIkILQ/pKp1INdiBqpiR53Z5YvsXEUJ8PHHZyILO00HnBldq0d77lmATr6QamXpbY+CZ9pIw65t32fhFcUfRC68C81/P2crCn3v5GMyrQcM/tB/xdVf/haEZiqgI/bjcreBpQobnAhwEsve+uvbSLFN1Rsc7o0W/7Pn6EGBX1h9rjKjDgqssHuWkVuU4sCAwEAATANBgkqhkiG9w0BAQUFAAOCAQEAmlqfTvEfGDeqqqvuAMDG5IKDo6h21wwByywNbRhimfOvL6FqIgAgx+D3gxW1lO41PcqQQKYIVUEAuYv+tW8COLdHcFRh/UV9ei4iquMwBCkO/XOoMC9FsRBo3yPaQClRK8OYj1IXer4JXNuFHeLblzf+GLYFoqMWWwT2dnBLAePoEgANKUm2aasxyiJmnroNa+O5zTP9ExT3qHphCCG1gh3iHrQu9iSEJxY12zAQYtPomIs8Vk/GBfj+ucUiBEEqaMpCH+t6f0VOIoP1SNHgNAaeBLVuOpS0VlLnwZFJkNPVOQpFgRuoFsH3/9i53Fs3eQreb9wzq2VkjDhhlc5eyA==",
+    "StepupGatewaySigningCertificate2":  null 
+  },
+  {
+    "Type": "Pilot",
+    "AuthenticationServiceUrl": "http://pilot.surfconext.nl",
+    "MinimalLoa": "http://pilot.surfconext.nl/assurance/sfo-level2",
+    "StepupGatewaySSOLocation": "https://gateway.pilot.stepup.surfconext.nl/second-factor-only/single-sign-on",
+    "StepupGatewayEntityID": "https://gateway.pilot.surfconext.nl/second-factor-only/metadata",
+    "StepupGatewaySigningCertificate": "MIICwjCCAaoCCQDs1IDIiytYMTANBgkqhkiG9w0BAQUFADAjMSEwHwYDVQQDDBhTdGVwdXAgUGlsb3QgR2F0ZXdheSBJZFAwHhcNMTUwMjI3MTA0MTU5WhcNMjUwMjI0MTA0MTU5WjAjMSEwHwYDVQQDDBhTdGVwdXAgUGlsb3QgR2F0ZXdheSBJZFAwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQDzlSzxPhG+B+o0ulUcR499NoMhaP4oX0+zpzi2vfY+Q1qw8x6b0eeUrIk99IpMrWN74twvuQ/eIecLZXIYhG94AYGB620OX7KMM8oCfdjc2I0lk8d+/rsxUqH0U4DDVBryrMcLjLGwe2CMncdSBuc2LCg15TveClC/QW/NJ6rvDiR1GoLouqx+CLBd+z2gwC+Od7YTUVY+22XrVzatzOZuz8Wdvja4VxHzv9Qyi6ta78ah345HWLeZsIh6pRF80qX0lpPRgwQSVXNpT8IxvoL28ViVVGkLU5SmdS3fbfLzlL5i3jHpWFcvRGPj5z8zmVZuDAka6P80WiKDVRg7gouXAgMBAAEwDQYJKoZIhvcNAQEFBQADggEBANlnKHackl7MfHi+0lxb/ERuMkRpIGej29RSWL0aFojNpRjN2ihnuIjp4PPk98xQCKbVeN+PWXNqrrschbUfC5ikcYP5hoU7WJrHAWvEwmMNy1/UzcKtSgNby8loLFRzi68R92ZTumgFEBFYow9HzgC3HvDeBpRw/qFLZjsYqAjezTeRtafx8NIaBtKabRr5hedwUpnzldFbPqLxR1o0B/tqcUIqJOjdpEFIYus7VcBI6N6T1TKB4DyfqjbgzxhS5zrE1jFeKaamRWCqKUcEUfngoxQWlKd9LSBWRXjw0aM+P22WHdxxX/1rIneV5jVgOIlRgDO0Dpxn0qie4XnIqzo=",
+    "StepupGatewaySigningCertificate2": null
+  },
+  {
+    "Type": "Test",
+    "AuthenticationServiceUrl": "http://test.surfconext.nl",
+    "MinimalLoa": "http://test.surfconext.nl/assurance/sfo-level2",
+    "StepupGatewaySSOLocation": "https://sa-gw.test.surfconext.nl/second-factor-only/single-sign-on",
+    "StepupGatewayEntityID": "https://sa-gw.test.surfconext.nl/second-factor-only/metadata",
+    "StepupGatewaySigningCertificate": "MIIC6jCCAdICCQCWUmXBRox3ZDANBgkqhkiG9w0BAQsFADA3MRkwFwYDVQQDDBBHYXRld2F5IFNBTUwgSWRQMRowGAYDVQQKDBFTVVJGc2VjdXJlSUQgVEVTVDAeFw0xODA4MDEwODA2MjdaFw0yMzA3MzEwODA2MjdaMDcxGTAXBgNVBAMMEEdhdGV3YXkgU0FNTCBJZFAxGjAYBgNVBAoMEVNVUkZzZWN1cmVJRCBURVNUMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA3okLxR7J2re6j7/rLjEYLc7iWiELcypmFLvL9BmCYqYZ80Pn+SR9LPUOXcplFUt6LYh/NOK5JMT0P6o0OTUP1P4zEMzLEl0wSJ1jBcu88yNppJoUn/TEgXMGNB1DW8jlVvzcgNSsJjxuw2Fj6J/6D+b77+7PhNMagbnfBEFStz0RBv7JOBdzuEC71wVxlGXB7C1Y8ZF3AwZgIp0jOVdiMub9i6neaKV9ZBLSv+azkT8BtAauMdKBpBxC+KxUFV9ccHKFnF2YOTLQ3CJNNGyQTtCJVI82fggraKnl+by2elV3+Dmzc0iqMcAdECasSS+2E8iOqw+3Qss+RgtS7QvCdQIDAQABMA0GCSqGSIb3DQEBCwUAA4IBAQCq/j+uXLvYDHhL7c/Y3+oj25+ur2UtZ/uSBqZIIqGlAzlCEL/zdgDI8XmePaRLtc2hYWUH4bD5Iu8HqxrMPrdBkG/5cjbMmlhU5uV3EX7S+m89k9vrok9+7B+uynCkMIdA/1Uif2btfEQi9hevvyP/1vvyoHqftym+ivIOyvELJNIgdTUaqvcJy//QvkmpvSpgTvlzHSVgKkSmMoBhTmevu7lQUGYSk/Mt53Zd3WmZhev+emS/MTKwV39JkZg7aykIRqXGVe/yTlttW/zaV9WtSIzNZfaKqASraAaClKgv8lsTjWFv88HZrsP/UuEseIWh4NjOo5HHvHYgqN/atX3t",
+    "StepupGatewaySigningCertificate2": null
+  },
+  {
+    "Type": "Test2",
+    "AuthenticationServiceUrl": "http://test2.surfconext.nl",
+    "MinimalLoa": "http://test2.surfconext.nl/assurance/sfo-level2",
+    "StepupGatewaySSOLocation": "https://sa-gw.test2.surfconext.nl/second-factor-only/single-sign-on",
+    "StepupGatewayEntityID": "https://sa-gw.test2.surfconext.nl/second-factor-only/metadata",
+    "StepupGatewaySigningCertificate": "MIITEST2=",
+    "StepupGatewaySigningCertificate2": null
+  }
+]

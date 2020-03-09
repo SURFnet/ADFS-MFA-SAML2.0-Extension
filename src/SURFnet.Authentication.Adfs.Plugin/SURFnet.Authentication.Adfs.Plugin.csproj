@@ -156,9 +156,6 @@
     <EmbeddedResource Include="Resources\Labels.1043.json" />
     <EmbeddedResource Include="Resources\Labels.1033.json" />
     <None Include="Setup\Configuration.ps1" />
-    <Content Include="Setup\Config\SURFnet.Authentication.ADFS.MFA.Plugin.Environments.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Content Include="SURFnet.Authentication.ADFS.MFA.Plugin.log4net">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

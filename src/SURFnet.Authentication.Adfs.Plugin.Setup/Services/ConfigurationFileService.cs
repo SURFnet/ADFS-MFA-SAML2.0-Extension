@@ -17,11 +17,15 @@
 namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
+    using System.Text;
     using System.Xml.Linq;
 
+    using Newtonsoft.Json.Linq;
+
     using SURFnet.Authentication.Adfs.Plugin.Setup.Models;
-    
+
     /// <summary>
     /// Class ConfigurationFileService.
     /// </summary>
@@ -50,61 +54,160 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
         /// <summary>
         /// Extracts the plugin configuration from the ADFS configuration.
         /// </summary>
-        /// <returns><see cref="PluginConfiguration"/>.</returns>
-        public PluginConfiguration ExtractPluginConfiguration()
+        /// <returns>The settings.</returns>
+        public List<Setting> ExtractPluginConfigurationFromAdfsConfig()
         {
-            var result = new PluginConfiguration();
+            var settings = new List<Setting>();
             var configSection = this.adfsConfig.Descendants(XName.Get("SURFnet.Authentication.Adfs.Plugin.Properties.Settings"));
-            var settings = configSection.Descendants(XName.Get("setting")).ToList();
-            if (settings.Count == 0)
-            {
-                return result;
-            }
+            var xmlSettings = configSection.Descendants(XName.Get("setting")).ToList();
+            var kentorConfigSection = this.adfsConfig.Descendants(XName.Get("kentor.authServices")).FirstOrDefault();
+            var identityProvider = kentorConfigSection?.Descendants(XName.Get("add")).FirstOrDefault();
+            var certificate = identityProvider?.Descendants(XName.Get("signingCertificate")).FirstOrDefault();
 
             var nameAttribute = XName.Get("name");
-            result.SchacHomeOrganization = settings.FirstOrDefault(s => s.Attribute(nameAttribute)?.Value.Equals("schacHomeOrganization") ?? false)?.Value;
-            result.ActiveDirectoryUserIdAttribute = settings.FirstOrDefault(s => s.Attribute(nameAttribute)?.Value.Equals("ActiveDirectoryUserIdAttribute") ?? false)?.Value;
-            result.PluginSigningCertificate = settings.FirstOrDefault(s => s.Attribute(nameAttribute)?.Value.Equals("SpSigningCertificate") ?? false)?.Value;
-            result.MinimalLoa = settings.FirstOrDefault(s => s.Attribute(nameAttribute)?.Value.Equals("MinimalLoa") ?? false)?.Value;
-            result.SecondFactorEndPoint = settings.FirstOrDefault(s => s.Attribute(nameAttribute)?.Value.Equals("SecondFactorEndpoint") ?? false)?.Value;
-            
-            return result;
+
+            settings.Add(
+                new Setting
+                {
+                    InternalName = PluginConstants.InternalNames.SchacHomeOrganization,
+                    FriendlyName = PluginConstants.FriendlyNames.SchacHomeOrganization,
+                    Description = new StringBuilder()
+                        .AppendLine("The value to use for schacHomeOranization when calculating the NameID for authenticating a user to the Stepup-Gateway")
+                        .AppendLine("This must be the same value as the value of the \"urn:mace:terena.org:attribute-def:schacHomeOrganization\" claim that the that AD FS server sends when a user authenticates to the Stepup-Gateway"),
+                    CurrentValue = xmlSettings.FirstOrDefault(s => s.Attribute(nameAttribute)?.Value.Equals(PluginConstants.InternalNames.SchacHomeOrganization) ?? false)?.Value
+                });
+            settings.Add(
+                new Setting
+                {
+                    InternalName = PluginConstants.InternalNames.EntityId,
+                    FriendlyName = PluginConstants.FriendlyNames.EntityId,
+                    Description = new StringBuilder()
+                        .AppendLine("The EntityID of the Stepup SFO MFA Plugin")
+                        .AppendLine("This must be an URI in a namespace that you control.")
+                        .AppendLine("Example: http://<adfs domain name>/sfo-mfa-plugin"),
+                    CurrentValue = kentorConfigSection?.Attribute(XName.Get(PluginConstants.InternalNames.EntityId))?.Value
+                });
+            settings.Add(new Setting
+            {
+                InternalName = PluginConstants.InternalNames.ActiveDirectoryUserIdAttribute,
+                FriendlyName = PluginConstants.FriendlyNames.ActiveDirectoryUserIdAttribute,
+                Description = new StringBuilder()
+                    .AppendLine("The name of the AD attribute that contains the user ID (\"uid\") used when calculating the NameID for authenticating a user to the Stepup-Gateway")
+                    .AppendLine("This AD attribute must contain the value of the \"urn:mace:dir:attribute-def:uid\" claim that the AD FS server sends when a user authenticates to the Stepup-Gateway"),
+                CurrentValue = xmlSettings.FirstOrDefault(s => s.Attribute(nameAttribute)?.Value.Equals(PluginConstants.InternalNames.ActiveDirectoryUserIdAttribute) ?? false)?.Value
+            });
+            settings.Add(new Setting
+            {
+                InternalName = PluginConstants.InternalNames.CertificateThumbprint,
+                FriendlyName = PluginConstants.FriendlyNames.CertificateThumbprint,
+                Description = new StringBuilder()
+                    .AppendLine("The thumbprint (i.e. the SHA1 hash of the DER X.509 certificate) of the signing certificate")
+                    .AppendLine("This is the self-signed certificate that we generated during install and that we installed in the certificate store"),
+                CurrentValue = xmlSettings.FirstOrDefault(s => s.Attribute(nameAttribute)?.Value.Equals(PluginConstants.InternalNames.CertificateThumbprint) ?? false)?.Value
+            });
+            settings.Add(new Setting
+            {
+                InternalName = PluginConstants.InternalNames.MinimalLoa,
+                FriendlyName = PluginConstants.FriendlyNames.MinimalLoa,
+                Description = new StringBuilder()
+                    .AppendLine("The LoA identifier indicating the level of authentication to request from the Stepup-Gateway")
+                    .AppendLine("This value is typically dependent on the Stepup-Gateway being used.")
+                    .AppendLine("These value is not independently configurable in the installer and is selected as part of the environment")
+                    .AppendLine("Example: http://example.com/assurance/sfo-level2"),
+                CurrentValue = xmlSettings.FirstOrDefault(s => s.Attribute(nameAttribute)?.Value.Equals(PluginConstants.InternalNames.MinimalLoa) ?? false)?.Value
+            });
+            /*
+                The cert store configuration for the SAML signing certificate and private key of the Stepup SFO Plugin 
+                These are not user configurable. We always use the local machine my store
+            */
+            settings.Add(new Setting
+            {
+                InternalName = PluginConstants.InternalNames.CertificateStoreName,
+                FriendlyName = PluginConstants.FriendlyNames.CertificateStoreName,
+                CurrentValue = certificate?.Attribute(XName.Get(PluginConstants.InternalNames.CertificateStoreName))?.Value,
+                IsConfigurable = false
+            });
+            /*
+                The cert store configuration for the SAML signing certificate and private key of the Stepup SFO Plugin 
+                These are not user configurable. We always use the local machine my store
+           */
+            settings.Add(new Setting
+            {
+                InternalName = PluginConstants.InternalNames.CertificateLocation,
+                FriendlyName = PluginConstants.FriendlyNames.CertificateLocation,
+                CurrentValue = certificate?.Attribute(XName.Get(PluginConstants.InternalNames.CertificateLocation))?.Value,
+                IsConfigurable = false
+            });
+            /*
+            The thumbprint (i.e. the SHA1 hash of the DER X.509 certificate) of the signing certificate
+            This is the self-signed certificate that we generated during install and that we installed in the certificate store
+            configured above
+            */
+            settings.Add(new Setting
+            {
+                InternalName = PluginConstants.InternalNames.FindBy,
+                FriendlyName = PluginConstants.FriendlyNames.FindBy,
+                CurrentValue = certificate?.Attribute(XName.Get(PluginConstants.InternalNames.FindBy))?.Value,
+                IsConfigurable = false
+            });
+
+            return settings;
         }
 
         /// <summary>
         /// Extracts the sustain system configuration from the ADFS configuration.
         /// </summary>
-        /// <returns><see cref="SustainSysConfiguration"/>.</returns>
-        public SustainSysConfiguration ExtractSustainSysConfiguration()
+        /// <returns>The StepUp settings.</returns>
+        public List<Setting> ExtractSustainSysConfigurationFromAdfsConfig()
         {
-            var result = new SustainSysConfiguration();
-            var configSection = this.adfsConfig.Descendants(XName.Get("kentor.authServices")).FirstOrDefault();
-            if (configSection == null)
+            var settings = new List<Setting>();
+            var pluginConfigSection = this.adfsConfig.Descendants(XName.Get("SURFnet.Authentication.Adfs.Plugin.Properties.Settings")).Descendants(XName.Get("setting")).ToList().ToList();
+            var kentorConfigSection = this.adfsConfig.Descendants(XName.Get("kentor.authServices")).FirstOrDefault();
+            var identityProvider = kentorConfigSection?.Descendants(XName.Get("add")).FirstOrDefault();
+            var certificate = identityProvider?.Descendants(XName.Get("signingCertificate")).FirstOrDefault();
+            var nameAttribute = XName.Get("name");
+
+            /* The SSOLocation of the SFO IdP Endpoint of the Stepup-Gateway 
+                Example: https://stepup-gateway.example.com/second-factor-only/single-sign-on
+            */
+            settings.Add(new Setting
             {
-                return result;
-            }
-
-            result.EntityId = configSection.Attribute(XName.Get("entityId"))?.Value;
-
-            var identityProvider = configSection.Descendants(XName.Get("add")).FirstOrDefault();
-            if (identityProvider == null)
+                InternalName = StepUpConstants.InternalNames.SecondFactorEndpoint,
+                FriendlyName = StepUpConstants.FriendlyNames.SecondFactorEndpoint,
+                CurrentValue = pluginConfigSection.FirstOrDefault(s => s.Attribute(nameAttribute)?.Value.Equals(StepUpConstants.InternalNames.SecondFactorEndpoint) ?? false)?.Value
+            });
+            /* SAML Configuration of the SFO IdP Endpoint of the Stepup-Gateway 
+               The correct values can be found in the SAML metadata of the SFO endpoint Stepup-Gateway
+               These values are not independently configurable in the installer and are selected as part of the environment
+            */
+            settings.Add(new Setting
             {
-                return result;
-            }
-
-            var certificate = identityProvider.Descendants(XName.Get("signingCertificate")).FirstOrDefault();
-            if (certificate == null)
+                InternalName = StepUpConstants.InternalNames.EntityId,
+                FriendlyName = StepUpConstants.FriendlyNames.EntityId,
+                CurrentValue = identityProvider?.Attribute(XName.Get(StepUpConstants.InternalNames.EntityId))?.Value
+            });
+            /* The first SAML signing certificate of SFO IdP Endpoint of the Stepup-Gateway 
+                A base64 encoded DER X.509 certificate (i.e. a PEM x.509 certificate without PEM headers and whitespace)
+               Example: "MIIabcdef ..... =="
+            */
+            settings.Add(new Setting
             {
-                return result;
-            }
+                InternalName = StepUpConstants.InternalNames.SigningCertificateThumbprint,
+                FriendlyName = StepUpConstants.FriendlyNames.SigningCertificateThumbprint,
+                CurrentValue = certificate?.Attribute(XName.Get(StepUpConstants.InternalNames.SigningCertificateThumbprint))?.Value
+            });
+            /* The optional second SAML signing certificate of SFO IdP Endpoint of the Stepup-Gateway 
+                A base64 encoded DER X.509 certificate (i.e. a PEM x.509 certificate without PEM headers and whitespace)
+               Example: "MIIabcdef ..... =="
+            */
+            settings.Add(new Setting
+            {
+                InternalName = StepUpConstants.InternalNames.SecondCertificate,
+                FriendlyName = StepUpConstants.FriendlyNames.SecondCertificate,
+                IsMandatory = false
+            });
 
-            result.Provider.EntityId = identityProvider.Attribute(XName.Get("entityId"))?.Value;
-            result.Provider.CertificateStoreName = certificate.Attribute(XName.Get("storeName"))?.Value;
-            result.Provider.CertificateLocation = certificate.Attribute(XName.Get("storeLocation"))?.Value;
-            result.Provider.SigningCertificateId = certificate.Attribute(XName.Get("findValue"))?.Value;
-            result.Provider.FindBy = certificate.Attribute(XName.Get("x509FindType"))?.Value;
-
-            return result;
+            return settings;
         }
 
         public void CreatePluginConfigurationFile(PluginConfiguration oldAdfsConfig)
@@ -121,6 +224,25 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
         }
 
         /// <summary>
+        /// Loads the default StepUp configuration.
+        /// </summary>
+        /// <returns>A list with the config values for each environment.</returns>
+        public List<Dictionary<string, string>> LoadDefaults()
+        {
+            var fileContents = this.fileService.LoadDefaultConfigFile();
+            var array = JArray.Parse(fileContents);
+            var result = new List<Dictionary<string, string>>();
+            foreach (var item in array)
+            {
+                var dict = item.Children<JProperty>().ToDictionary(child => child.Name, child => child.Value.Value<string>());
+
+                result.Add(dict);
+            }
+
+            return result;
+        }
+
+        /// <summary>
         /// Loads the ad fs configuration.
         /// </summary>
         private void LoadAdFsConfiguration()
@@ -130,6 +252,5 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
                 this.adfsConfig = this.fileService.LoadAdFsConfigurationFile();
             }
         }
-
     }
 }
