@@ -20,7 +20,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
     /// <summary>
     /// Class ConsoleWriter.
     /// </summary>
-    public static class ConsoleWriter
+    public static class ConsoleExtensions
     {
         /// <summary>
         /// Writes the header.
@@ -34,7 +34,37 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
             var paddLeft = padding / 2 + text.Length;
             Console.WriteLine(text.PadLeft(paddLeft, '-').PadRight(totalLength, '-'));
             Console.WriteLine();
+        }
 
+        /// <summary>
+        /// Reads the user input as int.
+        /// </summary>
+        /// <param name="minRange">The minimum range.</param>
+        /// <param name="maxRange">The maximum range.</param>
+        /// <returns>The user input.</returns>
+        public static int ReadUserInputAsInt(int minRange, int maxRange)
+        {
+            bool isInvalid;
+            var value = 0;
+            do
+            {
+                isInvalid = false;
+                var input = Console.ReadKey();
+                Console.WriteLine();
+                if (!char.IsNumber(input.KeyChar) || !int.TryParse(input.KeyChar.ToString(), out value))
+                {
+                    Console.Write($"Enter a numeric value: ");
+                    isInvalid = true;
+                }
+                else if (value < minRange || value > maxRange)
+                {
+                    Console.Write($"Enter a value between {minRange} and {maxRange}: ");
+                    isInvalid = true;
+                }
+            }
+            while (isInvalid);
+
+            return value;
         }
     }
 }

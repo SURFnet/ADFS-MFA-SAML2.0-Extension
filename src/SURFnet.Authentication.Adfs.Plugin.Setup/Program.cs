@@ -43,7 +43,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
 
             Console.WriteLine($"Finished upgrade from version '{VersionDetector.InstalledVersion}' to '{VersionDetector.NewVersion}'");
 
-            ConsoleWriter.WriteHeader("End of installation");
+            ConsoleExtensions.WriteHeader("End of installation");
             Console.WriteLine("Type 'exit' to exit");
             while (Console.ReadLine() != "exit")
             {

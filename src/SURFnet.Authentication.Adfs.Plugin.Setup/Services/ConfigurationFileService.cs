@@ -70,7 +70,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
                 new Setting
                 {
                     InternalName = PluginConstants.InternalNames.SchacHomeOrganization,
-                    FriendlyName = PluginConstants.FriendlyNames.SchacHomeOrganization,
+                    DisplayName = PluginConstants.FriendlyNames.SchacHomeOrganization,
                     Description = new StringBuilder()
                         .AppendLine("The value to use for schacHomeOranization when calculating the NameID for authenticating a user to the Stepup-Gateway")
                         .AppendLine("This must be the same value as the value of the \"urn:mace:terena.org:attribute-def:schacHomeOrganization\" claim that the that AD FS server sends when a user authenticates to the Stepup-Gateway"),
@@ -80,7 +80,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
                 new Setting
                 {
                     InternalName = PluginConstants.InternalNames.EntityId,
-                    FriendlyName = PluginConstants.FriendlyNames.EntityId,
+                    DisplayName = PluginConstants.FriendlyNames.EntityId,
                     Description = new StringBuilder()
                         .AppendLine("The EntityID of the Stepup ADFS MFA Extension")
                         .AppendLine("This must be an URI in a namespace that you control.")
@@ -90,7 +90,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
             settings.Add(new Setting
             {
                 InternalName = PluginConstants.InternalNames.ActiveDirectoryUserIdAttribute,
-                FriendlyName = PluginConstants.FriendlyNames.ActiveDirectoryUserIdAttribute,
+                DisplayName = PluginConstants.FriendlyNames.ActiveDirectoryUserIdAttribute,
                 Description = new StringBuilder()
                     .AppendLine("The name of the AD attribute that contains the user ID (\"uid\") used when calculating the NameID for authenticating a user to the Stepup-Gateway")
                     .AppendLine("This AD attribute must contain the value of the \"urn:mace:dir:attribute-def:uid\" claim that the AD FS server sends when a user authenticates to the Stepup-Gateway"),
@@ -99,11 +99,12 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
             settings.Add(new Setting
             {
                 InternalName = PluginConstants.InternalNames.CertificateThumbprint,
-                FriendlyName = PluginConstants.FriendlyNames.CertificateThumbprint,
+                DisplayName = PluginConstants.FriendlyNames.CertificateThumbprint,
                 Description = new StringBuilder()
                     .AppendLine("The thumbprint (i.e. the SHA1 hash of the DER X.509 certificate) of the signing certificate")
                     .AppendLine("This is the self-signed certificate that we generated during install and that we installed in the certificate store"),
-                CurrentValue = xmlSettings.FirstOrDefault(s => s.Attribute(nameAttribute)?.Value.Equals(PluginConstants.InternalNames.CertificateThumbprint) ?? false)?.Value
+                CurrentValue = xmlSettings.FirstOrDefault(s => s.Attribute(nameAttribute)?.Value.Equals(PluginConstants.InternalNames.CertificateThumbprint) ?? false)?.Value,
+                IsCertificate = true
             });
             /*
                 The cert store configuration for the SAML signing certificate and private key of the Stepup SFO Plugin 
@@ -112,7 +113,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
             settings.Add(new Setting
             {
                 InternalName = PluginConstants.InternalNames.CertificateStoreName,
-                FriendlyName = PluginConstants.FriendlyNames.CertificateStoreName,
+                DisplayName = PluginConstants.FriendlyNames.CertificateStoreName,
                 CurrentValue = certificate?.Attribute(XName.Get(PluginConstants.InternalNames.CertificateStoreName))?.Value,
                 IsConfigurable = false
             });
@@ -123,7 +124,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
             settings.Add(new Setting
             {
                 InternalName = PluginConstants.InternalNames.CertificateLocation,
-                FriendlyName = PluginConstants.FriendlyNames.CertificateLocation,
+                DisplayName = PluginConstants.FriendlyNames.CertificateLocation,
                 CurrentValue = certificate?.Attribute(XName.Get(PluginConstants.InternalNames.CertificateLocation))?.Value,
                 IsConfigurable = false
             });
@@ -135,7 +136,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
             settings.Add(new Setting
             {
                 InternalName = PluginConstants.InternalNames.FindBy,
-                FriendlyName = PluginConstants.FriendlyNames.FindBy,
+                DisplayName = PluginConstants.FriendlyNames.FindBy,
                 CurrentValue = certificate?.Attribute(XName.Get(PluginConstants.InternalNames.FindBy))?.Value,
                 IsConfigurable = false
             });
@@ -161,7 +162,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
             settings.Add(new Setting
             {
                 InternalName = StepUpConstants.InternalNames.SecondFactorEndpoint,
-                FriendlyName = StepUpConstants.FriendlyNames.SecondFactorEndpoint,
+                DisplayName = StepUpConstants.FriendlyNames.SecondFactorEndpoint,
                 CurrentValue = pluginConfigSection.FirstOrDefault(s => s.Attribute(nameAttribute)?.Value.Equals(StepUpConstants.InternalNames.SecondFactorEndpoint) ?? false)?.Value
             });
             /* SAML Configuration of the SFO IdP Endpoint of the Stepup-Gateway 
@@ -171,7 +172,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
             settings.Add(new Setting
             {
                 InternalName = StepUpConstants.InternalNames.EntityId,
-                FriendlyName = StepUpConstants.FriendlyNames.EntityId,
+                DisplayName = StepUpConstants.FriendlyNames.EntityId,
                 CurrentValue = identityProvider?.Attribute(XName.Get(StepUpConstants.InternalNames.EntityId))?.Value
             });
             /* The first SAML signing certificate of SFO IdP Endpoint of the Stepup-Gateway 
@@ -181,7 +182,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
             settings.Add(new Setting
             {
                 InternalName = StepUpConstants.InternalNames.SigningCertificateThumbprint,
-                FriendlyName = StepUpConstants.FriendlyNames.SigningCertificateThumbprint,
+                DisplayName = StepUpConstants.FriendlyNames.SigningCertificateThumbprint,
                 CurrentValue = certificate?.Attribute(XName.Get(StepUpConstants.InternalNames.SigningCertificateThumbprint))?.Value
             });
             /* The optional second SAML signing certificate of SFO IdP Endpoint of the Stepup-Gateway 
@@ -191,13 +192,13 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
             settings.Add(new Setting
             {
                 InternalName = StepUpConstants.InternalNames.SecondCertificate,
-                FriendlyName = StepUpConstants.FriendlyNames.SecondCertificate,
+                DisplayName = StepUpConstants.FriendlyNames.SecondCertificate,
                 IsMandatory = false
             });
             settings.Add(new Setting
                              {
                                  InternalName = StepUpConstants.InternalNames.MinimalLoa,
-                                 FriendlyName = StepUpConstants.FriendlyNames.MinimalLoa,
+                                 DisplayName = StepUpConstants.FriendlyNames.MinimalLoa,
                                  Description = new StringBuilder()
                                      .AppendLine("The LoA identifier indicating the level of authentication to request from the Stepup-Gateway")
                                      .AppendLine("This value is typically dependent on the Stepup-Gateway being used.")
@@ -217,7 +218,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
             var contents = this.fileService.GetStepUpConfig();
             foreach (var setting in settings)
             {
-                contents = contents.Replace($"%{setting.FriendlyName}%", setting.Value);
+                contents = contents.Replace($"%{setting.DisplayName}%", setting.Value);
             }
 
             var document = XDocument.Parse(contents);
@@ -233,7 +234,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
             var contents = this.fileService.GetAdapterConfig();
             foreach (var setting in settings)
             {
-                contents = contents.Replace($"%{setting.FriendlyName}%", setting.Value);
+                contents = contents.Replace($"%{setting.DisplayName}%", setting.Value);
             }
 
             var document = XDocument.Parse(contents);

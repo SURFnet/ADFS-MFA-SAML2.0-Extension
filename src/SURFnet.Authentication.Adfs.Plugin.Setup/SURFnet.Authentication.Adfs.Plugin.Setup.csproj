@@ -51,7 +51,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AdFsServer.cs" />
-    <Compile Include="ConsoleWriter.cs" />
+    <Compile Include="ConsoleExtensions.cs" />
     <Compile Include="Models\IdentityProvider.cs" />
     <Compile Include="Models\PluginConfiguration.cs" />
     <Compile Include="Models\Setting.cs" />
@@ -60,6 +60,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\AssemblyService.cs" />
+    <Compile Include="Services\CertificateService.cs" />
     <Compile Include="Services\ConfigurationFileService.cs" />
     <Compile Include="Services\FileService.cs" />
     <Compile Include="StepUpConstants.cs" />
