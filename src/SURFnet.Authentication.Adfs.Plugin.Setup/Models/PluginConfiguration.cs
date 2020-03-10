@@ -16,8 +16,6 @@
 
 namespace SURFnet.Authentication.Adfs.Plugin.Setup.Models
 {
-    using SURFnet.Authentication.Adfs.Plugin.Configuration;
-
     /// <summary>
     /// Class PluginConfiguration.
     /// </summary>

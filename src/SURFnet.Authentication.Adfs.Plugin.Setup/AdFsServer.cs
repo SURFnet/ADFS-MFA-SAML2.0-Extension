@@ -22,6 +22,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
 {
     public class AdFsServer
     {
+       // private ServiceController service;
+
         public void StopAdFsService()
         {
 
