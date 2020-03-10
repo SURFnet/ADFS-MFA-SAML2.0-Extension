@@ -16,11 +16,12 @@
 
 namespace SURFnet.Authentication.Adfs.Plugin.Setup.Upgrades
 {
-    using SURFnet.Authentication.Adfs.Plugin.Setup.Models;
-    using SURFnet.Authentication.Adfs.Plugin.Setup.Services;
     using System;
     using System.Collections.Generic;
     using System.Linq;
+
+    using SURFnet.Authentication.Adfs.Plugin.Setup.Models;
+    using SURFnet.Authentication.Adfs.Plugin.Setup.Services;
 
     /// <summary>
     /// Contains the steps to upgrade from 1.0.1 to 2.x
@@ -38,7 +39,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Upgrades
 
             if (!fileService.CopyAssembliesToOutput())
             {
-                Console.WriteLine($"Please fix errors before continue;");
+                Console.WriteLine("Please fix errors before continue;");
                 return;
             }
 
@@ -48,7 +49,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Upgrades
 
             var service = new AssemblyService();
             service.RemoveAssembliesFromGac();
-            fileService.BackupOldConfig();
+
             fileService.CopyOutputToAdFsDirectory();
 
             server.StartAdFsService();
@@ -113,7 +114,6 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Upgrades
             Console.WriteLine($"Reading existing ADFS config");
             var config = new ConfigurationFileService(fileService);
 
-            // todo: test clean and upgrade scenario
             var pluginSettings = config.ExtractPluginConfigurationFromAdfsConfig();
             var stepUpSettings = config.ExtractSustainSysConfigurationFromAdfsConfig();
             var defaultConfigValues = config.LoadDefaults();
@@ -123,12 +123,13 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Upgrades
             ConsoleWriter.WriteHeader("Configuration preparation");
             Console.WriteLine("Successfully prepared configuration");
 
-            var mergedDictionary = pluginSettings;
-            mergedDictionary.AddRange(stepUpSettings);
+            var mergedSettings = pluginSettings;
+            mergedSettings.AddRange(stepUpSettings);
 
-            config.CreatePluginConfigurationFile(mergedDictionary);
-            config.CreateSustainSysConfigFile(mergedDictionary);
+            config.CreatePluginConfigurationFile(mergedSettings);
+            config.CreateSustainSysConfigFile(mergedSettings);
             config.CreateCleanAdFsConfig();
+            fileService.BackupOldConfig();
             ConsoleWriter.WriteHeader("Finished configuration preparation");
         }
 
@@ -136,7 +137,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Upgrades
         /// Validates the plugin settings.
         /// </summary>
         /// <param name="pluginSettings">The plugin settings.</param>
-        private void ValidatePluginSettings(List<Setting> pluginSettings)
+        private void ValidatePluginSettings(ICollection<Setting> pluginSettings)
         {
             Console.WriteLine("Validate the local configuration for this ADFS MFA Extension");
             ConsoleWriter.WriteHeader("ADFS MFA Extension");
@@ -146,7 +147,12 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Upgrades
                 Console.WriteLine(setting.Description);
                 Console.WriteLine($"- Current value of {setting.FriendlyName}: {setting.CurrentValue ?? "null"}.");
 
-                if (!VersionDetector.IsCleanInstall())
+                if (VersionDetector.IsCleanInstall())
+                {
+                    Console.WriteLine($"No configuration Found. Please enter a value");
+                    SetSettingValue(setting);
+                }
+                else
                 {
                     Console.Write("Press Enter to continue with current value. Press N to supply a new value:");
                     var input = Console.ReadKey();
@@ -155,12 +161,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Upgrades
                         SetSettingValue(setting);
                     }
                 }
-                else
-                {
-                    Console.WriteLine($"No configuration Found. Please enter a value");
-                    SetSettingValue(setting);
-                }
-                
+
                 Console.WriteLine();
                 Console.WriteLine();
                 Console.WriteLine("----");
@@ -174,7 +175,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Upgrades
         /// </summary>
         /// <param name="settings">The settings.</param>
         /// <param name="defaultValues">The default values.</param>
-        private void ValidateStepUpConfiguration(List<Setting> settings, List<Dictionary<string, string>> defaultValues)
+        private void ValidateStepUpConfiguration(ICollection<Setting> settings, IList<Dictionary<string, string>> defaultValues)
         {
             ConsoleWriter.WriteHeader("StepUp config");
             var curEntityId = settings.FirstOrDefault(s => s.InternalName.Equals(StepUpConstants.InternalNames.EntityId));

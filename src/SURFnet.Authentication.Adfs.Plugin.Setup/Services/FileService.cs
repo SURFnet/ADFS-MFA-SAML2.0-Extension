@@ -41,6 +41,11 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
         private readonly string distFolder;
 
         /// <summary>
+        /// The backup folder.
+        /// </summary>
+        private readonly string backupFolder;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="FileService"/> class.
         /// </summary>
         public FileService()
@@ -52,10 +57,11 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
             this.adfsDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), "ADFS");
 #endif
             this.outputFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "output");
-            
             this.distFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "dist");
+            this.backupFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "backup");
 
             this.EnsureCleanOutputFolder();
+            this.EnsureBackupFolder();
             this.ValidateDistFolder();
         }
 
@@ -156,9 +162,22 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
             Console.WriteLine($"Successfully created temp Cleaned ADFS configuration file in '{path}'");
         }
 
+        /// <summary>
+        /// Backups the old configuration.
+        /// </summary>
         public void BackupOldConfig()
         {
-            // to backup folder in setup dir
+            try
+            {
+                var adfsCurrentConfig = Path.Combine(this.outputFolder, "Microsoft.IdentityServer.Servicehost.exe.config");
+                var backupConfig = Path.Combine(this.backupFolder, $"Microsoft.IdentityServer.Servicehost.exe.{DateTime.Now:yyyyMMddHHmmss}.config");
+                File.Copy(adfsCurrentConfig, backupConfig);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Failed to create ADFS config backup. Details: {e}");
+                throw;
+            }
         }
 
         /// <summary>
@@ -190,6 +209,17 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
             }
 
             Directory.CreateDirectory(this.outputFolder);
+        }
+
+        /// <summary>
+        /// Ensures the backup folder.
+        /// </summary>
+        private void EnsureBackupFolder()
+        {
+            if (!Directory.Exists(this.backupFolder))
+            {
+                Directory.CreateDirectory(this.backupFolder);
+            }
         }
 
         /// <summary>
