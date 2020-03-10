@@ -105,17 +105,6 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
                     .AppendLine("This is the self-signed certificate that we generated during install and that we installed in the certificate store"),
                 CurrentValue = xmlSettings.FirstOrDefault(s => s.Attribute(nameAttribute)?.Value.Equals(PluginConstants.InternalNames.CertificateThumbprint) ?? false)?.Value
             });
-            settings.Add(new Setting
-            {
-                InternalName = PluginConstants.InternalNames.MinimalLoa,
-                FriendlyName = PluginConstants.FriendlyNames.MinimalLoa,
-                Description = new StringBuilder()
-                    .AppendLine("The LoA identifier indicating the level of authentication to request from the Stepup-Gateway")
-                    .AppendLine("This value is typically dependent on the Stepup-Gateway being used.")
-                    .AppendLine("These value is not independently configurable in the installer and is selected as part of the environment")
-                    .AppendLine("Example: http://example.com/assurance/sfo-level2"),
-                CurrentValue = xmlSettings.FirstOrDefault(s => s.Attribute(nameAttribute)?.Value.Equals(PluginConstants.InternalNames.MinimalLoa) ?? false)?.Value
-            });
             /*
                 The cert store configuration for the SAML signing certificate and private key of the Stepup SFO Plugin 
                 These are not user configurable. We always use the local machine my store
@@ -162,11 +151,11 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
         {
             var settings = new List<Setting>();
             var pluginConfigSection = this.adfsConfig.Descendants(XName.Get("SURFnet.Authentication.Adfs.Plugin.Properties.Settings")).Descendants(XName.Get("setting")).ToList().ToList();
+            var xmlSettings = pluginConfigSection.Descendants(XName.Get("setting")).ToList();
             var kentorConfigSection = this.adfsConfig.Descendants(XName.Get("kentor.authServices")).FirstOrDefault();
             var identityProvider = kentorConfigSection?.Descendants(XName.Get("add")).FirstOrDefault();
             var certificate = identityProvider?.Descendants(XName.Get("signingCertificate")).FirstOrDefault();
             var nameAttribute = XName.Get("name");
-
             /* The SSOLocation of the SFO IdP Endpoint of the Stepup-Gateway 
                 Example: https://stepup-gateway.example.com/second-factor-only/single-sign-on
             */
@@ -206,21 +195,101 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
                 FriendlyName = StepUpConstants.FriendlyNames.SecondCertificate,
                 IsMandatory = false
             });
-
+            settings.Add(new Setting
+                             {
+                                 InternalName = StepUpConstants.InternalNames.MinimalLoa,
+                                 FriendlyName = StepUpConstants.FriendlyNames.MinimalLoa,
+                                 Description = new StringBuilder()
+                                     .AppendLine("The LoA identifier indicating the level of authentication to request from the Stepup-Gateway")
+                                     .AppendLine("This value is typically dependent on the Stepup-Gateway being used.")
+                                     .AppendLine("These value is not independently configurable in the installer and is selected as part of the environment")
+                                     .AppendLine("Example: http://example.com/assurance/sfo-level2"),
+                                 CurrentValue = xmlSettings.FirstOrDefault(s => s.Attribute(nameAttribute)?.Value.Equals(StepUpConstants.InternalNames.MinimalLoa) ?? false)?.Value
+                             });
             return settings;
         }
 
-        public void CreatePluginConfigurationFile(PluginConfiguration oldAdfsConfig)
+        /// <summary>
+        /// Creates the plugin configuration file.
+        /// </summary>
+        /// <param name="settings">The settings.</param>
+        public void CreatePluginConfigurationFile(List<Setting> settings)
         {
+            var contents = @"<?xml version='1.0' encoding='utf-8'?>
+                <configuration>
+                  <configSections>
+                    <section name='SURFnet.Authentication.Adfs.StepUp' type='SURFnet.Authentication.Adfs.Plugin.Configuration.StepUpSection, SURFnet.Authentication.Adfs.Plugin'/>
+                    <sectionGroup name='applicationSettings' type='System.Configuration.ApplicationSettingsGroup, System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089'>
+                      <section name='SURFnet.Authentication.Adfs.Plugin.Properties.Settings' type='System.Configuration.ClientSettingsSection, System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089' requirePermission='false' />
+                    </sectionGroup>
+                  </configSections>
+                  <SURFnet.Authentication.Adfs.StepUp>
+                    <institution schacHomeOrganization='%schacHomeOrganization%' activeDirectoryUserIdAttribute='%activeDirectoryUserIdAttribute%'/>
+                    <localSP sPSigningCertificate='%signingCertificate%'
+		                minimalLoa='%minimalLoa%'/>
+                    <stepUpIdP secondFactorEndPoint='%StepupGatewaySSOLocation%'/>
+                  </SURFnet.Authentication.Adfs.StepUp>
+                </configuration>";
+
+            foreach (var setting in settings)
+            {
+                contents = contents.Replace($"%{setting.FriendlyName}%", setting.Value);
+            }
+
+            var document = XDocument.Parse(contents);
+            this.fileService.CreatePluginConfigurationFile(document);
         }
 
-        public void CreateSustainSysConfigFile(SustainSysConfiguration sustainSysConfig)
+        /// <summary>
+        /// Creates the sustain system configuration file.
+        /// </summary>
+        /// <param name="settings">The settings.</param>
+        public void CreateSustainSysConfigFile(List<Setting> settings)
         {
+            var contents = @"<?xml version='1.0' encoding='utf-8'?>
+                <configuration>
+                  <configSections>
+                    <section name='sustainsys.saml2' type='Sustainsys.Saml2.Configuration.SustainsysSaml2Section, Sustainsys.Saml2, Version=2.3.0.0, Culture=neutral, PublicKeyToken=3F3ECD9D2F3457F7' />
+                  </configSections>
+                  <sustainsys.saml2 entityId='%entityId%' returnUrl='' discoveryServiceUrl=''>
+                    <nameIdPolicy allowCreate='true' format='Unspecified' />
+                    <identityProviders>
+                      <add entityId='%StepupGatewayEntityID%' signOnUrl='' binding='HttpPost' allowUnsolicitedAuthnResponse='false' wantAuthnRequestsSigned='true'>
+                        <signingCertificate storeName='My' storeLocation='LocalMachine' findValue='%StepupGatewaySigningCertificate%' x509FindType='FindByThumbprint' />
+                      </add>
+                    </identityProviders>
+                  </sustainsys.saml2>
+                </configuration>";
+
+            foreach (var setting in settings)
+            {
+                contents = contents.Replace($"%{setting.FriendlyName}%", setting.Value);
+            }
+
+            var document = XDocument.Parse(contents);
+            this.fileService.CreateSustainSysConfigFile(document);
         }
 
+        /// <summary>
+        /// Removes the old plugin configuration in the AD FS configuration file.
+        /// </summary>
         public void CreateCleanAdFsConfig()
         {
+            var sectionDeclarations = this.adfsConfig.Descendants(XName.Get("section")).ToList();
+            var kentorSection = sectionDeclarations.FirstOrDefault(section => section.Attribute(XName.Get("name"))?.Value.Equals("kentor.authServices") ?? false);
+            var pluginSection = sectionDeclarations.FirstOrDefault(section => section.Attribute(XName.Get("name"))?.Value.Equals("SURFnet.Authentication.Adfs.Plugin.Properties.Settings") ?? false);
+            var identitySection = sectionDeclarations.FirstOrDefault(section => section.Attribute(XName.Get("name"))?.Value.Equals("system.identityModel") ?? false);
+            kentorSection?.Remove();
+            pluginSection?.Remove();
+            identitySection?.Remove();
+           
+            var kentorConfig = this.adfsConfig.Descendants(XName.Get("kentor.authServices")).FirstOrDefault();
+            var pluginConfig = this.adfsConfig.Descendants(XName.Get("SURFnet.Authentication.Adfs.Plugin.Properties.Settings"));
 
+            kentorConfig?.Remove();
+            pluginConfig?.Remove();
+
+            this.fileService.CreateCleanAdFsConfig(this.adfsConfig);
         }
 
         /// <summary>

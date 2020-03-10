@@ -30,6 +30,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
             public const string SigningCertificateThumbprint = "findValue";
 
             public const string SecondCertificate = "Certificate";
+            
+            public const string MinimalLoa = "MinimalLoa";
         }
 
         /// <summary>
@@ -44,6 +46,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
             public const string SigningCertificateThumbprint = "StepupGatewaySigningCertificate";
 
             public const string SecondCertificate = "StepupGatewaySigningCertificate2";
+
+            public const string MinimalLoa = "minimalLoa";
         }
     }
 }

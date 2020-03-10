@@ -25,5 +25,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Models
         public bool IsMandatory { get; set; }
 
         public bool IsConfigurable { get; set; }
+
+        public string Value => this.NewValue ?? this.CurrentValue;
     }
 }

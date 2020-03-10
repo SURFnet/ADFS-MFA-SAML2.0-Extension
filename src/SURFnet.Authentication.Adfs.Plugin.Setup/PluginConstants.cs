@@ -31,10 +31,10 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
 
             public const string CertificateThumbprint = "SpSigningCertificate";
             
-            public const string MinimalLoa = "MinimalLoa";
             public const string CertificateStoreName = "storeName";
 
             public const string CertificateLocation = "storeLocation";
+
             public const string FindBy = "x509FindType";
         }
 
@@ -44,33 +44,15 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
 
             public const string ActiveDirectoryUserIdAttribute = "activeDirectoryUserIdAttribute";
 
-            public const string EntityId = "EntityId";
+            public const string EntityId = "entityId";
 
-            public const string CertificateThumbprint = "SigningCertificate";
+            public const string CertificateThumbprint = "signingCertificate";
             
-            public const string MinimalLoa = "MinimalLoa";
             public const string CertificateStoreName = "storeName";
 
             public const string CertificateLocation = "storeLocation";
-            public const string FindBy = "Certificate Id type";
 
-        }
-
-        public static class Descriptions
-        {
-            public const string MinimalLoa = "todo";
-
-            public const string SchacHomeOrganization = "Todo";
-
-            public const string ActiveDirectoryUserIdAttribute = "Todo";
-
-            public const string EntityId = "Todo";
-
-            public const string CertificateThumbprint = "Todo";
-            public const string CertificateStoreName = "todo";
-
-            public const string CertificateLocation = "todo";
-            public const string FindBy = "todo";
+            public const string FindBy = "certificateIdType";
 
         }
     }

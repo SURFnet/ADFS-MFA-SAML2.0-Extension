@@ -38,7 +38,11 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Upgrades
             var fileService = new FileService();
             this.ProcessConfigurationFiles(fileService);
 
-            fileService.CopyAssembliesToOutput();
+            if (!fileService.CopyAssembliesToOutput())
+            {
+                Console.WriteLine($"Please fix errors before continue;");
+                return;
+            }
 
             server.StopAdFsService();
 
@@ -50,7 +54,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Upgrades
             server.ReRegisterPlugin();
             server.StartAdFsService();
         }
-        
+
         /// <summary>
         /// Reads the user input as int.
         /// </summary>
@@ -91,24 +95,20 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Upgrades
             Console.WriteLine($"Reading existing ADFS config");
             var config = new ConfigurationFileService(fileService);
 
-            var pluginSettings = new List<Setting>();
-            var stepUpSettings = new List<Setting>();
-
-            PluginConfiguration existingPluginConfig = null;
-            SustainSysConfiguration existingSustainSysConfig = null;
-
-            if (!VersionDetector.IsCleanInstall())
-            {
-                pluginSettings = config.ExtractPluginConfigurationFromAdfsConfig();
-                stepUpSettings = config.ExtractSustainSysConfigurationFromAdfsConfig();
-                var defaultConfigValues = config.LoadDefaults();
-                this.ValidateStepUpConfiguration(stepUpSettings, defaultConfigValues);
-                this.ValidatePluginSettings(pluginSettings);
-            }
+            // todo: test clean and upgrade scenario
+            var pluginSettings = config.ExtractPluginConfigurationFromAdfsConfig();
+            var stepUpSettings = config.ExtractSustainSysConfigurationFromAdfsConfig();
+            var defaultConfigValues = config.LoadDefaults();
+            this.ValidateStepUpConfiguration(stepUpSettings, defaultConfigValues);
+            this.ValidatePluginSettings(pluginSettings);
 
 
-            config.CreatePluginConfigurationFile(existingPluginConfig);
-            config.CreateSustainSysConfigFile(existingSustainSysConfig);
+            var mergedDictionary = pluginSettings;
+            mergedDictionary.AddRange(stepUpSettings);
+
+
+            config.CreatePluginConfigurationFile(mergedDictionary);
+            config.CreateSustainSysConfigFile(mergedDictionary);
             config.CreateCleanAdFsConfig();
         }
 
