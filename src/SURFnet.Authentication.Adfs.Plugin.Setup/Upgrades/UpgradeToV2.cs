@@ -54,9 +54,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Upgrades
 
             server.StartAdFsService();
         }
-
         
-
         /// <summary>
         /// Extract the current configuration from the ADFS config file and save them in separate files.
         /// </summary>

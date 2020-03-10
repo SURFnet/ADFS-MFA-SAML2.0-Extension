@@ -145,8 +145,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Models
         /// </summary>
         private void ProcessCertificate()
         {
-            Console.WriteLine("How dow you want to set the certificate?");
-            Console.WriteLine("1. Upload my own");
+            Console.WriteLine("How do you want to set the certificate?");
+            Console.WriteLine("1. Use my own");
             Console.WriteLine("2. Generate new certificate");
             Console.Write($"Enter the number of the option you want to select: ");
             var input = ConsoleExtensions.ReadUserInputAsInt(1, 2);

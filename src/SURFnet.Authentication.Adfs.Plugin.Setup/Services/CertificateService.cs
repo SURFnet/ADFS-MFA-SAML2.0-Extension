@@ -69,7 +69,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
                 var certCollection = store.Certificates.Find(X509FindType.FindByThumbprint, thumbprint, false);
                 if (certCollection.Count == 0)
                 {
-                    Console.WriteLine($"Didn't found any certificate with thumbprint '{thumbprint}'");
+                    Console.WriteLine($"Didn't find any certificate with thumbprint '{thumbprint}'");
                     isValid = false;
                 }
                 else if (certCollection.Count > 1)
