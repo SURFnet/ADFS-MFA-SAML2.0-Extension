@@ -16,13 +16,11 @@
 
 namespace SURFnet.Authentication.Adfs.Plugin.Setup.Upgrades
 {
+    using SURFnet.Authentication.Adfs.Plugin.Setup.Models;
+    using SURFnet.Authentication.Adfs.Plugin.Setup.Services;
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Text;
-
-    using SURFnet.Authentication.Adfs.Plugin.Setup.Models;
-    using SURFnet.Authentication.Adfs.Plugin.Setup.Services;
 
     /// <summary>
     /// Contains the steps to upgrade from 1.0.1 to 2.x
@@ -50,10 +48,29 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Upgrades
 
             var service = new AssemblyService();
             service.RemoveAssembliesFromGac();
-
+            fileService.BackupOldConfig();
             fileService.CopyOutputToAdFsDirectory();
 
             server.StartAdFsService();
+        }
+
+        /// <summary>
+        /// Sets the setting value with the users input.
+        /// </summary>
+        /// <param name="setting">The setting.</param>
+        private static void SetSettingValue(Setting setting)
+        {
+            string newValue;
+            do
+            {
+                Console.Write($"Enter new value: ");
+                newValue = Console.ReadLine();
+                if (string.IsNullOrWhiteSpace(newValue) && setting.IsMandatory)
+                {
+                    Console.WriteLine($"Property {setting.FriendlyName} is required. Please enter a value.");
+                }
+            }
+            while (string.IsNullOrWhiteSpace(newValue) && setting.IsMandatory);
         }
 
         /// <summary>
@@ -78,7 +95,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Upgrades
                 }
                 else if (value < minRange || value > maxRange)
                 {
-                    Console.WriteLine($"Enter a value between {minRange} and {maxRange}");
+                    Console.Write($"Enter a value between {minRange} and {maxRange}: ");
                     isInvalid = true;
                 }
             }
@@ -102,15 +119,17 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Upgrades
             var defaultConfigValues = config.LoadDefaults();
             this.ValidateStepUpConfiguration(stepUpSettings, defaultConfigValues);
             this.ValidatePluginSettings(pluginSettings);
-
+            
+            ConsoleWriter.WriteHeader("Configuration preparation");
+            Console.WriteLine("Successfully prepared configuration");
 
             var mergedDictionary = pluginSettings;
             mergedDictionary.AddRange(stepUpSettings);
 
-
             config.CreatePluginConfigurationFile(mergedDictionary);
             config.CreateSustainSysConfigFile(mergedDictionary);
             config.CreateCleanAdFsConfig();
+            ConsoleWriter.WriteHeader("Finished configuration preparation");
         }
 
         /// <summary>
@@ -120,38 +139,36 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Upgrades
         private void ValidatePluginSettings(List<Setting> pluginSettings)
         {
             Console.WriteLine("Validate the local configuration for this ADFS MFA Extension");
-            Console.WriteLine("------------------------ADFS MFA Extension----------------------");
+            ConsoleWriter.WriteHeader("ADFS MFA Extension");
+
             foreach (var setting in pluginSettings.Where(s => s.IsConfigurable))
             {
-                Console.WriteLine();
-                Console.WriteLine($"Enter a value for setting {setting.FriendlyName}");
                 Console.WriteLine(setting.Description);
-                Console.WriteLine($"Current value: {setting.CurrentValue}.");
-                Console.Write("Press Enter to continue with current value. Press N to supply a new value:");
-                var input = Console.ReadKey();
+                Console.WriteLine($"- Current value of {setting.FriendlyName}: {setting.CurrentValue ?? "null"}.");
 
-                Console.WriteLine();
-                if (!input.Key.Equals(ConsoleKey.Enter))
+                if (!VersionDetector.IsCleanInstall())
                 {
-                    string newValue;
-                    do
+                    Console.Write("Press Enter to continue with current value. Press N to supply a new value:");
+                    var input = Console.ReadKey();
+                    if (!input.Key.Equals(ConsoleKey.Enter))
                     {
-                        Console.Write($"Enter new value: ");
-                        newValue = Console.ReadLine();
-                        if (string.IsNullOrWhiteSpace(newValue) && setting.IsMandatory)
-                        {
-                            Console.WriteLine($"Property {setting.FriendlyName} is required. Please enter a value.");
-                        }
+                        SetSettingValue(setting);
                     }
-                    while (string.IsNullOrWhiteSpace(newValue) && setting.IsMandatory);
                 }
-
-                Console.WriteLine(string.Empty);
+                else
+                {
+                    Console.WriteLine($"No configuration Found. Please enter a value");
+                    SetSettingValue(setting);
+                }
+                
+                Console.WriteLine();
+                Console.WriteLine();
+                Console.WriteLine("----");
             }
 
-            Console.WriteLine("------------------------End ADFS MFA Extension------------------");
+            ConsoleWriter.WriteHeader("End ADFS MFA Extension");
         }
-
+        
         /// <summary>
         /// Prints the current configuration.
         /// </summary>
@@ -159,10 +176,14 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Upgrades
         /// <param name="defaultValues">The default values.</param>
         private void ValidateStepUpConfiguration(List<Setting> settings, List<Dictionary<string, string>> defaultValues)
         {
-            Console.WriteLine("------------------------StepUp config----------------------");
+            ConsoleWriter.WriteHeader("StepUp config");
             var curEntityId = settings.FirstOrDefault(s => s.InternalName.Equals(StepUpConstants.InternalNames.EntityId));
 
-            if (curEntityId != null)
+            if (string.IsNullOrWhiteSpace(curEntityId?.CurrentValue))
+            {
+                VersionDetector.SetInstallationStatusToCleanInstall();
+            }
+            else 
             {
                 var curEnvironment = defaultValues.FirstOrDefault(s => s[StepUpConstants.FriendlyNames.EntityId].Equals(curEntityId.CurrentValue));
                 if (curEnvironment != null)
@@ -172,19 +193,22 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Upgrades
                 }
             }
 
-            Console.WriteLine("Do you want to reconfigure or connect to a new environment? (Y/N)");
+            Console.Write("Do you want to reconfigure or connect to a new environment? (Y/N): ");
             var input = Console.ReadKey();
 
             Console.WriteLine();
             if (input.Key.Equals(ConsoleKey.Y))
             {
-                Console.WriteLine("Which environment do you want to connect to?");
+                Console.WriteLine($"Found default configurations:");
                 for (var i = 0; i < defaultValues.Count; i++)
                 {
                     Console.WriteLine($"{i}. {defaultValues[i]["Type"]}");
                 }
 
+                Console.Write("Enter the number of the environment with which you want to connect to: ");
                 var environment = defaultValues[ReadUserInputAsInt(0, defaultValues.Count - 1)];
+                Console.WriteLine();
+
                 foreach (var defaultSetting in environment)
                 {
                     var curSetting = settings.FirstOrDefault(s => s.FriendlyName.Equals(defaultSetting.Key));
@@ -197,9 +221,18 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Upgrades
                 Console.WriteLine($"Prepared new StepUp Gateway configuration.");
             }
 
-            Console.WriteLine("------------------------End StepUp config------------------");
-            Console.WriteLine();
-            Console.WriteLine();
+            if (!input.Key.Equals(ConsoleKey.Y) && VersionDetector.IsCleanInstall())
+            {
+                Console.WriteLine();
+                Console.WriteLine();
+                Console.WriteLine("No existing installation found! Please enter a desired configuration.");
+                
+                // Keep retrying
+                this.ValidateStepUpConfiguration(settings, defaultValues);
+                return;
+            }
+
+            ConsoleWriter.WriteHeader("End StepUp config");
         }
     }
 }

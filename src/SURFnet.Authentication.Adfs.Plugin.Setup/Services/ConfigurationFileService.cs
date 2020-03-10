@@ -214,20 +214,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
         /// <param name="settings">The settings.</param>
         public void CreatePluginConfigurationFile(List<Setting> settings)
         {
-            var contents = @"<?xml version='1.0' encoding='utf-8'?>
-                <configuration>
-                  <configSections>
-                    <section name='SURFnet.Authentication.Adfs.StepUp' type='SURFnet.Authentication.Adfs.Plugin.Configuration.StepUpSection, SURFnet.Authentication.Adfs.Plugin'/>
-                  </configSections>
-                  <SURFnet.Authentication.Adfs.StepUp>
-                    <institution schacHomeOrganization='%SFOMfaExtensionSchacHomeOrganization%' activeDirectoryUserIdAttribute='%SFOMfaExtensionactiveDirectoryUserIdAttribute%'/>
-                    <localSP sPSigningCertificate='%SFOMfaExtensionCertThumbprint%'
-		                minimalLoa='%MinimalLoa%'/>
-                    <stepUpIdP secondFactorEndPoint='%StepupGatewaySSOLocation%'/>
-                  </SURFnet.Authentication.Adfs.StepUp>
-                </configuration>";
-
-            
+            var contents = this.fileService.GetStepUpConfig();
             foreach (var setting in settings)
             {
                 contents = contents.Replace($"%{setting.FriendlyName}%", setting.Value);
@@ -243,21 +230,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
         /// <param name="settings">The settings.</param>
         public void CreateSustainSysConfigFile(List<Setting> settings)
         {
-            var contents = @"<?xml version='1.0' encoding='utf-8'?>
-                <configuration>
-                  <configSections>
-                    <section name='sustainsys.saml2' type='Sustainsys.Saml2.Configuration.SustainsysSaml2Section, Sustainsys.Saml2, Version=2.3.0.0, Culture=neutral, PublicKeyToken=3F3ECD9D2F3457F7' />
-                  </configSections>
-                  <sustainsys.saml2 entityId='%entityId%' returnUrl='' discoveryServiceUrl=''>
-                    <nameIdPolicy allowCreate='true' format='Unspecified' />
-                    <identityProviders>
-                      <add entityId='%StepupGatewayEntityID%' signOnUrl='' binding='HttpPost' allowUnsolicitedAuthnResponse='false' wantAuthnRequestsSigned='true'>
-                        <signingCertificate storeName='My' storeLocation='LocalMachine' findValue='%StepupGatewaySigningCertificate%' x509FindType='FindByThumbprint' />
-                      </add>
-                    </identityProviders>
-                  </sustainsys.saml2>
-                </configuration>";
-
+            var contents = this.fileService.GetAdapterConfig();
             foreach (var setting in settings)
             {
                 contents = contents.Replace($"%{setting.FriendlyName}%", setting.Value);

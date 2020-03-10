@@ -25,6 +25,11 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
     public static class VersionDetector
     {
         /// <summary>
+        /// Indicated whether this installation is a greenfield.
+        /// </summary>
+        private static bool isCleanInstallBackingField;
+
+        /// <summary>
         /// Gets the plugin version thats currently installed in ADFS.
         /// </summary>
         /// <value>The installed version.</value>
@@ -58,7 +63,15 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
         /// <returns><c>true</c> if [is clean install]; otherwise, <c>false</c>.</returns>
         public static bool IsCleanInstall()
         {
-            return InstalledVersion == null;
+            return isCleanInstallBackingField;
+        }
+
+        /// <summary>
+        /// Sets the installation status to a clean install.
+        /// </summary>
+        public static void SetInstallationStatusToCleanInstall()
+        {
+            isCleanInstallBackingField = true;
         }
     }
 }

@@ -36,6 +36,11 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
         private readonly string outputFolder;
 
         /// <summary>
+        /// The distribution folder.
+        /// </summary>
+        private readonly string distFolder;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="FileService"/> class.
         /// </summary>
         public FileService()
@@ -47,8 +52,11 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
             this.adfsDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), "ADFS");
 #endif
             this.outputFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "output");
+            
+            this.distFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "dist");
 
             this.EnsureCleanOutputFolder();
+            this.ValidateDistFolder();
         }
 
         /// <summary>
@@ -79,6 +87,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
                     succeeded = false;
                 }
             }
+
+            Console.WriteLine($"Successfully copied assemblies to output directory");
 
             return succeeded;
         }
@@ -119,7 +129,9 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
         /// <param name="document">The document.</param>
         public void CreatePluginConfigurationFile(XDocument document)
         {
-            document.Save(Path.Combine(this.outputFolder, "SURFnet.Authentication.Adfs.Plugin.dll.config"));
+            var path = Path.Combine(this.outputFolder, "SURFnet.Authentication.Adfs.Plugin.dll.config");
+            document.Save(path);
+            Console.WriteLine($"Successfully created temp StepUp configuration file in '{path}'");
         }
 
         /// <summary>
@@ -128,7 +140,9 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
         /// <param name="document">The document.</param>
         public void CreateSustainSysConfigFile(XDocument document)
         {
-            document.Save(Path.Combine(this.outputFolder, "Sustainsys.Saml2.dll.config"));
+            var path = Path.Combine(this.outputFolder, "Sustainsys.Saml2.dll.config");
+            document.Save(path);
+            Console.WriteLine($"Successfully created temp StepUp configuration file in '{path}'");
         }
 
         /// <summary>
@@ -137,7 +151,32 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
         /// <param name="document">The document.</param>
         public void CreateCleanAdFsConfig(XDocument document)
         {
-            document.Save(Path.Combine(this.outputFolder, "Microsoft.IdentityServer.Servicehost.exe.config"));
+            var path = Path.Combine(this.outputFolder, "Microsoft.IdentityServer.Servicehost.exe.config");
+            document.Save(path);
+            Console.WriteLine($"Successfully created temp Cleaned ADFS configuration file in '{path}'");
+        }
+
+        public void BackupOldConfig()
+        {
+            // to backup folder in setup dir
+        }
+
+        /// <summary>
+        /// Gets the adapter configuration.
+        /// </summary>
+        /// <returns>The adapter configuration as string.</returns>
+        public string GetAdapterConfig()
+        {
+            return this.LoadFile("SURFnet.Authentication.Adfs.Plugin.dll.config");
+        }
+        
+        /// <summary>
+        /// Gets the step up configuration.
+        /// </summary>
+        /// <returns>The sustain sys config.</returns>
+        public string GetStepUpConfig()
+        {
+            return this.LoadFile("Sustainsys.Saml2.dll.config");
         }
 
         /// <summary>
@@ -151,6 +190,37 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
             }
 
             Directory.CreateDirectory(this.outputFolder);
+        }
+
+        /// <summary>
+        /// Validates the dist folder.
+        /// </summary>
+        /// <exception cref="DirectoryNotFoundException">Missing dist folder. Cannot continue.</exception>
+        private void ValidateDistFolder()
+        {
+            if (!Directory.Exists(this.distFolder))
+            {
+                throw new DirectoryNotFoundException("Missing dist folder. Cannot continue.");
+            }
+        }
+
+        /// <summary>
+        /// Loads the file from disk.
+        /// </summary>
+        /// <param name="fileName">Name of the file.</param>
+        /// <returns>The file contents.</returns>
+        private string LoadFile(string fileName)
+        {
+            try
+            {
+                var contents = File.ReadAllText(Path.Combine(this.distFolder, fileName));
+                return contents;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Error while opening file {fileName}. Details: {e}");
+                throw;
+            }
         }
     }
 }

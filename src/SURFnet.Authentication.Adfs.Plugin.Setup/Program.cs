@@ -42,6 +42,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
             }
 
             Console.WriteLine($"Finished upgrade from version '{VersionDetector.InstalledVersion}' to '{VersionDetector.NewVersion}'");
+
+            ConsoleWriter.WriteHeader("End of installation");
         }
     }
 }

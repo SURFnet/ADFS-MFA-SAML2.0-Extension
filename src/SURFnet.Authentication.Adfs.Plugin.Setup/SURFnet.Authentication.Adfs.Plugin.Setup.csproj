@@ -24,10 +24,4 @@
     <ProjectReference Include="..\SURFnet.Authentication.Adfs.Plugin\SURFnet.Authentication.Adfs.Plugin.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <None Update="binaries\log4net.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-
 </Project>
