@@ -44,6 +44,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Upgrades
                 return;
             }
 
+            server.ReRegisterPlugin();
+
             server.StopAdFsService();
 
             var service = new AssemblyService();
@@ -51,7 +53,6 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Upgrades
 
             fileService.CopyOutputToAdFsDirectory();
 
-            server.ReRegisterPlugin();
             server.StartAdFsService();
         }
 
@@ -118,8 +119,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Upgrades
         /// <param name="pluginSettings">The plugin settings.</param>
         private void ValidatePluginSettings(List<Setting> pluginSettings)
         {
-            Console.WriteLine("Validate the configuration for the ADFS plugin");
-            Console.WriteLine("------------------------ADFS Plugin config----------------------");
+            Console.WriteLine("Validate the local configuration for this ADFS MFA Extension");
+            Console.WriteLine("------------------------ADFS MFA Extension----------------------");
             foreach (var setting in pluginSettings.Where(s => s.IsConfigurable))
             {
                 Console.WriteLine();
@@ -148,7 +149,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Upgrades
                 Console.WriteLine(string.Empty);
             }
 
-            Console.WriteLine("------------------------End ADFS Plugin config------------------");
+            Console.WriteLine("------------------------End ADFS MFA Extension------------------");
         }
 
         /// <summary>
@@ -193,7 +194,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Upgrades
                     }
                 }
 
-                Console.WriteLine($"Written new configuration.");
+                Console.WriteLine($"Prepared new StepUp Gateway configuration.");
             }
 
             Console.WriteLine("------------------------End StepUp config------------------");

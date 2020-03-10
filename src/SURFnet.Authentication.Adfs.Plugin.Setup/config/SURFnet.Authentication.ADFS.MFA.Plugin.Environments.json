@@ -1,7 +1,6 @@
 [
   {
     "Type": "Production",
-    "AuthenticationServiceUrl": "http://surfconext.nl",
     "MinimalLoa": "http://surfconext.nl/assurance/sfo-level2",
     "StepupGatewaySSOLocation": "https://sa-gw.surfconext.nl/second-factor-only/single-sign-on",
     "StepupGatewayEntityID": "https://sa-gw.surfconext.nl/second-factor-only/metadata",
@@ -10,7 +9,6 @@
   },
   {
     "Type": "Pilot",
-    "AuthenticationServiceUrl": "http://pilot.surfconext.nl",
     "MinimalLoa": "http://pilot.surfconext.nl/assurance/sfo-level2",
     "StepupGatewaySSOLocation": "https://gateway.pilot.stepup.surfconext.nl/second-factor-only/single-sign-on",
     "StepupGatewayEntityID": "https://gateway.pilot.surfconext.nl/second-factor-only/metadata",
@@ -19,7 +17,6 @@
   },
   {
     "Type": "Test",
-    "AuthenticationServiceUrl": "http://test.surfconext.nl",
     "MinimalLoa": "http://test.surfconext.nl/assurance/sfo-level2",
     "StepupGatewaySSOLocation": "https://sa-gw.test.surfconext.nl/second-factor-only/single-sign-on",
     "StepupGatewayEntityID": "https://sa-gw.test.surfconext.nl/second-factor-only/metadata",
@@ -28,7 +25,6 @@
   },
   {
     "Type": "Test2",
-    "AuthenticationServiceUrl": "http://test2.surfconext.nl",
     "MinimalLoa": "http://test2.surfconext.nl/assurance/sfo-level2",
     "StepupGatewaySSOLocation": "https://sa-gw.test2.surfconext.nl/second-factor-only/single-sign-on",
     "StepupGatewayEntityID": "https://sa-gw.test2.surfconext.nl/second-factor-only/metadata",

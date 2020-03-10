@@ -40,13 +40,13 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
 
         public static class FriendlyNames
         {
-            public const string SchacHomeOrganization = "schacHomeOrganization";
+            public const string SchacHomeOrganization = "SFOMfaExtensionSchacHomeOrganization";
 
-            public const string ActiveDirectoryUserIdAttribute = "activeDirectoryUserIdAttribute";
+            public const string ActiveDirectoryUserIdAttribute = "SFOMfaExtensionactiveDirectoryUserIdAttribute";
 
-            public const string EntityId = "entityId";
+            public const string EntityId = "SFOMfaExtensionEntityId";
 
-            public const string CertificateThumbprint = "signingCertificate";
+            public const string CertificateThumbprint = "SFOMfaExtensionCertThumbprint";
             
             public const string CertificateStoreName = "storeName";
 

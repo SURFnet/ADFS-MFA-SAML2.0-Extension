@@ -47,7 +47,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
 
             public const string SecondCertificate = "StepupGatewaySigningCertificate2";
 
-            public const string MinimalLoa = "minimalLoa";
+            public const string MinimalLoa = "MinimalLoa";
         }
     }
 }

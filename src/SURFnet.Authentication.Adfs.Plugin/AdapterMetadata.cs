@@ -72,6 +72,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
         /// </summary>
         private static readonly string[] authenticationMethods =
         {
+            //todo: set minimal loa based on entityId
             $"http://{StepUpConfig.Current.LocalSpConfig.MinimalLoa.Host}/assurance/sfo-level2",
             $"http://{StepUpConfig.Current.LocalSpConfig.MinimalLoa.Host}/assurance/sfo-level3"
             // Temp to avoid null ptr at Regisration time

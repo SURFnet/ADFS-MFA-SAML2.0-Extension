@@ -82,7 +82,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
                     InternalName = PluginConstants.InternalNames.EntityId,
                     FriendlyName = PluginConstants.FriendlyNames.EntityId,
                     Description = new StringBuilder()
-                        .AppendLine("The EntityID of the Stepup SFO MFA Plugin")
+                        .AppendLine("The EntityID of the Stepup ADFS MFA Extension")
                         .AppendLine("This must be an URI in a namespace that you control.")
                         .AppendLine("Example: http://<adfs domain name>/sfo-mfa-plugin"),
                     CurrentValue = kentorConfigSection?.Attribute(XName.Get(PluginConstants.InternalNames.EntityId))?.Value
@@ -151,7 +151,6 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
         {
             var settings = new List<Setting>();
             var pluginConfigSection = this.adfsConfig.Descendants(XName.Get("SURFnet.Authentication.Adfs.Plugin.Properties.Settings")).Descendants(XName.Get("setting")).ToList().ToList();
-            var xmlSettings = pluginConfigSection.Descendants(XName.Get("setting")).ToList();
             var kentorConfigSection = this.adfsConfig.Descendants(XName.Get("kentor.authServices")).FirstOrDefault();
             var identityProvider = kentorConfigSection?.Descendants(XName.Get("add")).FirstOrDefault();
             var certificate = identityProvider?.Descendants(XName.Get("signingCertificate")).FirstOrDefault();
@@ -204,7 +203,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
                                      .AppendLine("This value is typically dependent on the Stepup-Gateway being used.")
                                      .AppendLine("These value is not independently configurable in the installer and is selected as part of the environment")
                                      .AppendLine("Example: http://example.com/assurance/sfo-level2"),
-                                 CurrentValue = xmlSettings.FirstOrDefault(s => s.Attribute(nameAttribute)?.Value.Equals(StepUpConstants.InternalNames.MinimalLoa) ?? false)?.Value
+                                 CurrentValue = pluginConfigSection.FirstOrDefault(s => s.Attribute(nameAttribute)?.Value.Equals(StepUpConstants.InternalNames.MinimalLoa) ?? false)?.Value
                              });
             return settings;
         }
@@ -219,18 +218,16 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
                 <configuration>
                   <configSections>
                     <section name='SURFnet.Authentication.Adfs.StepUp' type='SURFnet.Authentication.Adfs.Plugin.Configuration.StepUpSection, SURFnet.Authentication.Adfs.Plugin'/>
-                    <sectionGroup name='applicationSettings' type='System.Configuration.ApplicationSettingsGroup, System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089'>
-                      <section name='SURFnet.Authentication.Adfs.Plugin.Properties.Settings' type='System.Configuration.ClientSettingsSection, System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089' requirePermission='false' />
-                    </sectionGroup>
                   </configSections>
                   <SURFnet.Authentication.Adfs.StepUp>
-                    <institution schacHomeOrganization='%schacHomeOrganization%' activeDirectoryUserIdAttribute='%activeDirectoryUserIdAttribute%'/>
-                    <localSP sPSigningCertificate='%signingCertificate%'
-		                minimalLoa='%minimalLoa%'/>
+                    <institution schacHomeOrganization='%SFOMfaExtensionSchacHomeOrganization%' activeDirectoryUserIdAttribute='%SFOMfaExtensionactiveDirectoryUserIdAttribute%'/>
+                    <localSP sPSigningCertificate='%SFOMfaExtensionCertThumbprint%'
+		                minimalLoa='%MinimalLoa%'/>
                     <stepUpIdP secondFactorEndPoint='%StepupGatewaySSOLocation%'/>
                   </SURFnet.Authentication.Adfs.StepUp>
                 </configuration>";
 
+            
             foreach (var setting in settings)
             {
                 contents = contents.Replace($"%{setting.FriendlyName}%", setting.Value);
