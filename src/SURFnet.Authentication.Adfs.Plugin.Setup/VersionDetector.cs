@@ -16,6 +16,7 @@
 
 namespace SURFnet.Authentication.Adfs.Plugin.Setup
 {
+    using SURFnet.Authentication.Adfs.Plugin.Common;
     using System;
     using System.Runtime.CompilerServices;
 
@@ -33,7 +34,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
         /// Gets the plugin version thats currently installed in ADFS.
         /// </summary>
         /// <value>The installed version.</value>
-        public static Version InstalledVersion => new Version(1, 0, 1);
+        public static Version InstalledVersion => new Version(1, 0, 1, 0);  // PLUgh: always 4 number!!!
 
         /// <summary>
         /// Gets the new plugin version.
@@ -43,7 +44,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
         {
             get
             {
-                var version = Version.Parse(AdapterVersion.FileVersion);
+                var version = Version.Parse(Values.FileVersion);
                 return version;
             }
         }

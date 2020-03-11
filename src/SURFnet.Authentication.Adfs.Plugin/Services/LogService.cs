@@ -21,6 +21,7 @@ using log4net.Core;
 using log4net.Repository.Hierarchy;
 using log4net.Util;
 using Microsoft.IdentityServer.Web.Authentication.External;
+using SURFnet.Authentication.Adfs.Plugin.Common;
 using SURFnet.Authentication.Adfs.Plugin.Configuration;
 
 namespace SURFnet.Authentication.Adfs.Plugin.Services
@@ -88,8 +89,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
         public static void LogCurrentConfiguration(IAuthenticationAdapterMetadata metadata)
         {
             var sb = new StringBuilder();
-            sb.AppendLine($"File version: {AdapterVersion.FileVersion}");
-            sb.AppendLine($"Product version: {AdapterVersion.ProductVersion}");
+            sb.AppendLine($"File version: {Values.FileVersion}");  // PLUgh: Now it is runtime?
+            sb.AppendLine($"Product version: {Values.ProductVersion}");
             sb.AppendLine("Current plugin configuration");
             sb.AppendLine($"SchacHomeOrganization: {StepUpConfig.Current.InstitutionConfig.SchacHomeOrganization}");
             sb.AppendLine($"ActiveDirectoryUserIdAttribute: {StepUpConfig.Current.InstitutionConfig.ActiveDirectoryUserIdAttribute}");
@@ -119,7 +120,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
             catch (Exception ex)
             {
                 sb.AppendLine($"Error while reading configuration file. Please enter ServiceProvider and IdentityProvider settings. Details: {ex.Message}");
-                //todo: Needs rethrow?
+                throw;
             }
 
             Log.Info(sb);

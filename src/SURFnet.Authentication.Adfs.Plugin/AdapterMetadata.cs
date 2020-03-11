@@ -22,6 +22,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
 
     using Microsoft.IdentityServer.Web.Authentication.External;
 
+    using SURFnet.Authentication.Adfs.Plugin.Common;
     using SURFnet.Authentication.Adfs.Plugin.Configuration;
 
     /// <summary>
@@ -107,7 +108,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
         /// Returns the name of the provider that will be shown in the AD FS management UI (not visible to end users).
         /// </summary>
         /// <value>The name of the admin.</value>
-        public string AdminName => $"ADFS.SCSA {AdapterVersion.FileVersion}";
+        public string AdminName => $"ADFS.SCSA {Values.FileVersion}";  // PLUgh: 
 
         /// <summary>
         /// Gets an array indicating which languages are supported by the provider. AD FS uses this information
@@ -120,7 +121,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
         /// Statically initializing the available LCIDs so they do not get created for every instance.
         /// </summary>
         private static readonly int[] availableLcids = {
-        new CultureInfo("en-us").LCID,
+            new CultureInfo("en-us").LCID,
             new CultureInfo("nl-nl").LCID
         };
 

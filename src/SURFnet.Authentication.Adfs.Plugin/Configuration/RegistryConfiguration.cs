@@ -1,5 +1,5 @@
 ﻿/*
-* Copyright 2017 SURFnet bv, The Netherlands
+* Copyright 2020 SURFnet bv, The Netherlands
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -13,11 +13,12 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
+using Microsoft.Win32;
+using SURFnet.Authentication.Adfs.Plugin.Common;
+
 
 namespace SURFnet.Authentication.Adfs.Plugin.Configuration
 {
-    using Microsoft.Win32;
-
     /// <summary>
     /// Registration time only class.
     /// Root: HKLM\Software\Surfnet\Authentication\ADFS\Plugin
@@ -33,15 +34,6 @@ namespace SURFnet.Authentication.Adfs.Plugin.Configuration
     /// </summary>
     public class RegistryConfiguration
     {
-        /// <summary>
-        /// My root.
-        /// </summary>
-        private const string PluginRootKey = "Software\\Surfnet\\Authentication\\ADFS\\Plugin";
-
-        /// <summary>
-        /// The default name.
-        /// </summary>
-        private const string DefaultName = "ADFS.SCSA";
 
         /// <summary>
         /// The registration value.
@@ -52,7 +44,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Configuration
         /// Gets the plugin root.
         /// </summary>
         /// <value>The plugin root.</value>
-        public string PluginRoot { get; private set; } = PluginRootKey;
+        public string PluginRoot { get; private set; } = Values.RegistryRootKey;
 
         /// <summary>
         /// Gets the minimal loa.
@@ -94,7 +86,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Configuration
                 {
                     pluginbase = subKey; // at the base of the plugin(s)
 
-                    var registration = DefaultName;
+                    var registration = Values.DefaultRegistrationName;
                     if (pluginbase.ValueCount > 0)
                     {
                         // if there is a "Registration" value, switch to it.

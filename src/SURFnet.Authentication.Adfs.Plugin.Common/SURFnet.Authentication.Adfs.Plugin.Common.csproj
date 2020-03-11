@@ -65,6 +65,7 @@
     <Compile Include="PS\AdfsSyncProps.cs" />
     <Compile Include="PS\AdfsSyncPropsCmds.cs" />
     <Compile Include="PS\PSUtil.cs" />
+    <Compile Include="Values.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -17,7 +17,7 @@
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using SURFnet.Authentication.Adfs.Plugin;
+using SURFnet.Authentication.Adfs.Plugin.Common;
 
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
@@ -27,7 +27,7 @@ using SURFnet.Authentication.Adfs.Plugin;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("SURFnet bv")]
 [assembly: AssemblyProduct("SURFnet.Authentication.Adfs.Plugin")]
-[assembly: AssemblyCopyright("Copyright ©  2017")]
+[assembly: AssemblyCopyright("Copyright ©  2017-2020")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("neutral")]
 
@@ -51,9 +51,9 @@ using SURFnet.Authentication.Adfs.Plugin;
 // [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyVersion("1.0.1.0")]
 // Shows as "Product version" in the File Explorer
-[assembly: AssemblyInformationalVersion(AdapterVersion.ProductVersion)]
+[assembly: AssemblyInformationalVersion(Values.ProductVersion)]
 // Shows as "File version" in the File Explorer
-[assembly: AssemblyFileVersion(AdapterVersion.FileVersion)]
+[assembly: AssemblyFileVersion(Values.FileVersion)]
 
 // 
 [assembly: log4net.Config.XmlConfigurator(ConfigFile = "SURFnet.Authentication.ADFS.MFA.Plugin.log4net", Watch = true)]
