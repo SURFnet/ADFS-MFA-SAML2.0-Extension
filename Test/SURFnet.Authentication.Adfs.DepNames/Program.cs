@@ -1,4 +1,4 @@
-﻿using SURFnet.Authentication.Adfs.Plugin.Util.Assemblies;
+﻿using SURFnet.Authentication.Adfs.Plugin.Common.Assemblies;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +11,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Test.DepNames
     {
         /// <summary>
         /// Program to test the assembly code in:
-        ///    SURFnet.Authentication.Adfs.Plugin.Util.
+        ///    SURFnet.Authentication.Adfs.Plugin.Common.
         /// Not a real test, morre ability to step through.
         /// It can actually make a list of C# initializers that describe the
         /// dependencies.

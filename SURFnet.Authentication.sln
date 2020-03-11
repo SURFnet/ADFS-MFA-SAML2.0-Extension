@@ -12,7 +12,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionIt
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SURFnet.Authentication.Adfs.Plugin.Setup", "src\SURFnet.Authentication.Adfs.Plugin.Setup\SURFnet.Authentication.Adfs.Plugin.Setup.csproj", "{9CAB3115-6BE7-4A01-BEF1-5D506F943361}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SURFnet.Authentication.Adfs.Plugin.Util", "src\SURFnet.Authentication.Adfs.Plugin.Util\SURFnet.Authentication.Adfs.Plugin.Util.csproj", "{677C1388-9288-4997-88C4-523E499112E5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SURFnet.Authentication.Adfs.Plugin.Common", "src\SURFnet.Authentication.Adfs.Plugin.Common\SURFnet.Authentication.Adfs.Plugin.Common.csproj", "{677C1388-9288-4997-88C4-523E499112E5}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SURFnet.Authentication.Adfs.Test.PSObjTest", "Test\SURFnet.Authentication.Adfs.PSObjTest\SURFnet.Authentication.Adfs.Test.PSObjTest.csproj", "{D9FEA380-C6C0-40D7-9C08-ADEF4D9D4417}"
 EndProject

@@ -7,7 +7,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SURFnet.Authentication.Adfs.Plugin.Util.Assemblies
+namespace SURFnet.Authentication.Adfs.Plugin.Common.Assemblies
 {
     public class AssemblySpec
     {

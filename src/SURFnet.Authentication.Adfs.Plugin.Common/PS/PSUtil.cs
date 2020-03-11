@@ -5,7 +5,7 @@ using System.Management.Automation;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SURFnet.Authentication.Adfs.Plugin.Util.PS
+namespace SURFnet.Authentication.Adfs.Plugin.Common.PS
 {
     /// <summary>
     /// The idea is to work with our own defined classes and use PowerShell in string form.

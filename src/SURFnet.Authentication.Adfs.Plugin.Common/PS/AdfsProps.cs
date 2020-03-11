@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SURFnet.Authentication.Adfs.Plugin.Util.PS
+namespace SURFnet.Authentication.Adfs.Plugin.Common.PS
 {
     /// <summary>
     /// A subset of the Microsoft.IdentityServer.Management.Resources.ServiceProperties.

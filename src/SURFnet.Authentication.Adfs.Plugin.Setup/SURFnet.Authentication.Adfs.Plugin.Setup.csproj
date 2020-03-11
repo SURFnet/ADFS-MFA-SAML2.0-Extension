@@ -82,9 +82,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SURFnet.Authentication.Adfs.Plugin.Util\SURFnet.Authentication.Adfs.Plugin.Util.csproj">
+    <ProjectReference Include="..\SURFnet.Authentication.Adfs.Plugin.Common\SURFnet.Authentication.Adfs.Plugin.Common.csproj">
       <Project>{677c1388-9288-4997-88c4-523e499112e5}</Project>
-      <Name>SURFnet.Authentication.Adfs.Plugin.Util</Name>
+      <Name>SURFnet.Authentication.Adfs.Plugin.Common</Name>
     </ProjectReference>
     <ProjectReference Include="..\SURFnet.Authentication.Adfs.Plugin\SURFnet.Authentication.Adfs.Plugin.csproj">
       <Project>{7f165692-9e1e-4231-b3bf-3e3aed44b11a}</Project>
