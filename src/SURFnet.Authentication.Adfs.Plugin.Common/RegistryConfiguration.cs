@@ -13,12 +13,11 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-using Microsoft.Win32;
-using SURFnet.Authentication.Adfs.Plugin.Common;
 
-
-namespace SURFnet.Authentication.Adfs.Plugin.Configuration
+namespace SURFnet.Authentication.Adfs.Plugin.Common
 {
+    using System;
+
     using Microsoft.Win32;
 
     using SURFnet.Authentication.Adfs.Plugin.Common.Exceptions;
@@ -38,7 +37,6 @@ namespace SURFnet.Authentication.Adfs.Plugin.Configuration
     /// </summary>
     public class RegistryConfiguration
     {
-
         /// <summary>
         /// The registration value.
         /// </summary>
@@ -48,7 +46,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Configuration
         /// Gets the plugin root.
         /// </summary>
         /// <value>The plugin root.</value>
-        public string PluginRoot { get; private set; } = Values.RegistryRootKey;
+        private static string pluginRoot = Values.RegistryRootKey;
 
         /// <summary>
         /// Gets the minimal loa.
@@ -71,17 +69,30 @@ namespace SURFnet.Authentication.Adfs.Plugin.Configuration
         }
 
         /// <summary>
+        /// Sets the minimal loa.
+        /// </summary>
+        /// <param name="minimalLoa">The minimal loa.</param>
+        public static void SetMinimalLoa(Uri minimalLoa)
+        {
+            var pluginbase = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64);
+            var subKey = pluginbase.CreateSubKey(pluginRoot);
+            var pluginKey = subKey?.CreateSubKey(Values.DefaultRegistrationName);
+            var spKey = pluginKey?.CreateSubKey(Values.DefaultRegisteryKey);
+            spKey?.SetValue("MinimalLoa", minimalLoa.ToString());
+        }
+
+        /// <summary>
         /// Gets the surf net plugin root.
         /// </summary>
         /// <returns>The RegistryKey.</returns>
-        public RegistryKey GetSurfNetPluginRoot()
+        private RegistryKey GetSurfNetPluginRoot()
         {
             RegistryKey rc = null;
             var pluginbase = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64);
 
             try
             {
-                var subKey = pluginbase.OpenSubKey(this.PluginRoot);
+                var subKey = pluginbase.OpenSubKey(pluginRoot);
                 if (subKey != null)
                 {
                     pluginbase = subKey; // at the base of the plugin(s)
@@ -97,7 +108,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Configuration
                         }
                     }
 
-                    this.PluginRoot += "\\" + registration;
+                    //todo: is this correct?
+                    pluginRoot += "\\" + registration;
 
                     // goto the real configuration
                     rc = subKey.OpenSubKey(registration);

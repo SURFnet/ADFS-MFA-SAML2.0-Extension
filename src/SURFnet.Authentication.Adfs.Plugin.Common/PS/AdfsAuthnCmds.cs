@@ -149,12 +149,12 @@ namespace SURFnet.Authentication.Adfs.Plugin.Common.PS
         // Registration
 
 
-        public static void RegisterAuthnProvider(string name, string typename, string filepath)
+        public static void RegisterAuthnProvider(string name, string fullTypeName, string filepath)
         {
             PowerShell ps = PowerShell.Create();
             ps.AddCommand("Register-AdfsAuthenticationProvider");
             ps.AddParameter("Name", name);
-            ps.AddParameter("TypeName", typename);
+            ps.AddParameter("TypeName", fullTypeName);
             ps.AddParameter("ConfigurationFilePath", filepath);
 
             var result = ps.Invoke();

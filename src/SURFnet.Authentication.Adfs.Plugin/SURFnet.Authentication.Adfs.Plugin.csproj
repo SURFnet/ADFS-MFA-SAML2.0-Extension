@@ -122,7 +122,6 @@
     <Compile Include="Configuration\InstitutionElement.cs" />
     <Compile Include="Configuration\LocalSPConfig.cs" />
     <Compile Include="Configuration\LocalSPElement.cs" />
-    <Compile Include="Configuration\RegistryConfiguration.cs" />
     <Compile Include="Configuration\StepUpConfig.cs" />
     <Compile Include="Configuration\StepUpIdPConfig.cs" />
     <Compile Include="Configuration\StepUpIdPElement.cs" />

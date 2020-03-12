@@ -25,7 +25,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
 
     using Microsoft.IdentityModel.Tokens.Saml2;
     using Microsoft.IdentityServer.Web.Authentication.External;
-
+    using SURFnet.Authentication.Adfs.Plugin.Common;
     using SURFnet.Authentication.Adfs.Plugin.Common.Exceptions;
     using SURFnet.Authentication.Adfs.Plugin.Common.Services;
     using SURFnet.Authentication.Adfs.Plugin.Configuration;
@@ -34,9 +34,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
     using SURFnet.Authentication.Adfs.Plugin.Services;
 
     using Sustainsys.Saml2.Saml2P;
-
-    using Constants = SURFnet.Authentication.Adfs.Plugin.Common.Constants;
-
+    
     /// <summary>
     /// The ADFS MFA Adapter.
     /// </summary>
@@ -86,12 +84,6 @@ namespace SURFnet.Authentication.Adfs.Plugin
                     RegistrationLog.WriteLine(AdfsDir);
                     var minimalLoa = RegistryConfiguration.GetMinimalLoa();
                     StepUpConfig.PreSet(minimalLoa);
-
-                }
-                catch (InvalidConfigurationException)
-                {
-                    RegistrationLog.WriteLine("Failed to get configuration from Registry, using test url.");
-                    StepUpConfig.PreSet("http://test.surfconext.nl/assurance/sfo-level2");
                 }
                 catch (Exception e)
                 {
@@ -114,14 +106,6 @@ namespace SURFnet.Authentication.Adfs.Plugin
         public Adapter()
         {
             this.cryptographicService = new CryptographicService(new CertificateService());
-        }
-
-        /// <summary>
-        /// Finalizes an instance of the <see cref="Adapter"/> class.
-        /// </summary>
-        ~Adapter()
-        {
-            this.cryptographicService.Dispose();
         }
 
         /// <summary>
@@ -183,7 +167,6 @@ namespace SURFnet.Authentication.Adfs.Plugin
                 LogService.Log.DebugFormat("Signing AuthnRequest with id {0}", requestId);
                 var signedXml = this.cryptographicService.SignSamlRequest(authRequest);
                 return new AuthForm(StepUpConfig.Current.StepUpIdPConfig.SecondFactorEndPoint, signedXml);
-
             }
             catch (SurfNetException ex)
             {
@@ -201,7 +184,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
             catch (Exception ex)
             {
                 LogService.Log.FatalFormat("Unexpexted error while initiating authentication: {0}", ex);
-                return new AuthFailedForm(false, Constants.DefaultErrorMessageResourcerId, context.ContextId, context.ActivityId);
+                return new AuthFailedForm(false, Values.DefaultErrorMessageResourcerId, context.ContextId, context.ActivityId);
             }
         }
 
@@ -251,7 +234,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
         {
             LogService.PrepareCorrelatedLogger(ex.Context.ContextId, ex.Context.ActivityId);
             LogService.Log.ErrorFormat("Error occured: {0}", ex);
-            return new AuthFailedForm(false, Constants.DefaultErrorMessageResourcerId, ex.Context.ContextId, ex.Context.ActivityId);
+            return new AuthFailedForm(false, Values.DefaultErrorMessageResourcerId, ex.Context.ContextId, ex.Context.ActivityId);
         }
 
         /// <summary>
@@ -282,7 +265,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
                 var samlResponse = new Saml2Response(response.SamlResponse, new Saml2Id(requestId));
                 if (samlResponse.Status != Saml2StatusCode.Success)
                 {
-                    return new AuthFailedForm(false, Constants.DefaultVerificationFailedResourcerId, context.ContextId, context.ActivityId);
+                    return new AuthFailedForm(false, Values.DefaultVerificationFailedResourcerId, context.ContextId, context.ActivityId);
                 }
 
                 claims = SamlService.VerifyResponseAndGetAuthenticationClaim(samlResponse);
@@ -306,7 +289,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
             catch (Exception ex)
             {
                 LogService.Log.FatalFormat("Error while processing the saml response. Details: {0}", ex.Message);
-                return new AuthFailedForm(false, Constants.DefaultErrorMessageResourcerId, context.ContextId, context.ActivityId);
+                return new AuthFailedForm(false, Values.DefaultErrorMessageResourcerId, context.ContextId, context.ActivityId);
             }
         }
 

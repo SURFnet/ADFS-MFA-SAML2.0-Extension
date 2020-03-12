@@ -35,8 +35,13 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Upgrades
         /// </summary>
         public void Execute()
         {
-            var server = new AdFsServer();
             var fileService = new FileService();
+#if LOCAL
+            var adfsService = new FakeAdfsService();
+#else
+            var adfsService = new AdFsService(fileService);
+#endif
+            var server = new AdFsServer(adfsService);
             var certificateService = new CertificateService();
             var config = new ConfigurationFileService(fileService, certificateService);
 
@@ -52,7 +57,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Upgrades
                 return;
             }
 
-            server.UnregisterPlugin();
+            server.UnregisterAdapter();
 
             server.StopAdFsService();
 
@@ -62,7 +67,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Upgrades
             fileService.CopyOutputToAdFsDirectory();
 
             server.StartAdFsService();
-            server.RegisterPlugin();
+            server.RegisterAdapter();
         }
 
         /// <summary>
@@ -89,14 +94,15 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Upgrades
             config.CreatePluginConfigurationFile(mergedSettings);
             config.CreateSustainSysConfigFile(mergedSettings);
             config.CreateCleanAdFsConfig();
+            config.WriteMinimalLoaInRegistery(stepUpSettings.First(s => s.InternalName.Equals(StepUpGatewayConstants.InternalNames.MinimalLoa)));
             ConsoleExtensions.WriteHeader("Finished configuration preparation");
 
             var entityId = pluginSettings.First(s => s.InternalName.Equals(PluginConstants.InternalNames.EntityId));
             var cetificate = pluginSettings.First(s => s.InternalName.Equals(PluginConstants.InternalNames.CertificateThumbprint));
             var metadata = new MfaExtensionMetadata(new Uri(entityId.Value))
-                               {
-                                   SfoMfaExtensionCert = config.GetCertificate(cetificate.Value)
-                               };
+            {
+                SfoMfaExtensionCert = config.GetCertificate(cetificate.Value)
+            };
             return metadata;
         }
 
@@ -116,7 +122,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Upgrades
 
             ConsoleExtensions.WriteHeader("End ADFS MFA Extension");
         }
-        
+
         /// <summary>
         /// Prints the current configuration.
         /// </summary>
@@ -125,15 +131,15 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Upgrades
         private void ValidateStepUpConfiguration(ICollection<Setting> settings, IList<Dictionary<string, string>> defaultValues)
         {
             ConsoleExtensions.WriteHeader("StepUp config");
-            var curEntityId = settings.FirstOrDefault(s => s.InternalName.Equals(StepUpConstants.InternalNames.EntityId));
+            var curEntityId = settings.FirstOrDefault(s => s.InternalName.Equals(StepUpGatewayConstants.InternalNames.EntityId));
 
             if (string.IsNullOrWhiteSpace(curEntityId?.CurrentValue))
             {
                 VersionDetector.SetInstallationStatusToCleanInstall();
             }
-            else 
+            else
             {
-                var curEnvironment = defaultValues.FirstOrDefault(s => s[StepUpConstants.FriendlyNames.EntityId].Equals(curEntityId.CurrentValue));
+                var curEnvironment = defaultValues.FirstOrDefault(s => s[StepUpGatewayConstants.FriendlyNames.EntityId].Equals(curEntityId.CurrentValue));
                 if (curEnvironment != null)
                 {
                     Console.WriteLine("We've found an active configuration:");
@@ -174,7 +180,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Upgrades
                 Console.WriteLine();
                 Console.WriteLine();
                 Console.WriteLine("No existing installation found! Please enter a desired configuration.");
-                
+
                 // Keep retrying
                 this.ValidateStepUpConfiguration(settings, defaultValues);
                 return;

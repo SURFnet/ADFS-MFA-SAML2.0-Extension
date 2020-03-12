@@ -55,7 +55,6 @@
     <Compile Include="Assemblies\AssemblySpec.cs" />
     <Compile Include="Assemblies\AssemblyList.cs" />
     <Compile Include="Assemblies\GACCheck.cs" />
-    <Compile Include="Constants.cs" />
     <Compile Include="Exceptions\ActiveDirectoryConfigurationException.cs" />
     <Compile Include="Exceptions\InvalidConfigurationException.cs" />
     <Compile Include="Exceptions\StepUpExceptions.cs" />
@@ -70,6 +69,7 @@
     <Compile Include="PS\AdfsSyncProps.cs" />
     <Compile Include="PS\AdfsSyncPropsCmds.cs" />
     <Compile Include="PS\PSUtil.cs" />
+    <Compile Include="RegistryConfiguration.cs" />
     <Compile Include="Services\CertificateService.cs" />
     <Compile Include="Services\Interfaces\ICertificateService.cs" />
     <Compile Include="Values.cs" />

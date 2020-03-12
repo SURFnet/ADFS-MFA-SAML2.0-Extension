@@ -19,6 +19,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
     using System;
     using System.ServiceProcess;
 
+    using SURFnet.Authentication.Adfs.Plugin.Setup.Services.Interfaces;
+
     /// <summary>
     /// Class AdFsServer.
     /// </summary>
@@ -33,6 +35,20 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
         /// The sleep time in ms.
         /// </summary>
         private const int SleepMs = 1000;
+
+        /// <summary>
+        /// The ADFS service.
+        /// </summary>
+        private readonly IAdFsService service;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AdFsServer"/> class.
+        /// </summary>
+        /// <param name="service">The service.</param>
+        public AdFsServer(IAdFsService service)
+        {
+            this.service = service ?? throw new ArgumentNullException(nameof(service));
+        }
 
         /// <summary>
         /// Stops the ADFS service.
@@ -59,16 +75,18 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
         /// <summary>
         /// Unregisters the old plugin.
         /// </summary>
-        public void UnregisterPlugin()
+        public void UnregisterAdapter()
         {
+            this.service.UnregisterAdapter();
         }
 
 
         /// <summary>
         /// Registers the new plugin and refreshes the plugin metadata.
         /// </summary>
-        public void RegisterPlugin()
+        public void RegisterAdapter()
         {
+            this.service.RegisterAdapter();
         }
 
         /// <summary>

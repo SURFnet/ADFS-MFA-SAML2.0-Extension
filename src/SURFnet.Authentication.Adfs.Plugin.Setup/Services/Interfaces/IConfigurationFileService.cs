@@ -66,5 +66,11 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services.Interfaces
         /// <param name="thumbprint">The thumbprint.</param>
         /// <returns>The certificate.</returns>
         string GetCertificate(string thumbprint);
+
+        /// <summary>
+        /// Writes the minimal loa in the registery.
+        /// </summary>
+        /// <param name="setting">The setting.</param>
+        void WriteMinimalLoaInRegistery(Setting setting);
     }
 }

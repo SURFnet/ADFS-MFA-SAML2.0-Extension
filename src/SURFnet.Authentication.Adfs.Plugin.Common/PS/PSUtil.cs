@@ -11,11 +11,12 @@ namespace SURFnet.Authentication.Adfs.Plugin.Common.PS
     /// The idea is to work with our own defined classes and use PowerShell in string form.
     /// Never real references to ADFS assemblies. Then it should work for all versions of ADFS.
     /// Our method should (iff necessary) check OS version and limit property fetching.
-    /// 
+    /// <para>
     /// Our own types may have only a subset of properties of the real ADFS type.
     /// Implement more properties as needed.
+    /// </para> 
     /// </summary>
-    static public class PSUtil
+    public static class PSUtil
     {
         // All in: 
         // Microsoft.IdentityServer.Management.Commands |  Ref to S.Man.Automation
@@ -80,18 +81,25 @@ namespace SURFnet.Authentication.Adfs.Plugin.Common.PS
         /// on missing property. Therefor always try-catch. Should only happen in tests.
         /// </summary>
 
-        static public bool TryGetPropertyValue<T>(this PSObject psobj, string name, out T value) where T : class
+        public static bool TryGetPropertyValue<T>(this PSObject psobj, string name, out T value) where T : class
         {
-            if (psobj == null) throw new ArgumentNullException(nameof(psobj));
-            if (string.IsNullOrWhiteSpace(name)) throw new ArgumentOutOfRangeException(nameof(name), "IsNullOrWhiteSpace");
+            if (psobj == null)
+            {
+                throw new ArgumentNullException(nameof(psobj));
+            }
 
-            bool rc = false;
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                throw new ArgumentOutOfRangeException(nameof(name), "IsNullOrWhiteSpace");
+            }
+
+            var rc = false;
             value = null;
 
             try
             {
                 var tmp = psobj.Properties[name];
-                value = (T)(tmp.Value);
+                value = (T)tmp.Value;
                 rc = true;
             }
             catch (Exception)

@@ -88,5 +88,11 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services.Interfaces
         /// </summary>
         /// <param name="metadata">The metadata.</param>
         void SaveConfigurationData(MfaExtensionMetadata metadata);
+
+        /// <summary>
+        /// Gets the absolute path of the adapter assembly.
+        /// </summary>
+        /// <returns>The absolute path of the adapter assembly.</returns>
+        string GetAdapterAssembly();
     }
 }

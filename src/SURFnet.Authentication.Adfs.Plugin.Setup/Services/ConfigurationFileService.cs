@@ -24,6 +24,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
 
     using Newtonsoft.Json.Linq;
 
+    using SURFnet.Authentication.Adfs.Plugin.Common;
     using SURFnet.Authentication.Adfs.Plugin.Common.Services.Interfaces;
     using SURFnet.Authentication.Adfs.Plugin.Setup.Models;
     using SURFnet.Authentication.Adfs.Plugin.Setup.Services.Interfaces;
@@ -169,9 +170,9 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
             */
             settings.Add(new Setting
             {
-                InternalName = StepUpConstants.InternalNames.SecondFactorEndpoint,
-                DisplayName = StepUpConstants.FriendlyNames.SecondFactorEndpoint,
-                CurrentValue = pluginConfigSection.FirstOrDefault(s => s.Attribute(nameAttribute)?.Value.Equals(StepUpConstants.InternalNames.SecondFactorEndpoint) ?? false)?.Value
+                InternalName = StepUpGatewayConstants.InternalNames.SecondFactorEndpoint,
+                DisplayName = StepUpGatewayConstants.FriendlyNames.SecondFactorEndpoint,
+                CurrentValue = pluginConfigSection.FirstOrDefault(s => s.Attribute(nameAttribute)?.Value.Equals(StepUpGatewayConstants.InternalNames.SecondFactorEndpoint) ?? false)?.Value
             });
             /* SAML Configuration of the SFO IdP Endpoint of the Stepup-Gateway 
                The correct values can be found in the SAML metadata of the SFO endpoint Stepup-Gateway
@@ -179,9 +180,9 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
             */
             settings.Add(new Setting
             {
-                InternalName = StepUpConstants.InternalNames.EntityId,
-                DisplayName = StepUpConstants.FriendlyNames.EntityId,
-                CurrentValue = identityProvider?.Attribute(XName.Get(StepUpConstants.InternalNames.EntityId))?.Value
+                InternalName = StepUpGatewayConstants.InternalNames.EntityId,
+                DisplayName = StepUpGatewayConstants.FriendlyNames.EntityId,
+                CurrentValue = identityProvider?.Attribute(XName.Get(StepUpGatewayConstants.InternalNames.EntityId))?.Value
             });
             /* The first SAML signing certificate of SFO IdP Endpoint of the Stepup-Gateway 
                 A base64 encoded DER X.509 certificate (i.e. a PEM x.509 certificate without PEM headers and whitespace)
@@ -189,9 +190,9 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
             */
             settings.Add(new Setting
             {
-                InternalName = StepUpConstants.InternalNames.SigningCertificateThumbprint,
-                DisplayName = StepUpConstants.FriendlyNames.SigningCertificateThumbprint,
-                CurrentValue = certificate?.Attribute(XName.Get(StepUpConstants.InternalNames.SigningCertificateThumbprint))?.Value
+                InternalName = StepUpGatewayConstants.InternalNames.SigningCertificateThumbprint,
+                DisplayName = StepUpGatewayConstants.FriendlyNames.SigningCertificateThumbprint,
+                CurrentValue = certificate?.Attribute(XName.Get(StepUpGatewayConstants.InternalNames.SigningCertificateThumbprint))?.Value
             });
             /* The optional second SAML signing certificate of SFO IdP Endpoint of the Stepup-Gateway 
                 A base64 encoded DER X.509 certificate (i.e. a PEM x.509 certificate without PEM headers and whitespace)
@@ -199,20 +200,20 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
             */
             settings.Add(new Setting
             {
-                InternalName = StepUpConstants.InternalNames.SecondCertificate,
-                DisplayName = StepUpConstants.FriendlyNames.SecondCertificate,
+                InternalName = StepUpGatewayConstants.InternalNames.SecondCertificate,
+                DisplayName = StepUpGatewayConstants.FriendlyNames.SecondCertificate,
                 IsMandatory = false
             });
             settings.Add(new Setting
                              {
-                                 InternalName = StepUpConstants.InternalNames.MinimalLoa,
-                                 DisplayName = StepUpConstants.FriendlyNames.MinimalLoa,
+                                 InternalName = StepUpGatewayConstants.InternalNames.MinimalLoa,
+                                 DisplayName = StepUpGatewayConstants.FriendlyNames.MinimalLoa,
                                  Description = new StringBuilder()
                                      .AppendLine("The LoA identifier indicating the level of authentication to request from the Stepup-Gateway")
                                      .AppendLine("This value is typically dependent on the Stepup-Gateway being used.")
                                      .AppendLine("These value is not independently configurable in the installer and is selected as part of the environment")
                                      .AppendLine("Example: http://example.com/assurance/sfo-level2"),
-                                 CurrentValue = pluginConfigSection.FirstOrDefault(s => s.Attribute(nameAttribute)?.Value.Equals(StepUpConstants.InternalNames.MinimalLoa) ?? false)?.Value
+                                 CurrentValue = pluginConfigSection.FirstOrDefault(s => s.Attribute(nameAttribute)?.Value.Equals(StepUpGatewayConstants.InternalNames.MinimalLoa) ?? false)?.Value
                              });
             return settings;
         }
@@ -302,6 +303,15 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
                 var result = this.certificateService.ExportAsPem(cert);
                 return result;
             }
+        }
+
+        /// <summary>
+        /// Writes the minimal loa in the registery.
+        /// </summary>
+        /// <param name="setting">The setting.</param>
+        public void WriteMinimalLoaInRegistery(Setting setting)
+        {
+            RegistryConfiguration.SetMinimalLoa(new Uri(setting.Value));
         }
 
         /// <summary>

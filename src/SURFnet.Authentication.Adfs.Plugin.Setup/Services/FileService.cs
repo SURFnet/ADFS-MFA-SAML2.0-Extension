@@ -225,6 +225,15 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
         }
 
         /// <summary>
+        /// Gets the absolute path of the adapter assembly.
+        /// </summary>
+        /// <returns>The absolute path of the adapter assembly.</returns>
+        public string GetAdapterAssembly()
+        {
+            return Path.Combine(this.distFolder, "SURFnet.Authentication.Adfs.Plugin.dll");
+        }
+
+        /// <summary>
         /// Ensures the output folder.
         /// </summary>
         private void EnsureCleanOutputFolder()
