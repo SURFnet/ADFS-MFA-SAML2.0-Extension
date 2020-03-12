@@ -22,6 +22,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Upgrades
 
     using SURFnet.Authentication.Adfs.Plugin.Setup.Models;
     using SURFnet.Authentication.Adfs.Plugin.Setup.Services;
+    using SURFnet.Authentication.Adfs.Plugin.Setup.Services.Interfaces;
 
     /// <summary>
     /// Contains the steps to upgrade from 1.0.1 to 2.x
@@ -68,7 +69,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Upgrades
         /// </summary>
         /// <param name="config">The configuration.</param>
         /// <returns><see cref="MfaExtensionMetadata"/>.</returns>
-        private MfaExtensionMetadata ProcessConfigurationFiles(ConfigurationFileService config)
+        private MfaExtensionMetadata ProcessConfigurationFiles(IConfigurationFileService config)
         {
             Console.WriteLine($"Reading existing ADFS config");
 

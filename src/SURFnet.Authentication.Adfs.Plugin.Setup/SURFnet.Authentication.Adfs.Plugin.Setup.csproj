@@ -70,6 +70,8 @@
     <Compile Include="Services\CertificateService.cs" />
     <Compile Include="Services\ConfigurationFileService.cs" />
     <Compile Include="Services\FileService.cs" />
+    <Compile Include="Services\Interfaces\IConfigurationFileService.cs" />
+    <Compile Include="Services\Interfaces\IAssemblyService.cs" />
     <Compile Include="Services\Interfaces\IFileService.cs" />
     <Compile Include="Services\Interfaces\ICertificateService.cs" />
     <Compile Include="StepUpConstants.cs" />

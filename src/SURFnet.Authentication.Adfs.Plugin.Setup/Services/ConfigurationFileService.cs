@@ -30,7 +30,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
     /// <summary>
     /// Class ConfigurationFileService.
     /// </summary>
-    public class ConfigurationFileService
+    public class ConfigurationFileService : IConfigurationFileService
     {
         /// <summary>
         /// The certificate service.

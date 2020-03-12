@@ -20,7 +20,9 @@ using System.Text;
 
 namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
 {
-    public class AssemblyService
+    using SURFnet.Authentication.Adfs.Plugin.Setup.Services.Interfaces;
+
+    public class AssemblyService : IAssemblyService
     {
 
         public void RemoveAssembliesFromGac()
