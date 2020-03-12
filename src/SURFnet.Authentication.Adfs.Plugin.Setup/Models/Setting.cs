@@ -19,7 +19,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Models
     using System;
     using System.Text;
 
-    using SURFnet.Authentication.Adfs.Plugin.Setup.Services;
+    using SURFnet.Authentication.Adfs.Plugin.Setup.Services.Interfaces;
 
     /// <summary>
     /// Class Setting.
@@ -27,12 +27,27 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Models
     public class Setting
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="Setting"/> class.
+        /// The certification service.
+        /// </summary>
+        private readonly ICertificateService certificationService;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Setting" /> class.
         /// </summary>
         public Setting()
         {
             this.IsMandatory = true;
             this.IsConfigurable = true;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Setting"/> class.
+        /// </summary>
+        /// <param name="certificationService">The certification service.</param>
+        public Setting(ICertificateService certificationService) : this()
+        {
+            this.certificationService = certificationService;
+            this.IsCertificate = true;
         }
 
         /// <summary>
@@ -150,7 +165,6 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Models
             Console.WriteLine("2. Generate new certificate");
             Console.Write($"Enter the number of the option you want to select: ");
             var input = ConsoleExtensions.ReadUserInputAsInt(1, 2);
-            var service = new CertificateService();
             if (input == 1)
             {
                 string thumbprint;
@@ -159,14 +173,14 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Models
                     Console.Write("Please enter thumbprint: ");
                     thumbprint = Console.ReadLine();
                 }
-                while (!service.IsValidThumbPrint(thumbprint) ||
-                       !service.CertificateExists(thumbprint));
+                while (!this.certificationService.IsValidThumbPrint(thumbprint) ||
+                       !this.certificationService.CertificateExists(thumbprint));
 
                 this.NewValue = thumbprint;
             } 
             else if (input == 2)
             {
-                service.GenerateCertificate();
+                this.certificationService.GenerateCertificate();
             }
         }
 

@@ -35,7 +35,14 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Upgrades
         {
             var server = new AdFsServer();
             var fileService = new FileService();
-            this.ProcessConfigurationFiles(fileService);
+            var certificateService = new CertificateService();
+            var config = new ConfigurationFileService(fileService, certificateService);
+
+            var metadata = this.ProcessConfigurationFiles(config);
+            metadata.ACS = new Uri("http://todo");
+            fileService.SaveConfigurationData(metadata);
+
+            fileService.BackupOldConfig();
 
             if (!fileService.CopyAssembliesToOutput())
             {
@@ -43,7 +50,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Upgrades
                 return;
             }
 
-            server.ReRegisterPlugin();
+            server.UnregisterPlugin();
 
             server.StopAdFsService();
 
@@ -53,16 +60,17 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Upgrades
             fileService.CopyOutputToAdFsDirectory();
 
             server.StartAdFsService();
+            server.RegisterPlugin();
         }
-        
+
         /// <summary>
         /// Extract the current configuration from the ADFS config file and save them in separate files.
         /// </summary>
-        /// <param name="fileService">The file service.</param>
-        private void ProcessConfigurationFiles(FileService fileService)
+        /// <param name="config">The configuration.</param>
+        /// <returns><see cref="MfaExtensionMetadata"/>.</returns>
+        private MfaExtensionMetadata ProcessConfigurationFiles(ConfigurationFileService config)
         {
             Console.WriteLine($"Reading existing ADFS config");
-            var config = new ConfigurationFileService(fileService);
 
             var pluginSettings = config.ExtractPluginConfigurationFromAdfsConfig();
             var stepUpSettings = config.ExtractSustainSysConfigurationFromAdfsConfig();
@@ -79,8 +87,15 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Upgrades
             config.CreatePluginConfigurationFile(mergedSettings);
             config.CreateSustainSysConfigFile(mergedSettings);
             config.CreateCleanAdFsConfig();
-            fileService.BackupOldConfig();
             ConsoleExtensions.WriteHeader("Finished configuration preparation");
+
+            var entityId = pluginSettings.First(s => s.InternalName.Equals(PluginConstants.InternalNames.EntityId));
+            var cetificate = pluginSettings.First(s => s.InternalName.Equals(PluginConstants.InternalNames.CertificateThumbprint));
+            var metadata = new MfaExtensionMetadata(new Uri(entityId.Value))
+                               {
+                                   SfoMfaExtensionCert = config.GetCertificate(cetificate.Value)
+                               };
+            return metadata;
         }
 
         /// <summary>

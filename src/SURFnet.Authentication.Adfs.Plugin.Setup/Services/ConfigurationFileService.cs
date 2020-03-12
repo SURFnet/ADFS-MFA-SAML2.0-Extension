@@ -25,6 +25,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
     using Newtonsoft.Json.Linq;
 
     using SURFnet.Authentication.Adfs.Plugin.Setup.Models;
+    using SURFnet.Authentication.Adfs.Plugin.Setup.Services.Interfaces;
 
     /// <summary>
     /// Class ConfigurationFileService.
@@ -32,22 +33,29 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
     public class ConfigurationFileService
     {
         /// <summary>
+        /// The certificate service.
+        /// </summary>
+        private readonly ICertificateService certificateService;
+        
+        /// <summary>
         /// The file service.
         /// </summary>
-        private readonly FileService fileService;
+        private readonly IFileService fileService;
 
         /// <summary>
         /// The ADFS configuration.
         /// </summary>
         private XDocument adfsConfig;
-
+        
         /// <summary>
-        /// Initializes a new instance of the <see cref="ConfigurationFileService"/> class.
+        /// Initializes a new instance of the <see cref="ConfigurationFileService" /> class.
         /// </summary>
         /// <param name="fileService">The file service.</param>
-        public ConfigurationFileService(FileService fileService)
+        /// <param name="certificateService">The certificate service.</param>
+        public ConfigurationFileService(IFileService fileService, ICertificateService certificateService)
         {
             this.fileService = fileService;
+            this.certificateService = certificateService;
             this.LoadAdFsConfiguration();
         }
 
@@ -96,15 +104,14 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
                     .AppendLine("This AD attribute must contain the value of the \"urn:mace:dir:attribute-def:uid\" claim that the AD FS server sends when a user authenticates to the Stepup-Gateway"),
                 CurrentValue = xmlSettings.FirstOrDefault(s => s.Attribute(nameAttribute)?.Value.Equals(PluginConstants.InternalNames.ActiveDirectoryUserIdAttribute) ?? false)?.Value
             });
-            settings.Add(new Setting
+            settings.Add(new Setting(this.certificateService)
             {
                 InternalName = PluginConstants.InternalNames.CertificateThumbprint,
                 DisplayName = PluginConstants.FriendlyNames.CertificateThumbprint,
                 Description = new StringBuilder()
                     .AppendLine("The thumbprint (i.e. the SHA1 hash of the DER X.509 certificate) of the signing certificate")
                     .AppendLine("This is the self-signed certificate that we generated during install and that we installed in the certificate store"),
-                CurrentValue = xmlSettings.FirstOrDefault(s => s.Attribute(nameAttribute)?.Value.Equals(PluginConstants.InternalNames.CertificateThumbprint) ?? false)?.Value,
-                IsCertificate = true
+                CurrentValue = xmlSettings.FirstOrDefault(s => s.Attribute(nameAttribute)?.Value.Equals(PluginConstants.InternalNames.CertificateThumbprint) ?? false)?.Value
             });
             /*
                 The cert store configuration for the SAML signing certificate and private key of the Stepup SFO Plugin 
@@ -279,6 +286,17 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
                 result.Add(dict);
             }
 
+            return result;
+        }
+
+        /// <summary>
+        /// Gets the certificate.
+        /// </summary>
+        /// <param name="thumbprint">The thumbprint.</param>
+        /// <returns>The certificate.</returns>
+        public string GetCertificate(string thumbprint)
+        {
+            var result = this.certificateService.GetCertificate(thumbprint);
             return result;
         }
 

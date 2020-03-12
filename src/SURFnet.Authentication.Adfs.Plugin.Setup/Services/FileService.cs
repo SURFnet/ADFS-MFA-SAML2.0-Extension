@@ -18,12 +18,16 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
 {
     using System;
     using System.IO;
+    using System.Text;
     using System.Xml.Linq;
+
+    using SURFnet.Authentication.Adfs.Plugin.Setup.Models;
+    using SURFnet.Authentication.Adfs.Plugin.Setup.Services.Interfaces;
 
     /// <summary>
     /// Handles all disk operations.
     /// </summary>
-    public class FileService
+    public class FileService : IFileService
     {
         /// <summary>
         /// The adfs directory.
@@ -196,6 +200,28 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
         public string GetStepUpConfig()
         {
             return this.LoadFile("Sustainsys.Saml2.dll.config");
+        }
+
+        /// <summary>
+        /// Saves the configuration data.
+        /// </summary>
+        /// <param name="metadata">The metadata.</param>
+        public void SaveConfigurationData(MfaExtensionMetadata metadata)
+        {
+            var sb = new StringBuilder();
+            sb.AppendLine($"Issuer: {metadata.SfoMfaExtensionEntityId}");
+            sb.AppendLine();
+            sb.AppendLine(metadata.SfoMfaExtensionCert);
+            sb.AppendLine($"ACS: {metadata.ACS}");
+
+            var filePath = Path.Combine(this.outputFolder, "MfaExtensionConfiguration.txt");
+            if (File.Exists(filePath))
+            {
+                Console.WriteLine($"Removing old config");
+            }
+
+            File.WriteAllText(filePath, sb.ToString());
+            Console.WriteLine($"Written new MfaExtensionConfiguration. Please send this file to SurfNet");
         }
 
         /// <summary>
