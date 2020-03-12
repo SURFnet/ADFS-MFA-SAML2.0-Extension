@@ -145,30 +145,9 @@
     <None Include="packages.config" />
     <EmbeddedResource Include="Resources\Labels.1043.json" />
     <EmbeddedResource Include="Resources\Labels.1033.json" />
-    <None Include="Setup\Configuration.ps1" />
     <Content Include="SURFnet.Authentication.ADFS.MFA.Plugin.log4net">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <None Include="Setup\Functions.ps1" />
-    <None Include="Setup\SURFnetMFA\Add-EventLogForMfaPlugin.ps1" />
-    <None Include="Setup\SURFnetMFA\Copy-Log4NetConfiguration.ps1" />
-    <None Include="Setup\SURFnetMFA\Export-SigningCertificate.ps1" />
-    <None Include="Setup\SURFnetMFA\Import-SfoCertificate.ps1" />
-    <None Include="Setup\SURFnetMFA\Import-SigningCertificate.ps1" />
-    <None Include="Setup\SURFnetMFA\Install-AuthProvider.ps1" />
-    <None Include="Setup\SURFnetMFA\Install-SigningCertificate.ps1" />
-    <None Include="Setup\SURFnetMFA\New-AdfsConfigurationBackup.ps1" />
-    <None Include="Setup\SURFnetMFA\New-SelfSignedCertificateEx.ps1" />
-    <None Include="Setup\SURFnetMFA\New-SigningCertificate.ps1" />
-    <None Include="Setup\SURFnetMFA\Remove-Certificate.ps1" />
-    <None Include="Setup\SURFnetMFA\Remove-EventLogForMfaPlugin.ps1" />
-    <None Include="Setup\SURFnetMFA\Remove-Log4NetConfiguration.ps1" />
-    <None Include="Setup\SURFnetMFA\Remove-PluginFromADFSConfiguration.ps1" />
-    <None Include="Setup\SURFnetMFA\SURFnetMFA.psd1" />
-    <None Include="Setup\SURFnetMFA\SURFnetMFA.psm1" />
-    <None Include="Setup\SURFnetMFA\Uninstall-AuthProvider.ps1" />
-    <None Include="Setup\SURFnetMFA\Update-ADFSConfiguration.ps1" />
-    <None Include="Setup\SURFnetMFA\Write-SigningCertificate.ps1" />
     <None Include="Sustainsys.Saml2.dll.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -203,8 +182,8 @@
     <Binaries Include="$(ProjectDir)bin\$(Configuration)\log4net.dll" />
     <Binaries Include="$(ProjectDir)bin\$(Configuration)\SURFnet.Authentication.Adfs.Plugin.dll" />
     <Binaries Include="$(ProjectDir)bin\$(Configuration)\SURFnet.Authentication.Adfs.Plugin.dll.config" />
-    <SetupFiles Include="$(ProjectDir)Setup\Install.ps1" />
-    <SetupFiles Include="$(ProjectDir)Setup\Uninstall.ps1" />
+    <SetupFiles Include="C:\Projects\Winvision\SURFnet\ADFS-MFA-SAML2.0-Extension\src\SURFnet.Authentication.Adfs.Plugin\Setup\Install.ps1" />
+    <SetupFiles Include="C:\Projects\Winvision\SURFnet\ADFS-MFA-SAML2.0-Extension\src\SURFnet.Authentication.Adfs.Plugin\Setup\Uninstall.ps1" />
   </ItemGroup>
   <Target Name="BuildPackage">
     <GetAssemblyIdentity AssemblyFiles="$(ProjectDir)bin\$(Configuration)\Sustainsys.Saml2.dll">
