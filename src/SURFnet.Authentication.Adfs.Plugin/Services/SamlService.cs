@@ -31,7 +31,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
 
     using Repositories;
 
-    using SURFnet.Authentication.Adfs.Plugin.Exceptions;
+    using SURFnet.Authentication.Adfs.Plugin.Common.Exceptions;
 
     using Sustainsys.Saml2;
     using Sustainsys.Saml2.Configuration;

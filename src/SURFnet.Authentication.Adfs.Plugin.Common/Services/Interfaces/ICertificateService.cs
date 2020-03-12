@@ -38,6 +38,12 @@ namespace SURFnet.Authentication.Adfs.Plugin.Common.Services.Interfaces
         bool CertificateExists(string thumbprint);
 
         /// <summary>
+        /// Checks the certificate and private key by thumbprint in the My store in LocalMachine.
+        /// </summary>
+        /// <param name="thumbprint">The thumbprint.</param>
+        void CheckMfaExtensionCertificate(string thumbprint);
+
+        /// <summary>
         /// Generates the certificate.
         /// </summary>
         void GenerateCertificate();

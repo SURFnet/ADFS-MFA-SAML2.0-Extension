@@ -21,7 +21,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Configuration
 {
     using Microsoft.Win32;
 
-    using SURFnet.Authentication.Adfs.Plugin.Exceptions;
+    using SURFnet.Authentication.Adfs.Plugin.Common.Exceptions;
 
     /// <summary>
     /// Registration time only class.

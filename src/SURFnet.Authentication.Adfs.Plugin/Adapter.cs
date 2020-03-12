@@ -26,14 +26,16 @@ namespace SURFnet.Authentication.Adfs.Plugin
     using Microsoft.IdentityModel.Tokens.Saml2;
     using Microsoft.IdentityServer.Web.Authentication.External;
 
+    using SURFnet.Authentication.Adfs.Plugin.Common.Exceptions;
     using SURFnet.Authentication.Adfs.Plugin.Common.Services;
     using SURFnet.Authentication.Adfs.Plugin.Configuration;
-    using SURFnet.Authentication.Adfs.Plugin.Exceptions;
     using SURFnet.Authentication.Adfs.Plugin.Extensions;
     using SURFnet.Authentication.Adfs.Plugin.Models;
     using SURFnet.Authentication.Adfs.Plugin.Services;
 
     using Sustainsys.Saml2.Saml2P;
+
+    using Constants = SURFnet.Authentication.Adfs.Plugin.Common.Constants;
 
     /// <summary>
     /// The ADFS MFA Adapter.
@@ -55,6 +57,11 @@ namespace SURFnet.Authentication.Adfs.Plugin
         /// Indicates whether the sustain sys is initialized.
         /// </summary>
         private static bool sustainSysConfigured;
+
+        /// <summary>
+        /// The cryptographic service.
+        /// </summary>
+        private readonly CryptographicService cryptographicService;
 
         /// <summary>
         /// Initializes static members of the <see cref="Adapter"/> class.
@@ -101,11 +108,22 @@ namespace SURFnet.Authentication.Adfs.Plugin
             }
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Adapter"/> class.
+        /// </summary>
         public Adapter()
         {
-            //load service
+            this.cryptographicService = new CryptographicService(new CertificateService());
         }
-        
+
+        /// <summary>
+        /// Finalizes an instance of the <see cref="Adapter"/> class.
+        /// </summary>
+        ~Adapter()
+        {
+            this.cryptographicService.Dispose();
+        }
+
         /// <summary>
         /// Gets the metadata Singleton.
         /// </summary>
@@ -133,14 +151,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
                 LogService.LogConfigOnce(AdapterMetadata.Instance);
 
                 var certService = new CertificateService();
-                if (!certService.CertificateExists(StepUpConfig.Current?.LocalSpConfig.SPSigningCertificate))
-                {
-                    //throw new Exception($"No certificate found with thumbprint '{StepUpConfig.Current?.LocalSpConfig.SPSigningCertificate}'");
-                }
-            }
-            catch (ConfigurationException)
-            {
-                throw;
+                certService.CheckMfaExtensionCertificate(StepUpConfig.Current?.LocalSpConfig.SPSigningCertificate);
             }
             catch (Exception ex)
             {
@@ -169,12 +180,10 @@ namespace SURFnet.Authentication.Adfs.Plugin
                 var requestId = $"_{context.ContextId}";
                 var authRequest = SamlService.CreateAuthnRequest(identityClaim, requestId, httpListenerRequest.Url);
 
-                using (var cryptographicService = new CryptographicService())
-                {
-                    LogService.Log.DebugFormat("Signing AuthnRequest with id {0}", requestId);
-                    var signedXml = cryptographicService.SignSamlRequest(authRequest);
-                    return new AuthForm(StepUpConfig.Current.StepUpIdPConfig.SecondFactorEndPoint, signedXml);
-                }
+                LogService.Log.DebugFormat("Signing AuthnRequest with id {0}", requestId);
+                var signedXml = this.cryptographicService.SignSamlRequest(authRequest);
+                return new AuthForm(StepUpConfig.Current.StepUpIdPConfig.SecondFactorEndPoint, signedXml);
+
             }
             catch (SurfNetException ex)
             {
@@ -329,7 +338,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
                 var exePathSustainsys = Path.Combine(AdfsDir, "Sustainsys.Saml2.dll");
                 var configuration = ConfigurationManager.OpenExeConfiguration(exePathSustainsys);
                 Sustainsys.Saml2.Configuration.SustainsysSaml2Section.Configuration = configuration;
-                
+
                 // Call now to localize/isolate parsing errors.
                 var unused = Sustainsys.Saml2.Configuration.Options.FromConfiguration;
             }

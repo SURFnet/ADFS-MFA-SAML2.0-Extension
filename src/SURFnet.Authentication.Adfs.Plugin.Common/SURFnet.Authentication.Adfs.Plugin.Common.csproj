@@ -55,6 +55,11 @@
     <Compile Include="Assemblies\AssemblySpec.cs" />
     <Compile Include="Assemblies\AssemblyList.cs" />
     <Compile Include="Assemblies\GACCheck.cs" />
+    <Compile Include="Constants.cs" />
+    <Compile Include="Exceptions\ActiveDirectoryConfigurationException.cs" />
+    <Compile Include="Exceptions\InvalidConfigurationException.cs" />
+    <Compile Include="Exceptions\StepUpExceptions.cs" />
+    <Compile Include="Exceptions\SurfNetException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PS\AdfsAuthnCmds.cs" />
     <Compile Include="PS\AdfsAuthnMethodDesc.cs" />

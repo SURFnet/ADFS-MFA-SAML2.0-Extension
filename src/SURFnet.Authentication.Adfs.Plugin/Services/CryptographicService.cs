@@ -22,8 +22,9 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
 
     using log4net;
 
+    using SURFnet.Authentication.Adfs.Plugin.Common.Exceptions;
+    using SURFnet.Authentication.Adfs.Plugin.Common.Services.Interfaces;
     using SURFnet.Authentication.Adfs.Plugin.Configuration;
-    using SURFnet.Authentication.Adfs.Plugin.Exceptions;
     using SURFnet.Authentication.Adfs.Plugin.Models;
 
     using Sustainsys.Saml2;
@@ -31,7 +32,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
     /// <summary>
     /// Handles the signing.
     /// </summary>
-    public class CryptographicService : IDisposable
+    public sealed class CryptographicService : IDisposable
     {
         /// <summary>
         /// Gets the signing algorithm for the SAML request.
@@ -55,14 +56,14 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
         private X509Certificate2 signingCertificate;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="CryptographicService"/> class.
+        /// Initializes a new instance of the <see cref="CryptographicService" /> class.
         /// </summary>
-        public CryptographicService()
+        /// <param name="certificateService">The certificate service.</param>
+        public CryptographicService(ICertificateService certificateService)
         {
             EnableSha256Support();
-
             this.log = LogManager.GetLogger("CryptographicService");
-            this.LoadCertificate();
+            this.LoadCertificate(certificateService);
         }
 
         /// <summary>
@@ -86,35 +87,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
         /// </summary>
         public void Dispose()
         {
+            this.signingCertificate.Dispose();
             this.signingCertificate = null;
-        }
-
-        /// <summary>
-        /// Loads the signing certificate.
-        /// </summary>
-        private void LoadCertificate()
-        {
-            var linewidthsaver = StepUpConfig.Current.LocalSpConfig.SPSigningCertificate;
-
-            this.log.DebugFormat("Search siginging certificate with thumbprint '{0}' in the 'LocalMachine' 'My' store.", linewidthsaver);
-            var store = new X509Store(StoreName.My, StoreLocation.LocalMachine);
-            store.Open(OpenFlags.ReadOnly);
-            try
-            {
-                var cert = GetCertificateWithPrivateKey(store);
-                this.signingCertificate = cert;
-                this.log.DebugFormat("Found signing certificate with thumbprint '{0}'", linewidthsaver);
-            }
-            catch (Exception e)
-            {
-                this.log.FatalFormat("Error while loading signing certificate. Details: {0}", e);
-                throw new InvalidConfigurationException("ERROR_0002", "Error while loading signing certificate", e);
-            }
-            finally
-            {
-                this.log.Debug("Closing LocalMachine store");
-                store.Close();
-            }
         }
 
         /// <summary>
@@ -133,29 +107,20 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
         }
 
         /// <summary>
-        /// Gets the certificate with private key.
+        /// Loads the certificate.
         /// </summary>
-        /// <param name="store">The certificate store.</param>
-        /// <returns>
-        /// A certificate for signing the SAML authentication request.
-        /// </returns>
-        private static X509Certificate2 GetCertificateWithPrivateKey(X509Store store)
+        /// <param name="certificateService">The certificate service.</param>
+        private void LoadCertificate(ICertificateService certificateService)
         {
-            var thumbprint = StepUpConfig.Current.LocalSpConfig.SPSigningCertificate;
-
-            var certCollection = store.Certificates.Find(X509FindType.FindByThumbprint, thumbprint, false);
-            if (certCollection.Count == 0)
+            try
             {
-                throw new InvalidConfigurationException("ERROR_0002", $"No certificate found with thumbprint '{thumbprint}'");
+                this.signingCertificate = certificateService.GetCertificate(StepUpConfig.Current.LocalSpConfig.SPSigningCertificate);
             }
-
-            var cert = certCollection[0];
-            if (!cert.HasPrivateKey)
+            catch (Exception e)
             {
-                throw new InvalidConfigurationException("ERROR_0002", $"Certificate with thumbprint '{thumbprint}' doesn't have a private key.");
+                this.log.FatalFormat("Error while loading signing certificate. Details: {0}", e);
+                throw new InvalidConfigurationException("ERROR_0002", "Error while loading signing certificate", e);
             }
-
-            return cert;
         }
     }
 }

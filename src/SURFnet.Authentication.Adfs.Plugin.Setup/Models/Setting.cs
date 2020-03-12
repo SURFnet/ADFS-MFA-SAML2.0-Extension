@@ -60,7 +60,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Models
         /// <summary>
         /// Gets or sets the display name.
         /// </summary>
-        /// <value>The name of the friendly.</value>
+        /// <value>The display name.</value>
         public string DisplayName { get; set; }
 
         /// <summary>
@@ -70,7 +70,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Models
         public string InternalName { get; set; }
 
         /// <summary>
-        /// Gets or sets the current value found in the local config file.
+        /// Gets or sets the current value found in the local/old config file.
         /// </summary>
         /// <value>The current value.</value>
         public string CurrentValue { get; set; }

@@ -20,6 +20,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Common.Services
     using System.Security.Cryptography.X509Certificates;
     using System.Text;
 
+    using SURFnet.Authentication.Adfs.Plugin.Common.Exceptions;
     using SURFnet.Authentication.Adfs.Plugin.Common.Services.Interfaces;
 
     /// <summary>
@@ -82,7 +83,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Common.Services
                 }
                 else if (certCollection.Count > 1)
                 {
-                    Console.WriteLine($"Found more than one certificate with thumbprint '{thumbprint}'.");
+                    Console.WriteLine($"Found more than one certificate with thumbprint '{thumbprint}'");
                     isValid = false;
                 }
                 else
@@ -100,6 +101,46 @@ namespace SURFnet.Authentication.Adfs.Plugin.Common.Services
             }
 
             return isValid;
+        }
+
+        /// <summary>
+        /// Checks the certificate and private key by thumbprint in the My store in LocalMachine.
+        /// </summary>
+        /// <param name="thumbprint">The thumbprint.</param>
+        public void CheckMfaExtensionCertificate(string thumbprint)
+        {
+            if (string.IsNullOrWhiteSpace(thumbprint))
+            {
+                return;
+            }
+
+            using (var store = new X509Store("MY", StoreLocation.LocalMachine))
+            {
+                store.Open(OpenFlags.ReadOnly | OpenFlags.OpenExistingOnly);
+                var certCollection = store.Certificates.Find(X509FindType.FindByThumbprint, thumbprint, false);
+                if (certCollection.Count == 0)
+                {
+                    throw new InvalidConfigurationException($"Didn't find any certificate with thumbprint '{thumbprint}'");
+                }
+
+                if (certCollection.Count > 1)
+                {
+                    throw new InvalidConfigurationException($"Found more than one certificate with thumbprint '{thumbprint}'.");
+                }
+
+                if (!certCollection[0].HasPrivateKey)
+                {
+                    throw new InvalidConfigurationException($"Certificate with thumbprint '{thumbprint}' doesn't have a private key.");
+                }
+
+                foreach (var cert in certCollection)
+                {
+                    cert.Dispose();
+                }
+
+                // todo: check provider type == 23
+                store.Close();
+            }
         }
 
         /// <summary>
@@ -121,13 +162,18 @@ namespace SURFnet.Authentication.Adfs.Plugin.Common.Services
             using (var store = new X509Store("MY", StoreLocation.LocalMachine))
             {
                 store.Open(OpenFlags.ReadOnly | OpenFlags.OpenExistingOnly);
-                var certCollection = store.Certificates.Find(X509FindType.FindByThumbprint, thumbprint, false);
-                if (certCollection.Count == 1)
+                try
                 {
-                    certificate = certCollection[0];
+                    var certCollection = store.Certificates.Find(X509FindType.FindByThumbprint, thumbprint, false);
+                    if (certCollection.Count == 1)
+                    {
+                        certificate = certCollection[0];
+                    }
                 }
-
-                store.Close();
+                finally
+                {
+                    store.Close();
+                }
             }
 
             return certificate;

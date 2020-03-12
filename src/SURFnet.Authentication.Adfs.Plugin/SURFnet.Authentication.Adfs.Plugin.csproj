@@ -127,11 +127,6 @@
     <Compile Include="Configuration\StepUpIdPConfig.cs" />
     <Compile Include="Configuration\StepUpIdPElement.cs" />
     <Compile Include="Configuration\StepUpSection.cs" />
-    <Compile Include="Constants.cs" />
-    <Compile Include="Exceptions\StepUpExceptions.cs" />
-    <Compile Include="Exceptions\ActiveDirectoryConfigurationException.cs" />
-    <Compile Include="Exceptions\InvalidConfigurationException.cs" />
-    <Compile Include="Exceptions\SurfNetException.cs" />
     <Compile Include="Extensions\LogExtensions.cs" />
     <Compile Include="Models\Saml2AuthenticationSecondFactorRequest.cs" />
     <Compile Include="Models\SecondFactorAuthResponse.cs" />
@@ -187,9 +182,8 @@
     <Binaries Include="$(ProjectDir)bin\$(Configuration)\log4net.dll" />
     <Binaries Include="$(ProjectDir)bin\$(Configuration)\SURFnet.Authentication.Adfs.Plugin.dll" />
     <Binaries Include="$(ProjectDir)bin\$(Configuration)\SURFnet.Authentication.Adfs.Plugin.dll.config" />
-    <SetupFiles Include="C:\Projects\Winvision\SURFnet\ADFS-MFA-SAML2.0-Extension\src\SURFnet.Authentication.Adfs.Plugin\Setup\Install.ps1" />
-    <SetupFiles Include="C:\Projects\Winvision\SURFnet\ADFS-MFA-SAML2.0-Extension\src\SURFnet.Authentication.Adfs.Plugin\Setup\Uninstall.ps1" />
   </ItemGroup>
+  <ItemGroup />
   <Target Name="BuildPackage">
     <GetAssemblyIdentity AssemblyFiles="$(ProjectDir)bin\$(Configuration)\Sustainsys.Saml2.dll">
       <Output TaskParameter="Assemblies" ItemName="SustainsysAssemblyInfo" />

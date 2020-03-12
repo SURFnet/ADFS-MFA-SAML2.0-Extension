@@ -14,7 +14,7 @@
 * limitations under the License.
 */
 
-namespace SURFnet.Authentication.Adfs.Plugin
+namespace SURFnet.Authentication.Adfs.Plugin.Common
 {
     /// <summary>
     /// Class Constants.

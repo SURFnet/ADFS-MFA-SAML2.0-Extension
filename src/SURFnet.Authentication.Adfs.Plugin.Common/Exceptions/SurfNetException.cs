@@ -14,17 +14,28 @@
 * limitations under the License.
 */
 
-namespace SURFnet.Authentication.Adfs.Plugin.Exceptions
+namespace SURFnet.Authentication.Adfs.Plugin.Common.Exceptions
 {
     using System;
+    using System.Runtime.Serialization;
 
     /// <summary>
     /// Class SurfNetException.
     /// Implements the <see cref="System.Exception" />
     /// </summary>
     /// <seealso cref="System.Exception" />
+    [Serializable]
     public abstract class SurfNetException : Exception
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SurfNetException"/> class.
+        /// </summary>
+        /// <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo" /> that holds the serialized object data about the exception being thrown.</param>
+        /// <param name="context">The <see cref="T:System.Runtime.Serialization.StreamingContext" /> that contains contextual information about the source or destination.</param>
+        protected SurfNetException(SerializationInfo info, StreamingContext context)
+        {
+        }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="SurfNetException"/> class.
         /// </summary>

@@ -14,15 +14,15 @@
 * limitations under the License.
 */
 
-namespace SURFnet.Authentication.Adfs.Plugin.Exceptions
+namespace SURFnet.Authentication.Adfs.Plugin.Common.Exceptions
 {
     using System;
 
     /// <summary>
     /// Thrown when the active directory setting is missing or invalid.
-    /// Implements the <see cref="SURFnet.Authentication.Adfs.Plugin.Exceptions.SurfNetException" />
+    /// Implements the <see cref="SurfNetException" />
     /// </summary>
-    /// <seealso cref="SURFnet.Authentication.Adfs.Plugin.Exceptions.SurfNetException" />
+    /// <seealso cref="SurfNetException" />
     public class ActiveDirectoryConfigurationException : SurfNetException
     {
         /// <summary>

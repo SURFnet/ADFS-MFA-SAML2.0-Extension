@@ -21,8 +21,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Repositories
     using System.DirectoryServices.AccountManagement;
     using System.Security.Claims;
 
+    using SURFnet.Authentication.Adfs.Plugin.Common.Exceptions;
     using SURFnet.Authentication.Adfs.Plugin.Configuration;
-    using SURFnet.Authentication.Adfs.Plugin.Exceptions;
 
     /// <summary>
     /// Data access for the active directory.
