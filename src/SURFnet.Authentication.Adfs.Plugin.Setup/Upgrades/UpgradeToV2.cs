@@ -20,6 +20,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Upgrades
     using System.Collections.Generic;
     using System.Linq;
 
+    using SURFnet.Authentication.Adfs.Plugin.Common.Services;
     using SURFnet.Authentication.Adfs.Plugin.Setup.Models;
     using SURFnet.Authentication.Adfs.Plugin.Setup.Services;
     using SURFnet.Authentication.Adfs.Plugin.Setup.Services.Interfaces;

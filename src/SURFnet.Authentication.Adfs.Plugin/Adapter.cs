@@ -26,6 +26,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
     using Microsoft.IdentityModel.Tokens.Saml2;
     using Microsoft.IdentityServer.Web.Authentication.External;
 
+    using SURFnet.Authentication.Adfs.Plugin.Common.Services;
     using SURFnet.Authentication.Adfs.Plugin.Configuration;
     using SURFnet.Authentication.Adfs.Plugin.Extensions;
     using SURFnet.Authentication.Adfs.Plugin.Models;
@@ -100,6 +101,11 @@ namespace SURFnet.Authentication.Adfs.Plugin
                 ConfigureDependencies();
             }
         }
+
+        public Adapter()
+        {
+            //load service
+        }
         
         /// <summary>
         /// Gets the metadata Singleton.
@@ -121,11 +127,21 @@ namespace SURFnet.Authentication.Adfs.Plugin
 
             try
             {
-                ReadConfigurationFromSection();  // read Adapter configuration
+                ReadConfigurationFromSection(); // read Adapter configuration
 
                 ConfigureSustainsys(); // read Sustainsys configuration
 
                 LogService.LogConfigOnce(AdapterMetadata.Instance);
+
+                var certService = new CertificateService();
+                if (!certService.CertificateExists(StepUpConfig.Current?.LocalSpConfig.SPSigningCertificate))
+                {
+                    //throw new Exception($"No certificate found with thumbprint '{StepUpConfig.Current?.LocalSpConfig.SPSigningCertificate}'");
+                }
+            }
+            catch (ConfigurationException)
+            {
+                throw;
             }
             catch (Exception ex)
             {

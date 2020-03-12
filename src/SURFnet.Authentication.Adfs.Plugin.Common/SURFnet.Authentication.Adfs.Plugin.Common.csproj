@@ -65,7 +65,10 @@
     <Compile Include="PS\AdfsSyncProps.cs" />
     <Compile Include="PS\AdfsSyncPropsCmds.cs" />
     <Compile Include="PS\PSUtil.cs" />
+    <Compile Include="Services\CertificateService.cs" />
+    <Compile Include="Services\Interfaces\ICertificateService.cs" />
     <Compile Include="Values.cs" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

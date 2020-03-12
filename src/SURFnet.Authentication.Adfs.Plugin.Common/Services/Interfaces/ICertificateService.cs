@@ -14,8 +14,10 @@
 * limitations under the License.
 */
 
-namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services.Interfaces
+namespace SURFnet.Authentication.Adfs.Plugin.Common.Services.Interfaces
 {
+    using System.Security.Cryptography.X509Certificates;
+
     /// <summary>
     /// Interface ICertificateService
     /// </summary>
@@ -41,10 +43,17 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services.Interfaces
         void GenerateCertificate();
 
         /// <summary>
-        /// Gets the certificate in PEM format.
+        /// Gets the certificate.
         /// </summary>
         /// <param name="thumbprint">The thumbprint.</param>
-        /// <returns>The certificate (PEM format).</returns>
-        string GetCertificate(string thumbprint);
+        /// <returns>The certificate.</returns>
+        X509Certificate2 GetCertificate(string thumbprint);
+
+        /// <summary>
+        /// Exports in PEM format.
+        /// </summary>
+        /// <param name="certificate">The certificate.</param>
+        /// <returns>The certificate in PEM format.</returns>
+        string ExportAsPem(X509Certificate2 certificate);
     }
 }

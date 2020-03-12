@@ -14,13 +14,13 @@
 * limitations under the License.
 */
 
-namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
+namespace SURFnet.Authentication.Adfs.Plugin.Common.Services
 {
     using System;
     using System.Security.Cryptography.X509Certificates;
     using System.Text;
 
-    using SURFnet.Authentication.Adfs.Plugin.Setup.Services.Interfaces;
+    using SURFnet.Authentication.Adfs.Plugin.Common.Services.Interfaces;
 
     /// <summary>
     /// Class CertificateService.
@@ -64,6 +64,11 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
         /// <returns><c>true</c> if XXXX, <c>false</c> otherwise.</returns>
         public bool CertificateExists(string thumbprint)
         {
+            if (string.IsNullOrWhiteSpace(thumbprint))
+            {
+                return false;
+            }
+
             var isValid = true;
             Console.WriteLine($"Check thumbprint '{thumbprint}' in LocalMachine store: My");
             using (var store = new X509Store("MY", StoreLocation.LocalMachine))
@@ -85,7 +90,12 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
                     Console.WriteLine($"Found certificate in store.");
                 }
 
-                //todo: check provider type == 23
+                foreach (var cert in certCollection)
+                {
+                    cert.Dispose();
+                }
+
+                // todo: check provider type == 23
                 store.Close();
             }
 
@@ -105,28 +115,39 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
         /// </summary>
         /// <param name="thumbprint">The thumbprint.</param>
         /// <returns>The certificate (PEM format).</returns>
-        public string GetCertificate(string thumbprint)
+        public X509Certificate2 GetCertificate(string thumbprint)
         {
-            var cert = string.Empty;
+            X509Certificate2 certificate = null;
             using (var store = new X509Store("MY", StoreLocation.LocalMachine))
             {
                 store.Open(OpenFlags.ReadOnly | OpenFlags.OpenExistingOnly);
                 var certCollection = store.Certificates.Find(X509FindType.FindByThumbprint, thumbprint, false);
                 if (certCollection.Count == 1)
                 {
-                    var builder = new StringBuilder();
-
-                    builder.AppendLine("-----BEGIN CERTIFICATE-----");
-                    builder.AppendLine(Convert.ToBase64String(certCollection[0].Export(X509ContentType.Cert), Base64FormattingOptions.InsertLineBreaks));
-                    builder.AppendLine("-----END CERTIFICATE-----");
-
-                    cert = builder.ToString();
+                    certificate = certCollection[0];
                 }
 
                 store.Close();
             }
 
-            return cert;
+            return certificate;
+        }
+
+        /// <summary>
+        /// Exports in PEM format.
+        /// </summary>
+        /// <param name="certificate">The certificate.</param>
+        /// <returns>The certificate in PEM format.</returns>
+        public string ExportAsPem(X509Certificate2 certificate)
+        {
+            var builder = new StringBuilder();
+
+            builder.AppendLine("-----BEGIN CERTIFICATE-----");
+            builder.AppendLine(Convert.ToBase64String(certificate.Export(X509ContentType.Cert), Base64FormattingOptions.InsertLineBreaks));
+            builder.AppendLine("-----END CERTIFICATE-----");
+
+            var result = builder.ToString();
+            return result;
         }
     }
 }

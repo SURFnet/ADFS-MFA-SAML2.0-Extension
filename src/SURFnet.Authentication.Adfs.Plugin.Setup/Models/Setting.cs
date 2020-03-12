@@ -19,6 +19,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Models
     using System;
     using System.Text;
 
+    using SURFnet.Authentication.Adfs.Plugin.Common.Services.Interfaces;
     using SURFnet.Authentication.Adfs.Plugin.Setup.Services.Interfaces;
 
     /// <summary>

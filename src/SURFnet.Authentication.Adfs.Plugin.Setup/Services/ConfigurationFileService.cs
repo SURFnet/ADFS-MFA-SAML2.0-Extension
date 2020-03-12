@@ -24,6 +24,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
 
     using Newtonsoft.Json.Linq;
 
+    using SURFnet.Authentication.Adfs.Plugin.Common.Services.Interfaces;
     using SURFnet.Authentication.Adfs.Plugin.Setup.Models;
     using SURFnet.Authentication.Adfs.Plugin.Setup.Services.Interfaces;
 
@@ -296,8 +297,11 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
         /// <returns>The certificate.</returns>
         public string GetCertificate(string thumbprint)
         {
-            var result = this.certificateService.GetCertificate(thumbprint);
-            return result;
+            using (var cert = this.certificateService.GetCertificate(thumbprint))
+            {
+                var result = this.certificateService.ExportAsPem(cert);
+                return result;
+            }
         }
 
         /// <summary>
