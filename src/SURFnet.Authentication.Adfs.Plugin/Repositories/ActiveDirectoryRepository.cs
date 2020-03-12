@@ -22,6 +22,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Repositories
     using System.Security.Claims;
 
     using SURFnet.Authentication.Adfs.Plugin.Configuration;
+    using SURFnet.Authentication.Adfs.Plugin.Exceptions;
 
     /// <summary>
     /// Data access for the active directory.
@@ -49,19 +50,19 @@ namespace SURFnet.Authentication.Adfs.Plugin.Repositories
             if (currentUser == null)
             {
                 // This should never happen, but just to be sure
-                throw new Exception($"User '{identityClaim.Value}' not found in active directory for domain '{domainName}'");
+                throw new ActiveDirectoryConfigurationException("ERROR_0003", $"User '{identityClaim.Value}' not found in active directory for domain '{domainName}'");
             }
 
             using (var entry = currentUser.GetUnderlyingObject() as DirectoryEntry)
             {
                 if (entry == null)
                 {
-                    throw new Exception("Cannot get the properties from active directory. Reason: it's not a DirectoryEntry type");
+                    throw new ActiveDirectoryConfigurationException("ERROR_0003", "Cannot get the properties from active directory. Reason: it's not a DirectoryEntry type");
                 }
 
                 if (!entry.Properties.Contains(linewidthsaver))
                 {
-                    throw new Exception($"Property '{linewidthsaver}' not found in the active directory. Please add the property or update the plugin configuration");
+                    throw new ActiveDirectoryConfigurationException("ERROR_0003", $"Property '{linewidthsaver}' not found in the active directory. Please add the property or update the plugin configuration");
                 }
 
                 userId = entry.Properties[linewidthsaver].Value.ToString();

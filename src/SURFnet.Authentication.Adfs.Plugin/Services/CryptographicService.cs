@@ -23,6 +23,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
     using log4net;
 
     using SURFnet.Authentication.Adfs.Plugin.Configuration;
+    using SURFnet.Authentication.Adfs.Plugin.Exceptions;
     using SURFnet.Authentication.Adfs.Plugin.Models;
 
     using Sustainsys.Saml2;
@@ -33,6 +34,12 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
     public class CryptographicService : IDisposable
     {
         /// <summary>
+        /// Gets the signing algorithm for the SAML request.
+        /// </summary>
+        /// <value>The signing algorithm.</value>
+        private const string SigningAlgorithm = "http://www.w3.org/2001/04/xmldsig-more#rsa-sha256";
+
+        /// <summary>
         /// To enable SHA256 signatures in the SAML Library we need to enable this only once.
         /// </summary>
         private static bool isSha265Enabled;
@@ -41,12 +48,6 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
         /// Used for logging.
         /// </summary>
         private readonly ILog log;
-
-        /// <summary>
-        /// Gets the signing algorithm for the SAML request.
-        /// </summary>
-        /// <value>The signing algorithm.</value>
-        private const string SigningAlgorithm = "http://www.w3.org/2001/04/xmldsig-more#rsa-sha256";
 
         /// <summary>
         /// Contains the signing certificate.
@@ -93,7 +94,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
         /// </summary>
         private void LoadCertificate()
         {
-            string linewidthsaver = StepUpConfig.Current.LocalSpConfig.SPSigningCertificate;
+            var linewidthsaver = StepUpConfig.Current.LocalSpConfig.SPSigningCertificate;
 
             this.log.DebugFormat("Search siginging certificate with thumbprint '{0}' in the 'LocalMachine' 'My' store.", linewidthsaver);
             var store = new X509Store(StoreName.My, StoreLocation.LocalMachine);
@@ -107,7 +108,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
             catch (Exception e)
             {
                 this.log.FatalFormat("Error while loading signing certificate. Details: {0}", e);
-                throw;
+                throw new InvalidConfigurationException("ERROR_0002", "Error while loading signing certificate", e);
             }
             finally
             {
@@ -138,9 +139,6 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
         /// <returns>
         /// A certificate for signing the SAML authentication request.
         /// </returns>
-        /// <exception cref="Exception">
-        /// Thrown when no certificate was found with the specified thumbprint or when it does not have a private key.
-        /// </exception>
         private static X509Certificate2 GetCertificateWithPrivateKey(X509Store store)
         {
             var thumbprint = StepUpConfig.Current.LocalSpConfig.SPSigningCertificate;
@@ -148,13 +146,13 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
             var certCollection = store.Certificates.Find(X509FindType.FindByThumbprint, thumbprint, false);
             if (certCollection.Count == 0)
             {
-                throw new Exception($"No certificate found with thumbprint '{thumbprint}'");
+                throw new InvalidConfigurationException("ERROR_0002", $"No certificate found with thumbprint '{thumbprint}'");
             }
 
             var cert = certCollection[0];
             if (!cert.HasPrivateKey)
             {
-                throw new Exception($"Certificate with thumbprint '{thumbprint}' doesn't have a private key.");
+                throw new InvalidConfigurationException("ERROR_0002", $"Certificate with thumbprint '{thumbprint}' doesn't have a private key.");
             }
 
             return cert;

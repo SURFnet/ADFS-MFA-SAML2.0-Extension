@@ -1,11 +1,12 @@
 {
-  "ERROR_0001": "Verificatie mislukt",
-  "ERROR_0002": "Er is een onherstelbare fout opgetreden. Probeer het opnieuw.",
-  "ERROR_0003": "De verificatie is mislukt vanwege de volgende reden:\n{0}",
+  "ERROR_0000": "Er is een onverwachte fout opgetreden. Neem contact op met uw eigen IT administrator en geef de volgende details door: ContextId '{0}', ActivityId '{1}'",
+  "ERROR_0001": "Verificatie mislukt. Neem contact op met uw eigen IT administrator en geef de volgende details door: ContextId '{0}', ActivityId '{1}'",
+  "ERROR_0002": "De StepUp configuratie is incorrect. Neem contact op met uw eigen IT administrator en geef de volgende details door: ContextId '{0}', ActivityId '{1}'",
+  "ERROR_0003": "Uw ADFS omgeving is niet goed geconfigureerd. Neem contact op met uw eigen IT administrator en geef de volgende details door: ContextId '{0}', ActivityId '{1}'",
+  "AuthFailedFormTitle": "Authenticatie mislukt",
   "NoJavascript": "Je hebt Javascript uitgeschakeld. Schakele Javascript in om verder te gaan.",
   "OneMomentPlease": "Een moment geduld alstublieft...",
   "Working": "Bezig...",
-  "AuthenticationFailed": "Authenticatie mislukt",
   "Description": "SURFNet Tweede Factor Authenticatie.",
   "FriendlyName": "SURFNet Tweede Factor Authenticatie."
 }
