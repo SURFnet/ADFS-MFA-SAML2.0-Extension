@@ -19,7 +19,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
     /// <summary>
     /// Class Constants.
     /// </summary>
-    public static class StepUpConstants
+    public static class StepUpGatewayConstants
     {
         public static class InternalNames
         {

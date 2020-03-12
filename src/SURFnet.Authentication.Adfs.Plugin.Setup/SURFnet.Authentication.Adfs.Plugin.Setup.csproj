@@ -72,7 +72,7 @@
     <Compile Include="Services\Interfaces\IAssemblyService.cs" />
     <Compile Include="Services\Interfaces\IConfigurationFileService.cs" />
     <Compile Include="Services\Interfaces\IFileService.cs" />
-    <Compile Include="StepUpConstants.cs" />
+    <Compile Include="StepUpGatewayConstants.cs" />
     <Compile Include="Upgrades\UpgradeToV2.cs" />
     <Compile Include="VersionDetector.cs" />
   </ItemGroup>
