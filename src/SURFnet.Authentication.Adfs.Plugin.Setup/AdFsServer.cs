@@ -57,9 +57,17 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
         }
 
         /// <summary>
-        /// Unregisters the old plugin an registers the new plugin and refreshes the plugin metadata.
+        /// Unregisters the old plugin.
         /// </summary>
-        public void ReRegisterPlugin()
+        public void UnregisterPlugin()
+        {
+        }
+
+
+        /// <summary>
+        /// Registers the new plugin and refreshes the plugin metadata.
+        /// </summary>
+        public void RegisterPlugin()
         {
         }
 

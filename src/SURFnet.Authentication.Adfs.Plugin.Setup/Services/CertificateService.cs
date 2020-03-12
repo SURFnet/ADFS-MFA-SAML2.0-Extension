@@ -18,11 +18,14 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
 {
     using System;
     using System.Security.Cryptography.X509Certificates;
+    using System.Text;
+
+    using SURFnet.Authentication.Adfs.Plugin.Setup.Services.Interfaces;
 
     /// <summary>
     /// Class CertificateService.
     /// </summary>
-    public class CertificateService
+    public class CertificateService : ICertificateService
     {
         /// <summary>
         /// Determines whether the specified thumbprint is a valid sha1 fingerprint.
@@ -82,6 +85,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
                     Console.WriteLine($"Found certificate in store.");
                 }
 
+                //todo: check provider type == 23
                 store.Close();
             }
 
@@ -94,6 +98,35 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
         public void GenerateCertificate()
         {
             //todo: cert generation.
+        }
+
+        /// <summary>
+        /// Gets the certificate in PEM format.
+        /// </summary>
+        /// <param name="thumbprint">The thumbprint.</param>
+        /// <returns>The certificate (PEM format).</returns>
+        public string GetCertificate(string thumbprint)
+        {
+            var cert = string.Empty;
+            using (var store = new X509Store("MY", StoreLocation.LocalMachine))
+            {
+                store.Open(OpenFlags.ReadOnly | OpenFlags.OpenExistingOnly);
+                var certCollection = store.Certificates.Find(X509FindType.FindByThumbprint, thumbprint, false);
+                if (certCollection.Count == 1)
+                {
+                    var builder = new StringBuilder();
+
+                    builder.AppendLine("-----BEGIN CERTIFICATE-----");
+                    builder.AppendLine(Convert.ToBase64String(certCollection[0].Export(X509ContentType.Cert), Base64FormattingOptions.InsertLineBreaks));
+                    builder.AppendLine("-----END CERTIFICATE-----");
+
+                    cert = builder.ToString();
+                }
+
+                store.Close();
+            }
+
+            return cert;
         }
     }
 }

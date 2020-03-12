@@ -58,6 +58,7 @@
   <ItemGroup>
     <Compile Include="AdFsServer.cs" />
     <Compile Include="ConsoleExtensions.cs" />
+    <Compile Include="Models\MfaExtensionMetadata.cs" />
     <Compile Include="Models\IdentityProvider.cs" />
     <Compile Include="Models\PluginConfiguration.cs" />
     <Compile Include="Models\Setting.cs" />
@@ -69,6 +70,8 @@
     <Compile Include="Services\CertificateService.cs" />
     <Compile Include="Services\ConfigurationFileService.cs" />
     <Compile Include="Services\FileService.cs" />
+    <Compile Include="Services\Interfaces\IFileService.cs" />
+    <Compile Include="Services\Interfaces\ICertificateService.cs" />
     <Compile Include="StepUpConstants.cs" />
     <Compile Include="Upgrades\UpgradeToV2.cs" />
     <Compile Include="VersionDetector.cs" />
@@ -91,5 +94,6 @@
       <Name>SURFnet.Authentication.Adfs.Plugin</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
