@@ -50,6 +50,11 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
         private readonly string backupFolder;
 
         /// <summary>
+        /// Contains the extension information needed to configure the StepUp Gateway.
+        /// </summary>
+        private string extensionConfigurationFolder;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="FileService"/> class.
         /// </summary>
         public FileService()
@@ -67,6 +72,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
             this.EnsureCleanOutputFolder();
             this.EnsureBackupFolder();
             this.ValidateDistFolder();
+            this.extensionConfigurationFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, this.outputFolder, "configuration");
+            this.EnsureConfigFolder();
         }
 
         /// <summary>
@@ -87,9 +94,9 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
             {
                 try
                 {
-                    var from = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, assembly);
+                    var from = Path.Combine(this.distFolder, assembly);
                     var to = Path.Combine(this.outputFolder, assembly);
-                    File.Move(from, to);
+                    File.Copy(from, to);
                 }
                 catch (Exception e)
                 {
@@ -214,7 +221,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
             sb.AppendLine(metadata.SfoMfaExtensionCert);
             sb.AppendLine($"ACS: {metadata.ACS}");
 
-            var filePath = Path.Combine(this.outputFolder, "MfaExtensionConfiguration.txt");
+            var filePath = Path.Combine(this.extensionConfigurationFolder, "MfaExtensionConfiguration.txt");
             if (File.Exists(filePath))
             {
                 Console.WriteLine($"Removing old config");
@@ -244,6 +251,19 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
             }
 
             Directory.CreateDirectory(this.outputFolder);
+        }
+
+        /// <summary>
+        /// Ensures the configuration folder.
+        /// </summary>
+        private void EnsureConfigFolder()
+        {
+            if (Directory.Exists(this.extensionConfigurationFolder))
+            {
+                Directory.Delete(this.extensionConfigurationFolder);
+            }
+
+            Directory.CreateDirectory(this.extensionConfigurationFolder);
         }
 
         /// <summary>
