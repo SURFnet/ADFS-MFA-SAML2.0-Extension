@@ -52,7 +52,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
         /// <summary>
         /// Contains the extension information needed to configure the StepUp Gateway.
         /// </summary>
-        private string extensionConfigurationFolder;
+        private readonly string extensionConfigurationFolder;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FileService"/> class.
