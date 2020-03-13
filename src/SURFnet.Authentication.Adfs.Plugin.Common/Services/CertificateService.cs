@@ -146,9 +146,11 @@ namespace SURFnet.Authentication.Adfs.Plugin.Common.Services
         /// <summary>
         /// Generates the certificate.
         /// </summary>
-        public void GenerateCertificate()
+        /// <returns>The certificate thumbprint</returns>
+        public string GenerateCertificate()
         {
             //todo: cert generation.
+            return string.Empty;
         }
 
         /// <summary>

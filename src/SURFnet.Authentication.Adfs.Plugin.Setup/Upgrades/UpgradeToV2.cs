@@ -22,6 +22,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Upgrades
 
     using SURFnet.Authentication.Adfs.Plugin.Common.Services;
     using SURFnet.Authentication.Adfs.Plugin.Setup.Models;
+    using SURFnet.Authentication.Adfs.Plugin.Setup.Question;
     using SURFnet.Authentication.Adfs.Plugin.Setup.Services;
     using SURFnet.Authentication.Adfs.Plugin.Setup.Services.Interfaces;
 
@@ -112,12 +113,27 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Upgrades
         /// <param name="pluginSettings">The plugin settings.</param>
         private void ValidatePluginSettings(ICollection<Setting> pluginSettings)
         {
-            Console.WriteLine("Validate the local configuration for this ADFS MFA Extension");
             ConsoleExtensions.WriteHeader("ADFS MFA Extension");
-
-            foreach (var setting in pluginSettings)
+            if (pluginSettings.Any(s => !string.IsNullOrWhiteSpace(s.CurrentValue) && s.IsConfigurable))
             {
-                setting.VerifySetting();
+                Console.WriteLine("Found local MFA extension settings");
+
+                foreach (var setting in pluginSettings.Where(s => s.IsConfigurable))
+                {
+                    Console.WriteLine(setting);
+                }
+            }
+
+            var question = new YesNoQuestion("Do you want to change this configuration", DefaultAnswer.No);
+            var answer = question.ReadUserResponse();
+            if (!answer.IsDefaultAnswer)
+            {
+                Console.WriteLine();
+                Console.WriteLine();
+                foreach (var setting in pluginSettings)
+                {
+                    setting.VerifySetting();
+                }
             }
 
             ConsoleExtensions.WriteHeader("End ADFS MFA Extension");
@@ -147,11 +163,9 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Upgrades
                 }
             }
 
-            Console.Write("Do you want to reconfigure or connect to a new environment? (Y/N): ");
-            var input = Console.ReadKey();
-
-            Console.WriteLine();
-            if (input.Key.Equals(ConsoleKey.Y))
+            var question = new YesNoQuestion("Do you want to reconfigure or connect to a new environment?", DefaultAnswer.No);
+            var answer = question.ReadUserResponse();
+            if (!answer.IsDefaultAnswer)
             {
                 Console.WriteLine($"Found default configurations:");
                 for (var i = 0; i < defaultValues.Count; i++)
@@ -159,8 +173,10 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Upgrades
                     Console.WriteLine($"{i}. {defaultValues[i]["Type"]}");
                 }
 
-                Console.Write("Enter the number of the environment with which you want to connect to: ");
-                var environment = defaultValues[ConsoleExtensions.ReadUserInputAsInt(0, defaultValues.Count - 1)];
+                var envQuestion = new NumericQuestion("Enter the number of the environment with which you want to connect to", 0, defaultValues.Count - 1);
+                var envAnswer = envQuestion.ReadUserResponse();
+
+                var environment = defaultValues[envAnswer];
                 Console.WriteLine();
 
                 foreach (var defaultSetting in environment)
@@ -175,7 +191,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Upgrades
                 Console.WriteLine($"Prepared new StepUp Gateway configuration.");
             }
 
-            if (!input.Key.Equals(ConsoleKey.Y) && VersionDetector.IsCleanInstall())
+            if (answer.IsDefaultAnswer && VersionDetector.IsCleanInstall())
             {
                 Console.WriteLine();
                 Console.WriteLine();

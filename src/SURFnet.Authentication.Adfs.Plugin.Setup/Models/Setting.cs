@@ -20,6 +20,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Models
     using System.Text;
 
     using SURFnet.Authentication.Adfs.Plugin.Common.Services.Interfaces;
+    using SURFnet.Authentication.Adfs.Plugin.Setup.Question.SettingsQuestions;
     using SURFnet.Authentication.Adfs.Plugin.Setup.Services.Interfaces;
 
     /// <summary>
@@ -115,92 +116,115 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Models
                 return;
             }
 
-            Console.WriteLine(this.Description);
-            Console.WriteLine($"- Current value of {this.DisplayName}: {this.CurrentValue ?? "null"}.");
-
-            if (VersionDetector.IsCleanInstall())
-            {
-                Console.WriteLine($"No configuration Found. Please enter a value");
-                this.SetSettingValue();
-            }
-            else
-            {
-                Console.Write("Press Enter to continue with current value. Press N to supply a new value:");
-                var input = Console.ReadKey();
-                Console.WriteLine();
-
-                if (!input.Key.Equals(ConsoleKey.Enter))
-                {
-                    this.SetSettingValue();
-                }
-            }
-
-            Console.WriteLine();
-            Console.WriteLine();
-            Console.WriteLine("----");
-        }
-        
-        /// <summary>
-        /// Sets the setting value with the users input.
-        /// </summary>
-        private void SetSettingValue()
-        {
-
+            // todo: should refactor to settings base class and create derived types for certificate and normal setting
             if (this.IsCertificate)
             {
-                this.ProcessCertificate();
+                var question = new SettingsQuestion<CertificateAnswer>(this.DisplayName, this.IsMandatory, this.CurrentValue, this.Description);
+                this.NewValue = question.ReadUserResponse();
             }
             else
             {
-                this.ProcessNormalSetting();
+                var question = new SettingsQuestion<StringAnswer>(this.DisplayName, this.IsMandatory, this.CurrentValue, this.Description);
+                this.NewValue = question.ReadUserResponse();
             }
+
+
+            //Console.WriteLine(this.Description);
+            //Console.WriteLine($"- Current value of {this.DisplayName}: {this.CurrentValue ?? "null"}.");
+
+            //if (VersionDetector.IsCleanInstall())
+            //{
+            //    Console.WriteLine($"No configuration Found. Please enter a value");
+            //    this.SetSettingValue();
+            //}
+            //else
+            //{
+            //    Console.Write("Press Enter to continue with current value. Press N to supply a new value:");
+            //    var input = Console.ReadKey();
+            //    Console.WriteLine();
+
+            //    if (!input.Key.Equals(ConsoleKey.Enter))
+            //    {
+            //        this.SetSettingValue();
+            //    }
+            //}
+
+            //Console.WriteLine();
+            //Console.WriteLine();
+            //Console.WriteLine("----");
         }
 
         /// <summary>
-        /// Processes the certificate.
+        /// Returns a <see cref="System.String" /> that represents this instance.
         /// </summary>
-        private void ProcessCertificate()
+        /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
+        public override string ToString()
         {
-            Console.WriteLine("How do you want to set the certificate?");
-            Console.WriteLine("1. Use my own");
-            Console.WriteLine("2. Generate new certificate");
-            Console.Write($"Enter the number of the option you want to select: ");
-            var input = ConsoleExtensions.ReadUserInputAsInt(1, 2);
-            if (input == 1)
-            {
-                string thumbprint;
-                do
-                {
-                    Console.Write("Please enter thumbprint: ");
-                    thumbprint = Console.ReadLine();
-                }
-                while (!this.certificationService.IsValidThumbPrint(thumbprint) ||
-                       !this.certificationService.CertificateExists(thumbprint));
-
-                this.NewValue = thumbprint;
-            } 
-            else if (input == 2)
-            {
-                this.certificationService.GenerateCertificate();
-            }
+            var name = this.DisplayName.PadRight(45);
+            return $"{name}: {this.Value}";
         }
 
-        /// <summary>
-        /// Processes the normal setting.
-        /// </summary>
-        private void ProcessNormalSetting()
-        {
-            string newValue;
-            do
-            {
-                Console.Write($"Enter new value: ");
-                newValue = Console.ReadLine();
-                if (string.IsNullOrWhiteSpace(newValue) && this.IsMandatory)
-                {
-                    Console.WriteLine($"Property {this.DisplayName} is required. Please enter a value.");
-                }
-            }
-            while (string.IsNullOrWhiteSpace(newValue) && this.IsMandatory);
-        }
+        ///// <summary>
+        ///// Sets the setting value with the users input.
+        ///// </summary>
+        //private void SetSettingValue()
+        //{
+
+        //    if (this.IsCertificate)
+        //    {
+        //        this.ProcessCertificate();
+        //    }
+        //    else
+        //    {
+        //        this.ProcessNormalSetting();
+        //    }
+        //}
+
+        ///// <summary>
+        ///// Processes the certificate.
+        ///// </summary>
+        //private void ProcessCertificate()
+        //{
+        //    Console.WriteLine("How do you want to set the certificate?");
+        //    Console.WriteLine("1. Use my own");
+        //    Console.WriteLine("2. Generate new certificate");
+        //    Console.Write($"Enter the number of the option you want to select: ");
+        //    var input = ConsoleExtensions.ReadUserInputAsInt(1, 2);
+        //    if (input == 1)
+        //    {
+        //        string thumbprint;
+        //        do
+        //        {
+        //            Console.Write("Please enter thumbprint: ");
+        //            thumbprint = Console.ReadLine();
+        //        }
+        //        while (!this.certificationService.IsValidThumbPrint(thumbprint) ||
+        //               !this.certificationService.CertificateExists(thumbprint));
+
+        //        this.NewValue = thumbprint;
+        //    } 
+        //    else if (input == 2)
+        //    {
+        //        this.certificationService.GenerateCertificate();
+        //    }
+        //}
+
+        ///// <summary>
+        ///// Processes the normal setting.
+        ///// </summary>
+        //private void ProcessNormalSetting()
+        //{
+        //    string newValue;
+        //    do
+        //    {
+        //        Console.Write($"Enter new value: ");
+        //        newValue = Console.ReadLine();
+        //        if (string.IsNullOrWhiteSpace(newValue) && this.IsMandatory)
+        //        {
+        //            Console.WriteLine($"Property {this.DisplayName} is required. Please enter a value.");
+        //        }
+        //    }
+        //    while (string.IsNullOrWhiteSpace(newValue) && this.IsMandatory);
+        //}
     }
 }

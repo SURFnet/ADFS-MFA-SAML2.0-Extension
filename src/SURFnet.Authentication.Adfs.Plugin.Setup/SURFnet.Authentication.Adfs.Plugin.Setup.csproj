@@ -66,6 +66,15 @@
     <Compile Include="PluginConstants.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Question\DefaultAnswer.cs" />
+    <Compile Include="Question\NumericQuestion.cs" />
+    <Compile Include="Question\SettingsQuestions\IAnswer.cs" />
+    <Compile Include="Question\SettingsQuestions\SettingsQuestion.cs" />
+    <Compile Include="Question\SettingsQuestions\CertificateAnswer.cs" />
+    <Compile Include="Question\SettingsQuestions\StringAnswer.cs" />
+    <Compile Include="Question\YesNoAnswer.cs" />
+    <Compile Include="Question\YesNoQuestion.cs" />
+    <Compile Include="Question\Question.cs" />
     <Compile Include="Services\AdFsService.cs" />
     <Compile Include="Services\AssemblyService.cs" />
     <Compile Include="Services\ConfigurationFileService.cs" />

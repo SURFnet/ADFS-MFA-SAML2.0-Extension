@@ -46,7 +46,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Common.Services.Interfaces
         /// <summary>
         /// Generates the certificate.
         /// </summary>
-        void GenerateCertificate();
+        /// <returns>The certificate thumbprint.</returns>
+        string GenerateCertificate();
 
         /// <summary>
         /// Gets the certificate.

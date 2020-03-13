@@ -35,7 +35,16 @@
             var policy = AdfsAuthnCmds.GetGlobAuthnPol();
             var filePath = this.fileService.GetAdapterAssembly();
 
+            Console.WriteLine($"Loading assembly file from: '{filePath}'");
+
             var spec = AssemblySpec.GetAssemblySpec(filePath);
+
+            Console.WriteLine("Details:");
+            Console.WriteLine($"FullTypeName: {spec.FullName}");
+            Console.WriteLine($"Assembly version: {spec.AssemblyVersion}");
+            Console.WriteLine($"File version: {spec.FileVersion}");
+            Console.WriteLine($"Product version: {spec.ProductVersion}");
+
             AdfsAuthnCmds.RegisterAuthnProvider(adapterName, spec.FullName, filePath);
             if (!policy.AdditionalAuthenticationProviders.Contains(adapterName))
             {

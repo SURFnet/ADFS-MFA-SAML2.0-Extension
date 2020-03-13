@@ -18,6 +18,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
 {
     using System;
 
+    using SURFnet.Authentication.Adfs.Plugin.Setup.Question;
+    using SURFnet.Authentication.Adfs.Plugin.Setup.Question.SettingsQuestions;
     using SURFnet.Authentication.Adfs.Plugin.Setup.Upgrades;
 
     /// <summary>
@@ -34,6 +36,28 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
             Console.WriteLine($"Starting SurfNet MFA Plugin setup. Detected installed version '{VersionDetector.InstalledVersion}'");
             Console.WriteLine($"upgrading to version '{VersionDetector.NewVersion}'. Is upgrade to version 2: '{VersionDetector.IsUpgradeToVersion2()}'");
 
+            //var question = new YesNoQuestion($"Do you want to reconfigure or connect to a new environment?", DefaultAnswer.No);
+            //var answer = question.ReadUserResponse();
+            //if (answer.IsDefaultAnswer)
+            //{
+            //    Console.WriteLine("The default");
+            //}
+
+            //Console.WriteLine($"You entered: {answer.Value}");
+
+            //var numQuestion = new NumericQuestion("Enter the number", 0, 3);
+            //var answer1 = numQuestion.ReadUserResponse();
+            //Console.WriteLine($"You entered: {answer1}");
+
+            //var settingsQuestion = new SettingsQuestion<StringAnswer>("schacHomeOrganization", true, "institution-b.nl", null);
+            //var answer2 = settingsQuestion.ReadUserResponse();
+            //Console.WriteLine($"You entered: {answer2}");
+
+            //var certSettingsQuestion = new SettingsQuestion<CertificateAnswer>("Certificate", true, "BD047", null);
+            //var answer3 = certSettingsQuestion.ReadUserResponse();
+            //Console.WriteLine($"You entered: {answer3}");
+
+
             // Currently we only support v1.0.1 to v2.x
             if (VersionDetector.IsUpgradeToVersion2())
             {
@@ -49,7 +73,6 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
             {
                 Console.WriteLine("Type 'exit' to exit");
             }
-
         }
     }
 }
