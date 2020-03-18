@@ -14,7 +14,7 @@
 * limitations under the License.
 */
 
-namespace SURFnet.Authentication.Adfs.Plugin.Common.Exceptions
+namespace SURFnet.Authentication.Adfs.Plugin.Setup.Common.Exceptions
 {
     using System;
     using System.Runtime.Serialization;

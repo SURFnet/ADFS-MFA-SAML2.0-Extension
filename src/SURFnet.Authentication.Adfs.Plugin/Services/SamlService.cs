@@ -31,7 +31,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
 
     using Repositories;
 
-    using SURFnet.Authentication.Adfs.Plugin.Common.Exceptions;
+    using SURFnet.Authentication.Adfs.Plugin.Setup.Common.Exceptions;
 
     using Sustainsys.Saml2;
     using Sustainsys.Saml2.Configuration;
@@ -56,23 +56,26 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
         /// <returns>
         /// The authentication request.
         /// </returns>
-        public static Saml2AuthenticationSecondFactorRequest CreateAuthnRequest(Claim identityClaim, string authnRequestId, Uri ascUri)
+        public static Saml2AuthenticationSecondFactorRequest CreateAuthnRequest(string userid, string authnRequestId, Uri ascUri)
         {
-            Log.DebugFormat("Creating AuthnRequest for identity '{0}'", identityClaim.Value);
+            string stepupNameID = GetNameId(userid);  // This code should move up to the adapter, should not be in SAML code
 
+            var nameIdentifier = new Saml2NameIdentifier(stepupNameID, new Uri("urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified"));
+            Log.DebugFormat("Creating AuthnRequest for NameID '{0}'", nameIdentifier);
+
+            // This was testes in constructors!!!
             var samlConfiguration = Options.FromConfiguration;
             if (samlConfiguration == null)
             {
                 throw new InvalidConfigurationException("ERROR_0002", "The SAML configuration could not be loaded");
             }
 
+            // Should have been tested in constructors!
             var spConfiguration = samlConfiguration.SPOptions;
             if (spConfiguration == null)
             {
                 throw new InvalidConfigurationException("ERROR_0002", "The service provider section of the SAML configuration could not be loaded");
             }
-
-            var nameIdentifier = new Saml2NameIdentifier(GetNameId(identityClaim), new Uri("urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified"));
 
             var authnRequest = new Saml2AuthenticationSecondFactorRequest
             {
@@ -84,7 +87,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
             };
             authnRequest.SetId(authnRequestId);
 
-            Log.InfoFormat("Created AuthnRequest for '{0}' with id '{1}'", identityClaim.Value, authnRequest.Id.Value);
+            Log.InfoFormat("Created AuthnRequest for '{0}' with id '{1}'", userid, authnRequest.Id.Value);
             return authnRequest;
         }
 
@@ -137,9 +140,9 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
         /// </summary>
         /// <param name="identityClaim">The identity claim.</param>
         /// <returns>A name identifier.</returns>
-        private static string GetNameId(Claim identityClaim)
+        private static string GetNameId(string userid)
         {
-            var nameid = $"urn:collab:person:{StepUpConfig.Current.InstitutionConfig.SchacHomeOrganization}:{ActiveDirectoryRepository.GetUserIdForIdentity(identityClaim)}";
+            var nameid = $"urn:collab:person:{StepUpConfig.Current.InstitutionConfig.SchacHomeOrganization}:{userid}";
 
             nameid = nameid.Replace('@', '_');
             return nameid;

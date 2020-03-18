@@ -2,7 +2,7 @@
 using System.IO;
 using System.Reflection;
 
-namespace SURFnet.Authentication.Adfs.Plugin.Common.Assemblies
+namespace SURFnet.Authentication.Adfs.Plugin.Setup.Assemblies
 {
 
     static public class GACCheck

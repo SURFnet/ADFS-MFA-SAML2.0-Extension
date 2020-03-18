@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace SURFnet.Authentication.Adfs.Plugin.Common.PS
+namespace SURFnet.Authentication.Adfs.Plugin.Setup.PS
 {
     /// <summary>
     /// Subset of: M.IdS.Management.Resource.AdfsGlobalAuthenticationPolicy.

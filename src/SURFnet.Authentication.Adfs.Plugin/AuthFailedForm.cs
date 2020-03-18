@@ -20,7 +20,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
 
     using Microsoft.IdentityServer.Web.Authentication.External;
 
-    using SURFnet.Authentication.Adfs.Plugin.Common;
+    using SURFnet.Authentication.Adfs.Plugin.Setup.Common;
 
     /// <summary>
     /// The presentation form for the adapter.
@@ -74,7 +74,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
             var message = Resources.GetLabel(lcid, this.messageResourceId, this.contextId, this.activityId);
             if (string.IsNullOrWhiteSpace(message))
             {
-                message = Resources.GetLabel(lcid, Common.Values.DefaultErrorMessageResourcerId, this.contextId, this.activityId);
+                message = Resources.GetLabel(lcid, Values.DefaultErrorMessageResourcerId, this.contextId, this.activityId);
             }
             
             var builder = new StringBuilder(Resources.GetForm("AuthFailedForm"));

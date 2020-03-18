@@ -24,8 +24,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
 
     using Newtonsoft.Json.Linq;
 
-    using SURFnet.Authentication.Adfs.Plugin.Common;
-    using SURFnet.Authentication.Adfs.Plugin.Common.Services.Interfaces;
+    using SURFnet.Authentication.Adfs.Plugin.Setup.Common;
+    using SURFnet.Authentication.Adfs.Plugin.Setup.Common.Services.Interfaces;
     using SURFnet.Authentication.Adfs.Plugin.Setup.Models;
     using SURFnet.Authentication.Adfs.Plugin.Setup.Services.Interfaces;
 

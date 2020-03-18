@@ -18,7 +18,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Question.SettingsQuestions
 {
     using System;
 
-    using SURFnet.Authentication.Adfs.Plugin.Common.Services;
+    using SURFnet.Authentication.Adfs.Plugin.Setup.Common.Services;
 
     /// <summary>
     /// Class CertificateAnswer.

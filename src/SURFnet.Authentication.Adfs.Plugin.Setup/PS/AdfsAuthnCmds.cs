@@ -5,7 +5,7 @@ using System.Management.Automation;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SURFnet.Authentication.Adfs.Plugin.Common.PS
+namespace SURFnet.Authentication.Adfs.Plugin.Setup.PS
 {
     static public class AdfsAuthnCmds
     {

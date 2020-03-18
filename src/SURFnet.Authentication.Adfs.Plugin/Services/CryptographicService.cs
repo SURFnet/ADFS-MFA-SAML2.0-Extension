@@ -22,8 +22,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
 
     using log4net;
 
-    using SURFnet.Authentication.Adfs.Plugin.Common.Exceptions;
-    using SURFnet.Authentication.Adfs.Plugin.Common.Services.Interfaces;
+    using SURFnet.Authentication.Adfs.Plugin.Setup.Common.Exceptions;
+    using SURFnet.Authentication.Adfs.Plugin.Setup.Common.Services.Interfaces;
     using SURFnet.Authentication.Adfs.Plugin.Configuration;
     using SURFnet.Authentication.Adfs.Plugin.Models;
 

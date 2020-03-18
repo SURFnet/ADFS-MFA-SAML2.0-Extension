@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SURFnet.Authentication.Adfs.Plugin.Common.PS
+namespace SURFnet.Authentication.Adfs.Plugin.Setup.PS
 {
     public class AdfsSyncProps
     {

@@ -116,12 +116,6 @@
     </None>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\SURFnet.Authentication.Adfs.Plugin\SURFnet.Authentication.Adfs.Plugin.csproj">
-      <Project>{7f165692-9e1e-4231-b3bf-3e3aed44b11a}</Project>
-      <Name>SURFnet.Authentication.Adfs.Plugin</Name>
-    </ProjectReference>
-  </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

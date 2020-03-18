@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SURFnet.Authentication.Adfs.Plugin.Common.PS
+namespace SURFnet.Authentication.Adfs.Plugin.Setup.PS
 {
     /// <summary>
     /// This corresponds with the classic ADFS 2012R2  descriptor:

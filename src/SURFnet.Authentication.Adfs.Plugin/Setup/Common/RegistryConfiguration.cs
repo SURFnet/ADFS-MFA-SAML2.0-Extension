@@ -14,13 +14,13 @@
 * limitations under the License.
 */
 
-namespace SURFnet.Authentication.Adfs.Plugin.Common
+namespace SURFnet.Authentication.Adfs.Plugin.Setup.Common
 {
     using System;
 
     using Microsoft.Win32;
 
-    using SURFnet.Authentication.Adfs.Plugin.Common.Exceptions;
+    using SURFnet.Authentication.Adfs.Plugin.Setup.Common.Exceptions;
 
     /// <summary>
     /// Registration time only class.

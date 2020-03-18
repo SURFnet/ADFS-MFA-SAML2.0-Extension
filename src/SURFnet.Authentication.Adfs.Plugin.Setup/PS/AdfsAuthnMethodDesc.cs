@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SURFnet.Authentication.Adfs.Plugin.Common.PS
+namespace SURFnet.Authentication.Adfs.Plugin.Setup.PS
 {
     /// <summary>
     /// NOT YET USED.

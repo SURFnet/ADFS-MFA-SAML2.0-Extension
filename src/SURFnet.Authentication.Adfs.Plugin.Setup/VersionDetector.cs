@@ -16,7 +16,7 @@
 
 namespace SURFnet.Authentication.Adfs.Plugin.Setup
 {
-    using SURFnet.Authentication.Adfs.Plugin.Common;
+    using SURFnet.Authentication.Adfs.Plugin.Setup.Common;
     using System;
     using System.Runtime.CompilerServices;
 

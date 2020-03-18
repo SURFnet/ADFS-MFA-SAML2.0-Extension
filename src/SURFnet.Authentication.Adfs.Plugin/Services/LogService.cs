@@ -21,7 +21,7 @@ using log4net.Core;
 using log4net.Repository.Hierarchy;
 using log4net.Util;
 using Microsoft.IdentityServer.Web.Authentication.External;
-using SURFnet.Authentication.Adfs.Plugin.Common;
+using SURFnet.Authentication.Adfs.Plugin.Setup.Common;
 using SURFnet.Authentication.Adfs.Plugin.Configuration;
 
 namespace SURFnet.Authentication.Adfs.Plugin.Services

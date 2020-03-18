@@ -1,4 +1,4 @@
-﻿using SURFnet.Authentication.Adfs.Plugin.Common.PS;
+﻿using SURFnet.Authentication.Adfs.Plugin.Setup.PS;
 
 using System;
 using System.Collections.Generic;

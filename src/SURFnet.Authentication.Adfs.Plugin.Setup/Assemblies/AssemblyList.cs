@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-namespace SURFnet.Authentication.Adfs.Plugin.Common.Assemblies
+namespace SURFnet.Authentication.Adfs.Plugin.Setup.Assemblies
 {
     public class AssemblyList
     {

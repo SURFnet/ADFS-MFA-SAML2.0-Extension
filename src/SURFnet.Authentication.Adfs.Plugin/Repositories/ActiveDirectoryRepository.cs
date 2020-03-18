@@ -21,7 +21,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Repositories
     using System.DirectoryServices.AccountManagement;
     using System.Security.Claims;
 
-    using SURFnet.Authentication.Adfs.Plugin.Common.Exceptions;
+    using SURFnet.Authentication.Adfs.Plugin.Setup.Common.Exceptions;
     using SURFnet.Authentication.Adfs.Plugin.Configuration;
 
     /// <summary>
@@ -31,9 +31,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Repositories
     {
         /// <summary>
         /// Gets the user identifier for the given identity.
-        /// TODO: can remove this..... Unless...
         /// </summary>
-        /// <param name="identityClaim">The identity claim.</param>
+        /// <param name="identityClaim">The identity claim as mandated by Metadata.</param>
         /// <returns>
         /// The user identifier.
         /// </returns>
@@ -49,7 +48,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Repositories
 
             if (currentUser == null)
             {
-                // This should never happen, but just to be sure
+                // This should never happen because the user was found by ADFS.
+                // Panic condition!
                 throw new ActiveDirectoryConfigurationException("ERROR_0003", $"User '{identityClaim.Value}' not found in active directory for domain '{domainName}'");
             }
 
@@ -69,6 +69,52 @@ namespace SURFnet.Authentication.Adfs.Plugin.Repositories
             }
 
             return userId;
+        }
+
+        static public bool TryGetAttributeValue(string domain, string windowsaccountname, string attributename, out string attributevalue, out string error)
+        {
+            bool rc = false;
+
+            attributevalue = null;
+            error = null;
+            try
+            {
+                var ctx = new PrincipalContext(ContextType.Domain, domain);
+                var currentUser = UserPrincipal.FindByIdentity(ctx, windowsaccountname);
+                if ( null!=currentUser )
+                {
+                    using ( DirectoryEntry de = currentUser.GetUnderlyingObject() as DirectoryEntry )
+                    {
+                        // according to documentaion this cannot happen, it should have thrown!
+                        if ( de == null )
+                        {
+                            error = "Bug: no underlying DirectoryEntry!" + windowsaccountname;
+                        }
+                        else if ( de.Properties.Contains(attributename) )
+                        {
+                            attributevalue = de.Properties[attributename].Value.ToString();
+                            rc = true;   // the only perfect result.
+                        }
+                        else
+                        {
+                            // Operational (functional) error. The account does not have the attribute.
+                            // Do not report or set an error. That is up to the caller!
+                        }
+                    }
+                }
+                else
+                {
+                    // Unthinkable, the user was there in ADFS!!
+                    error = "BUG, did not find the account in AD: " + windowsaccountname;
+                }
+            }
+            catch (Exception ex)
+            {
+                // Also unthinkable, the user was there in ADFS!!
+                error = ex.ToString();
+            }
+
+            return rc;
         }
     }
 }

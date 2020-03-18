@@ -2,9 +2,9 @@
 {
     using System;
 
-    using SURFnet.Authentication.Adfs.Plugin.Common;
-    using SURFnet.Authentication.Adfs.Plugin.Common.Assemblies;
-    using SURFnet.Authentication.Adfs.Plugin.Common.PS;
+    using SURFnet.Authentication.Adfs.Plugin.Setup.Common;
+    using SURFnet.Authentication.Adfs.Plugin.Setup.Assemblies;
+    using SURFnet.Authentication.Adfs.Plugin.Setup.PS;
     using SURFnet.Authentication.Adfs.Plugin.Setup.Services.Interfaces;
 
     /// <summary>

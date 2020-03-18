@@ -25,16 +25,17 @@ namespace SURFnet.Authentication.Adfs.Plugin
 
     using Microsoft.IdentityModel.Tokens.Saml2;
     using Microsoft.IdentityServer.Web.Authentication.External;
-    using SURFnet.Authentication.Adfs.Plugin.Common;
-    using SURFnet.Authentication.Adfs.Plugin.Common.Exceptions;
-    using SURFnet.Authentication.Adfs.Plugin.Common.Services;
+    using SURFnet.Authentication.Adfs.Plugin.Setup.Common;
+    using SURFnet.Authentication.Adfs.Plugin.Setup.Common.Exceptions;
+    using SURFnet.Authentication.Adfs.Plugin.Setup.Common.Services;
     using SURFnet.Authentication.Adfs.Plugin.Configuration;
     using SURFnet.Authentication.Adfs.Plugin.Extensions;
     using SURFnet.Authentication.Adfs.Plugin.Models;
     using SURFnet.Authentication.Adfs.Plugin.Services;
 
     using Sustainsys.Saml2.Saml2P;
-    
+    using SURFnet.Authentication.Adfs.Plugin.Repositories;
+
     /// <summary>
     /// The ADFS MFA Adapter.
     /// </summary>
@@ -60,6 +61,8 @@ namespace SURFnet.Authentication.Adfs.Plugin
         /// The cryptographic service.
         /// </summary>
         private readonly CryptographicService cryptographicService;
+
+        private UserForStepup _user4Stepup;
 
         /// <summary>
         /// Initializes static members of the <see cref="Adapter"/> class.
@@ -148,6 +151,38 @@ namespace SURFnet.Authentication.Adfs.Plugin
         }
 
         /// <summary>
+        /// Determines whether the MFA is available for current user.
+        /// This call comes before the BeginAuthentication method.
+        /// </summary>
+        /// <param name="identityClaim">The identity claim.</param>
+        /// <param name="context">The context.</param>
+        /// <returns>
+        /// <c>true</c> if this method of authentication is available for the user; otherwise, <c>false</c>.
+        /// </returns>
+        public bool IsAvailableForUser(Claim identityClaim, IAuthenticationContext context)
+        {
+            LogService.PrepareCorrelatedLogger(context.ContextId, context.ActivityId);
+
+            bool rc = false;
+
+            var tmpuser = new UserForStepup(identityClaim);
+            if ( tmpuser.TryGetStepupAttributeValue() )
+            {
+                // OK, attribute was there.
+                _user4Stepup = tmpuser;
+                rc = true;
+            }
+            else
+            {
+                _user4Stepup = null;
+            }
+
+            return rc;
+        }
+
+
+
+        /// <summary>
         /// Begins the authentication.
         /// </summary>
         /// <param name="identityClaim">The identity claim.</param>
@@ -189,23 +224,6 @@ namespace SURFnet.Authentication.Adfs.Plugin
                 LogService.Log.FatalFormat("Unexpexted error while initiating authentication: {0}", ex);
                 return new AuthFailedForm(false, Values.DefaultErrorMessageResourcerId, context.ContextId, context.ActivityId);
             }
-        }
-
-        /// <summary>
-        /// Determines whether the MFA is available for current user.
-        /// </summary>
-        /// <param name="identityClaim">The identity claim.</param>
-        /// <param name="context">The context.</param>
-        /// <returns>
-        /// <c>true</c> if this method of authentication is available for the user; otherwise, <c>false</c>.
-        /// </returns>
-        public bool IsAvailableForUser(Claim identityClaim, IAuthenticationContext context)
-        {
-            // Officially we should check here if the user has the proper attribute in the AD to do Stepup.
-            // But we do not do that until the BeginAuthentication. Which is wrong.....
-
-            LogService.PrepareCorrelatedLogger(context.ContextId, context.ActivityId);
-            return true;
         }
 
         /// <summary>

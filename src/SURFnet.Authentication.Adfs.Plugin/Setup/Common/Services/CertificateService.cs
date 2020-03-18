@@ -14,14 +14,14 @@
 * limitations under the License.
 */
 
-namespace SURFnet.Authentication.Adfs.Plugin.Common.Services
+namespace SURFnet.Authentication.Adfs.Plugin.Setup.Common.Services
 {
     using System;
     using System.Security.Cryptography.X509Certificates;
     using System.Text;
 
-    using SURFnet.Authentication.Adfs.Plugin.Common.Exceptions;
-    using SURFnet.Authentication.Adfs.Plugin.Common.Services.Interfaces;
+    using SURFnet.Authentication.Adfs.Plugin.Setup.Common.Exceptions;
+    using SURFnet.Authentication.Adfs.Plugin.Setup.Common.Services.Interfaces;
 
     /// <summary>
     /// Class CertificateService.

@@ -14,7 +14,7 @@
 * limitations under the License.
 */
 
-namespace SURFnet.Authentication.Adfs.Plugin.Common.Services.Interfaces
+namespace SURFnet.Authentication.Adfs.Plugin.Setup.Common.Services.Interfaces
 {
     using System.Security.Cryptography.X509Certificates;
 
