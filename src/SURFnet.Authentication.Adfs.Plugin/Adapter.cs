@@ -105,7 +105,10 @@ namespace SURFnet.Authentication.Adfs.Plugin
         /// </summary>
         public Adapter()
         {
-            this.cryptographicService = new CryptographicService(new CertificateService());
+            if (false==RegistrationLog.IsRegistration)
+            {
+                this.cryptographicService = new CryptographicService(new CertificateService());
+            }
         }
 
         /// <summary>
