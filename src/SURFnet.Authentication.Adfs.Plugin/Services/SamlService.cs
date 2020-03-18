@@ -20,18 +20,13 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
     using System.Diagnostics.CodeAnalysis;
     using System.Linq;
     using System.Security.Claims;
-
-    using Configuration;
-
-    using log4net;
-
     using Microsoft.IdentityModel.Tokens.Saml2;
 
+    using SURFnet.Authentication.Adfs.Plugin.Setup.Common.Exceptions;
+    using Configuration;
     using Models;
 
-    using Repositories;
-
-    using SURFnet.Authentication.Adfs.Plugin.Setup.Common.Exceptions;
+    using log4net;
 
     using Sustainsys.Saml2;
     using Sustainsys.Saml2.Configuration;
@@ -50,7 +45,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
         /// <summary>
         /// Creates the SAML authentication request with the correct name identifier.
         /// </summary>
-        /// <param name="identityClaim">The identity claim.</param>
+        /// <param name="userid">The stepup userid as found in the active Directory.</param>
         /// <param name="authnRequestId">The AuthnRequest identifier.</param>
         /// <param name="ascUri">The asc URI.</param>
         /// <returns>

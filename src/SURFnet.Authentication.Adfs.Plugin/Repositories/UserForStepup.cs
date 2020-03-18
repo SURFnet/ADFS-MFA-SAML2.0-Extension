@@ -48,12 +48,13 @@ namespace SURFnet.Authentication.Adfs.Plugin.Repositories
             }
             else
             {
-                // attribute not found
+                // attribute not found, operational error.
                 if (error != null)
                 {
-                    // really unexpected fatal error.
+                    // but this is a really unexpected fatal error.
                     ErrorMsg = error;
                     LogService.Log.Fatal(ErrorMsg);
+                    // TODO:  Could/should throw!!
                 }
             }
 

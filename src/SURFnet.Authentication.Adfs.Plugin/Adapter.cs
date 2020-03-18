@@ -151,6 +151,14 @@ namespace SURFnet.Authentication.Adfs.Plugin
         }
 
         /// <summary>
+        /// Called when the authentication pipeline is loaded.
+        /// </summary>
+        /// <param name="configData">The configuration data.</param>
+        public void OnAuthenticationPipelineLoad(IAuthenticationMethodConfigData configData)
+        {
+        }
+
+        /// <summary>
         /// Determines whether the MFA is available for current user.
         /// This call comes before the BeginAuthentication method.
         /// </summary>
@@ -199,8 +207,18 @@ namespace SURFnet.Authentication.Adfs.Plugin
                 LogService.Log.Debug("Enter BeginAuthentication");
                 LogService.Log.DebugFormat("context.Lcid={0}", context.Lcid);
 
+                string stepupUID = string.Empty;
+                if ( _user4Stepup == null )
+                {
+                    LogService.Log.Fatal("No User4Stepup");
+                }
+                else
+                {
+                    stepupUID = _user4Stepup.UserID;
+                }
+
                 var requestId = $"_{context.ContextId}";
-                var authRequest = SamlService.CreateAuthnRequest(identityClaim, requestId, httpListenerRequest.Url);
+                var authRequest = SamlService.CreateAuthnRequest(stepupUID, requestId, httpListenerRequest.Url);
 
                 LogService.Log.DebugFormat("Signing AuthnRequest with id {0}", requestId);
                 var signedXml = this.cryptographicService.SignSamlRequest(authRequest);
@@ -224,38 +242,6 @@ namespace SURFnet.Authentication.Adfs.Plugin
                 LogService.Log.FatalFormat("Unexpexted error while initiating authentication: {0}", ex);
                 return new AuthFailedForm(false, Values.DefaultErrorMessageResourcerId, context.ContextId, context.ActivityId);
             }
-        }
-
-        /// <summary>
-        /// Called when the authentication pipeline is loaded.
-        /// </summary>
-        /// <param name="configData">The configuration data.</param>
-        public void OnAuthenticationPipelineLoad(IAuthenticationMethodConfigData configData)
-        {
-        }
-
-        /// <summary>
-        /// Called when the authentication pipeline is unloaded.
-        /// Do not assume that there is a proper match between "load" and "unload".
-        /// Different ADFS versions have different bugs...
-        /// </summary>
-        public void OnAuthenticationPipelineUnload()
-        {
-        }
-
-        /// <summary>
-        /// Called when an error occurs.
-        /// </summary>
-        /// <param name="request">The request.</param>
-        /// <param name="ex">The exception details.</param>
-        /// <returns>
-        /// The presentation form.
-        /// </returns>
-        public IAdapterPresentation OnError(HttpListenerRequest request, ExternalAuthenticationException ex)
-        {
-            LogService.PrepareCorrelatedLogger(ex.Context.ContextId, ex.Context.ActivityId);
-            LogService.Log.ErrorFormat("Error occured: {0}", ex);
-            return new AuthFailedForm(false, Values.DefaultErrorMessageResourcerId, ex.Context.ContextId, ex.Context.ActivityId);
         }
 
         /// <summary>
@@ -312,6 +298,30 @@ namespace SURFnet.Authentication.Adfs.Plugin
                 LogService.Log.FatalFormat("Error while processing the saml response. Details: {0}", ex.Message);
                 return new AuthFailedForm(false, Values.DefaultErrorMessageResourcerId, context.ContextId, context.ActivityId);
             }
+        }
+
+        /// <summary>
+        /// Called when the authentication pipeline is unloaded.
+        /// Do not assume that there is a proper match between "load" and "unload".
+        /// Different ADFS versions have different bugs...
+        /// </summary>
+        public void OnAuthenticationPipelineUnload()
+        {
+        }
+
+        /// <summary>
+        /// Called when an error occurs.
+        /// </summary>
+        /// <param name="request">The request.</param>
+        /// <param name="ex">The exception details.</param>
+        /// <returns>
+        /// The presentation form.
+        /// </returns>
+        public IAdapterPresentation OnError(HttpListenerRequest request, ExternalAuthenticationException ex)
+        {
+            LogService.PrepareCorrelatedLogger(ex.Context.ContextId, ex.Context.ActivityId);
+            LogService.Log.ErrorFormat("Error occured: {0}", ex);
+            return new AuthFailedForm(false, Values.DefaultErrorMessageResourcerId, ex.Context.ContextId, ex.Context.ActivityId);
         }
 
         /// <summary>

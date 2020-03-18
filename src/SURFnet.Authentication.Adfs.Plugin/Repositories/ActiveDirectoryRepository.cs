@@ -29,48 +29,6 @@ namespace SURFnet.Authentication.Adfs.Plugin.Repositories
     /// </summary>
     public static class ActiveDirectoryRepository
     {
-        /// <summary>
-        /// Gets the user identifier for the given identity.
-        /// </summary>
-        /// <param name="identityClaim">The identity claim as mandated by Metadata.</param>
-        /// <returns>
-        /// The user identifier.
-        /// </returns>
-        public static string GetUserIdForIdentity(Claim identityClaim)
-        {
-            string userId;
-            var linewidthsaver = StepUpConfig.Current.InstitutionConfig.ActiveDirectoryUserIdAttribute;
-
-            var domainName = identityClaim.Value.Split('\\')[0];
-
-            var ctx = new PrincipalContext(ContextType.Domain, domainName);
-            var currentUser = UserPrincipal.FindByIdentity(ctx, identityClaim.Value);
-
-            if (currentUser == null)
-            {
-                // This should never happen because the user was found by ADFS.
-                // Panic condition!
-                throw new ActiveDirectoryConfigurationException("ERROR_0003", $"User '{identityClaim.Value}' not found in active directory for domain '{domainName}'");
-            }
-
-            using (var entry = currentUser.GetUnderlyingObject() as DirectoryEntry)
-            {
-                if (entry == null)
-                {
-                    throw new ActiveDirectoryConfigurationException("ERROR_0003", "Cannot get the properties from active directory. Reason: it's not a DirectoryEntry type");
-                }
-
-                if (!entry.Properties.Contains(linewidthsaver))
-                {
-                    throw new ActiveDirectoryConfigurationException("ERROR_0003", $"Property '{linewidthsaver}' not found in the active directory. Please add the property or update the plugin configuration");
-                }
-
-                userId = entry.Properties[linewidthsaver].Value.ToString();
-            }
-
-            return userId;
-        }
-
         static public bool TryGetAttributeValue(string domain, string windowsaccountname, string attributename, out string attributevalue, out string error)
         {
             bool rc = false;
