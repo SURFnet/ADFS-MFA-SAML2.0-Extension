@@ -43,11 +43,11 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Upgrades
             var adfsService = new AdFsService(fileService);
 #endif
             var server = new AdFsServer(adfsService);
-            var certificateService = new CertificateService();
+            var certificateService = new CertificateService("pfrrrrrtttttt");  // BUG:
             var config = new ConfigurationFileService(fileService, certificateService);
 
             var metadata = this.ProcessConfigurationFiles(config);
-            metadata.ACS = new Uri("http://todo");
+            metadata.ACS = new Uri("http://todo"); // BUG:
             fileService.SaveConfigurationData(metadata);
 
             fileService.BackupOldConfig();

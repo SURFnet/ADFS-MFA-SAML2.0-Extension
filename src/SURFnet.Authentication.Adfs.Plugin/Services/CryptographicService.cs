@@ -28,6 +28,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
     using SURFnet.Authentication.Adfs.Plugin.Models;
 
     using Sustainsys.Saml2;
+    using SURFnet.Authentication.Adfs.Plugin.Setup.Common.Services;
 
     /// <summary>
     /// Handles the signing.
@@ -55,15 +56,44 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
         /// </summary>
         private X509Certificate2 signingCertificate;
 
+        private CryptographicService() { }  // hide
+
         /// <summary>
         /// Initializes a new instance of the <see cref="CryptographicService" /> class.
         /// </summary>
         /// <param name="certificateService">The certificate service.</param>
-        public CryptographicService(ICertificateService certificateService)
+        public CryptographicService(X509Certificate2 certificate)
         {
+            signingCertificate = certificate;
             EnableSha256Support();
             this.log = LogManager.GetLogger("CryptographicService");
-            this.LoadCertificate(certificateService);
+
+            if (certificate == null)
+                LogService.Log.Fatal("cert==null .ctor CryptographicService");
+        }
+
+        /// <summary>
+        /// Creates a CryptographicService for the certificate thumbprint.
+        /// Only call this when it is abolutely there, because it was verified before!
+        /// </summary>
+        /// <param name="thumbprint">The verified thumbprint for a valid certificate.</param>
+        /// <returns>A service, ready to run.</returns>
+        public static CryptographicService Create(string thumbprint)
+        {
+            CryptographicService rc = null; // just for idiots that did not check. It will throwup on the first test!
+            string error;
+
+            if (CertificateService.IsValidThumbPrint(thumbprint, out error))
+            {
+                var certWrapper = new CertificateService(thumbprint);
+                if (certWrapper.TryGetCertificate(false)) // generic fetch, we do not care about the key.
+                {
+                    rc = new CryptographicService(certWrapper.Cert);
+                }
+                // else:  return a null and kill the caller!
+            }
+
+            return rc;
         }
 
         /// <summary>
@@ -110,17 +140,17 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
         /// Loads the certificate.
         /// </summary>
         /// <param name="certificateService">The certificate service.</param>
-        private void LoadCertificate(ICertificateService certificateService)
-        {
-            try
-            {
-                this.signingCertificate = certificateService.GetCertificate(StepUpConfig.Current.LocalSpConfig.SPSigningCertificate);
-            }
-            catch (Exception e)
-            {
-                this.log.FatalFormat("Error while loading signing certificate. Details: {0}", e);
-                throw new InvalidConfigurationException("ERROR_0002", "Error while loading signing certificate", e);
-            }
-        }
+        ////private void LoadCertificate(ICertificateService certificateService)
+        ////{
+        ////    try
+        ////    {
+        ////        this.signingCertificate = certificateService.GetCertificate(StepUpConfig.Current.LocalSpConfig.SPSigningCertificate);
+        ////    }
+        ////    catch (Exception e)
+        ////    {
+        ////        this.log.FatalFormat("Error while loading signing certificate. Details: {0}", e);
+        ////        throw new InvalidConfigurationException("ERROR_0002", "Error while loading signing certificate", e);
+        ////    }
+        //}
     }
 }

@@ -28,7 +28,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Common.Services.Interfaces
         /// </summary>
         /// <param name="thumbprint">The thumbprint.</param>
         /// <returns><c>true</c> if [is valid thumb print] [the specified thumbprint]; otherwise, <c>false</c>.</returns>
-        bool IsValidThumbPrint(string thumbprint);
+        //bool IsValidThumbPrint(string thumbprint);
 
         /// <summary>
         /// Checks the certificate thumbprint in the My store in LocalMachine.

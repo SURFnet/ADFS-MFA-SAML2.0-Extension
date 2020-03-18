@@ -25,6 +25,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
     using Newtonsoft.Json.Linq;
 
     using SURFnet.Authentication.Adfs.Plugin.Setup.Common;
+    using SURFnet.Authentication.Adfs.Plugin.Setup.Common.Services;
     using SURFnet.Authentication.Adfs.Plugin.Setup.Common.Services.Interfaces;
     using SURFnet.Authentication.Adfs.Plugin.Setup.Models;
     using SURFnet.Authentication.Adfs.Plugin.Setup.Services.Interfaces;
@@ -37,7 +38,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
         /// <summary>
         /// The certificate service.
         /// </summary>
-        private readonly ICertificateService certificateService;
+        private readonly CertificateService certificateService;
         
         /// <summary>
         /// The file service.
@@ -54,7 +55,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
         /// </summary>
         /// <param name="fileService">The file service.</param>
         /// <param name="certificateService">The certificate service.</param>
-        public ConfigurationFileService(IFileService fileService, ICertificateService certificateService)
+        public ConfigurationFileService(IFileService fileService, CertificateService certificateService)
         {
             this.fileService = fileService;
             this.certificateService = certificateService;

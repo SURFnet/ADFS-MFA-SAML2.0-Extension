@@ -116,6 +116,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
                 sb.AppendLine($"ServiceProvider.EntityId: '{options.SPOptions.EntityId.Id}'");
                 sb.AppendLine($"IdentityProvider.EntityId: '{SamlService.GetIdentityProvider(options).EntityId.Id}'");
                 // TODO: we need moere: also signing cert of Stepup gatway.
+                //sb.AppendLine($"IdentityProvider.signingCertificate: {options.IdentityProviders.???}");
             }
             catch (Exception ex)
             {

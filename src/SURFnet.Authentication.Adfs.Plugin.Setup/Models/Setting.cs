@@ -18,7 +18,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Models
 {
     using System;
     using System.Text;
-
+    using SURFnet.Authentication.Adfs.Plugin.Setup.Common.Services;
     using SURFnet.Authentication.Adfs.Plugin.Setup.Common.Services.Interfaces;
     using SURFnet.Authentication.Adfs.Plugin.Setup.Question.SettingsQuestions;
     using SURFnet.Authentication.Adfs.Plugin.Setup.Services.Interfaces;
@@ -31,7 +31,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Models
         /// <summary>
         /// The certification service.
         /// </summary>
-        private readonly ICertificateService certificationService;
+        private readonly CertificateService certificateService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Setting" /> class.
@@ -45,10 +45,10 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Models
         /// <summary>
         /// Initializes a new instance of the <see cref="Setting"/> class.
         /// </summary>
-        /// <param name="certificationService">The certification service.</param>
-        public Setting(ICertificateService certificationService) : this()
+        /// <param name="certificateService">The certification service.</param>
+        public Setting(CertificateService certificateService) : this()
         {
-            this.certificationService = certificationService;
+            this.certificateService = certificateService;
             this.IsCertificate = true;
         }
 

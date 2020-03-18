@@ -26,128 +26,171 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Common.Services
     /// <summary>
     /// Class CertificateService.
     /// </summary>
-    public class CertificateService : ICertificateService
+    public class CertificateService
     {
+        public string ErrorMsg { get; private set; }
+        public string ThumbPrint { get; private set; }
+        public X509Certificate2 Cert { get; private set; }
+
+        public CertificateService(string thumbprint)
+        {
+            ThumbPrint = thumbprint;
+        }
+
+        public void Clear()
+        {
+            if ( Cert != null )
+            {
+                try
+                {
+                    Cert.Dispose();
+                }
+                catch(Exception) { }
+
+                Cert = null;
+            }
+        }
+
+
         /// <summary>
         /// Determines whether the specified thumbprint is a valid sha1 fingerprint.
         /// </summary>
         /// <param name="thumbprint">The thumbprint.</param>
         /// <returns><c>true</c> if [is valid thumb print] [the specified thumbprint]; otherwise, <c>false</c>.</returns>
-        public bool IsValidThumbPrint(string thumbprint)
+        public static bool IsValidThumbPrint(string thumbprint, out string error)
         {
+            error = null;
+
             var isValid = true;
-            Console.WriteLine($"Validating thumbprint '{thumbprint}'");
             if (thumbprint.Length != 40)
             {
-                Console.WriteLine("Thumbprint length is incorrect");
+                error = "Thumbprint length is incorrect (must be 40 hexdigits).";
                 isValid = false;
             }
-
-            var isHex = System.Text.RegularExpressions.Regex.IsMatch(thumbprint, @"\A\b[0-9a-fA-F]+\b\Z");
-            if (!isHex)
+            else
             {
-                Console.WriteLine("Enter a valid thumbprint");
-                isValid = false;
-            }
-
-            if (isValid)
-            {
-                Console.WriteLine($"Thumbprint is valid");
+                var isHex = System.Text.RegularExpressions.Regex.IsMatch(thumbprint, @"\A\b[0-9a-fA-F]+\b\Z");
+                if (!isHex)
+                {
+                    error = "Enter a valid thumbprint  (must be 40 hexdigits).";
+                    isValid = false;
+                }
             }
 
             return isValid;
         }
 
-        /// <summary>
-        /// Checks the certificate thumbprint in the My store in LocalMachine.
-        /// </summary>
-        /// <param name="thumbprint">The thumbprint.</param>
-        /// <returns><c>true</c> if XXXX, <c>false</c> otherwise.</returns>
-        public bool CertificateExists(string thumbprint)
+        public bool TryGetCertificate(bool privatekeyrequired)
         {
-            if (string.IsNullOrWhiteSpace(thumbprint))
-            {
-                return false;
-            }
+            bool rc = false;
 
-            var isValid = true;
-            Console.WriteLine($"Check thumbprint '{thumbprint}' in LocalMachine store: My");
             using (var store = new X509Store("MY", StoreLocation.LocalMachine))
             {
                 store.Open(OpenFlags.ReadOnly | OpenFlags.OpenExistingOnly);
-                var certCollection = store.Certificates.Find(X509FindType.FindByThumbprint, thumbprint, false);
+                var certCollection = store.Certificates.Find(X509FindType.FindByThumbprint, ThumbPrint, false); // do not check validity
                 if (certCollection.Count == 0)
                 {
-                    Console.WriteLine($"Didn't find any certificate with thumbprint '{thumbprint}'");
-                    isValid = false;
+                    ErrorMsg = $"Didn't find any certificate with thumbprint '{ThumbPrint}'";
                 }
                 else if (certCollection.Count > 1)
                 {
-                    Console.WriteLine($"Found more than one certificate with thumbprint '{thumbprint}'");
-                    isValid = false;
+                    ErrorMsg = $"Found more than one certificate with thumbprint '{ThumbPrint}'";
+                    foreach ( var cert in certCollection )
+                    {
+                        cert.Dispose();
+                    }
                 }
                 else
                 {
-                    Console.WriteLine($"Found certificate in store.");
+                    // TODO:  check provider type == 23
+                    Cert = certCollection[0];
+                    rc = true;
                 }
 
-                foreach (var cert in certCollection)
-                {
-                    cert.Dispose();
-                }
-
-                // todo: check provider type == 23
                 store.Close();
             }
 
-            return isValid;
+            return rc;
+        }
+
+        /// <summary>
+        /// Checks the certificate thumbprint in the My store in LocalMachine.
+        /// This is typically for UI code, because it does not preserve the cert instance.
+        /// </summary>
+        /// <param name="thumbprint">The thumbprint.</param>
+        /// <returns><c>true</c> if XXXX, <c>false</c> otherwise.</returns>
+        public static bool CertificateExists(string thumbprint, bool requireprivatekey, out string errormsg)
+        {
+            bool rc = false;
+            errormsg = null;
+
+            // UI helper.
+            if (string.IsNullOrWhiteSpace(thumbprint))
+            {
+                errormsg = "Thumbprint should not be NullOrWhiteSpace";
+                return false;
+            }
+
+            var tmpservice = new CertificateService(thumbprint);
+            if ( tmpservice.TryGetCertificate(requireprivatekey) )
+            {
+                rc = true;
+                tmpservice.Clear();
+            }
+            else
+            {
+                errormsg = tmpservice.ErrorMsg;
+            }
+
+
+            return rc;
         }
 
         /// <summary>
         /// Checks the certificate and private key by thumbprint in the My store in LocalMachine.
         /// </summary>
         /// <param name="thumbprint">The thumbprint.</param>
-        public void CheckMfaExtensionCertificate(string thumbprint)
-        {
-            if (string.IsNullOrWhiteSpace(thumbprint))
-            {
-                return;
-            }
+        //public void CheckMfaExtensionCertificate(string thumbprint)
+        //{
+        //    if (string.IsNullOrWhiteSpace(thumbprint))
+        //    {
+        //        return;
+        //    }
 
-            using (var store = new X509Store("MY", StoreLocation.LocalMachine))
-            {
-                store.Open(OpenFlags.ReadOnly | OpenFlags.OpenExistingOnly);
-                var certCollection = store.Certificates.Find(X509FindType.FindByThumbprint, thumbprint, false);
-                if (certCollection.Count == 0)
-                {
-                    throw new InvalidConfigurationException($"Didn't find any certificate with thumbprint '{thumbprint}'");
-                }
+        //    using (var store = new X509Store("MY", StoreLocation.LocalMachine))
+        //    {
+        //        store.Open(OpenFlags.ReadOnly | OpenFlags.OpenExistingOnly);
+        //        var certCollection = store.Certificates.Find(X509FindType.FindByThumbprint, thumbprint, false);
+        //        if (certCollection.Count == 0)
+        //        {
+        //            throw new InvalidConfigurationException($"Didn't find any certificate with thumbprint '{thumbprint}'");
+        //        }
 
-                if (certCollection.Count > 1)
-                {
-                    throw new InvalidConfigurationException($"Found more than one certificate with thumbprint '{thumbprint}'.");
-                }
+        //        if (certCollection.Count > 1)
+        //        {
+        //            throw new InvalidConfigurationException($"Found more than one certificate with thumbprint '{thumbprint}'.");
+        //        }
 
-                if (!certCollection[0].HasPrivateKey)
-                {
-                    throw new InvalidConfigurationException($"Certificate with thumbprint '{thumbprint}' doesn't have a private key.");
-                }
+        //        if (!certCollection[0].HasPrivateKey)
+        //        {
+        //            throw new InvalidConfigurationException($"Certificate with thumbprint '{thumbprint}' doesn't have a private key.");
+        //        }
 
-                foreach (var cert in certCollection)
-                {
-                    cert.Dispose();
-                }
+        //        foreach (var cert in certCollection)
+        //        {
+        //            cert.Dispose();
+        //        }
 
-                // todo: check provider type == 23
-                store.Close();
-            }
-        }
+        //        // todo: check provider type == 23
+        //        store.Close();
+        //    }
+        //}
 
         /// <summary>
         /// Generates the certificate.
         /// </summary>
         /// <returns>The certificate thumbprint</returns>
-        public string GenerateCertificate()
+        public static string GenerateCertificate()
         {
             //todo: cert generation.
             return string.Empty;

@@ -43,8 +43,6 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Question.SettingsQuestions
         /// <returns>The user input.</returns>
         public string ReadUserReponse()
         {
-            var certificationService = new CertificateService();
-
             var newValue = string.Empty;
             Console.WriteLine("How do you want to set the certificate?");
             Console.WriteLine("1. Use my own");
@@ -54,20 +52,31 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Question.SettingsQuestions
 
             if (answer == 1)
             {
-                string thumbprint;
-                do
+                string thumbprint = null; ;
+                bool tryagain = true;
+                while (tryagain )
                 {
                     Console.Write("Please enter thumbprint: ");
                     thumbprint = Console.ReadLine();
+                    string error;
+                    if ( CertificateService.IsValidThumbPrint(thumbprint, out error) )
+                    {
+                        if ( CertificateService.CertificateExists(thumbprint, false, out error) )
+                        {
+                            tryagain = false;
+                        }
+                        else
+                        {
+                            Console.WriteLine(error);
+                        }
+                    }
                 }
-                while (!certificationService.IsValidThumbPrint(thumbprint) ||
-                       !certificationService.CertificateExists(thumbprint));
 
                 newValue = thumbprint;
             }
             else if (answer == 2)
             {
-                newValue = certificationService.GenerateCertificate();
+                newValue = CertificateService.GenerateCertificate();
             }
 
             return newValue;

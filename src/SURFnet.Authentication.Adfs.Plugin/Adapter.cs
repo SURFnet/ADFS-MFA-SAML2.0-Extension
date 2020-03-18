@@ -110,7 +110,8 @@ namespace SURFnet.Authentication.Adfs.Plugin
         {
             if (false==RegistrationLog.IsRegistration)
             {
-                this.cryptographicService = new CryptographicService(new CertificateService());
+                // existance was verified in static constructor.
+                this.cryptographicService = CryptographicService.Create(StepUpConfig.Current.LocalSpConfig.SPSigningCertificate);
             }
         }
 
@@ -119,36 +120,6 @@ namespace SURFnet.Authentication.Adfs.Plugin
         /// </summary>
         /// <value>The metadata.</value>
         public IAuthenticationAdapterMetadata Metadata => AdapterMetadata.Instance;
-
-        /// <summary>
-        /// Called by static constructor and by testcode outside ADFS environment (to simulate static constructor under ADFS).
-        /// After this method call, other parts of the adapter can be tested without ADFS.
-        /// </summary>
-        public static void ConfigureDependencies()
-        {
-            LogService.InitializeLogger();
-            LogService.PrepareCorrelatedLogger("CfgDependencies", "CfgDependencies");
-#if DEBUG
-            LogService.Log.Info("Logging initialized");
-#endif
-
-            try
-            {
-                ReadConfigurationFromSection(); // read Adapter configuration
-
-                ConfigureSustainsys(); // read Sustainsys configuration
-
-                LogService.LogConfigOnce(AdapterMetadata.Instance);
-
-                var certService = new CertificateService();
-                certService.CheckMfaExtensionCertificate(StepUpConfig.Current?.LocalSpConfig.SPSigningCertificate);
-            }
-            catch (Exception ex)
-            {
-                LogService.Log.Fatal(ex.ToString());
-                throw;
-            }
-        }
 
         /// <summary>
         /// Called when the authentication pipeline is loaded.
@@ -324,6 +295,44 @@ namespace SURFnet.Authentication.Adfs.Plugin
             return new AuthFailedForm(false, Values.DefaultErrorMessageResourcerId, ex.Context.ContextId, ex.Context.ActivityId);
         }
 
+
+
+
+        /// <summary>
+        /// Called by static constructor and by testcode outside ADFS environment (to simulate static constructor under ADFS).
+        /// After this method call, other parts of the adapter can be tested without ADFS.
+        /// </summary>
+        public static void ConfigureDependencies()
+        {
+            LogService.InitializeLogger();
+            LogService.PrepareCorrelatedLogger("CfgDependencies", "CfgDependencies");
+#if DEBUG
+            LogService.Log.Info("Logging initialized");
+#endif
+
+            try
+            {
+                string errors;
+
+                ReadConfigurationFromSection(); // read Adapter configuration, throws on error.
+                // now check if the private key is available etc.
+                if ( false==CertificateService.CertificateExists(StepUpConfig.Current.LocalSpConfig.SPSigningCertificate, true, out errors) )
+                {
+                    throw new Exception(errors);
+                }
+
+                ConfigureSustainsys(); // read Sustainsys configuration
+
+                LogService.LogConfigOnce(AdapterMetadata.Instance);
+            }
+            catch (Exception ex)
+            {
+                LogService.Log.Fatal(ex.ToString());
+                throw;
+            }
+        }
+
+
         /// <summary>
         /// Configures the sustainsys once per ADFS server.
         /// </summary>
@@ -379,7 +388,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
             var stepUpSection = (StepUpSection)cfg.GetSection(StepUpSection.AdapterSectionName);
             if (stepUpSection == null)
             {
-                throw new InvalidConfigurationException($"Missing StepUp configuration. Expected config at '{assemblyConfigPath}'");
+                throw new InvalidConfigurationException($"Missing/invalid StepUp Adapter (SP) configuration. Expected config at '{assemblyConfigPath}'");
             }
 
             StepUpConfig.Reload(stepUpSection);
