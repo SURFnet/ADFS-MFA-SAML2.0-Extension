@@ -1,16 +1,15 @@
-﻿using SURFnet.Authentication.Adfs.Plugin.Common;
-using System.Reflection;
+﻿using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("SURFnet.Authentication.Adfs.Plugin.Common")]
+[assembly: AssemblyTitle("Setup")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("SURFnet bv")]
-[assembly: AssemblyProduct("SURFnet.Authentication.Adfs.Plugin.Common")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("Setup")]
 [assembly: AssemblyCopyright("Copyright ©  2020")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -21,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("677c1388-9288-4997-88c4-523e499112e5")]
+[assembly: Guid("f099ad03-7546-4bbb-b259-eb7af23b116a")]
 
 // Version information for an assembly consists of the following four values:
 //
@@ -33,6 +32,5 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion(Values.ProductVersion)]
-[assembly: AssemblyInformationalVersion(Values.ProductVersion)]
-[assembly: AssemblyFileVersion(Values.FileVersion)]
+[assembly: AssemblyVersion("1.0.0.0")]
+[assembly: AssemblyFileVersion("1.0.0.0")]

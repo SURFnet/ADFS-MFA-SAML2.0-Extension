@@ -4,10 +4,10 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{D9FEA380-C6C0-40D7-9C08-ADEF4D9D4417}</ProjectGuid>
+    <ProjectGuid>{F099AD03-7546-4BBB-B259-EB7AF23B116A}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>SURFnet.Authentication.Adfs.PSObjTest</RootNamespace>
-    <AssemblyName>SURFnet.Authentication.Adfs.PSObjTest</AssemblyName>
+    <RootNamespace>SURFnet.Authentication.Adfs.Plugin.Setup</RootNamespace>
+    <AssemblyName>Setup</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -43,14 +43,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SetupProgram.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="app.manifest" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\SURFnet.Authentication.Adfs.Plugin.Setup\SURFnet.Authentication.Adfs.Plugin.Setup.csproj">
+    <ProjectReference Include="..\SURFnet.Authentication.Adfs.Plugin.Setup\SURFnet.Authentication.Adfs.Plugin.Setup.csproj">
       <Project>{9cab3115-6be7-4a01-bef1-5d506f943361}</Project>
       <Name>SURFnet.Authentication.Adfs.Plugin.Setup</Name>
     </ProjectReference>

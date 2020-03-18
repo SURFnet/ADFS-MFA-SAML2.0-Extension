@@ -137,7 +137,6 @@
     <Compile Include="Services\LogService.cs" />
     <Compile Include="Services\RegistrationLog.cs" />
     <Compile Include="Services\SamlService.cs" />
-    <Compile Include="Setup\Common\Exceptions\ActiveDirectoryConfigurationException.cs" />
     <Compile Include="Setup\Common\Exceptions\InvalidConfigurationException.cs" />
     <Compile Include="Setup\Common\Exceptions\StepUpExceptions.cs" />
     <Compile Include="Setup\Common\Exceptions\SurfNetException.cs" />

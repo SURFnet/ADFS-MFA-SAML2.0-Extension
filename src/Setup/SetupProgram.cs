@@ -25,7 +25,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
     /// <summary>
     /// Class Program.
     /// </summary>
-    public class Program
+    public class SetupProgram
     {
         /// <summary>
         /// Defines the entry point of the application.
