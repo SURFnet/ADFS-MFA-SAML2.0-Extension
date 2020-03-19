@@ -62,7 +62,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
         /// </summary>
         private readonly CryptographicService cryptographicService;
 
-        private UserForStepup _user4Stepup;
+        //private UserForStepup _user4Stepup; /* See: IsAvailableForuser() */
 
         /// <summary>
         /// Initializes static members of the <see cref="Adapter"/> class.
@@ -130,33 +130,49 @@ namespace SURFnet.Authentication.Adfs.Plugin
         }
 
         /// <summary>
-        /// Determines whether the MFA is available for current user.
+        /// Determines whether the MFA is available for current user in the identityClaim.
         /// This call comes before the BeginAuthentication method.
+        /// CAVEAT:
+        /// The behavior of ADFS when returning FALSE depends on how the SP asked for MFA.
+        /// - If the SP asked it with http://schemas.microsoft.com/claims/multipleauthn then
+        ///   ADFS wil display an error "The selected authn method is not available for......."
+        /// - If send to the MFA adapter through an "access policy" then:
+        ///     + ADFS 2012R2 will not display an error form. But return a
+        ///       StatusCode Value="urn:oasis:tc:SAML:2.0:status:Responder".
+        ///       Not so nice for user, nor for Admin.
+        ///     + ADFS 2016 will display the proper form.
+        /// Therfor we deal with it in BeginAuthentication(). Once we drop 2012R2, we can enable it.
         /// </summary>
         /// <param name="identityClaim">The identity claim.</param>
         /// <param name="context">The context.</param>
         /// <returns>
-        /// <c>true</c> if this method of authentication is available for the user; otherwise, <c>false</c>.
+        /// <c>true</c> if this method of authentication is available for the user; otherwise <c>false</c>,
+        /// currently always <c>true</c>.
         /// </returns>
         public bool IsAvailableForUser(Claim identityClaim, IAuthenticationContext context)
         {
-            LogService.PrepareCorrelatedLogger(context.ContextId, context.ActivityId);
+            //LogService.PrepareCorrelatedLogger(context.ContextId, context.ActivityId);
 
-            bool rc = false;
+            // Do not throw away yet. This was used for a test,
+            // prepare a Stepup uid here. Use it in BeginAuthentication().
+            // But it was deemed too dangerous. (Paullem: march 2020)
+            //
+            //bool rc = false;
+            //var tmpuser = new UserForStepup(identityClaim);
+            //if (tmpuser.TryGetStepupGwUidValue())
+            //{
+            //    // OK, attribute was there.
+            //    _user4Stepup = tmpuser;
+            //    rc = true;
+            //}
+            //else
+            //{
+            //    LogService.Log.Info(tmpuser.ErrorMsg);
+            //    _user4Stepup = null;
+            //}
+            //return rc;
 
-            var tmpuser = new UserForStepup(identityClaim);
-            if ( tmpuser.TryGetStepupAttributeValue() )
-            {
-                // OK, attribute was there.
-                _user4Stepup = tmpuser;
-                rc = true;
-            }
-            else
-            {
-                _user4Stepup = null;
-            }
-
-            return rc;
+            return true;
         }
 
 
@@ -178,18 +194,25 @@ namespace SURFnet.Authentication.Adfs.Plugin
                 LogService.Log.Debug("Enter BeginAuthentication");
                 LogService.Log.DebugFormat("context.Lcid={0}", context.Lcid);
 
-                string stepupUID = string.Empty;
-                if ( _user4Stepup == null )
+                string stepUpUid;
+                var tmpuser = new UserForStepup(identityClaim);
+                if (tmpuser.TryGetStepupGwUidValue())
                 {
-                    LogService.Log.Fatal("No User4Stepup");
+                    // OK, attribute was there.
+                    stepUpUid = tmpuser.StepupGwUid;
                 }
                 else
                 {
-                    stepupUID = _user4Stepup.UserID;
+                    // Ouch user is not configured for StepUp in AD
+                    if ( null!= tmpuser.ErrorMsg)
+                    {
+                        LogService.Log.Info(tmpuser.ErrorMsg);  // low level error!
+                    }
+                    return new AuthFailedForm(false, "ERROR_0003", context.ContextId, context.ActivityId);
                 }
 
                 var requestId = $"_{context.ContextId}";
-                var authRequest = SamlService.CreateAuthnRequest(stepupUID, requestId, httpListenerRequest.Url);
+                var authRequest = SamlService.CreateAuthnRequest(stepUpUid, requestId, httpListenerRequest.Url);
 
                 LogService.Log.DebugFormat("Signing AuthnRequest with id {0}", requestId);
                 var signedXml = this.cryptographicService.SignSamlRequest(authRequest);

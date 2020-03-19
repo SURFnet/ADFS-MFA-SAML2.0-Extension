@@ -13,7 +13,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Repositories
     {
         public Claim UserClaim { get; private set; }
         public string ErrorMsg { get; private set; }
-        public string UserID { get; private set; }
+        public string StepupGwUid { get; private set; }
 
         private UserForStepup() { }
 
@@ -22,7 +22,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Repositories
             UserClaim = claim;
         }
 
-        public bool TryGetStepupAttributeValue()
+        public bool TryGetStepupGwUidValue()
         {
             bool rc = false;
             var linewidthsaver = StepUpConfig.Current.InstitutionConfig.ActiveDirectoryUserIdAttribute;
@@ -38,11 +38,10 @@ namespace SURFnet.Authentication.Adfs.Plugin.Repositories
                 if ( string.IsNullOrWhiteSpace(userid) )
                 {
                     ErrorMsg = $"The {linewidthsaver} attribute for {UserClaim.Value} IsNullOrWhiteSpace()";
-                    LogService.Log.Warn(ErrorMsg);
                 }
                 else
                 {
-                    UserID = userid;
+                    StepupGwUid = userid;
                     rc = true;
                 }
             }
@@ -53,7 +52,6 @@ namespace SURFnet.Authentication.Adfs.Plugin.Repositories
                 {
                     // but this is a really unexpected fatal error.
                     ErrorMsg = error;
-                    LogService.Log.Fatal(ErrorMsg);
                     // TODO:  Could/should throw!!
                 }
             }
