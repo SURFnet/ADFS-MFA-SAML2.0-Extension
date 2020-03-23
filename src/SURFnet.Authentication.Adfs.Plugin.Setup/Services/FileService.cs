@@ -32,47 +32,54 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
         /// <summary>
         /// The adfs directory.
         /// </summary>
-        private readonly string adfsDir;
+        public static string AdfsDir { get; private set; }
+
+        /// <summary>
+        /// The adfs directory.
+        /// </summary>
+        public static string GACDir { get; private set; }
 
         /// <summary>
         /// The output folder.
         /// </summary>
-        private readonly string outputFolder;
+        public static string OutputFolder { get; private set; }
 
         /// <summary>
         /// The distribution folder.
         /// </summary>
-        private readonly string distFolder;
+        public static string DistFolder { get; private set; }
 
         /// <summary>
         /// The backup folder.
         /// </summary>
-        private readonly string backupFolder;
+        public static string BackupFolder { get; private set; }
 
         /// <summary>
         /// Contains the extension information needed to configure the StepUp Gateway.
         /// </summary>
-        private readonly string extensionConfigurationFolder;
+        public static string ExtensionConfigurationFolder { get; private set; }
+
+        static FileService()
+        {
+            AdfsDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), "ADFS");
+            GACDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows),
+                        @"Microsoft.NET\assembly");
+
+            OutputFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "output");
+            DistFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "dist");
+            BackupFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "backup");
+            ExtensionConfigurationFolder = Path.Combine(OutputFolder, "configuration");
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FileService"/> class.
         /// </summary>
         public FileService()
         {
-            // todo: remove after testing
-#if DEBUG
-            this.adfsDir = Path.GetDirectoryName(@"c:\temp\data\");
-#else
-            this.adfsDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), "ADFS");
-#endif
-            this.outputFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "output");
-            this.distFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "dist");
-            this.backupFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "backup");
 
             this.EnsureCleanOutputFolder();
             this.EnsureBackupFolder();
             this.ValidateDistFolder();
-            this.extensionConfigurationFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, this.outputFolder, "configuration");
             this.EnsureConfigFolder();
         }
 
@@ -94,8 +101,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
             {
                 try
                 {
-                    var from = Path.Combine(this.distFolder, assembly);
-                    var to = Path.Combine(this.outputFolder, assembly);
+                    var from = Path.Combine(DistFolder, assembly);
+                    var to = Path.Combine(OutputFolder, assembly);
                     File.Copy(from, to);
                 }
                 catch (Exception e)
@@ -125,7 +132,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
         /// <returns>The ADFS configuration file.</returns>
         public XDocument LoadAdFsConfigurationFile()
         {
-            var document = XDocument.Load($"{this.adfsDir}/Microsoft.IdentityServer.Servicehost.exe.config");
+            var document = XDocument.Load($"{AdfsDir}/Microsoft.IdentityServer.Servicehost.exe.config");
             return document;
         }
 
@@ -146,7 +153,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
         /// <param name="document">The document.</param>
         public void CreatePluginConfigurationFile(XDocument document)
         {
-            var path = Path.Combine(this.outputFolder, "SURFnet.Authentication.Adfs.Plugin.dll.config");
+            var path = Path.Combine(OutputFolder, "SURFnet.Authentication.Adfs.Plugin.dll.config");
             document.Save(path);
             Console.WriteLine($"Successfully created temp StepUp configuration file in '{path}'");
         }
@@ -157,7 +164,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
         /// <param name="document">The document.</param>
         public void CreateSustainSysConfigFile(XDocument document)
         {
-            var path = Path.Combine(this.outputFolder, "Sustainsys.Saml2.dll.config");
+            var path = Path.Combine(OutputFolder, "Sustainsys.Saml2.dll.config");
             document.Save(path);
             Console.WriteLine($"Successfully created temp StepUp configuration file in '{path}'");
         }
@@ -168,7 +175,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
         /// <param name="document">The document.</param>
         public void CreateCleanAdFsConfig(XDocument document)
         {
-            var path = Path.Combine(this.outputFolder, "Microsoft.IdentityServer.Servicehost.exe.config");
+            var path = Path.Combine(OutputFolder, "Microsoft.IdentityServer.Servicehost.exe.config");
             document.Save(path);
             Console.WriteLine($"Successfully created temp Cleaned ADFS configuration file in '{path}'");
         }
@@ -180,8 +187,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
         {
             try
             {
-                var adfsCurrentConfig = Path.Combine(this.outputFolder, "Microsoft.IdentityServer.Servicehost.exe.config");
-                var backupConfig = Path.Combine(this.backupFolder, $"Microsoft.IdentityServer.Servicehost.exe.{DateTime.Now:yyyyMMddHHmmss}.config");
+                var adfsCurrentConfig = Path.Combine(OutputFolder, "Microsoft.IdentityServer.Servicehost.exe.config");
+                var backupConfig = Path.Combine(BackupFolder, $"Microsoft.IdentityServer.Servicehost.exe.{DateTime.Now:yyyyMMddHHmmss}.config");
                 File.Copy(adfsCurrentConfig, backupConfig);
             }
             catch (Exception e)
@@ -221,7 +228,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
             sb.AppendLine(metadata.SfoMfaExtensionCert);
             sb.AppendLine($"ACS: {metadata.ACS}");
 
-            var filePath = Path.Combine(this.extensionConfigurationFolder, "MfaExtensionConfiguration.txt");
+            var filePath = Path.Combine(ExtensionConfigurationFolder, "MfaExtensionConfiguration.txt");
             if (File.Exists(filePath))
             {
                 Console.WriteLine($"Removing old config");
@@ -237,7 +244,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
         /// <returns>The absolute path of the adapter assembly.</returns>
         public string GetAdapterAssembly()
         {
-            return Path.Combine(this.distFolder, "SURFnet.Authentication.Adfs.Plugin.dll");
+            return Path.Combine(DistFolder, "SURFnet.Authentication.Adfs.Plugin.dll");
         }
 
         /// <summary>
@@ -245,12 +252,12 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
         /// </summary>
         private void EnsureCleanOutputFolder()
         {
-            if (Directory.Exists(this.outputFolder))
+            if (Directory.Exists(OutputFolder))
             {
-                Directory.Delete(this.outputFolder, true);
+                Directory.Delete(OutputFolder, true);
             }
 
-            Directory.CreateDirectory(this.outputFolder);
+            Directory.CreateDirectory(OutputFolder);
         }
 
         /// <summary>
@@ -258,12 +265,12 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
         /// </summary>
         private void EnsureConfigFolder()
         {
-            if (Directory.Exists(this.extensionConfigurationFolder))
+            if (Directory.Exists(ExtensionConfigurationFolder))
             {
-                Directory.Delete(this.extensionConfigurationFolder);
+                Directory.Delete(ExtensionConfigurationFolder);
             }
 
-            Directory.CreateDirectory(this.extensionConfigurationFolder);
+            Directory.CreateDirectory(ExtensionConfigurationFolder);
         }
 
         /// <summary>
@@ -271,9 +278,9 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
         /// </summary>
         private void EnsureBackupFolder()
         {
-            if (!Directory.Exists(this.backupFolder))
+            if (!Directory.Exists(BackupFolder))
             {
-                Directory.CreateDirectory(this.backupFolder);
+                Directory.CreateDirectory(BackupFolder);
             }
         }
 
@@ -283,7 +290,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
         /// <exception cref="DirectoryNotFoundException">Missing dist folder. Cannot continue.</exception>
         private void ValidateDistFolder()
         {
-            if (!Directory.Exists(this.distFolder))
+            if (!Directory.Exists(DistFolder))
             {
                 throw new DirectoryNotFoundException("Missing dist folder. Cannot continue.");
             }
@@ -298,7 +305,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
         {
             try
             {
-                var contents = File.ReadAllText(Path.Combine(this.distFolder, fileName));
+                var contents = File.ReadAllText(Path.Combine(DistFolder, fileName));
                 return contents;
             }
             catch (Exception e)

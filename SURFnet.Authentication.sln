@@ -3,6 +3,8 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28307.852
 MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Setup", "src\Setup\Setup.csproj", "{F099AD03-7546-4BBB-B259-EB7AF23B116A}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SURFnet.Authentication.Adfs.Plugin", "src\SURFnet.Authentication.Adfs.Plugin\SURFnet.Authentication.Adfs.Plugin.csproj", "{7F165692-9E1E-4231-B3BF-3E3AED44B11A}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionItems", "{9D4482C6-E4FA-48DD-A9C3-473B7FF90551}"
@@ -15,8 +17,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SURFnet.Authentication.Adfs.Test.PSObjTest", "Test\SURFnet.Authentication.Adfs.PSObjTest\SURFnet.Authentication.Adfs.Test.PSObjTest.csproj", "{D9FEA380-C6C0-40D7-9C08-ADEF4D9D4417}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SURFnet.Authentication.Adfs.Test.DepNames", "Test\SURFnet.Authentication.Adfs.DepNames\SURFnet.Authentication.Adfs.Test.DepNames.csproj", "{F2EDD29B-B40D-4CE5-B26F-4A7C07614FE5}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Setup", "src\Setup\Setup.csproj", "{F099AD03-7546-4BBB-B259-EB7AF23B116A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -40,7 +40,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
         /// Gets the new plugin version.
         /// </summary>
         /// <value>The new version.</value>
-        public static Version NewVersion
+        public static Version SetupVersion
         {
             get
             {
@@ -55,7 +55,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
         /// <returns><c>true</c> if [is complex update]; otherwise, <c>false</c>.</returns>
         public static bool IsUpgradeToVersion2()
         {
-            return InstalledVersion?.Major == 1 && NewVersion.Major == 2;
+            return InstalledVersion?.Major == 1 && SetupVersion.Major == 2;
         }
 
         /// <summary>

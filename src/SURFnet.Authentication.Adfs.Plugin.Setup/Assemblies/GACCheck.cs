@@ -53,7 +53,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Assemblies
             {
                 string gacpath = Path.Combine(
                         Environment.GetFolderPath(Environment.SpecialFolder.Windows),
-                        "Assembly");
+                        @"Microsoft.NET\assembly");
 
                 rc = Directory.GetFiles(gacpath, filename, SearchOption.AllDirectories);
             }

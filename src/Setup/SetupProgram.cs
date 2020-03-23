@@ -17,10 +17,12 @@
 namespace SURFnet.Authentication.Adfs.Plugin.Setup
 {
     using System;
-
+    using log4net;
     using SURFnet.Authentication.Adfs.Plugin.Setup.Question;
     using SURFnet.Authentication.Adfs.Plugin.Setup.Question.SettingsQuestions;
+    using SURFnet.Authentication.Adfs.Plugin.Setup.Services;
     using SURFnet.Authentication.Adfs.Plugin.Setup.Upgrades;
+    using SURFnet.Authentication.Adfs.Plugin.Setup.Versions;
 
     /// <summary>
     /// Class Program.
@@ -31,10 +33,46 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
         /// Defines the entry point of the application.
         /// </summary>
         /// <param name="args">The arguments.</param>
-        public static void Main(string[] args)
+        public static int Main(string[] args)
         {
+            if ( args.Length == 0 )
+            {
+                Help();
+                return 4;
+            }
+
+            ILog log = LogManager.GetLogger("FileAppender");
+            LogService.InsertLoggerDependency(log);
+            LogService.Log.Info("Log Started");
+
+            int rc = ParseOptions(args);
+            if ( rc != 0 )
+            {
+                Help();
+                return 4;
+            }
+
+            LogService.Log.Debug("Main: After ParseOptions()");
+
+            try
+            {
+                var heuristic = new VersionHeuristics();
+                if ( heuristic!=null)
+                {
+                    heuristic.Probe();
+                    Console.WriteLine($"Version on local disk: {heuristic.AdapterFileVersion}");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+            }
+
+            return 0;
+
+
             Console.WriteLine($"Starting SurfNet MFA Plugin setup. Detected installed version '{VersionDetector.InstalledVersion}'");
-            Console.WriteLine($"upgrading to version '{VersionDetector.NewVersion}'. Is upgrade to version 2: '{VersionDetector.IsUpgradeToVersion2()}'");
+            Console.WriteLine($"upgrading to version '{VersionDetector.SetupVersion}'. Is upgrade to version 2: '{VersionDetector.IsUpgradeToVersion2()}'");
 
             //var question = new YesNoQuestion($"Do you want to reconfigure or connect to a new environment?", DefaultAnswer.No);
             //var answer = question.ReadUserResponse();
@@ -65,7 +103,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                 upgrade.Execute();
             }
 
-            Console.WriteLine($"Finished upgrade from version '{VersionDetector.InstalledVersion}' to '{VersionDetector.NewVersion}'");
+            Console.WriteLine($"Finished upgrade from version '{VersionDetector.InstalledVersion}' to '{VersionDetector.SetupVersion}'");
 
             ConsoleExtensions.WriteHeader("End of installation");
             Console.WriteLine("Type 'exit' to exit");
@@ -73,6 +111,79 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
             {
                 Console.WriteLine("Type 'exit' to exit");
             }
+
+            return rc;
+        }
+
+        private static int ParseOptions(string[] args)
+        {
+            int rc = 0;
+
+            int i = 0;
+            while ( i < args.Length && rc==0)
+            {
+                // main advance in single place, per option optional extras
+                string arg = args[i++];
+
+                if ( arg[0] == '-' )
+                {
+                    // option
+                    if ( arg.Length < 2 )
+                    {
+                        Console.WriteLine($"Invalide option length ({arg.Length}): {arg}");
+                    }
+                    else
+                        switch ( char.ToLower(arg[1]) )
+                        {
+                            case '?':
+                            case 'h':
+                                rc = 4;
+                                break;
+
+                            case 'c':
+                                // Configure
+                                break;
+
+                            case 'd':
+                                // Diagnose/analyze
+                                break;
+
+                            case 'f':
+                                // Fix/Repair
+                                break;
+
+                            case 'i':
+                                // Install
+                                break;
+
+                            case 'x':
+                                // Uninstall
+                                break;
+
+                            default:
+                                Console.WriteLine($"Invalid option: {arg}");
+                                break;
+                        }
+                }
+                else
+                {
+                    // not an option. Not '-'
+                }
+            }
+
+            return rc;
+        }
+
+        private static void Help()
+        {
+            Console.WriteLine("Setup program for ADFS MFA Stepup Extension.");
+            Console.WriteLine("   Adds Single Factor Only MFA to an ADFS server.");
+            Console.WriteLine(" -? -h  This help");
+            Console.WriteLine(" -c     Configure existing installation");
+            Console.WriteLine(" -d     Diagnos/Analyse existing installation");
+            Console.WriteLine(" -f     Fix/Repair existing installation");
+            Console.WriteLine(" -i     Install (including automatic upgrade)");
+            Console.WriteLine(" -x     Uninstall");
         }
     }
 }

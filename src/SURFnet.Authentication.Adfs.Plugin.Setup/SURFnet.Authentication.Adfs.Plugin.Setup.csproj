@@ -43,6 +43,9 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="log4net, Version=2.0.8.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
@@ -52,6 +55,7 @@
     <Reference Include="System.Management.Automation, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>C:\Windows\Microsoft.NET\assembly\GAC_MSIL\System.Management.Automation\v4.0_3.0.0.0__31bf3856ad364e35\System.Management.Automation.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="System.ServiceProcess" />
     <Reference Include="System.Xml.Linq" />
@@ -63,6 +67,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AdFsServer.cs" />
+    <Compile Include="Assemblies\AssemblyNames.cs" />
     <Compile Include="ConsoleExtensions.cs" />
     <Compile Include="Models\MfaExtensionMetadata.cs" />
     <Compile Include="Models\IdentityProvider.cs" />
@@ -104,9 +109,24 @@
     <Compile Include="Services\Interfaces\IAssemblyService.cs" />
     <Compile Include="Services\Interfaces\IConfigurationFileService.cs" />
     <Compile Include="Services\Interfaces\IFileService.cs" />
+    <Compile Include="Services\LogService.cs" />
+    <Compile Include="SetupMode.cs" />
+    <Compile Include="SetupSettings.cs" />
     <Compile Include="StepUpGatewayConstants.cs" />
     <Compile Include="Upgrades\UpgradeToV2.cs" />
     <Compile Include="VersionDetector.cs" />
+    <Compile Include="Versions\ComponentAssemblies.cs" />
+    <Compile Include="Versions\V1Components.cs" />
+    <Compile Include="Versions\ISetupHandler.cs" />
+    <Compile Include="Versions\V2-1Description.cs" />
+    <Compile Include="Versions\V2_1Components.cs" />
+    <Compile Include="Versions\V1010Description.cs" />
+    <Compile Include="Versions\StepupComponent.cs" />
+    <Compile Include="Versions\V1Assemblies.cs" />
+    <Compile Include="Versions\V1Common.cs" />
+    <Compile Include="Versions\V2Assemblies.cs" />
+    <Compile Include="Versions\VersionDescription.cs" />
+    <Compile Include="Versions\VersionHeuristics.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

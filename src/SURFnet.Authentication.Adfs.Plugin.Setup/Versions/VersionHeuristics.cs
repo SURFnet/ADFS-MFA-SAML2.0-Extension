@@ -1,0 +1,139 @@
+﻿using SURFnet.Authentication.Adfs.Plugin.Setup.Assemblies;
+using SURFnet.Authentication.Adfs.Plugin.Setup.Services;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
+{
+    public class VersionHeuristics
+    {
+        public AssemblySpec GACAssembly { get; private set; }
+        public AssemblySpec AdfsDirAssembly { get; private set; }
+
+        public Version AdapterFileVersion { get; private set; }
+        public Version AdfsConfigVersion { get; private set; }
+
+
+        public VersionDescription Probe()
+        {
+            VersionDescription rc = null;
+
+            if ( TryFindAdapter() )
+            {
+                if ( AdapterFileVersion == V1010Description.V1_0_1.DistributionVersion )
+                {
+                    rc = V1010Description.V1_0_1;
+                }
+                else if ( AdapterFileVersion==V2_1Description.V2_1_17_9.DistributionVersion )
+                {
+                    rc = V2_1Description.V2_1_17_9;
+                }
+
+                // TODO: Verify!
+
+            }
+
+            return rc;
+        }
+
+        bool TryFindAdapter()
+        {
+            bool rc = false;
+            AssemblySpec tmpSpec;
+            int cnt = 0;
+
+            LogService.Log.Debug("VersionHeuristics: TryFindAdapter1.");
+
+            if ( TryGetAdapterAssembly(FileService.AdfsDir, AssemblyNames.Adapter, out tmpSpec) )
+            {
+                // Found one in ADFS directory
+                AdfsDirAssembly = tmpSpec;
+                LogService.Log.Info($"Found in ADFS directory: {tmpSpec.FileVersion}");
+                cnt++;
+                rc = true;
+            }
+
+            LogService.Log.Debug("VersionHeuristics: TryFindAdapter2.");
+
+            if (TryGetAdapterAssembly(FileService.GACDir, AssemblyNames.Adapter, out tmpSpec))
+            {
+                GACAssembly = tmpSpec;
+                LogService.Log.Info($"Found in GAC: {tmpSpec.FileVersion}");
+                cnt++;
+                rc = true;
+            }
+
+            LogService.Log.Debug("VersionHeuristics: just before finishing touch.");
+
+            if ( rc )
+            {
+                if (cnt>1)
+                {
+                    // found multiple versions, that is fatal!!
+                    rc = false;
+                }
+                else
+                {
+                    LogService.Log.Debug("VersionHeuristics: setting versions.");
+                    if ( AdfsDirAssembly != null )
+                    {
+                        AdapterFileVersion = AdfsDirAssembly.FileVersion;
+                    }
+                    else
+                    {
+                        AdapterFileVersion = GACAssembly.FileVersion;
+                    }
+                }
+            }
+
+            LogService.Log.Debug("VersionHeuristics: returning.");
+
+            return rc;
+        }
+
+        bool TryGetAdapterAssembly(string directory, string filename, out AssemblySpec spec)
+        {
+            bool rc = false;
+
+            spec = null;
+            string[] found = AssemblyList.GetAssemblies(directory, filename);
+            if ( found != null )
+            {
+                // seems there is something
+                if ( found.Length == 0 )
+                {
+                    // actually nothing there
+                    LogService.Log.Debug("TryGetAdapterAssembly: found.Length==0");
+                }
+                else if ( found.Length == 1 )
+                {
+                    LogService.Log.Debug($"TryGetAdapterAssembly: Found={found[0]}");
+                    var tmp = AssemblySpec.GetAssemblySpec(found[0]);
+                    if ( tmp != null )
+                    {
+                        spec = tmp;
+                    }
+                    else
+                    {
+                        LogService.Log.Debug($"TryGetAdapterAssembly: AssemblySpec.GetAssemblySpec failed");
+                    }
+                    rc = true;
+                }
+                else
+                {
+                    // really wrong! Multiple files!
+                    LogService.Log.Error($"Found multiple files in {directory}");
+                    foreach ( var name in found )
+                    {
+                        LogService.Log.Error("     "+name);
+                    }
+                }
+            }
+
+            return rc;
+        }
+    }
+}
