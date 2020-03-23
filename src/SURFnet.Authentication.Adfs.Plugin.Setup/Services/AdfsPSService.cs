@@ -10,7 +10,7 @@
     /// <summary>
     /// Class AdFsService.
     /// </summary>
-    public class AdFsService : IAdFsService
+    public class AdfsPSService : IAdfsPSService
     {
         /// <summary>
         /// The file service.
@@ -18,10 +18,10 @@
         private readonly IFileService fileService;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="AdFsService"/> class.
+        /// Initializes a new instance of the <see cref="AdfsPSService"/> class.
         /// </summary>
         /// <param name="fileService">The file service.</param>
-        public AdFsService(IFileService fileService)
+        public AdfsPSService(IFileService fileService)
         {
             this.fileService = fileService ?? throw new ArgumentNullException(nameof(fileService));
         }
@@ -33,7 +33,7 @@
         {
             var adapterName = Values.DefaultRegistrationName;
             var policy = AdfsAuthnCmds.GetGlobAuthnPol();
-            var filePath = this.fileService.GetAdapterAssembly();
+            var filePath = this.fileService.GetAdapterAssembly(); // TODO:  No, no! From ADdfsDir!!!
 
             Console.WriteLine($"Loading assembly file from: '{filePath}'");
 

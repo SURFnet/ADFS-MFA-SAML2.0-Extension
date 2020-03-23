@@ -66,7 +66,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AdFsServer.cs" />
+    <Compile Include="AdfsServer.cs" />
+    <Compile Include="FileDirectory.cs" />
     <Compile Include="Assemblies\AssemblyNames.cs" />
     <Compile Include="ConsoleExtensions.cs" />
     <Compile Include="Models\MfaExtensionMetadata.cs" />
@@ -100,12 +101,12 @@
     <Compile Include="Question\YesNoAnswer.cs" />
     <Compile Include="Question\YesNoQuestion.cs" />
     <Compile Include="Question\Question.cs" />
-    <Compile Include="Services\AdFsService.cs" />
+    <Compile Include="Services\AdfsPSService.cs" />
     <Compile Include="Services\AssemblyService.cs" />
     <Compile Include="Services\ConfigurationFileService.cs" />
     <Compile Include="Services\FakeAdfsService.cs" />
     <Compile Include="Services\FileService.cs" />
-    <Compile Include="Services\Interfaces\IAdFsService.cs" />
+    <Compile Include="Services\Interfaces\IAdfsPSService.cs" />
     <Compile Include="Services\Interfaces\IAssemblyService.cs" />
     <Compile Include="Services\Interfaces\IConfigurationFileService.cs" />
     <Compile Include="Services\Interfaces\IFileService.cs" />
@@ -114,6 +115,7 @@
     <Compile Include="SetupSettings.cs" />
     <Compile Include="StepUpGatewayConstants.cs" />
     <Compile Include="Upgrades\UpgradeToV2.cs" />
+    <Compile Include="Util\UAC.cs" />
     <Compile Include="VersionDetector.cs" />
     <Compile Include="Versions\ComponentAssemblies.cs" />
     <Compile Include="Versions\V1Components.cs" />

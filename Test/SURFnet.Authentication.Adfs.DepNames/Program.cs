@@ -1,6 +1,7 @@
 ﻿using SURFnet.Authentication.Adfs.Plugin.Setup.Assemblies;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -27,7 +28,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Test.DepNames
             }
             else
             {
-                dirpath = args[0];
+                dirpath = Path.Combine(Environment.CurrentDirectory, args[0]);
+                dirpath = Path.GetFullPath(dirpath);
             }
             Console.WriteLine("Working on: {0}", dirpath);
 
@@ -40,7 +42,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Test.DepNames
                 foreach (string file in files)
                 {
                     AssemblySpec spec = AssemblySpec.GetAssemblySpec(file);
-                    Console.Write(spec.ToString());
+                    Console.Write(spec.WriteNewInstance());
                 }
             }
         }

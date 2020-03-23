@@ -42,7 +42,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Upgrades
 #else
             var adfsService = new AdFsService(fileService);
 #endif
-            var server = new AdFsServer(adfsService);
+            var server = new AdfsServer(adfsService);
             var certificateService = new CertificateService("pfrrrrrtttttt");  // BUG:
             var config = new ConfigurationFileService(fileService, certificateService);
 

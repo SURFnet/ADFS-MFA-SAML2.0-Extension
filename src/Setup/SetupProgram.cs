@@ -22,6 +22,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
     using SURFnet.Authentication.Adfs.Plugin.Setup.Question.SettingsQuestions;
     using SURFnet.Authentication.Adfs.Plugin.Setup.Services;
     using SURFnet.Authentication.Adfs.Plugin.Setup.Upgrades;
+    using SURFnet.Authentication.Adfs.Plugin.Setup.Util;
     using SURFnet.Authentication.Adfs.Plugin.Setup.Versions;
 
     /// <summary>
@@ -41,9 +42,18 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                 return 4;
             }
 
-            ILog log = LogManager.GetLogger("FileAppender");
+            if ( !UAC.HasAdministratorPrivileges() )
+            {
+                Console.WriteLine("Must be a member of local Administrators an run with Administrative privileges.");
+                return 4;
+            }
+
+            // would not log without Admin!
+            ILog log = LogManager.GetLogger("Setup");
             LogService.InsertLoggerDependency(log);
-            LogService.Log.Info("Log Started");
+#if DEBUG
+            LogService.Log.Info("Log Started");  // just to check if logging works. Needs Admin etc.
+#endif
 
             int rc = ParseOptions(args);
             if ( rc != 0 )
@@ -59,8 +69,22 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                 var heuristic = new VersionHeuristics();
                 if ( heuristic!=null)
                 {
-                    heuristic.Probe();
-                    Console.WriteLine($"Version on local disk: {heuristic.AdapterFileVersion}");
+                    var vdesc = heuristic.Probe();
+                    if ( vdesc != null )
+                    {
+                        Console.WriteLine($"Version on local disk: {heuristic.AdapterFileVersion}");
+                        int result = vdesc.Verify();
+                        if ( result == 0 )
+                        {
+                            // so far, so good.
+                            LogService.Log.Info("Verify() result: so far, so good.");
+                        }
+                        else
+                        {
+                            Console.WriteLine("Some missing file or version mismatch. No cigar!");
+                        }
+                    }
+
                 }
             }
             catch (Exception ex)

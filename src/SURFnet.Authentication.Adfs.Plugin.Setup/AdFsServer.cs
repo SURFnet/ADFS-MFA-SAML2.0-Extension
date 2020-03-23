@@ -18,13 +18,13 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
 {
     using System;
     using System.ServiceProcess;
-
+    using SURFnet.Authentication.Adfs.Plugin.Setup.Services;
     using SURFnet.Authentication.Adfs.Plugin.Setup.Services.Interfaces;
 
     /// <summary>
     /// Class AdFsServer.
     /// </summary>
-    public class AdFsServer
+    public class AdfsServer
     {
         /// <summary>
         /// Defines the maximum retries to start and stop the service before we cancel the setup
@@ -39,13 +39,13 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
         /// <summary>
         /// The ADFS service.
         /// </summary>
-        private readonly IAdFsService service;
+        private readonly IAdfsPSService service;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="AdFsServer"/> class.
+        /// Initializes a new instance of the <see cref="AdfsServer"/> class.
         /// </summary>
         /// <param name="service">The service.</param>
-        public AdFsServer(IAdFsService service)
+        public AdfsServer(IAdfsPSService service)
         {
             this.service = service ?? throw new ArgumentNullException(nameof(service));
         }
@@ -100,6 +100,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                 throw new Exception("Reached max retries to start the ADFS service");
             }
 
+            // TODO: use Refresh()!!
             var service = this.GetAdFsService();
             if (service.Status.Equals(ServiceControllerStatus.StopPending))
             {
@@ -133,6 +134,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                 throw new Exception("Reached max retries to stop the ADFS service");
             }
 
+            // TODO: use Refresh()!!
             var service = this.GetAdFsService();
             if (service.Status.Equals(ServiceControllerStatus.StartPending))
             {
@@ -161,11 +163,21 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
         /// <returns><see cref="ServiceController"/>.</returns>
         private ServiceController GetAdFsService()
         {
-#if DEBUG
-            return new ServiceController("XboxNetApiSvc");
-#else
-            return new ServiceController("adfssrv");
-#endif
+            ServiceController rc = null;
+
+            try
+            {
+                rc = new ServiceController("adfssrv");
+            }
+            catch (ArgumentException)
+            {
+                LogService.Log.Fatal("No ADFS service on this machine");
+            }
+            catch (Exception ex)
+            {
+                LogService.Log.Fatal(ex.ToString());
+            }
+            return rc;
         }
     }
 }

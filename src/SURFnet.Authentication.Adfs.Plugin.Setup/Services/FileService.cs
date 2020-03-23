@@ -29,6 +29,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
     /// </summary>
     public class FileService : IFileService
     {
+        static readonly string[] directoryMap = new string[(int)FileDirectory.Sentinel];
         /// <summary>
         /// The adfs directory.
         /// </summary>
@@ -62,8 +63,10 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
         static FileService()
         {
             AdfsDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), "ADFS");
+            directoryMap[(int)FileDirectory.AdfsDir] = AdfsDir;
             GACDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows),
                         @"Microsoft.NET\assembly");
+            directoryMap[(int)FileDirectory.GAC] = GACDir;
 
             OutputFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "output");
             DistFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "dist");
@@ -81,6 +84,11 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
             this.EnsureBackupFolder();
             this.ValidateDistFolder();
             this.EnsureConfigFolder();
+        }
+
+        public static string Enum2Directory(FileDirectory value)
+        {
+            return directoryMap[(int)value];
         }
 
         /// <summary>
@@ -244,6 +252,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
         /// <returns>The absolute path of the adapter assembly.</returns>
         public string GetAdapterAssembly()
         {
+            // TODO: no, no. Must be ADFS folder!!!! And name from spec!!
             return Path.Combine(DistFolder, "SURFnet.Authentication.Adfs.Plugin.dll");
         }
 

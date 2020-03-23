@@ -17,6 +17,8 @@
             compatibility.
         -->
         <requestedExecutionLevel level="requireAdministrator" uiAccess="false" />
+        <!-- PL: Because default policy disables the prompt, it will probaly not prompt, nor raise!!!!  -->
+        <!--     Must start from a raised process or really "Run as Administrator" -->
       </requestedPrivileges>
     </security>
   </trustInfo>

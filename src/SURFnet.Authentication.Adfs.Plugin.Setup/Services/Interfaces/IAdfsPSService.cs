@@ -3,7 +3,7 @@
     /// <summary>
     /// Interface IAdFsService
     /// </summary>
-    public interface IAdFsService
+    public interface IAdfsPSService
     {
         /// <summary>
         /// Registers the ADFS MFA extension.

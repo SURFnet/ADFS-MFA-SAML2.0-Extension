@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SURFnet.Authentication.Adfs.Plugin.Setup.Services;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -14,7 +15,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Assemblies
         public AssemblySpec() { }
         public AssemblySpec(FileVersionInfo fvi, AssemblyName name)
         {
-            FileName = fvi.FileName;
+            FilePath = fvi.FileName;
             InternalName = fvi.InternalName;
             ProductVersion = new Version(fvi.ProductMajorPart, fvi.ProductMinorPart, fvi.ProductBuildPart, fvi.ProductPrivatePart);
             FileVersion = new Version(fvi.FileMajorPart, fvi.FileMinorPart, fvi.FileBuildPart, fvi.FilePrivatePart);
@@ -22,12 +23,91 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Assemblies
             AssemblyVersion = name.Version;
             FullName = name.FullName;
         }
-        public string FileName { get; set; }  // full path
+        public string FilePath { get; set; }  // full path
         public string InternalName { get; set; }  // filename only
+        public FileDirectory Directory { get; set; } = FileDirectory.AdfsDir;  // only 1.0.1.0 uses GAC.
+        public string CalculatedFilePath
+        {
+            get
+            {
+                if (FilePath == null)
+                {
+                    FilePath = Path.Combine(FileService.Enum2Directory(Directory), InternalName);
+
+                }
+                return FilePath;
+            }
+        }
         public string FullName { get; set; }
         public Version AssemblyVersion { get; set; }
         public Version ProductVersion { get; set; }
         public Version FileVersion { get; set; }
+
+        /// <summary>
+        /// Compares this instance with the assembly at filepath.
+        /// This instance typically comes from a version description.
+        /// </summary>
+        /// <param name="filepath"></param>
+        /// <returns>0 if OK, non-zero if not a match.</returns>
+        public int Verify(string filepath)
+        {
+            int rc = -1;
+
+            AssemblySpec tmp = GetAssemblySpec(filepath);
+            if ( tmp != null )
+            {
+                if ( tmp.FileVersion != FileVersion )
+                {
+                    LogMismatch("FileVersion", tmp.FileVersion, FileVersion);
+                    rc = 1;
+                }
+                else if (tmp.ProductVersion != ProductVersion)
+                {
+                    LogMismatch("ProductVersion", tmp.ProductVersion, ProductVersion);
+                    rc = 2;
+                }
+                else if (tmp.AssemblyVersion != AssemblyVersion)
+                {
+                    LogMismatch("AssemblyVersion", tmp.AssemblyVersion, AssemblyVersion);
+                    rc = 3;
+                }
+                else
+                {
+                    rc = 0;
+                }
+            }
+            else
+            {
+                LogService.Log.Warn($"  AssemblySpec.Verify: Did not find {filepath}");
+            }
+
+            return rc;
+        }
+
+        private void LogMismatch(string versionname, Version found, Version should)
+        {
+            LogService.Log.Warn($"  Assembly {InternalName} mismatch in {versionname}. Found: {found}, should be: {should}");
+        }
+
+        static public AssemblySpec GetAssemblySpec(string path)
+        {
+            AssemblySpec rc = null;
+            try
+            {
+                if (File.Exists(path))
+                {
+                    FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(path);
+                    AssemblyName asmname = AssemblyName.GetAssemblyName(path);
+                    rc = new AssemblySpec(fvi, asmname);
+                }
+            }
+            catch (Exception ex)
+            {
+                LogService.Log.Info(ex.ToString());
+            }
+
+            return rc;
+        }
 
         public string WriteNewInstance()
         {
@@ -47,26 +127,6 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Assemblies
         public override string ToString()
         {
             return FullName;
-        }
-
-        static public AssemblySpec GetAssemblySpec(string path)
-        {
-            AssemblySpec rc = null;
-            try
-            {
-                if (File.Exists(path))
-                {
-                    FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(path);
-                    AssemblyName asmname = AssemblyName.GetAssemblyName(path);
-                    rc = new AssemblySpec(fvi, asmname);
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.ToString());
-            }
-
-            return rc;
         }
     }
 }

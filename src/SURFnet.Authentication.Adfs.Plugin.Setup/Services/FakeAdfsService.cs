@@ -22,10 +22,10 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
 
     /// <summary>
     /// Class FakeAdfsService.
-    /// Implements the <see cref="SURFnet.Authentication.Adfs.Plugin.Setup.Services.Interfaces.IAdFsService" />
+    /// Implements the <see cref="SURFnet.Authentication.Adfs.Plugin.Setup.Services.Interfaces.IAdfsPSService" />
     /// </summary>
-    /// <seealso cref="SURFnet.Authentication.Adfs.Plugin.Setup.Services.Interfaces.IAdFsService" />
-    public class FakeAdfsService : IAdFsService
+    /// <seealso cref="SURFnet.Authentication.Adfs.Plugin.Setup.Services.Interfaces.IAdfsPSService" />
+    public class FakeAdfsService : IAdfsPSService
     {
         /// <summary>
         /// Registers the ADFS MFA extension.
