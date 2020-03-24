@@ -12,7 +12,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
         {
             ComponentName = "StepupAdapter",
             Assemblies = V2Assemblies.AdapterSpec,
-            Configfile = string.Empty
+            ConfigFilename = string.Empty
         };
 
         public static readonly StepupComponent[] Components = new StepupComponent[]
@@ -21,19 +21,19 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
             {
                 ComponentName = "Saml2",
                 Assemblies = ComponentAssemblies.Sustain2_3Spec,
-                Configfile = "Sustainsys.Saml2.dll.config"
+                ConfigFilename = "Sustainsys.Saml2.dll.config"
             },
             new StepupComponent()
             {
                 ComponentName = "log4net",
                 Assemblies = ComponentAssemblies.Log4Net2_0_8Spec,
-                Configfile = "SURFnet.Authentication.ADFS.MFA.Plugin.log4net"
+                ConfigFilename = "SURFnet.Authentication.ADFS.MFA.Plugin.log4net"
             },
             new StepupComponent()
             {
                 ComponentName = "Newtonsoft",
                 Assemblies = ComponentAssemblies.Newtonsoft12_0_3Spec,
-                Configfile = null
+                ConfigFilename = null
             }
         };
     }

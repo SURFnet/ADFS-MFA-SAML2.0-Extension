@@ -10,64 +10,120 @@
     /// <summary>
     /// Class AdFsService.
     /// </summary>
-    public class AdfsPSService : IAdfsPSService
+    public class AdfsPSService // : IAdfsPSService
     {
         /// <summary>
         /// The file service.
         /// </summary>
-        private readonly IFileService fileService;
+        //private readonly IFileService fileService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AdfsPSService"/> class.
         /// </summary>
         /// <param name="fileService">The file service.</param>
-        public AdfsPSService(IFileService fileService)
-        {
-            this.fileService = fileService ?? throw new ArgumentNullException(nameof(fileService));
-        }
+        //public AdfsPSService(IFileService fileService)
+        //{
+        //    this.fileService = fileService ?? throw new ArgumentNullException(nameof(fileService));
+        //}
 
         /// <summary>
-        /// Registers the ADFS MFA extension.
+        /// Registers the ADFS MFA extension and add it to the
+        /// GlobalAutenticationPolicy.
         /// </summary>
-        public void RegisterAdapter()
+        public bool RegisterAdapter(AssemblySpec spec)
         {
             var adapterName = Values.DefaultRegistrationName;
-            var policy = AdfsAuthnCmds.GetGlobAuthnPol();
-            var filePath = this.fileService.GetAdapterAssembly(); // TODO:  No, no! From ADdfsDir!!!
+            bool ok = true;
 
-            Console.WriteLine($"Loading assembly file from: '{filePath}'");
-
-            var spec = AssemblySpec.GetAssemblySpec(filePath);
-
-            Console.WriteLine("Details:");
-            Console.WriteLine($"FullTypeName: {spec.FullName}");
-            Console.WriteLine($"Assembly version: {spec.AssemblyVersion}");
-            Console.WriteLine($"File version: {spec.FileVersion}");
-            Console.WriteLine($"Product version: {spec.ProductVersion}");
-
-            AdfsAuthnCmds.RegisterAuthnProvider(adapterName, spec.FullName, filePath);
-            if (!policy.AdditionalAuthenticationProviders.Contains(adapterName))
+            try
             {
-                policy.AdditionalAuthenticationProviders.Add(adapterName);
-                AdfsAuthnCmds.SetGlobAuthnPol(policy);
+                AdfsAuthnCmds.RegisterAuthnProvider(adapterName, spec.FullName);
             }
+            catch (Exception ex)
+            {
+                AdfsAuthnCmds.ReportFatalPS("Register-AdfsAuthenticationProvider", ex);
+                ok = false;
+            }
+
+            if ( ok )
+            {
+                try
+                {
+                    var policy = AdfsAuthnCmds.GetGlobAuthnPol();
+                    if ( policy != null )
+                    {
+                        if (!policy.AdditionalAuthenticationProviders.Contains(adapterName))
+                        {
+                            policy.AdditionalAuthenticationProviders.Add(adapterName);
+                            try
+                            {
+                                AdfsAuthnCmds.SetGlobAuthnPol(policy);
+                            }
+                            catch (Exception ex)
+                            {
+                                AdfsAuthnCmds.ReportFatalPS("Set-AdfsGlobalAuthenticationPolicy", ex);
+                                ok = false;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        // was already logged!
+                        ok = false;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    ok = false;
+                    AdfsAuthnCmds.ReportFatalPS("Get-AdfsGlobalAuthenticationPolicy", ex);
+                }
+            }
+
+            return ok;
         }
 
         /// <summary>
         /// Unregisters the ADFS MFA extension adapter.
         /// </summary>
-        public void UnregisterAdapter()
+        public bool UnregisterAdapter()
         {
+            bool ok = false;
             var adapterName = Values.DefaultRegistrationName;
             var policy = AdfsAuthnCmds.GetGlobAuthnPol();
-
-            if (policy.AdditionalAuthenticationProviders.Contains(adapterName))
+            if ( policy != null )
             {
-                policy.AdditionalAuthenticationProviders.Remove(adapterName);
-                AdfsAuthnCmds.SetGlobAuthnPol(policy);
+                if (policy.AdditionalAuthenticationProviders.Contains(adapterName))
+                {
+                    policy.AdditionalAuthenticationProviders.Remove(adapterName);
+                    try
+                    {
+                        AdfsAuthnCmds.SetGlobAuthnPol(policy);
+                        ok = true;
+                    }
+                    catch (Exception ex)
+                    {
+                        AdfsAuthnCmds.ReportFatalPS("Set-AdfsGlobalAuthenticationPolicy", ex);
+                    }
+                }
+
+                if ( ok )
+                {
+                    try
+                    {
+                        AdfsAuthnCmds.UnregisterAuthnProvider(adapterName);
+                    }
+                    catch (Exception ex)
+                    {
+                        AdfsAuthnCmds.ReportFatalPS("UnRegister-AdfsAuthenticationProvider", ex);
+                    }
+                }
+            }
+            else
+            {
+                // was already logged.
             }
 
-            AdfsAuthnCmds.UnregisterAuthnProvider(adapterName);
+            return ok;
         }
     }
 }

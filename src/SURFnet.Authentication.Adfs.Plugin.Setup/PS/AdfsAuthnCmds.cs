@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SURFnet.Authentication.Adfs.Plugin.Setup.Services;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Management.Automation;
@@ -7,8 +8,25 @@ using System.Threading.Tasks;
 
 namespace SURFnet.Authentication.Adfs.Plugin.Setup.PS
 {
+    /// <summary>
+    /// PowerShell command wrappers.
+    /// Methods returning void will throw on error.
+    /// Caller *must* catch.
+    /// The most common error is a Stopped ADFS server. Check that before calling!
+    /// The other return null on fatal errors.
+    /// </summary>
     static public class AdfsAuthnCmds
     {
+        static public void ReportFatalPS(string cmd, Exception ex)
+        {
+            Console.WriteLine($"Fatal PowerShell error in {cmd}: {ex.Message}");
+            LogService.Log.Fatal($"Fatal PowerShell error in {cmd}: {ex.ToString()}");
+        }
+        /// <summary>
+        /// Does not throw, must test the return code.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns>null on fatal error, otherwise a (possibly empty) list.</returns>
         static public List<AdfsExtAuthProviderProps> GetAuthProviderProps(string name)
         {
             List<AdfsExtAuthProviderProps> rc = null;
@@ -24,10 +42,11 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.PS
 
                 if (result == null)
                 {
-                    throw new ApplicationException("Get-AdfsAuthenticationProvider.Invoke() returns null");
+                    LogService.Log.Error("Get - AdfsAuthenticationProvider.Invoke() returns null");
                 }
                 else if (result.Count <= 0)
                 {
+                    // Specific provider not there!
                     rc = new List<AdfsExtAuthProviderProps>();  // Empty List
                 }
                 else
@@ -38,20 +57,26 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.PS
                     foreach ( var psobj in result )
                     {
                         // Implement (add) the rest of the properties when needed.
-                        string foundname;
-                        string adminname;
 
-                        if (false == psobj.TryGetPropertyString("Name", out foundname))
+                        if (false == psobj.TryGetPropertyString("Name", out string foundname))
+                        {
                             error = true;
+                            LogService.Log.Fatal("Missing 'Name' property on ExternalAuthenticationProviderProperty.");
+                        }
 
-                        if (false == psobj.TryGetPropertyString("AdminName", out adminname))
+                        if (false == psobj.TryGetPropertyString("AdminName", out string adminname))
+                        {
                             error = true;
+                            LogService.Log.Fatal("Missing 'AdminName' property on ExternalAuthenticationProviderProperty.");
+                        }
 
                         if (false==error)
                         {
-                            var props = new AdfsExtAuthProviderProps();
-                            props.Name = foundname;
-                            props.AdminName = adminname;
+                            var props = new AdfsExtAuthProviderProps
+                            {
+                                Name = foundname,
+                                AdminName = adminname
+                            };
 
                             rc.Add(props);
                         }
@@ -63,14 +88,10 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.PS
                     }
                 }
             }
-            catch (ApplicationException aex)
-            {
-                throw aex; // retrow because we want this to bubble up all the way.
-            }
             catch (Exception ex)
             {
-                // TODO: log4net
-                Console.WriteLine(ex.ToString());
+                AdfsAuthnCmds.ReportFatalPS("Get-AdfsAuthenticationProvider", ex);
+                rc = null;
             }
 
             return rc;
@@ -80,6 +101,10 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.PS
         // - - - - - - - - - - - - - - - - - - - - - - - -
         // GlobalAuthenticationPolicy
 
+        /// <summary>
+        /// Does not throw, must test the return code.
+        /// </summary>
+        /// <returns>null on fatal error, otherwise a (possibly empty) list.</returns>
         static public AdfsGlobAuthPolicy GetGlobAuthnPol()
         {
             AdfsGlobAuthPolicy policy = null;
@@ -91,12 +116,12 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.PS
                 var result = ps.Invoke();
                 if (result == null)
                 {
-                    throw new ApplicationException("Get-AdfsGlobalAuthenticationPolicy.Invoke() returns null");
+                    LogService.Log.Fatal("Get-AdfsGlobalAuthenticationPolicy.Invoke() returns null");
                 }
                 else if (result.Count <= 0)
                 {
-                    // must have
-                    throw new ApplicationException("Get-AdfsGlobalAuthenticationPolicy.Invoke() result.Count <= 0");
+                    // must have, there is always a policy!
+                    LogService.Log.Fatal("Get-AdfsGlobalAuthenticationPolicy.Invoke() result.Count <= 0");
                 }
                 else
                 {
@@ -105,32 +130,35 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.PS
 
                     if (false == error)
                     {
-                        IList<string> additionals = null;
-                        if (false == psobj.TryGetPropertyValue("AdditionalAuthenticationProvider", out additionals))
+                        if (false == psobj.TryGetPropertyValue("AdditionalAuthenticationProvider", out IList<string> additionals))
+                        {
                             error = true;
+                            LogService.Log.Fatal("Missing 'AdditionalAuthenticationProvider' property on GlobalAuthenticationPolicy.");
+                        }
 
                         if (false == error)
                         {
-                            policy = new AdfsGlobAuthPolicy();
-                            policy.AdditionalAuthenticationProviders = additionals;
+                            policy = new AdfsGlobAuthPolicy
+                            {
+                                AdditionalAuthenticationProviders = additionals
+                            };
                         }
 
                     }
                 }
             }
-            catch (ApplicationException)
-            {
-                throw; // retrow because we want this to bubble up all the way.
-            }
             catch (Exception ex)
             {
-                // TODO: log4net
-                Console.WriteLine(ex.ToString());
+                ReportFatalPS("Get-AdfsGlobalAuthenticationPolicy", ex);
             }
 
             return policy;
         }
 
+        /// <summary>
+        /// Throws on errors. Must catch!
+        /// </summary>
+        /// <param name="policy"></param>
         static public void SetGlobAuthnPol(AdfsGlobAuthPolicy policy)
         {
             PowerShell ps = PowerShell.Create();
@@ -149,17 +177,29 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.PS
         // Registration
 
 
-        public static void RegisterAuthnProvider(string name, string fullTypeName, string filepath)
+        /// <summary>
+        /// Throws on errors. Must catch!
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="fullTypeName"></param>
+        /// <param name="cfgFilePath"></param>
+        public static void RegisterAuthnProvider(string name, string fullTypeName, string cfgFilePath = null)
         {
             PowerShell ps = PowerShell.Create();
             ps.AddCommand("Register-AdfsAuthenticationProvider");
             ps.AddParameter("Name", name);
             ps.AddParameter("TypeName", fullTypeName);
-            ps.AddParameter("ConfigurationFilePath", filepath);
+            if ( ! string.IsNullOrWhiteSpace(cfgFilePath) )
+                ps.AddParameter("ConfigurationFilePath", cfgFilePath);
 
             var result = ps.Invoke();
         }
 
+        /// <summary>
+        /// Throws on errors. Must catch!
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="confirm"></param>
         public static void UnregisterAuthnProvider(string name, bool confirm = false)
         {
             PowerShell ps = PowerShell.Create();
@@ -178,6 +218,11 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.PS
         // ConfigurationData
 
 
+        /// <summary>
+        /// Throws on errors. Must catch!
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="filepath"></param>
         static public void ExportCfgData(string name, string filepath)
         {
             // TODO: should report errors! Currently void!
@@ -191,6 +236,11 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.PS
             return;
         }
 
+        /// <summary>
+        /// Throws on errors. Must catch!
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="filepath"></param>
         static public void ImportCfgData(string name, string filepath)
         {
             // TODO: should report errors! Currently void!

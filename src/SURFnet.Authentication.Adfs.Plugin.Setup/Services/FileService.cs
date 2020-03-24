@@ -91,6 +91,13 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
             return directoryMap[(int)value];
         }
 
+        public static string Combine(FileDirectory direnum, string name)
+        {
+            string tmp = Path.Combine(Enum2Directory(direnum), name);
+            // optional GetFullPath()
+            return tmp;
+        }
+
         /// <summary>
         /// Copies the assemblies to the output directory.
         /// </summary>

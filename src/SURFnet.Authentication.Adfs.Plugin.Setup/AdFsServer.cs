@@ -18,156 +18,213 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
 {
     using System;
     using System.ServiceProcess;
+    using System.Threading;
     using SURFnet.Authentication.Adfs.Plugin.Setup.Services;
     using SURFnet.Authentication.Adfs.Plugin.Setup.Services.Interfaces;
 
     /// <summary>
     /// Class AdFsServer.
     /// </summary>
-    public class AdfsServer
+    public static class AdfsServer
     {
-        /// <summary>
-        /// Defines the maximum retries to start and stop the service before we cancel the setup
-        /// </summary>
-        private const int MaxRetries = 15;
-        
-        /// <summary>
-        /// The sleep time in ms.
-        /// </summary>
-        private const int SleepMs = 1000;
+        private const int DefaultRetries = 29;
+        private const int DefaultSleepMs = 1000;
+        private const string DefaultName = "adfssrv";
 
         /// <summary>
-        /// The ADFS service.
+        /// Defines the maximum retries to start and stop the service
+        /// before we stop waiting for the action result.
         /// </summary>
-        private readonly IAdfsPSService service;
+        private static int MaxRetries = DefaultRetries;
+        
+        /// <summary>
+        /// The sleep time in ms between retries.
+        /// </summary>
+        private static int SleepMs = DefaultSleepMs;
+
+        private static string ServiceName = DefaultName;
+
+        public static ServiceController SvcController { get; private set; } = null;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AdfsServer"/> class.
         /// </summary>
         /// <param name="service">The service.</param>
-        public AdfsServer(IAdfsPSService service)
+        static void Configure(string name, int retries = DefaultRetries, int sleepMs = DefaultSleepMs)
         {
-            this.service = service ?? throw new ArgumentNullException(nameof(service));
+            ServiceName = name;
+            MaxRetries = retries;
+            SleepMs = sleepMs;
+            if ( SvcController != null )
+            {
+                try
+                {
+                    SvcController.Dispose();
+                }
+                finally
+                {
+                    SvcController = null;
+                }
+            }
         }
 
         /// <summary>
         /// Stops the ADFS service.
         /// </summary>
-        public void StopAdFsService()
+        public static int StopAdFsService()
         {
+            if (SvcController == null)
+                return -1;
+
             Console.Write("Stopping ADFS service");
-            this.StopAdFsServiceInternal();
+            int rc = StopAdFsServiceInternal();
             Console.WriteLine();
             Console.WriteLine("Stopped ADFS service");
+
+            return rc;
         }
 
         /// <summary>
         /// Starts the ADFS service.
         /// </summary>
-        public void StartAdFsService()
+        public static int StartAdFsService()
         {
             Console.Write("Starting ADFS service");
-            this.StartAdFsServiceInternal();
+            int rc = StartAdFsServiceInternal();
             Console.WriteLine();
             Console.WriteLine("Started ADFS service");
-        }
-
-        /// <summary>
-        /// Unregisters the old plugin.
-        /// </summary>
-        public void UnregisterAdapter()
-        {
-            this.service.UnregisterAdapter();
-        }
-
-
-        /// <summary>
-        /// Registers the new plugin and refreshes the plugin metadata.
-        /// </summary>
-        public void RegisterAdapter()
-        {
-            this.service.RegisterAdapter();
+            return rc;
         }
 
         /// <summary>
         /// Starts the ADFS service.
         /// </summary>
         /// <param name="failsave">The failsave.</param>
-        private void StartAdFsServiceInternal(int failsave = 0)
+        private static int StartAdFsServiceInternal()
         {
-            if (failsave > MaxRetries)
-            {
-                throw new Exception("Reached max retries to start the ADFS service");
-            }
-
-            // TODO: use Refresh()!!
-            var service = this.GetAdFsService();
-            if (service.Status.Equals(ServiceControllerStatus.StopPending))
-            {
-                Console.Write(".");
-                System.Threading.Thread.Sleep(SleepMs);
-                this.StartAdFsServiceInternal(failsave + 1);
-                return;
-            }
+            int rc = -1;
+            bool more = true;
+            int retriesLeft = MaxRetries;
 
             try
             {
-                if (service.Status.Equals(ServiceControllerStatus.Stopped))
+                while (more)
                 {
-                    service.Start();
-                }
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine($"Failed to start the ADFS service. Details: {e}");
-            }
-        }
+                    SvcController.Refresh();
 
-        /// <summary>
-        /// Stops the ADFS service.
-        /// </summary>
-        /// <param name="failsave">The failsave.</param>
-        private void StopAdFsServiceInternal(int failsave = 0)
-        {
-            if (failsave > MaxRetries)
-            {
-                throw new Exception("Reached max retries to stop the ADFS service");
-            }
+                    switch (SvcController.Status)
+                    {
+                        case ServiceControllerStatus.Paused:
+                        case ServiceControllerStatus.Stopped:
+                            SvcController.Start();
+                            Console.Write(".");
+                            break;
 
-            // TODO: use Refresh()!!
-            var service = this.GetAdFsService();
-            if (service.Status.Equals(ServiceControllerStatus.StartPending))
-            {
-                Console.Write(".");
-                System.Threading.Thread.Sleep(SleepMs);
-                this.StopAdFsServiceInternal(failsave + 1);
-                return;
-            }
+                        case ServiceControllerStatus.Running:
+                            rc = 0;
+                            more = false;
+                            break;
 
-            try
-            {
-                if (service.Status.Equals(ServiceControllerStatus.Running))
-                {
-                    service.Stop();
-                }
+                        default:
+                            // All pending states
+                            Thread.Sleep(SleepMs);
+                            retriesLeft--;
+                            break;
+                    }
+
+                    if (more && (--retriesLeft > 0))
+                    {
+                        if (0 == (retriesLeft % 3))
+                        {
+                            Console.Write(".");
+                        }
+                    }
+                } // timeout loop
             }
             catch (Exception e)
             {
                 Console.WriteLine($"Failed to stop the ADFS service. Details: {e}");
+                rc = -2;
             }
+
+            if (rc == -1 && retriesLeft <= 0)
+            {
+                rc = 1; // timeout
+            }
+
+            return rc;
+        }
+
+        /// <summary>
+        /// Stops the ADFS service.
+        /// </summary>
+        /// <param name="failsave">The failsave.</param>
+        private static int StopAdFsServiceInternal()
+        {
+            int rc = -1;
+            bool more = true;
+            int retriesLeft = MaxRetries;
+
+            try
+            {
+                while ( more )
+                {
+                    SvcController.Refresh();
+
+                    switch (SvcController.Status)
+                    {
+                        case ServiceControllerStatus.Stopped:
+                            rc = 0;
+                            more = false;
+                            break;
+
+                        case ServiceControllerStatus.Paused:
+                        case ServiceControllerStatus.Running:
+                            SvcController.Stop();
+                            Console.Write(".");
+                            break;
+
+                        default:
+                            // All pending states
+                            Thread.Sleep(SleepMs);
+                            retriesLeft--;
+                            break;
+                    }
+
+                    if ( more && (--retriesLeft>0) )
+                    {
+                        if ( 0==(retriesLeft%3) )
+                        {
+                            Console.Write(".");
+                        }
+                    }
+                } // timeout loop
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Failed to stop the ADFS service. Details: {e}");
+                rc = -2;
+            }
+
+            if ( rc==-1 && retriesLeft<=0 )
+            {
+                rc = 1; // timeout
+            }
+
+            return rc;
         }
 
         /// <summary>
         /// Gets the ad fs service.
         /// </summary>
         /// <returns><see cref="ServiceController"/>.</returns>
-        private ServiceController GetAdFsService()
+        private static ServiceController CheckAdFsService()
         {
-            ServiceController rc = null;
+            SvcController = null;
 
             try
             {
-                rc = new ServiceController("adfssrv");
+                SvcController = new ServiceController("adfssrv");
             }
             catch (ArgumentException)
             {
@@ -177,7 +234,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
             {
                 LogService.Log.Fatal(ex.ToString());
             }
-            return rc;
+
+            return SvcController;
         }
     }
 }

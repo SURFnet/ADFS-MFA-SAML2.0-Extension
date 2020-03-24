@@ -42,12 +42,11 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
         bool TryFindAdapter()
         {
             bool rc = false;
-            AssemblySpec tmpSpec;
             int cnt = 0;
 
             LogService.Log.Debug("VersionHeuristics: TryFindAdapter1.");
 
-            if ( TryGetAdapterAssembly(FileService.AdfsDir, AssemblyNames.Adapter, out tmpSpec) )
+            if ( TryGetAdapterAssembly(FileService.AdfsDir, AssemblyNames.Adapter, out AssemblySpec tmpSpec) )
             {
                 // Found one in ADFS directory
                 AdfsDirAssembly = tmpSpec;

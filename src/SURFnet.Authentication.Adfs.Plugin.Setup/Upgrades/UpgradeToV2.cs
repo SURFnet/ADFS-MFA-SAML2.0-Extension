@@ -42,7 +42,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Upgrades
 #else
             var adfsService = new AdFsService(fileService);
 #endif
-            var server = new AdfsServer(adfsService);
+            //var server = new AdfsServer(adfsService);
             var certificateService = new CertificateService("pfrrrrrtttttt");  // BUG:
             var config = new ConfigurationFileService(fileService, certificateService);
 
@@ -58,17 +58,17 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Upgrades
                 return;
             }
 
-            server.UnregisterAdapter();
+            //server.UnregisterAdapter();
 
-            server.StopAdFsService();
+            AdfsServer.StopAdFsService();
 
             var service = new AssemblyService();
             service.RemoveAssembliesFromGac();
 
             fileService.CopyOutputToAdFsDirectory();
 
-            server.StartAdFsService();
-            server.RegisterAdapter();
+            AdfsServer.StartAdFsService();
+            //server.RegisterAdapter();
         }
 
         /// <summary>

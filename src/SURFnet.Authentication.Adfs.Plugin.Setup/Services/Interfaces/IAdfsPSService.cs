@@ -1,7 +1,9 @@
 ﻿namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services.Interfaces
 {
     /// <summary>
-    /// Interface IAdFsService
+    /// Removed nterface IAdFsService
+    /// Maybe would have been for OK testing the rest of the code.
+    /// Should be diffenet Unit tests.
     /// </summary>
     public interface IAdfsPSService
     {
