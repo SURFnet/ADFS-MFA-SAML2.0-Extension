@@ -41,7 +41,7 @@
             }
             catch (Exception ex)
             {
-                AdfsAuthnCmds.ReportFatalPS("Register-AdfsAuthenticationProvider", ex);
+                PSUtil.ReportFatalPS("Register-AdfsAuthenticationProvider", ex);
                 ok = false;
             }
 
@@ -61,7 +61,7 @@
                             }
                             catch (Exception ex)
                             {
-                                AdfsAuthnCmds.ReportFatalPS("Set-AdfsGlobalAuthenticationPolicy", ex);
+                                PSUtil.ReportFatalPS("Set-AdfsGlobalAuthenticationPolicy", ex);
                                 ok = false;
                             }
                         }
@@ -75,7 +75,7 @@
                 catch (Exception ex)
                 {
                     ok = false;
-                    AdfsAuthnCmds.ReportFatalPS("Get-AdfsGlobalAuthenticationPolicy", ex);
+                    PSUtil.ReportFatalPS("Get-AdfsGlobalAuthenticationPolicy", ex);
                 }
             }
 
@@ -102,7 +102,7 @@
                     }
                     catch (Exception ex)
                     {
-                        AdfsAuthnCmds.ReportFatalPS("Set-AdfsGlobalAuthenticationPolicy", ex);
+                        PSUtil.ReportFatalPS("Set-AdfsGlobalAuthenticationPolicy", ex);
                     }
                 }
 
@@ -114,7 +114,7 @@
                     }
                     catch (Exception ex)
                     {
-                        AdfsAuthnCmds.ReportFatalPS("UnRegister-AdfsAuthenticationProvider", ex);
+                        PSUtil.ReportFatalPS("UnRegister-AdfsAuthenticationProvider", ex);
                     }
                 }
             }

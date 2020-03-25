@@ -112,8 +112,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Assemblies
             catch (Exception ex)
             {
                 string error = $"Failed to delete {FilePath} threw: ";
-                Console.WriteLine(error + ex.Message);
-                LogService.Log.Error(error + ex.ToString());
+                LogService.WriteFatalException(error, ex);
             }
 
             return rc;

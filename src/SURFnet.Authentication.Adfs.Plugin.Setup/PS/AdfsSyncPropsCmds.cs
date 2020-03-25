@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SURFnet.Authentication.Adfs.Plugin.Setup.Services;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Management.Automation;
@@ -25,12 +26,12 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.PS
 
                 if (result == null)
                 {
-                    throw new ApplicationException("Get-AdfsSyncProperties.Invoke returns null");
+                    LogService.WriteFatal("Get-AdfsSyncProperties.Invoke returns null");
                 }
                 else if (result.Count <= 0)
                 {
                     // must have
-                    throw new ApplicationException("Get-AdfsSyncProperties.Invoke result.Count <= 0");
+                    LogService.WriteFatal("Get-AdfsSyncProperties.Invoke result.Count <= 0");
                 }
                 else
                 {
@@ -39,7 +40,11 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.PS
                     {
                         rc = new AdfsSyncProps() { Role = role };
                     }
-                    // else rc remains null
+                    else
+                    {
+                        // rc remains null
+                        LogService.WriteFatal("Getting AdfsSyncProperties.Role failed.");
+                    }
                 }
             }
             catch (ApplicationException)
@@ -48,8 +53,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.PS
             }
             catch (Exception ex)
             {
-                // ToDo:  log4net?
-                Console.WriteLine(ex.ToString());
+                PSUtil.ReportFatalPS("Get-AdfsSyncPropertiesGet-AdfsSyncProperties", ex);
             }
 
             return rc;

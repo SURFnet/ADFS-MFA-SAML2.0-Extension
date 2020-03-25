@@ -9,10 +9,11 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
     [Flags]
     public enum SetupMode
     {
-        Diagnose = 0x1,
-        Configure = 0x2,
-        Repair = 0x4,
-        Uninstall = 0x8,
-        Install = 0x10
+        Check = 0x1, 
+        Backup = 0x2,
+        Configure = 0x4,
+        Repair = 0x8,
+        Uninstall = 0x10,
+        Install = 0x20
     }
 }

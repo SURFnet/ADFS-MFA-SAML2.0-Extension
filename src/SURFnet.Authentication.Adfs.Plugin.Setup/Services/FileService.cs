@@ -120,9 +120,9 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
                     var to = Path.Combine(OutputFolder, assembly);
                     File.Copy(from, to);
                 }
-                catch (Exception e)
+                catch (Exception ex)
                 {
-                    Console.WriteLine($"Failed to copy file '{assembly}' to output directory. Details: {e}");
+                    LogService.WriteFatalException($"Failed to copy file '{assembly}' to output directory.", ex);
                     succeeded = false;
                 }
             }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SURFnet.Authentication.Adfs.Plugin.Setup.Services;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Management.Automation;
@@ -75,6 +76,12 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.PS
         // S2016:  ExportAuthProviderConfigurationData : PSCmdletBase
         // S2019:  ExportAuthProviderConfigurationData : PSCmdletBase
 
+
+        static public void ReportFatalPS(string cmd, Exception ex)
+        {
+            LogService.WriteFatalException($"Fatal PowerShell error in {cmd}: ", ex);
+        }
+
         /// <summary>
         /// PSObject extensions.
         /// Not sure what the PSMemberInfoCollection does with the string indexer
@@ -99,11 +106,19 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.PS
             try
             {
                 var tmp = psobj.Properties[name];
-                value = (T)tmp.Value;
-                rc = true;
+                value = tmp.Value as T;
+                if ( value != null )
+                {
+                    rc = true;
+                }
+                else
+                {
+                    LogService.Log.Error($"Cast to {typeof(T)} for {name} in {psobj.ToString()} failed.");
+                }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                LogService.Log.Error($"Looking for {name} in {psobj.ToString()} threw: "+ex.ToString());
                 value = null;
             }
 
@@ -124,8 +139,9 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.PS
                 value = (string)tmp.Value;
                 rc = true;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                LogService.Log.Error($"Looking for {name} in {psobj.ToString()} threw: " + ex.ToString());
                 value = string.Empty;
             }
 
@@ -146,8 +162,9 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.PS
                 value = (int)tmp.Value;
                 rc = true;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                LogService.Log.Error($"Looking for {name} in {psobj.ToString()} threw: " + ex.ToString());
                 value = 0;
             }
 

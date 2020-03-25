@@ -10,6 +10,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
 {
     public class StepupComponent : ISetupHandler
     {
+        // TODO: better with Constructor(x,y,z) and/or private setters?
+
         public string ComponentName { get; set; }
         public AssemblySpec[] Assemblies { get; set; }
         public string ConfigFilename { get; set; }
@@ -74,11 +76,11 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
             return 0;
         }
 
-        public virtual int Install(List<Setting> settings)
+        public virtual int Install()
         {
             int rc = 0;  // assume ok
 
-            LogService.Log.Debug("UnInstall: " + ComponentName);
+            LogService.Log.Debug("Install: " + ComponentName);
 
             // Copy configuration
             if (ConfigFilename != null)
@@ -137,8 +139,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"File.Delete on {tmp} failed with: {ex.Message}");
-                    LogService.Log.Fatal($"File.Delete on {tmp} failed with: {ex.ToString()}");
+                    LogService.WriteFatalException($"File.Delete on {tmp} failed with: ", ex);
                     rc = -1;
                 }
             }

@@ -8,7 +8,11 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
 {
     public static class SetupSettings
     {
+        public static SetupMode CurrentMode { get; private set; }
 
-
+        public static void InitializeSetupMode(SetupMode mode)
+        {
+            CurrentMode = mode;
+        }
     }
 }

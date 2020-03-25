@@ -11,6 +11,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
 {
     public class VersionDescription : ISetupHandler
     {
+        // TODO: better with Constructor(x,y,z) and/or private setters?
+
         public Version DistributionVersion { get; set; }   // The FileVersion of the Adapter.
         public StepupComponent Adapter { get; set; }
         public StepupComponent[] Components { get; set; }  // Dependencies for Adapter
@@ -18,21 +20,75 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
         // This is somewhat dubious:
         // A single list of assemblies is OK fo now.
         // But better to give each assembly a guid and list dependencies per component.
-        // But that is more work now and les work later....
+        // But that is more work now and less work later....
         public AssemblySpec[] ExtraAssemblies { get; set; } // Dependencies of dependencies
 
-        public virtual int Install(List<Setting> settings)
+
+
+
+        //
+        // ISetupHandler
+        //
+        public virtual int Install()
         {
+            // First extra assemblies
+
+            // Then dependencies
+
+            // Adapter last
+
             throw new NotImplementedException();
         }
 
+        /// <summary>
+        /// Reads all configuration files to the configuration directory.
+        /// Stops on first failure.
+        /// </summary>
+        /// <returns>Null on failure. Otherwise: All settings for all components.</returns>
         public virtual List<Setting> ReadConfiguration()
         {
-            throw new NotImplementedException();
+            List<Setting> allSettings = new List<Setting>();
+            List<Setting> moreSettings;
+
+            moreSettings = Adapter.ReadConfiguration();
+            if (moreSettings != null)
+            {
+                allSettings.AddRange(moreSettings);
+            }
+            else
+            {
+                // Stop on first error
+                allSettings = null;
+            }
+
+            if ( allSettings!=null && Components!=null && Components.Length>0 )
+            {
+                foreach(var component in Components)
+                {
+                    moreSettings = component.ReadConfiguration();
+                    if (moreSettings != null)
+                    {
+                        allSettings.AddRange(moreSettings);
+                    }
+                    else
+                    {
+                        // Stop on first error
+                        allSettings = null;
+                        break;
+                    }
+                }
+            }
+
+            return allSettings;
         }
 
         public virtual int UnInstall()
         {
+            // start with adapter
+
+            // then dependencies
+
+            // and last the extra assemblies
             throw new NotImplementedException();
         }
 
@@ -51,7 +107,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
                 foreach ( var cspec in Components )
                 {
                     tmprc = cspec.Verify();
-                    if (tmprc != 0 && rc==0 ) rc = tmprc;
+                    if (tmprc != 0 && rc==0 )
+                        rc = tmprc;
                 }
             }
 
@@ -61,17 +118,46 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
                 foreach (var aspec in ExtraAssemblies)
                 {
                     tmprc = aspec.Verify(aspec.FilePath);
-                    if (tmprc != 0 && rc == 0) rc = tmprc;
+                    if (tmprc != 0 && rc == 0)
+                        rc = tmprc;
                 }
             }
 
             return rc;
         }
 
+        /// <summary>
+        /// Writes all configuration files to the configuration directory.
+        /// Stops on first failure.
+        /// </summary>
+        /// <param name="settings">All settings for all components.</param>
+        /// <returns>0 on success.</returns>
         public virtual int WriteConfiguration(List<Setting> settings)
         {
-            throw new NotImplementedException();
-        }
+            int rc = 0;
 
+            if (Components != null && Components.Length > 0)
+            {
+                foreach (var component in Components)
+                {
+                    if (0!=component.WriteConfiguration(settings))
+                    {
+                        // Stop on first error
+                        rc = -1;
+                        break;
+                    }
+                }
+            }
+
+            if ( rc==0 )
+            {
+                if ( 0!=Adapter.WriteConfiguration(settings) )
+                {
+                    rc = -1;
+                }
+            }
+
+            return rc;
+        }
     }
 }

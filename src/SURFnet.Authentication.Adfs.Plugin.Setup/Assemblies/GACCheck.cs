@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SURFnet.Authentication.Adfs.Plugin.Setup.Services;
+using System;
 using System.IO;
 using System.Reflection;
 
@@ -40,7 +41,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Assemblies
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.ToString());
+                LogService.Log.Error("Old GAC search exception: "+ex.ToString());
             }
 
             return rc;
@@ -59,7 +60,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Assemblies
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.ToString());
+                LogService.Log.Error("V4GAC search exception: " + ex.ToString());
             }
 
             return rc;

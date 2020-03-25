@@ -17,11 +17,6 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.PS
     /// </summary>
     static public class AdfsAuthnCmds
     {
-        static public void ReportFatalPS(string cmd, Exception ex)
-        {
-            LogService.WriteFatalException($"Fatal PowerShell error in {cmd}: ", ex);
-        }
-
         /// <summary>
         /// Does not throw, must test the return code.
         /// </summary>
@@ -61,13 +56,11 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.PS
                         if (false == psobj.TryGetPropertyString("Name", out string foundname))
                         {
                             error = true;
-                            LogService.Log.Fatal("Missing 'Name' property on ExternalAuthenticationProviderProperty.");
                         }
 
                         if (false == psobj.TryGetPropertyString("AdminName", out string adminname))
                         {
                             error = true;
-                            LogService.Log.Fatal("Missing 'AdminName' property on ExternalAuthenticationProviderProperty.");
                         }
 
                         if (false==error)
@@ -90,7 +83,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.PS
             }
             catch (Exception ex)
             {
-                AdfsAuthnCmds.ReportFatalPS("Get-AdfsAuthenticationProvider", ex);
+                PSUtil.ReportFatalPS("Get-AdfsAuthenticationProvider", ex);
                 rc = null;
             }
 
@@ -149,7 +142,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.PS
             }
             catch (Exception ex)
             {
-                ReportFatalPS("Get-AdfsGlobalAuthenticationPolicy", ex);
+                PSUtil.ReportFatalPS("Get-AdfsGlobalAuthenticationPolicy", ex);
             }
 
             return policy;
