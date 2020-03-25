@@ -44,7 +44,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
 
             if ( !UAC.HasAdministratorPrivileges() )
             {
-                Console.WriteLine("Must be a member of local Administrators an run with Administrative privileges.");
+                Console.WriteLine("Must be a member of local Administrators and run with Administrative privileges.");
                 return 4;
             }
 
@@ -165,11 +165,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                                 break;
 
                             case 'c':
-                                // Configure
-                                break;
-
-                            case 'd':
-                                // Diagnose/analyze
+                                // Check/analyze the current installation
                                 break;
 
                             case 'f':
@@ -178,6 +174,10 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
 
                             case 'i':
                                 // Install
+                                break;
+
+                            case 'r':
+                                // (Re)configure
                                 break;
 
                             case 'x':
@@ -201,10 +201,10 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
         private static void Help()
         {
             Console.WriteLine("Setup program for ADFS MFA Stepup Extension.");
-            Console.WriteLine("   Adds Single Factor Only MFA to an ADFS server.");
+            Console.WriteLine("   Adds Single Factor Only MFA extension to an ADFS server.");
             Console.WriteLine(" -? -h  This help");
-            Console.WriteLine(" -c     Configure existing installation");
-            Console.WriteLine(" -d     Diagnos/Analyse existing installation");
+            Console.WriteLine(" -c     Check/Analyze existing installation");
+            Console.WriteLine(" -r     Reconfigure existing installation");
             Console.WriteLine(" -f     Fix/Repair existing installation");
             Console.WriteLine(" -i     Install (including automatic upgrade)");
             Console.WriteLine(" -x     Uninstall");

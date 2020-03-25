@@ -34,7 +34,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
 
             if ( null!=ConfigFilename )
             {
-                string tmp = FileService.Combine(ConfigFileDirectory, ConfigFilename);
+                string tmp = FileService.OurDirCombine(ConfigFileDirectory, ConfigFilename);
                 LogService.Log.Debug($"Removing Configuration of: {ComponentName}, File: {tmp}");
                 try
                 {
@@ -71,6 +71,9 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
 
         public virtual int Install(List<Setting> settings)
         {
+            // Copy configuration
+
+            // Copy assemblies
             return -1;
         }
 
@@ -107,7 +110,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
             // Delete Configuration file
             if ( null != ConfigFilename )
             {
-                string tmp = FileService.Combine(ConfigFileDirectory, ConfigFilename);
+                string tmp = FileService.OurDirCombine(ConfigFileDirectory, ConfigFilename);
                 try
                 {
                     // no need to test for existence. It was there on Verify()!
