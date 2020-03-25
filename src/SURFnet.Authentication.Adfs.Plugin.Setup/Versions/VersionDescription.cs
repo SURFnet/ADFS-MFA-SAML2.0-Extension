@@ -60,7 +60,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
                 LogService.Log.Info($"Checking ExtraAssemblies:");
                 foreach (var aspec in ExtraAssemblies)
                 {
-                    tmprc = aspec.Verify(aspec.CalculatedFilePath);
+                    tmprc = aspec.Verify(aspec.FilePath);
                     if (tmprc != 0 && rc == 0) rc = tmprc;
                 }
             }

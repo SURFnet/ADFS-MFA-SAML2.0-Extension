@@ -19,9 +19,9 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.PS
     {
         static public void ReportFatalPS(string cmd, Exception ex)
         {
-            Console.WriteLine($"Fatal PowerShell error in {cmd}: {ex.Message}");
-            LogService.Log.Fatal($"Fatal PowerShell error in {cmd}: {ex.ToString()}");
+            LogService.WriteFatalException($"Fatal PowerShell error in {cmd}: ", ex);
         }
+
         /// <summary>
         /// Does not throw, must test the return code.
         /// </summary>

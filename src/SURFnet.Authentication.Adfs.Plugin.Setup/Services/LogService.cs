@@ -93,5 +93,17 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
                 throw new ApplicationException($"Setting the log level on this class failed: {Log.GetType().FullName}");
             }
         }
+
+        public static void WriteFatal(string error)
+        {
+            Console.WriteLine(error);
+            LogService.Log.Fatal(error);
+        }
+
+        public static void WriteFatalException(string error, Exception ex)
+        {
+            Console.WriteLine(error+ex.Message);
+            LogService.Log.Fatal(error+ex.ToString());
+        }
     }
 }

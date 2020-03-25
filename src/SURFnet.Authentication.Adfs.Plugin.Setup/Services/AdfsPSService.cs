@@ -37,7 +37,7 @@
 
             try
             {
-                AdfsAuthnCmds.RegisterAuthnProvider(adapterName, spec.FullName);
+                AdfsAuthnCmds.RegisterAuthnProvider(adapterName, spec.AssemblyFullName);
             }
             catch (Exception ex)
             {

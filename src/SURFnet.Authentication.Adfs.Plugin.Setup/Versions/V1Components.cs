@@ -20,13 +20,13 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
             new StepupComponent()
             {
                 ComponentName = "Saml2",
-                Assemblies = ComponentAssemblies.Kentor0_21_2Spec,
+                Assemblies = V1Assemblies.Kentor0_21_2Spec,
                 ConfigFilename = null
             },
             new StepupComponent()
             {
                 ComponentName = "log4net",
-                Assemblies = ComponentAssemblies.Log4Net2_0_8Spec,
+                Assemblies = V1Assemblies.Log4Net2_0_8Spec,
                 ConfigFilename = "SURFnet.Authentication.ADFS.MFA.Plugin.log4net"
             }
         };
