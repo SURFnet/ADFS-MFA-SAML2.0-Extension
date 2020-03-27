@@ -17,6 +17,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Assemblies
             InternalName = filename;
             TargetDirectory = direnum;
             FilePath = FileService.Enum2Directory(direnum);
+            // Caller must initialize the other properties!
         }
 
         private AssemblySpec(FileVersionInfo fvi, AssemblyName name)
@@ -29,6 +30,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Assemblies
             AssemblyVersion = name.Version;
             AssemblyFullName = name.FullName;
         }
+
         public string FilePath { get; private set; }  // full path
         public string InternalName { get; set; }  // filename only
         public FileDirectory TargetDirectory { get; private set; } = FileDirectory.Illegal;  // Throw on bug.
@@ -50,29 +52,39 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Assemblies
             AssemblySpec tmp = GetAssemblySpec(filepath);
             if ( tmp != null )
             {
-                if ( tmp.FileVersion != FileVersion )
-                {
-                    LogMismatch("FileVersion", tmp.FileVersion, FileVersion);
-                    rc = 1;
-                }
-                else if (tmp.ProductVersion != ProductVersion)
-                {
-                    LogMismatch("ProductVersion", tmp.ProductVersion, ProductVersion);
-                    rc = 2;
-                }
-                else if (tmp.AssemblyVersion != AssemblyVersion)
-                {
-                    LogMismatch("AssemblyVersion", tmp.AssemblyVersion, AssemblyVersion);
-                    rc = 3;
-                }
-                else
-                {
-                    rc = 0;
-                }
+                rc = Verify(tmp);
             }
             else
             {
-                LogService.Log.Warn($"  AssemblySpec.Verify: Did not find {filepath}");
+                LogService.Log.Warn($"  AssemblySpec.Verify({filepath}): Not found.");
+            }
+
+            return rc;
+        }
+
+        public int Verify(AssemblySpec found)
+        {
+            int rc = 0;
+
+            if (found.FileVersion != FileVersion)
+            {
+                LogMismatch("FileVersion", found.FileVersion, FileVersion);
+                rc = 1;
+            }
+            else if (found.ProductVersion != ProductVersion)
+            {
+                LogMismatch("ProductVersion", found.ProductVersion, ProductVersion);
+                rc = 2;
+            }
+            else if (found.AssemblyVersion != AssemblyVersion)
+            {
+                LogMismatch("AssemblyVersion", found.AssemblyVersion, AssemblyVersion);
+                rc = 3;
+            }
+            else
+            {
+                // TODO?: check PubicKeyTokens?
+                rc = 0;
             }
 
             return rc;

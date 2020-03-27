@@ -25,7 +25,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
         {
             public const string SecondFactorEndpoint = "SecondFactorEndpoint";
 
-            public const string EntityId = "entityId";
+            public const string IdPEntityId = "IdPentityId";
 
             public const string SigningCertificateThumbprint = "findValue";
 
@@ -37,11 +37,11 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
         /// <summary>
         /// Class FriendlyNames. These values Must match with the property names in the JSON file
         /// </summary>
-        public static class FriendlyNames
+        public static class DisplayNames
         {
-            public const string SecondFactorEndpoint = "StepupGatewaySSOLocation";
+            public const string SecondFactorEndpoint = "StepupGatewaySSOLocation";  // TODO: ???? rename to endpoint ???? of URL??
 
-            public const string EntityId = "StepupGatewayEntityID";
+            public const string IdPEntityId = "StepupGatewayEntityID";
 
             public const string SigningCertificateThumbprint = "StepupGatewaySigningCertificate";
 

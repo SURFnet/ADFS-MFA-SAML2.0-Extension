@@ -9,9 +9,18 @@ using System.Threading.Tasks;
 
 namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
 {
+    /// <summary>
+    /// Base class for specific version descriptions.
+    /// If there are for instance specific things like 'pre' or 'post' install
+    /// actions, then override the Install() and/or UnInstall() methods.
+    /// </summary>
     public class VersionDescription : ISetupHandler
     {
         // TODO: better with Constructor(x,y,z) and/or private setters?
+
+        //
+        // The real description
+        //
 
         public Version DistributionVersion { get; set; }   // The FileVersion of the Adapter.
         public StepupComponent Adapter { get; set; }
@@ -25,19 +34,41 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
 
 
 
-
         //
         // ISetupHandler
         //
-        public virtual int Install()
+        public virtual int Verify()
         {
-            // First extra assemblies
+            int rc = 0;
+            int tmprc;
 
-            // Then dependencies
+            LogService.Log.Info($"Checking Adapter:");
+            tmprc = Adapter.Verify();
+            if (tmprc != 0) rc = tmprc;
 
-            // Adapter last
+            if (Components != null && Components.Length > 0)
+            {
+                LogService.Log.Info($"Checking Components:");
+                foreach (var cspec in Components)
+                {
+                    tmprc = cspec.Verify();
+                    if (tmprc != 0 && rc == 0)
+                        rc = tmprc;
+                }
+            }
 
-            throw new NotImplementedException();
+            if (ExtraAssemblies != null && ExtraAssemblies.Length > 0)
+            {
+                LogService.Log.Info($"Checking ExtraAssemblies:");
+                foreach (var aspec in ExtraAssemblies)
+                {
+                    tmprc = aspec.Verify(aspec.FilePath);
+                    if (tmprc != 0 && rc == 0)
+                        rc = tmprc;
+                }
+            }
+
+            return rc;
         }
 
         /// <summary>
@@ -61,9 +92,9 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
                 allSettings = null;
             }
 
-            if ( allSettings!=null && Components!=null && Components.Length>0 )
+            if (allSettings != null && Components != null && Components.Length > 0)
             {
-                foreach(var component in Components)
+                foreach (var component in Components)
                 {
                     moreSettings = component.ReadConfiguration();
                     if (moreSettings != null)
@@ -82,50 +113,6 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
             return allSettings;
         }
 
-        public virtual int UnInstall()
-        {
-            // start with adapter
-
-            // then dependencies
-
-            // and last the extra assemblies
-            throw new NotImplementedException();
-        }
-
-        public virtual int Verify()
-        {
-            int rc = 0;
-            int tmprc;
-
-            LogService.Log.Info($"Checking Adapter:");
-            tmprc = Adapter.Verify();
-            if (tmprc != 0) rc = tmprc;
-
-            if ( Components!=null && Components.Length>0 )
-            {
-                LogService.Log.Info($"Checking Components:");
-                foreach ( var cspec in Components )
-                {
-                    tmprc = cspec.Verify();
-                    if (tmprc != 0 && rc==0 )
-                        rc = tmprc;
-                }
-            }
-
-            if (ExtraAssemblies != null && ExtraAssemblies.Length > 0)
-            {
-                LogService.Log.Info($"Checking ExtraAssemblies:");
-                foreach (var aspec in ExtraAssemblies)
-                {
-                    tmprc = aspec.Verify(aspec.FilePath);
-                    if (tmprc != 0 && rc == 0)
-                        rc = tmprc;
-                }
-            }
-
-            return rc;
-        }
-
         /// <summary>
         /// Writes all configuration files to the configuration directory.
         /// Stops on first failure.
@@ -140,7 +127,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
             {
                 foreach (var component in Components)
                 {
-                    if (0!=component.WriteConfiguration(settings))
+                    if (0 != component.WriteConfiguration(settings))
                     {
                         // Stop on first error
                         rc = -1;
@@ -149,9 +136,9 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
                 }
             }
 
-            if ( rc==0 )
+            if (rc == 0)
             {
-                if ( 0!=Adapter.WriteConfiguration(settings) )
+                if (0 != Adapter.WriteConfiguration(settings))
                 {
                     rc = -1;
                 }
@@ -159,5 +146,89 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
 
             return rc;
         }
+
+        public virtual int Install()
+        {
+            int rc = 0;
+
+            // First extra assemblies
+            if ( ExtraAssemblies!=null && ExtraAssemblies.Length>0 )
+            {
+                string srcdir = FileService.DistFolder;
+                foreach( var assembly in ExtraAssemblies )
+                {
+                    int tmprc = assembly.CopyToTarget(srcdir);
+                    if (0 != tmprc)
+                    {
+                        rc = tmprc; // error message was already written
+                        break; // stop copying.
+                    }
+                }
+            }
+
+            // Then dependencies, if still OK.
+            if ( rc==0 && Components!=null && Components.Length>0 )
+            {
+                foreach( var component in Components )
+                {
+                    int tmprc = component.Install();
+                    if (0 != tmprc)
+                    {
+                        rc = tmprc; // error message was already written
+                        break; // stop Installing
+                    }
+                }
+            }
+
+            // Adapter last
+            if ( rc==0 && Adapter!=null )
+            {
+                rc = Adapter.Install();
+            }
+
+            return rc;
+        }
+
+        public virtual int UnInstall()
+        {
+            int rc = 0;
+
+            // start with adapter
+            if ( Adapter!=null )
+            {
+                rc = Adapter.Install();
+            }
+
+            // then dependencies
+            if ( rc==0 && Components!=null && Components.Length>0 )
+            {
+                foreach( var component in Components )
+                {
+                    int tmprc = component.UnInstall();
+                    if (0 != tmprc)
+                    {
+                        rc = tmprc; // error message was already written
+                        // but do continue removing
+                    }
+                }
+            }
+
+            // and last the extra assemblies
+            if (ExtraAssemblies != null && ExtraAssemblies.Length > 0)
+            {
+                foreach (var assembly in ExtraAssemblies)
+                {
+                    int tmprc = assembly.DeleteTarget();
+                    if (0 != tmprc)
+                    {
+                        rc = tmprc; // error message was already written
+                        // but do continue removing
+                    }
+                }
+            }
+
+            return rc;
+        }
+
     }
 }

@@ -23,13 +23,13 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
 
             if ( TryFindAdapter() )
             {
-                if ( AdapterFileVersion == V1010Description.V1_0_1.DistributionVersion )
+                if ( AdapterFileVersion == VersionDictionary.V1010.DistributionVersion )
                 {
-                    rc = V1010Description.V1_0_1;
+                    rc = VersionDictionary.V1010;
                 }
-                else if ( AdapterFileVersion==V2_1Description.V2_1_17_9.DistributionVersion )
+                else if ( AdapterFileVersion==AllDescriptions.V2_1_17_9.DistributionVersion )
                 {
-                    rc = V2_1Description.V2_1_17_9;
+                    rc = AllDescriptions.V2_1_17_9;
                 }
 
                 // TODO: Verify!
@@ -46,7 +46,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
 
             LogService.Log.Debug("VersionHeuristics: TryFindAdapter1.");
 
-            if ( TryGetAdapterAssembly(FileService.AdfsDir, AssemblyNames.Adapter, out AssemblySpec tmpSpec) )
+            if ( TryGetAdapterAssembly(FileService.AdfsDir, PluginConstants.AdapterFilename, out AssemblySpec tmpSpec) )
             {
                 // Found one in ADFS directory
                 AdfsDirAssembly = tmpSpec;
@@ -57,7 +57,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
 
             LogService.Log.Debug("VersionHeuristics: TryFindAdapter2.");
 
-            if (TryGetAdapterAssembly(FileService.GACDir, AssemblyNames.Adapter, out tmpSpec))
+            if (TryGetAdapterAssembly(FileService.GACDir, PluginConstants.AdapterFilename, out tmpSpec))
             {
                 GACAssembly = tmpSpec;
                 LogService.Log.Info($"Found in GAC: {tmpSpec.FileVersion}");

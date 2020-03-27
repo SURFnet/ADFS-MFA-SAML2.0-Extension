@@ -8,6 +8,11 @@ using System.Text;
 
 namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
 {
+    /// <summary>
+    /// Base class for specific components version descriptions.
+    /// If there is any configuration (Configuration property != null).
+    /// Then they *MUST* overwrite the ReadConfiguration() and WriteConfiguration() methods.
+    /// </summary>
     public class StepupComponent : ISetupHandler
     {
         // TODO: better with Constructor(x,y,z) and/or private setters?

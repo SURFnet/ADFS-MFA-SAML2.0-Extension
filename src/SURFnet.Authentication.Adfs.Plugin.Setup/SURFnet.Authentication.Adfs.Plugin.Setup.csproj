@@ -68,7 +68,6 @@
   <ItemGroup>
     <Compile Include="AdfsServer.cs" />
     <Compile Include="FileDirectory.cs" />
-    <Compile Include="Assemblies\AssemblyNames.cs" />
     <Compile Include="ConsoleExtensions.cs" />
     <Compile Include="Models\MfaExtensionMetadata.cs" />
     <Compile Include="Models\IdentityProvider.cs" />
@@ -102,25 +101,26 @@
     <Compile Include="Question\YesNoQuestion.cs" />
     <Compile Include="Question\Question.cs" />
     <Compile Include="Services\AdfsPSService.cs" />
-    <Compile Include="Services\AssemblyService.cs" />
     <Compile Include="Services\ConfigurationFileService.cs" />
     <Compile Include="Services\FakeAdfsService.cs" />
     <Compile Include="Services\FileService.cs" />
     <Compile Include="Services\Interfaces\IAdfsPSService.cs" />
-    <Compile Include="Services\Interfaces\IAssemblyService.cs" />
     <Compile Include="Services\Interfaces\IConfigurationFileService.cs" />
     <Compile Include="Services\Interfaces\IFileService.cs" />
     <Compile Include="Services\LogService.cs" />
-    <Compile Include="SetupMode.cs" />
+    <Compile Include="SetupFlags.cs" />
     <Compile Include="SetupSettings.cs" />
     <Compile Include="StepUpGatewayConstants.cs" />
     <Compile Include="Upgrades\UpgradeToV2.cs" />
     <Compile Include="Util\UAC.cs" />
     <Compile Include="VersionDetector.cs" />
     <Compile Include="Versions\ComponentAssemblies.cs" />
+    <Compile Include="Versions\SustainsysComponent.cs" />
+    <Compile Include="Versions\V1AdfsConfigHandler.cs" />
     <Compile Include="Versions\V1Components.cs" />
     <Compile Include="Versions\ISetupHandler.cs" />
-    <Compile Include="Versions\V2-1Description.cs" />
+    <Compile Include="Versions\V2-1Adapter.cs" />
+    <Compile Include="Versions\AllDescriptions.cs" />
     <Compile Include="Versions\V2_1Components.cs" />
     <Compile Include="Versions\V1010Description.cs" />
     <Compile Include="Versions\StepupComponent.cs" />
@@ -128,6 +128,7 @@
     <Compile Include="Versions\V1Common.cs" />
     <Compile Include="Versions\V2Assemblies.cs" />
     <Compile Include="Versions\VersionDescription.cs" />
+    <Compile Include="Versions\VersionDictionary.cs" />
     <Compile Include="Versions\VersionHeuristics.cs" />
   </ItemGroup>
   <ItemGroup>

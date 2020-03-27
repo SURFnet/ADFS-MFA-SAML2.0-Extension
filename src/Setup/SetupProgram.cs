@@ -17,7 +17,9 @@
 namespace SURFnet.Authentication.Adfs.Plugin.Setup
 {
     using System;
+    using System.Collections.Generic;
     using log4net;
+    using SURFnet.Authentication.Adfs.Plugin.Setup.Models;
     using SURFnet.Authentication.Adfs.Plugin.Setup.Question;
     using SURFnet.Authentication.Adfs.Plugin.Setup.Question.SettingsQuestions;
     using SURFnet.Authentication.Adfs.Plugin.Setup.Services;
@@ -36,6 +38,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
         /// <param name="args">The arguments.</param>
         public static int Main(string[] args)
         {
+            Console.WriteLine($"Setup for Single Factor Only ADFS MFA extension (version: {SetupSettings.SetupVersion})");
+
             if ( args.Length == 0 )
             {
                 Help();
@@ -64,28 +68,38 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
 
             LogService.Log.Debug("Main: After ParseOptions()");
 
+
             try
             {
-                var heuristic = new VersionHeuristics();
-                if ( heuristic!=null)
-                {
-                    var vdesc = heuristic.Probe();
-                    if ( vdesc != null )
-                    {
-                        Console.WriteLine($"Version on local disk: {heuristic.AdapterFileVersion}");
-                        int result = vdesc.Verify();
-                        if ( result == 0 )
-                        {
-                            // so far, so good.
-                            LogService.Log.Info("Verify() result: so far, so good.");
-                        }
-                        else
-                        {
-                            Console.WriteLine("Some missing file or version mismatch. No cigar!");
-                        }
-                    }
+                FileService.InitFileService();
 
+                // check ADFS service state etc.
+
+                // now the settings
+                List<Setting> allSettings;
+
+                VersionDescription vdesc = AllDescriptions.V1_0_1_0;
+                allSettings = vdesc.ReadConfiguration();
+
+                if (allSettings != null)
+                {
+                    var result = AllDescriptions.V2_1_17_9.WriteConfiguration(allSettings);
                 }
+
+                var heuristic = new VersionHeuristics();
+                vdesc = heuristic.Probe();
+                if ( vdesc != null )
+                {
+                    Console.WriteLine($"Heuristic detected version on local disk: {heuristic.AdapterFileVersion}");
+                    int result = vdesc.Verify();
+                    if (result == 0)
+                    {
+                        // so far, so good.
+                        LogService.Log.Info("Verify() result: so far, so good.");
+
+                    }
+                }
+
             }
             catch (Exception ex)
             {

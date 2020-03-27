@@ -94,6 +94,12 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
             }
         }
 
+        public static void WriteWarning(string warning)
+        {
+            Console.WriteLine(warning);
+            LogService.Log.Warn(warning);
+        }
+
         public static void WriteFatal(string error)
         {
             Console.WriteLine(error);

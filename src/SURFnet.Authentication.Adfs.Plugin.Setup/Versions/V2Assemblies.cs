@@ -7,7 +7,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
     {
         static public readonly AssemblySpec[] AdapterSpec = new AssemblySpec[]
         {
-            new AssemblySpec("SURFnet.Authentication.Adfs.Plugin.dll")
+            new AssemblySpec(PluginConstants.AdapterFilename)
             {
             AssemblyFullName = "SURFnet.Authentication.Adfs.Plugin, Version=1.0.1.0, Culture=neutral, PublicKeyToken=3f3ecd9d2f3457f7",
             AssemblyVersion = new Version("1.0.1.0"),

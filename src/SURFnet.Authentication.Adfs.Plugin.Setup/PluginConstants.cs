@@ -21,15 +21,21 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
     /// </summary>
     public static class PluginConstants
     {
+        public static class XmlAttribName
+        {
+            public const string EntityId = "entityId";
+        }
+
         public static class InternalNames
         {
             public const string SchacHomeOrganization = "schacHomeOrganization";
 
             public const string ActiveDirectoryUserIdAttribute = "ActiveDirectoryUserIdAttribute";
 
-            public const string EntityId = "entityId";
+            public const string SPEntityId = "SP-entityId";
 
             public const string CertificateThumbprint = "SpSigningCertificate";
+
             
             public const string CertificateStoreName = "storeName";
 
@@ -38,13 +44,13 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
             public const string FindBy = "x509FindType";
         }
 
-        public static class FriendlyNames
+        public static class DisplayNames
         {
             public const string SchacHomeOrganization = "SFOMfaExtensionSchacHomeOrganization";
 
             public const string ActiveDirectoryUserIdAttribute = "SFOMfaExtensionactiveDirectoryUserIdAttribute";
 
-            public const string EntityId = "SFOMfaExtensionEntityId";
+            public const string SPEntityId = "SFOMfaExtensionEntityId";
 
             public const string CertificateThumbprint = "SFOMfaExtensionCertThumbprint";
             
@@ -55,5 +61,18 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
             public const string FindBy = "certificateIdType";
 
         }
+
+        public const string AdfsCfgFilename = "Microsoft.IdentityServer.Servicehost.exe.config";
+
+        public const string AdapterName = "SURFnet.Authentication.ADFS.Plugin";
+        public const string AdapterFilename = AdapterName + ".dll";
+        public const string AdapterCfgFilename = AdapterFilename + ".conf";
+
+        public const string SustainsysName = "Sustainsys.Saml2";
+        public const string SustainsysFilename = SustainsysName + ".dll";
+        public const string SustainCfgFilename = SustainsysFilename + ".conf";
+
+        public const string Log4netFilename = "log4net.dll";
+        public const string Log4netCfgFilename = "SURFnet.Authentication.ADFS.MFA.Plugin.log4net";
     }
 }

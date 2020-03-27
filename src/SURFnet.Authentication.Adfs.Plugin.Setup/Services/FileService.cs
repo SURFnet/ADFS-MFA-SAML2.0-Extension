@@ -36,17 +36,20 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
         public static string AdfsDir { get; private set; }
 
         /// <summary>
-        /// The adfs directory.
+        /// The V4 GAC directory directory. Which is where the V1.0.1.0 files are.
         /// </summary>
         public static string GACDir { get; private set; }
 
         /// <summary>
         /// The output folder.
+        /// A directory where new files are prepared befor we start the installation.
+        /// The will be copied from there during installation.
         /// </summary>
         public static string OutputFolder { get; private set; }
 
         /// <summary>
         /// The distribution folder.
+        /// The sources (new files) as they come from the ZIP.
         /// </summary>
         public static string DistFolder { get; private set; }
 
@@ -77,13 +80,13 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
         /// <summary>
         /// Initializes a new instance of the <see cref="FileService"/> class.
         /// </summary>
-        public FileService()
+        public static void InitFileService()
         {
 
-            this.EnsureCleanOutputFolder();
-            this.EnsureBackupFolder();
-            this.ValidateDistFolder();
-            this.EnsureConfigFolder();
+            EnsureCleanOutputFolder();
+            EnsureBackupFolder();
+            ValidateDistFolder();
+            EnsureConfigFolder();
         }
 
         public static string Enum2Directory(FileDirectory value)
@@ -168,9 +171,15 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
         /// <param name="document">The document.</param>
         public void CreatePluginConfigurationFile(XDocument document)
         {
-            var path = Path.Combine(OutputFolder, "SURFnet.Authentication.Adfs.Plugin.dll.config");
+            var path = Path.Combine(OutputFolder, PluginConstants.AdapterCfgFilename);
             document.Save(path);
             Console.WriteLine($"Successfully created temp StepUp configuration file in '{path}'");
+        }
+
+        public static void SaveXmlConfigurationFile(XDocument document, string filename)
+        {
+            var path = Path.Combine(OutputFolder, filename);
+            document.Save(path);
         }
 
         /// <summary>
@@ -179,7 +188,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
         /// <param name="document">The document.</param>
         public void CreateSustainSysConfigFile(XDocument document)
         {
-            var path = Path.Combine(OutputFolder, "Sustainsys.Saml2.dll.config");
+            var path = Path.Combine(OutputFolder, PluginConstants.SustainCfgFilename);
             document.Save(path);
             Console.WriteLine($"Successfully created temp StepUp configuration file in '{path}'");
         }
@@ -219,7 +228,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
         /// <returns>The adapter configuration as string.</returns>
         public string GetAdapterConfig()
         {
-            return this.LoadFile("SURFnet.Authentication.Adfs.Plugin.dll.config");
+            return LoadCfgSrcFile(PluginConstants.AdapterCfgFilename);
         }
         
         /// <summary>
@@ -228,7 +237,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
         /// <returns>The sustain sys config.</returns>
         public string GetStepUpConfig()
         {
-            return this.LoadFile("Sustainsys.Saml2.dll.config");
+            return LoadCfgSrcFile(PluginConstants.SustainCfgFilename);
         }
 
         /// <summary>
@@ -259,15 +268,15 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
         /// <returns>The absolute path of the adapter assembly.</returns>
         public string GetAdapterAssembly()
         {
-            // TODO: no, no. Must be ADFS folder!!!! And name from spec!!
-            return Path.Combine(DistFolder, "SURFnet.Authentication.Adfs.Plugin.dll");
+            return Path.Combine(AdfsDir, PluginConstants.AdapterFilename);
         }
 
         /// <summary>
         /// Ensures the output folder.
         /// </summary>
-        private void EnsureCleanOutputFolder()
+        private static void EnsureCleanOutputFolder()
         {
+            // TODO: not ideal!???  Maybe better keep it for setup restart??
             if (Directory.Exists(OutputFolder))
             {
                 Directory.Delete(OutputFolder, true);
@@ -279,7 +288,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
         /// <summary>
         /// Ensures the configuration folder.
         /// </summary>
-        private void EnsureConfigFolder()
+        private static void EnsureConfigFolder()
         {
             if (Directory.Exists(ExtensionConfigurationFolder))
             {
@@ -292,7 +301,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
         /// <summary>
         /// Ensures the backup folder.
         /// </summary>
-        private void EnsureBackupFolder()
+        private static void EnsureBackupFolder()
         {
             if (!Directory.Exists(BackupFolder))
             {
@@ -304,7 +313,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
         /// Validates the dist folder.
         /// </summary>
         /// <exception cref="DirectoryNotFoundException">Missing dist folder. Cannot continue.</exception>
-        private void ValidateDistFolder()
+        private static void ValidateDistFolder()
         {
             if (!Directory.Exists(DistFolder))
             {
@@ -317,7 +326,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
         /// </summary>
         /// <param name="fileName">Name of the file.</param>
         /// <returns>The file contents.</returns>
-        private string LoadFile(string fileName)
+        public static string LoadCfgSrcFile(string fileName)
         {
             try
             {
@@ -326,6 +335,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
             }
             catch (Exception e)
             {
+                // TODO: logging!!!
                 Console.WriteLine($"Error while opening file {fileName}. Details: {e}");
                 throw;
             }
