@@ -113,6 +113,13 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
             return allSettings;
         }
 
+        public virtual int CheckConfigurationParameters(List<Setting> settings)
+        {
+            int rc = 0;
+
+            return rc;
+        }
+
         /// <summary>
         /// Writes all configuration files to the configuration directory.
         /// Stops on first failure.
@@ -230,5 +237,9 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
             return rc;
         }
 
+        public override string ToString()
+        {
+            return DistributionVersion.ToString();
+        }
     }
 }

@@ -5,34 +5,32 @@
     using SURFnet.Authentication.Adfs.Plugin.Setup.Common;
     using SURFnet.Authentication.Adfs.Plugin.Setup.Assemblies;
     using SURFnet.Authentication.Adfs.Plugin.Setup.PS;
-    using SURFnet.Authentication.Adfs.Plugin.Setup.Services.Interfaces;
+    using System.ServiceProcess;
+    using System.Collections.Generic;
 
     /// <summary>
     /// Class AdFsService.
     /// </summary>
-    public class AdfsPSService // : IAdfsPSService
+    public static class AdfsPSService
     {
-        /// <summary>
-        /// The file service.
-        /// </summary>
-        //private readonly IFileService fileService;
+        private static bool fakeit = false;
+        private static Version fakedVersion;
+        private static readonly string adapterName = Values.AdapterRegistrationName;
+        private static readonly Version InvalidVersion = new Version(0, 0, 0, 0);
+        private static readonly Version Version1010 = new Version(1, 0, 1, 0);
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="AdfsPSService"/> class.
-        /// </summary>
-        /// <param name="fileService">The file service.</param>
-        //public AdfsPSService(IFileService fileService)
-        //{
-        //    this.fileService = fileService ?? throw new ArgumentNullException(nameof(fileService));
-        //}
-
-        /// <summary>
-        /// Registers the ADFS MFA extension and add it to the
+        /// Registers the ADFS MFA extension and adds it to the
         /// GlobalAutenticationPolicy.
         /// </summary>
-        public bool RegisterAdapter(AssemblySpec spec)
+        public static bool RegisterAdapter(AssemblySpec spec)
         {
-            var adapterName = Values.DefaultRegistrationName;
+            if ( fakeit )
+            {
+                return true;
+            }
+
+            //var adapterName = Values.AdapterRegistrationName;
             bool ok = true;
 
             try
@@ -85,10 +83,15 @@
         /// <summary>
         /// Unregisters the ADFS MFA extension adapter.
         /// </summary>
-        public bool UnregisterAdapter()
+        public static bool UnregisterAdapter()
         {
+            if (fakeit)
+            {
+                return true;
+            }
+
             bool ok = false;
-            var adapterName = Values.DefaultRegistrationName;
+            //var adapterName = Values.AdapterRegistrationName;
             var policy = AdfsAuthnCmds.GetGlobAuthnPol();
             if ( policy != null )
             {
@@ -125,5 +128,109 @@
 
             return ok;
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="registeredAdapterVersion"></param>
+        /// <returns>true if OK, false on fatal error.</returns>
+        public static bool CheckRegisteredAdapterVersion(out Version registeredAdapterVersion)
+        {
+            bool rc = false;
+            registeredAdapterVersion = InvalidVersion; // No idea yet, initialize
+
+            ServiceController adfsService = AdfsServer.SvcController;
+            try
+            {
+                adfsService.Refresh();
+                if ( adfsService.Status != ServiceControllerStatus.Running )
+                {
+                    LogService.WriteFatal("ADFS service not Running. Start it!");
+                }
+                else
+                {
+                    // get the Registration data from the ADFS configuration.
+                    List<AdfsExtAuthProviderProps> props = AdfsAuthnCmds.GetAuthProviderProps(adapterName);
+                    if ( props!=null )
+                    {
+                        if ( props.Count == 1 )
+                        {
+                            // OK, adapter is registered
+                            registeredAdapterVersion = GetVersionFromAdminName(props[0].AdminName);
+                            rc = true;
+                        }
+                        else
+                        {
+                            // Adapter is not registered, assuming that 'Name' is unique.
+                            // leave it at 0.0.0.0
+                            LogService.Log.Debug($"Found {props.Count} adapters in ADFS configuration.");
+                            rc = true;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                LogService.WriteFatalException("Exception while trying to obtain the MFA Extension version from the ADFS configuration database.", ex);
+            }
+
+            return rc;
+        }
+
+        private static Version GetVersionFromAdminName(string adminName)
+        {
+            if (fakeit)
+            {
+                return fakedVersion;
+            }
+
+            Version rc;
+
+            if ( string.IsNullOrWhiteSpace(adminName) )
+            {
+                throw new ApplicationException("Registered AdminName IsNullOrWhiteSpace(). That is very weird becaus it has a 'const' AdminName");
+            }
+            else if ( ! adminName.StartsWith(adapterName) )
+            {
+                throw new ApplicationException("Registered AdminName does not start with "+adapterName);
+            }
+            else
+            {
+                int index = adapterName.Length;
+                while ( index<adminName.Length && adminName[index]==' ')
+                {
+                    index++;
+                }
+                if ( index == adminName.Length )
+                {
+                    // no version, ie 1.0.1.0
+                    rc = Version1010;
+                }
+                else
+                {
+                    // there is some non blank at the end
+                    string version = adminName.Substring(index);
+                    try
+                    {
+                        rc = new Version(version);
+                    }
+                    catch (Exception ex)
+                    {
+                        LogService.WriteFatalException($"Failed to convert the string '{version}' to a Version.Version", ex);
+                        throw; // must be garbage in AdminName? See log.
+                    }
+                }
+            }
+
+            return rc;
+        }
+
+#if DEBUG
+        public static void FakeIt(Version faked)
+        {
+            fakeit = true;
+            fakedVersion = faked;
+        }
+#endif
     }
 }

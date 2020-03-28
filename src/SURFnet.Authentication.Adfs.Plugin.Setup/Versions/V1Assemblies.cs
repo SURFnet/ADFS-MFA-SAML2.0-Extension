@@ -9,7 +9,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
 {
     public static class V1Assemblies
     {
-        static public readonly AssemblySpec AdapterSpec = new AssemblySpec(PluginConstants.AdapterFilename, FileDirectory.GAC)
+        static public readonly AssemblySpec AdapterSpec = new AssemblySpec(SetupConstants.AdapterFilename, FileDirectory.GAC)
         {
             AssemblyFullName = "SURFnet.Authentication.Adfs.Plugin, Version=1.0.1.0, Culture=nl-NL, PublicKeyToken=5a7c03a5ab19fec3",
             AssemblyVersion = new Version("1.0.1.0"),
@@ -29,7 +29,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
         };
 
 
-        static public readonly AssemblySpec Log4Net2_0_8_GACSpec = new AssemblySpec(PluginConstants.Log4netFilename, FileDirectory.GAC)
+        static public readonly AssemblySpec Log4Net2_0_8_GACSpec = new AssemblySpec(SetupConstants.Log4netFilename, FileDirectory.GAC)
         {
             AssemblyFullName = "log4net, Version=2.0.8.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a",
             AssemblyVersion = new Version("2.0.8.0"),

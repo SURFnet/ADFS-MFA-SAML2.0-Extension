@@ -201,7 +201,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Common.Services
         /// </summary>
         /// <param name="thumbprint">The thumbprint.</param>
         /// <returns>The certificate (PEM format).</returns>
-        public X509Certificate2 GetCertificate(string thumbprint)
+        public static X509Certificate2 GetCertificate(string thumbprint)
         {
             X509Certificate2 certificate = null;
             using (var store = new X509Store("MY", StoreLocation.LocalMachine))
@@ -229,7 +229,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Common.Services
         /// </summary>
         /// <param name="certificate">The certificate.</param>
         /// <returns>The certificate in PEM format.</returns>
-        public string ExportAsPem(X509Certificate2 certificate)
+        public static string ExportAsPem(X509Certificate2 certificate)
         {
             var builder = new StringBuilder();
 

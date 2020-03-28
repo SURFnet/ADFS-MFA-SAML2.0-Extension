@@ -19,7 +19,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
 
         public List<Setting> ExtractAllConfigurationFromAdfsConfig()
         {
-            adfsConfig = XDocument.Load( Path.Combine(FileService.AdfsDir, "Microsoft.IdentityServer.Servicehost.exe.config") );
+            string adfsCfgPath = FileService.OurDirCombine(FileDirectory.AdfsDir, SetupConstants.AdfsCfgFilename);
+            adfsConfig = XDocument.Load( adfsCfgPath );
 
             var settings = new List<Setting>
             {
@@ -37,25 +38,25 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
 
             var nameAttribute = XName.Get("name");
             
-            SetupSettings.SchacHomeSetting.CurrentValue = xmlSettings.FirstOrDefault(s => s.Attribute(nameAttribute)?.Value.Equals(PluginConstants.InternalNames.SchacHomeOrganization) ?? false)?.Value;
+            SetupSettings.SchacHomeSetting.CurrentValue = xmlSettings.FirstOrDefault(s => s.Attribute(nameAttribute)?.Value.Equals(SetupConstants.AdapterInternalNames.SchacHomeOrganization) ?? false)?.Value;
             //if ( null == SetupSettings.SchacHomeSetting.CurrentValue )
             //{
             //    LogService.WriteWarning("Failed to get: " + SetupSettings.SchacHomeSetting.DisplayName);
             //}
             settings.Add(SetupSettings.SchacHomeSetting);
 
-            SetupSettings.ADAttributeSetting.CurrentValue = xmlSettings.FirstOrDefault(s => s.Attribute(nameAttribute)?.Value.Equals(PluginConstants.InternalNames.ActiveDirectoryUserIdAttribute) ?? false)?.Value;
+            SetupSettings.ADAttributeSetting.CurrentValue = xmlSettings.FirstOrDefault(s => s.Attribute(nameAttribute)?.Value.Equals(SetupConstants.AdapterInternalNames.ActiveDirectoryUserIdAttribute) ?? false)?.Value;
             settings.Add(SetupSettings.ADAttributeSetting);
 
-            SetupSettings.SPEntityID.CurrentValue = kentorConfigSection?.Attribute(XName.Get(PluginConstants.XmlAttribName.EntityId))?.Value;
+            SetupSettings.SPEntityID.CurrentValue = kentorConfigSection?.Attribute(XName.Get(SetupConstants.XmlAttribName.EntityId))?.Value;
             settings.Add(SetupSettings.SPEntityID);
 
-            SetupSettings.SPSigningThumbprint.CurrentValue = xmlSettings.FirstOrDefault(s => s.Attribute(nameAttribute)?.Value.Equals(PluginConstants.InternalNames.CertificateThumbprint) ?? false)?.Value;
+            SetupSettings.SPSigningThumbprint.CurrentValue = xmlSettings.FirstOrDefault(s => s.Attribute(nameAttribute)?.Value.Equals(SetupConstants.AdapterInternalNames.CertificateThumbprint) ?? false)?.Value;
             settings.Add(SetupSettings.SPSigningThumbprint);
 
             // Now IdP / SFO gateway
             // No need to fetch anything but entityID.
-            SetupSettings.IdPEntityID.CurrentValue = identityProvider?.Attribute(XName.Get(PluginConstants.XmlAttribName.EntityId))?.Value;
+            SetupSettings.IdPEntityID.CurrentValue = identityProvider?.Attribute(XName.Get(SetupConstants.XmlAttribName.EntityId))?.Value;
             settings.Add(SetupSettings.IdPEntityID);
 
             return settings;

@@ -11,18 +11,18 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
 {
     public class V2_1Adapter : StepupComponent
     {
-        public V2_1Adapter() : base ()
+        public V2_1Adapter() : base ("Adapter V2.1.*")
         {
 
         }
 
         private static readonly string[] ConfigParameters =
         {
-            PluginConstants.DisplayNames.SchacHomeOrganization,
-            PluginConstants.DisplayNames.ActiveDirectoryUserIdAttribute,
-            PluginConstants.DisplayNames.CertificateThumbprint,
-            StepUpGatewayConstants.DisplayNames.MinimalLoa,
-            StepUpGatewayConstants.DisplayNames.SecondFactorEndpoint
+            SetupConstants.AdapterDisplayNames.SchacHomeOrganization,
+            SetupConstants.AdapterDisplayNames.ActiveDirectoryUserIdAttribute,
+            SetupConstants.AdapterDisplayNames.CertificateThumbprint,
+            StepUpGatewayConstants.GwDisplayNames.MinimalLoa,
+            StepUpGatewayConstants.GwDisplayNames.SecondFactorEndpoint
         };
 
         public override List<Setting> ReadConfiguration()
@@ -43,7 +43,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
             }
 
             var document = XDocument.Parse(contents); // TODO: wow soliciting exception....
-            FileService.SaveXmlConfigurationFile(document, PluginConstants.AdapterCfgFilename);
+            FileService.SaveXmlConfigurationFile(document, SetupConstants.AdapterCfgFilename);
 
             return rc;
         }

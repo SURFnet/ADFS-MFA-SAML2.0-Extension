@@ -17,21 +17,18 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
 
         public static readonly StepupComponent[] Components = new StepupComponent[]
         {
-            new SustainsysComponent()
+            new Sustainsys_2_3_Component()
             {
-                ComponentName = "Saml2",
                 Assemblies = ComponentAssemblies.Sustain2_3Spec,
-                ConfigFilename = PluginConstants.SustainCfgFilename
+                ConfigFilename = SetupConstants.SustainCfgFilename
             },
-            new StepupComponent()
+            new StepupComponent("log4net v2.0.8")
             {
-                ComponentName = "log4net",
                 Assemblies = ComponentAssemblies.Log4Net2_0_8Spec,
-                ConfigFilename = PluginConstants.Log4netCfgFilename
+                ConfigFilename = SetupConstants.Log4netCfgFilename
             },
-            new StepupComponent()
+            new StepupComponent("Newtonsoft v12.0.3")
             {
-                ComponentName = "Newtonsoft",
                 Assemblies = ComponentAssemblies.Newtonsoft12_0_3Spec,
                 ConfigFilename = null
             }

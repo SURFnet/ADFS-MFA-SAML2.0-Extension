@@ -22,6 +22,13 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
         public string ConfigFilename { get; set; }
         public readonly FileDirectory ConfigFileDirectory = FileDirectory.AdfsDir; // never in GAC, nor other places
 
+        private StepupComponent() { } // hide
+
+        public StepupComponent(string componentname)
+        {
+            ComponentName = componentname;
+        }
+
         public virtual int Verify()
         {
             int rc = 0; // assume OK
@@ -71,6 +78,13 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
             return rc;
         }
 
+        public virtual int CheckConfigurationParameters(List<Setting> settings)
+        {
+            int rc = 0;
+
+            return rc;
+        }
+
         public virtual int WriteConfiguration(List<Setting> settings)
         {
             if (ConfigFilename != null)
@@ -91,7 +105,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
             if (ConfigFilename != null)
             {
                 string dest = FileService.OurDirCombine(ConfigFileDirectory, ConfigFilename);
-                string src = Path.Combine(FileService.ExtensionConfigurationFolder, ConfigFilename);
+                string src = Path.Combine(FileService.RegistrationDataFolder, ConfigFilename);
                 try
                 {
                     File.Copy(src, dest, true); // force overwrite
@@ -150,6 +164,11 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
             }
 
             return rc;
+        }
+
+        public override string ToString()
+        {
+            return ComponentName;
         }
     }
 }

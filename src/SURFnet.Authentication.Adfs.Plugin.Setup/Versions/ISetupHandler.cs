@@ -42,6 +42,15 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
         List<Setting> ReadConfiguration();
 
         /// <summary>
+        /// Each component may need some configuration parameters.
+        /// This method can expand the parameter set. For instance adding all
+        /// Stepup Gateway (SFO IdP) parameters base on the entityID of the gateway.
+        /// It should also signal missing values (by returning non-zero).
+        /// </summary>
+        /// <returns>0 if OK</returns>
+        int CheckConfigurationParameters(List<Setting> settings);
+
+        /// <summary>
         /// Writes the new configuration files to the configuration directory.
         /// Install() will later copy them to the TargetDirectory.
         /// </summary>

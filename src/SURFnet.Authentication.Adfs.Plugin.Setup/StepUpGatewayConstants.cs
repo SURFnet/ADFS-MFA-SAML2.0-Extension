@@ -21,7 +21,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
     /// </summary>
     public static class StepUpGatewayConstants
     {
-        public static class InternalNames
+        public static class GwInternalNames
         {
             public const string SecondFactorEndpoint = "SecondFactorEndpoint";
 
@@ -37,7 +37,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
         /// <summary>
         /// Class FriendlyNames. These values Must match with the property names in the JSON file
         /// </summary>
-        public static class DisplayNames
+        public static class GwDisplayNames
         {
             public const string SecondFactorEndpoint = "StepupGatewaySSOLocation";  // TODO: ???? rename to endpoint ???? of URL??
 

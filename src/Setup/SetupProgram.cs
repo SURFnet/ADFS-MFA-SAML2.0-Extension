@@ -18,6 +18,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
 {
     using System;
     using System.Collections.Generic;
+    using System.ServiceProcess;
     using log4net;
     using SURFnet.Authentication.Adfs.Plugin.Setup.Models;
     using SURFnet.Authentication.Adfs.Plugin.Setup.Question;
@@ -30,44 +31,24 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
     /// <summary>
     /// Class Program.
     /// </summary>
-    public class SetupProgram
+    public static class SetupProgram
     {
+        //
+        // Preaparation results.
+        // TODO: not a nice place. Bit of a smell?
+        //
+        static List<Dictionary<string, string>> GwEnvironments;
+        static Version VersionRegisteredInAdfsConfig;
+
         /// <summary>
         /// Defines the entry point of the application.
         /// </summary>
         /// <param name="args">The arguments.</param>
         public static int Main(string[] args)
         {
-            Console.WriteLine($"Setup for Single Factor Only ADFS MFA extension (version: {SetupSettings.SetupVersion})");
-
-            if ( args.Length == 0 )
-            {
-                Help();
-                return 4;
-            }
-
-            if ( !UAC.HasAdministratorPrivileges() )
-            {
-                Console.WriteLine("Must be a member of local Administrators and run with Administrative privileges.");
-                return 4;
-            }
-
-            // would not log without Admin!
-            ILog log = LogManager.GetLogger("Setup");
-            LogService.InsertLoggerDependency(log);
-#if DEBUG
-            LogService.Log.Info("Log Started");  // just to check if logging works. Needs Admin etc.
-#endif
-
-            int rc = ParseOptions(args);
-            if ( rc != 0 )
-            {
-                Help();
-                return 4;
-            }
-
-            LogService.Log.Debug("Main: After ParseOptions()");
-
+            int rc = PrepareForSetup(args);
+            if (rc != 0)
+                return rc;
 
             try
             {
@@ -150,6 +131,92 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                 Console.WriteLine("Type 'exit' to exit");
             }
 
+            return rc;
+        }
+
+        /// <summary>
+        /// Initializes the setup program reads environment files, checks if ADFS is
+        /// installed on the machine, if the adapetr is registered in the farm etc.
+        /// Logs and Warns if anything is wrong. 
+        /// </summary>
+        /// <param name="args">returns 0 if OK</param>
+        /// <returns></returns>
+        private static int PrepareForSetup(string[] args)
+        {
+            int rc = 0;
+
+            Console.WriteLine($"Setup for Single Factor Only ADFS MFA extension (version: {SetupSettings.SetupVersion})");
+
+            if (args.Length == 0)
+            {
+                Help();
+                return 4;
+            }
+
+            if (!UAC.HasAdministratorPrivileges())
+            {
+                Console.WriteLine("Must be a member of local Administrators and run with Administrative privileges.");
+                return 4;
+            }
+
+            // would not log without Admin!
+            ILog log = LogManager.GetLogger("Setup");
+            LogService.InsertLoggerDependency(log);
+#if DEBUG
+            LogService.Log.Info("Log Started");  // just to check if logging works. Needs Admin etc.
+#endif
+
+            rc = ParseOptions(args);
+            if (rc != 0)
+            {
+                Help();
+                return 4;
+            }
+
+            LogService.Log.Debug("Main: After ParseOptions()");
+
+            try
+            {
+                FileService.InitFileService();
+
+                GwEnvironments = ConfigurationFileService.LoadGWDefaults();
+                if ( GwEnvironments==null || GwEnvironments.Count<3)
+                {
+                    // Darn, no error check at low level?
+                    throw new ApplicationException("Some error in the Stepup Gateway (IdP) environment descriptions.");
+                }
+
+                ServiceController controller = AdfsServer.CheckAdFsService();
+                if ( controller == null )
+                {
+                    // ai, no ADFS service on this machine.
+#if DEBUG
+                    // Choose which version to fake.
+                    Version faking = new Version(1, 0, 1, 0);
+                    //Version faking = SetupSettings.SetupVersion;
+
+                    AdfsPSService.FakeIt(faking);
+                    Console.WriteLine("Faking version: " + faking.ToString());
+#else
+                    LogService.WriteFatal("No ADFS service on this machine! This program configures ADFS. Stopping.");
+                    rc = 8;
+#endif
+                }
+                else if ( AdfsPSService.CheckRegisteredAdapterVersion(out VersionRegisteredInAdfsConfig) )
+                {
+                    // no exceptions. 0.0.0.0 means green field?
+                    Console.WriteLine("MFA extension registered in the ADFS configuration: "+VersionRegisteredInAdfsConfig.ToString());
+                }
+                else
+                {
+                    rc = 8; // Some ADFS access failure (most likely) or weird Version fetch failure.
+                }
+            }
+            catch (Exception ex)
+            {
+                LogService.WriteFatalException("Fatal failure in Setup preparation.", ex);
+                rc = 8;
+            }
             return rc;
         }
 

@@ -20,7 +20,6 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
     using System.ServiceProcess;
     using System.Threading;
     using SURFnet.Authentication.Adfs.Plugin.Setup.Services;
-    using SURFnet.Authentication.Adfs.Plugin.Setup.Services.Interfaces;
 
     /// <summary>
     /// Class AdFsServer.
@@ -29,7 +28,13 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
     {
         private const int DefaultRetries = 29;
         private const int DefaultSleepMs = 1000;
-        private const string DefaultName = "adfssrv";
+        private const string DefaultAdfsSvcName = "adfssrv";
+
+        ///
+        /// The polling is theoretically not 100% correct.
+        /// The official algorithm is more complex. If the machine
+        /// is not under severe stress then this will work.
+        ///
 
         /// <summary>
         /// Defines the maximum retries to start and stop the service
@@ -42,8 +47,11 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
         /// </summary>
         private static int SleepMs = DefaultSleepMs;
 
-        private static string ServiceName = DefaultName;
+        private static string ServiceName = DefaultAdfsSvcName;
 
+        /// <summary>
+        /// Get Available for the service account, which must have rights for the private key.
+        /// </summary>
         public static ServiceController SvcController { get; private set; } = null;
 
         /// <summary>
@@ -57,6 +65,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
             SleepMs = sleepMs;
             if ( SvcController != null )
             {
+                // reconfiguration
                 try
                 {
                     SvcController.Dispose();
@@ -66,22 +75,6 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                     SvcController = null;
                 }
             }
-        }
-
-        /// <summary>
-        /// Stops the ADFS service.
-        /// </summary>
-        public static int StopAdFsService()
-        {
-            if (SvcController == null)
-                return -1;
-
-            Console.Write("Stopping ADFS service");
-            int rc = StopAdFsServiceInternal();
-            Console.WriteLine();
-            Console.WriteLine("Stopped ADFS service");
-
-            return rc;
         }
 
         /// <summary>
@@ -132,6 +125,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                             break;
                     }
 
+                    // print once it 3 polls
                     if (more && (--retriesLeft > 0))
                     {
                         if (0 == (retriesLeft % 3))
@@ -141,9 +135,9 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                     }
                 } // timeout loop
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                Console.WriteLine($"Failed to stop the ADFS service. Details: {e}");
+                LogService.WriteFatalException("Failed to stop the ADFS service.", ex);
                 rc = -2;
             }
 
@@ -156,9 +150,35 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
         }
 
         /// <summary>
-        /// Stops the ADFS service.
+        /// Tries to Stop the ADFS server and writes activity to the Console
         /// </summary>
-        /// <param name="failsave">The failsave.</param>
+        /// <returns>0 if OK</returns>
+        public static int StopAdFsService()
+        {
+            if (SvcController == null)
+                return -1;
+
+            Console.Write("Stopping ADFS service");
+            int rc = StopAdFsServiceInternal();
+            Console.WriteLine();
+            if ( rc == 0 )
+            {
+                Console.WriteLine("Stopped ADFS service");
+            }
+            else
+            {
+                LogService.WriteFatal("Stopping the ADFS service failed.");
+            }
+
+            return rc;
+        }
+
+
+
+        /// <summary>
+        /// Tries to get the service into the Stopped state.
+        /// </summary>
+        /// <returns>0 if OK</returns>
         private static int StopAdFsServiceInternal()
         {
             int rc = -1;
@@ -191,6 +211,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                             break;
                     }
 
+                    // Write dots once in the three polls
                     if ( more && (--retriesLeft>0) )
                     {
                         if ( 0==(retriesLeft%3) )
@@ -200,9 +221,9 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                     }
                 } // timeout loop
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                Console.WriteLine($"Failed to stop the ADFS service. Details: {e}");
+                LogService.WriteFatalException("Failed to stop the ADFS service. Details: ", ex);
                 rc = -2;
             }
 
@@ -215,24 +236,31 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
         }
 
         /// <summary>
-        /// Gets the ad fs service.
+        /// Gets the ADFS service controller.
         /// </summary>
-        /// <returns><see cref="ServiceController"/>.</returns>
-        private static ServiceController CheckAdFsService()
+        /// <returns><see cref="ServiceController"/>null on error</returns>
+        public static ServiceController CheckAdFsService()
         {
             SvcController = null;
 
             try
             {
-                SvcController = new ServiceController("adfssrv");
+                ServiceController tmp = new ServiceController("adfssrv");
+                // trigger exception if not on machine.
+                var beng = tmp.Status;
+                SvcController = tmp;
             }
-            catch (ArgumentException)
+            catch (InvalidOperationException ex1)
             {
-                LogService.Log.Fatal("No ADFS service on this machine");
+                LogService.WriteFatalException("No ADFS on this machine.", ex1);
+            }
+            catch (ArgumentException ex2)
+            {
+                LogService.WriteFatalException("Invalid name for ADFS service on this machine.", ex2);
             }
             catch (Exception ex)
             {
-                LogService.Log.Fatal(ex.ToString());
+                LogService.WriteFatalException("Trying to get a ServiceController threw an unexpectedexception!", ex);
             }
 
             return SvcController;

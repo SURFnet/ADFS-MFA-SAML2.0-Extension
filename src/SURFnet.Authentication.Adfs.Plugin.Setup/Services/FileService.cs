@@ -22,12 +22,17 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
     using System.Xml.Linq;
 
     using SURFnet.Authentication.Adfs.Plugin.Setup.Models;
-    using SURFnet.Authentication.Adfs.Plugin.Setup.Services.Interfaces;
 
     /// <summary>
     /// Handles all disk operations.
+    /// It hides (isolates) the location/layout of the setup directory structure.
+    /// It provides the methods to do the file operations. 
+    /// It is aware of the directory structure:
+    ///   dist:    the distribution files of this version.
+    ///   output:  temporary files generated befor the real installation (copy)
+    ///   backup:  when an uninstall or partial remove happens, the file go here.
     /// </summary>
-    public class FileService : IFileService
+    public class FileService
     {
         static readonly string[] directoryMap = new string[(int)FileDirectory.Sentinel];
         /// <summary>
@@ -61,7 +66,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
         /// <summary>
         /// Contains the extension information needed to configure the StepUp Gateway.
         /// </summary>
-        public static string ExtensionConfigurationFolder { get; private set; }
+        public static string RegistrationDataFolder { get; private set; }
 
         static FileService()
         {
@@ -74,7 +79,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
             OutputFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "output");
             DistFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "dist");
             BackupFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "backup");
-            ExtensionConfigurationFolder = Path.Combine(OutputFolder, "configuration");
+            RegistrationDataFolder = Path.Combine(OutputFolder, "configuration");
         }
 
         /// <summary>
@@ -105,44 +110,44 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
         /// Copies the assemblies to the output directory.
         /// </summary>
         /// <returns><c>true</c> if all assemblies and corresponding config files are successfully copied.</returns>
-        public bool CopyAssembliesToOutput()
-        {
-            var succeeded = true;
-            var assemblies = new[]
-                                 {
-                                     "SURFnet.Authentication.ADFS.MFA.Plugin.log4net",
-                                     "SURFnet.Authentication.Adfs.Plugin.dll", 
-                                     "log4net.dll",
-                                     "Sustainsys.Saml2.dll"
-                                 };
-            foreach (var assembly in assemblies)
-            {
-                try
-                {
-                    var from = Path.Combine(DistFolder, assembly);
-                    var to = Path.Combine(OutputFolder, assembly);
-                    File.Copy(from, to);
-                }
-                catch (Exception ex)
-                {
-                    LogService.WriteFatalException($"Failed to copy file '{assembly}' to output directory.", ex);
-                    succeeded = false;
-                }
-            }
+        //public bool CopyAssembliesToOutput()
+        //{
+        //    var succeeded = true;
+        //    var assemblies = new[]
+        //                         {
+        //                             "SURFnet.Authentication.ADFS.MFA.Plugin.log4net",
+        //                             "SURFnet.Authentication.Adfs.Plugin.dll", 
+        //                             "log4net.dll",
+        //                             "Sustainsys.Saml2.dll"
+        //                         };
+        //    foreach (var assembly in assemblies)
+        //    {
+        //        try
+        //        {
+        //            var from = Path.Combine(DistFolder, assembly);
+        //            var to = Path.Combine(OutputFolder, assembly);
+        //            File.Copy(from, to);
+        //        }
+        //        catch (Exception ex)
+        //        {
+        //            LogService.WriteFatalException($"Failed to copy file '{assembly}' to output directory.", ex);
+        //            succeeded = false;
+        //        }
+        //    }
 
-            Console.WriteLine($"Successfully copied assemblies to output directory");
+        //    Console.WriteLine($"Successfully copied assemblies to output directory");
 
-            return succeeded;
-        }
+        //    return succeeded;
+        //}
 
         /// <summary>
         /// Copies all files in the output directory to the ADFS directory.
         /// </summary>
-        public void CopyOutputToAdFsDirectory()
-        {
-            // set new assemblies in adfs dir. First config, than assembly
+        //public void CopyOutputToAdFsDirectory()
+        //{
+        //    // set new assemblies in adfs dir. First config, than assembly
 
-        }
+        //}
 
         /// <summary>
         /// Loads the ad fs configuration file.
@@ -158,7 +163,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
         /// Loads the default StepUp configuration from a file.
         /// </summary>
         /// <returns>The default StepUp configuration.</returns>
-        public string LoadDefaultConfigFile()
+        public static string LoadGwEnvironmentsConfigFile()
         {
             var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Config", "SURFnet.Authentication.ADFS.MFA.Plugin.Environments.json");
             var contents = File.ReadAllText(path);
@@ -171,7 +176,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
         /// <param name="document">The document.</param>
         public void CreatePluginConfigurationFile(XDocument document)
         {
-            var path = Path.Combine(OutputFolder, PluginConstants.AdapterCfgFilename);
+            var path = Path.Combine(OutputFolder, SetupConstants.AdapterCfgFilename);
             document.Save(path);
             Console.WriteLine($"Successfully created temp StepUp configuration file in '{path}'");
         }
@@ -188,7 +193,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
         /// <param name="document">The document.</param>
         public void CreateSustainSysConfigFile(XDocument document)
         {
-            var path = Path.Combine(OutputFolder, PluginConstants.SustainCfgFilename);
+            var path = Path.Combine(OutputFolder, SetupConstants.SustainCfgFilename);
             document.Save(path);
             Console.WriteLine($"Successfully created temp StepUp configuration file in '{path}'");
         }
@@ -217,7 +222,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
             }
             catch (Exception e)
             {
-                Console.WriteLine($"Failed to create ADFS config backup. Details: {e}");
+                LogService.WriteFatalException("Failed to create ADFS config backup.", e);
                 throw;
             }
         }
@@ -228,7 +233,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
         /// <returns>The adapter configuration as string.</returns>
         public string GetAdapterConfig()
         {
-            return LoadCfgSrcFile(PluginConstants.AdapterCfgFilename);
+            return LoadCfgSrcFile(SetupConstants.AdapterCfgFilename);
         }
         
         /// <summary>
@@ -237,14 +242,35 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
         /// <returns>The sustain sys config.</returns>
         public string GetStepUpConfig()
         {
-            return LoadCfgSrcFile(PluginConstants.SustainCfgFilename);
+            return LoadCfgSrcFile(SetupConstants.SustainCfgFilename);
+        }
+
+
+        /// <summary>
+        /// Loads the specified file from disk as a string.
+        /// </summary>
+        /// <param name="fileName">Name of the file.</param>
+        /// <returns>The file contents.</returns>
+        public static string LoadCfgSrcFile(string fileName)
+        {
+            string filepath = Path.Combine(DistFolder, fileName);
+            try
+            {
+                var contents = File.ReadAllText(filepath);
+                return contents;
+            }
+            catch (Exception e)
+            {
+                LogService.WriteFatalException($"Error while opening file {fileName}", e);
+                throw;
+            }
         }
 
         /// <summary>
         /// Saves the configuration data.
         /// </summary>
         /// <param name="metadata">The metadata.</param>
-        public void SaveConfigurationData(MfaExtensionMetadata metadata)
+        public void SaveRegistrationData(MfaExtensionMetadata metadata)
         {
             var sb = new StringBuilder();
             sb.AppendLine($"Issuer: {metadata.SfoMfaExtensionEntityId}");
@@ -252,7 +278,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
             sb.AppendLine(metadata.SfoMfaExtensionCert);
             sb.AppendLine($"ACS: {metadata.ACS}");
 
-            var filePath = Path.Combine(ExtensionConfigurationFolder, "MfaExtensionConfiguration.txt");
+            var filePath = Path.Combine(RegistrationDataFolder, "MfaExtensionConfiguration.txt");
             if (File.Exists(filePath))
             {
                 Console.WriteLine($"Removing old config");
@@ -266,10 +292,10 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
         /// Gets the absolute path of the adapter assembly.
         /// </summary>
         /// <returns>The absolute path of the adapter assembly.</returns>
-        public string GetAdapterAssembly()
-        {
-            return Path.Combine(AdfsDir, PluginConstants.AdapterFilename);
-        }
+        //public string GetAdapterAssembly()
+        //{
+        //    return Path.Combine(AdfsDir, PluginConstants.AdapterFilename);
+        //}
 
         /// <summary>
         /// Ensures the output folder.
@@ -290,12 +316,12 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
         /// </summary>
         private static void EnsureConfigFolder()
         {
-            if (Directory.Exists(ExtensionConfigurationFolder))
+            if (Directory.Exists(RegistrationDataFolder))
             {
-                Directory.Delete(ExtensionConfigurationFolder);
+                Directory.Delete(RegistrationDataFolder);
             }
 
-            Directory.CreateDirectory(ExtensionConfigurationFolder);
+            Directory.CreateDirectory(RegistrationDataFolder);
         }
 
         /// <summary>
@@ -317,27 +343,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
         {
             if (!Directory.Exists(DistFolder))
             {
+                LogService.WriteFatal("Missing dist folder with installation files. Cannot continue.");
                 throw new DirectoryNotFoundException("Missing dist folder. Cannot continue.");
-            }
-        }
-
-        /// <summary>
-        /// Loads the file from disk.
-        /// </summary>
-        /// <param name="fileName">Name of the file.</param>
-        /// <returns>The file contents.</returns>
-        public static string LoadCfgSrcFile(string fileName)
-        {
-            try
-            {
-                var contents = File.ReadAllText(Path.Combine(DistFolder, fileName));
-                return contents;
-            }
-            catch (Exception e)
-            {
-                // TODO: logging!!!
-                Console.WriteLine($"Error while opening file {fileName}. Details: {e}");
-                throw;
             }
         }
     }

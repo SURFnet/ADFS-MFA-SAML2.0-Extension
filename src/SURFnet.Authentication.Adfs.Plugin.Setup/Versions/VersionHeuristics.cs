@@ -46,7 +46,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
 
             LogService.Log.Debug("VersionHeuristics: TryFindAdapter1.");
 
-            if ( TryGetAdapterAssembly(FileService.AdfsDir, PluginConstants.AdapterFilename, out AssemblySpec tmpSpec) )
+            if ( TryGetAdapterAssembly(FileService.AdfsDir, SetupConstants.AdapterFilename, out AssemblySpec tmpSpec) )
             {
                 // Found one in ADFS directory
                 AdfsDirAssembly = tmpSpec;
@@ -57,7 +57,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
 
             LogService.Log.Debug("VersionHeuristics: TryFindAdapter2.");
 
-            if (TryGetAdapterAssembly(FileService.GACDir, PluginConstants.AdapterFilename, out tmpSpec))
+            if (TryGetAdapterAssembly(FileService.GACDir, SetupConstants.AdapterFilename, out tmpSpec))
             {
                 GACAssembly = tmpSpec;
                 LogService.Log.Info($"Found in GAC: {tmpSpec.FileVersion}");

@@ -27,8 +27,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
 
         public static Setting SchacHomeSetting = new Setting
         {
-            InternalName = PluginConstants.InternalNames.SchacHomeOrganization,
-            DisplayName = PluginConstants.DisplayNames.SchacHomeOrganization,
+            InternalName = SetupConstants.AdapterInternalNames.SchacHomeOrganization,
+            DisplayName = SetupConstants.AdapterDisplayNames.SchacHomeOrganization,
             Description = new StringBuilder()
                         .AppendLine("The value to use for schacHomeOranization when calculating the NameID for authenticating a user to the Stepup-Gateway")
                         .AppendLine("This must be the same value as the value of the \"urn:mace:terena.org:attribute-def:schacHomeOrganization\" claim that the that AD FS server sends when a user authenticates to the Stepup-Gateway"),
@@ -36,8 +36,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
 
         public static Setting ADAttributeSetting = new Setting
         {
-            InternalName = PluginConstants.InternalNames.ActiveDirectoryUserIdAttribute,
-            DisplayName = PluginConstants.DisplayNames.ActiveDirectoryUserIdAttribute,
+            InternalName = SetupConstants.AdapterInternalNames.ActiveDirectoryUserIdAttribute,
+            DisplayName = SetupConstants.AdapterDisplayNames.ActiveDirectoryUserIdAttribute,
             Description = new StringBuilder()
                     .AppendLine("The name of the AD attribute that contains the user ID (\"uid\") used when calculating the NameID for authenticating a user to the Stepup-Gateway")
                     .AppendLine("This AD attribute must contain the value of the \"urn:mace:dir:attribute-def:uid\" claim that the AD FS server sends when a user authenticates to the Stepup-Gateway"),
@@ -45,8 +45,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
 
         public static Setting SPSigningThumbprint = new Setting()
         {
-            InternalName = PluginConstants.InternalNames.CertificateThumbprint,
-            DisplayName = PluginConstants.DisplayNames.CertificateThumbprint,
+            InternalName = SetupConstants.AdapterInternalNames.CertificateThumbprint,
+            DisplayName = SetupConstants.AdapterDisplayNames.CertificateThumbprint,
             Description = new StringBuilder()
                         .AppendLine("The thumbprint (i.e. the SHA1 hash of the DER X.509 certificate) of the signing certificate")
                         .AppendLine("This is the self-signed certificate that we generated during install and that we installed in the certificate store"),
@@ -54,8 +54,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
 
         public static Setting SPEntityID = new Setting
         {
-            InternalName = PluginConstants.InternalNames.SPEntityId,
-            DisplayName = PluginConstants.DisplayNames.SPEntityId,
+            InternalName = SetupConstants.AdapterInternalNames.SPEntityId,
+            DisplayName = SetupConstants.AdapterDisplayNames.SPEntityId,
             Description = new StringBuilder()
                         .AppendLine("The EntityID of the Stepup ADFS MFA Extension")
                         .AppendLine("This must be an URI in a namespace that you control.")
@@ -69,33 +69,33 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
 
         public static Setting IdPEntityID = new Setting
         {
-            InternalName = StepUpGatewayConstants.InternalNames.IdPEntityId,
-            DisplayName = StepUpGatewayConstants.DisplayNames.IdPEntityId,
+            InternalName = StepUpGatewayConstants.GwInternalNames.IdPEntityId,
+            DisplayName = StepUpGatewayConstants.GwDisplayNames.IdPEntityId,
         };
 
         public static Setting IdPEndpointSetting = new Setting
         {
-            InternalName = StepUpGatewayConstants.InternalNames.SecondFactorEndpoint,
-            DisplayName = StepUpGatewayConstants.DisplayNames.SecondFactorEndpoint,
+            InternalName = StepUpGatewayConstants.GwInternalNames.SecondFactorEndpoint,
+            DisplayName = StepUpGatewayConstants.GwDisplayNames.SecondFactorEndpoint,
         };
 
         public static Setting IdPSigningThumbPrint_1_Setting = new Setting
         {
-            InternalName = StepUpGatewayConstants.InternalNames.SigningCertificateThumbprint,
-            DisplayName = StepUpGatewayConstants.DisplayNames.SigningCertificateThumbprint,
+            InternalName = StepUpGatewayConstants.GwInternalNames.SigningCertificateThumbprint,
+            DisplayName = StepUpGatewayConstants.GwDisplayNames.SigningCertificateThumbprint,
         };
 
         public static Setting IdPSigningThumbPrint_2_Setting = new Setting
         {
-            InternalName = StepUpGatewayConstants.InternalNames.SecondCertificate,
-            DisplayName = StepUpGatewayConstants.DisplayNames.SecondCertificate,
+            InternalName = StepUpGatewayConstants.GwInternalNames.SecondCertificate,
+            DisplayName = StepUpGatewayConstants.GwDisplayNames.SecondCertificate,
             IsMandatory = false
         };
 
         public static Setting MinimaLoaSetting = new Setting
         {
-            InternalName = StepUpGatewayConstants.InternalNames.MinimalLoa,
-            DisplayName = StepUpGatewayConstants.DisplayNames.MinimalLoa,
+            InternalName = StepUpGatewayConstants.GwInternalNames.MinimalLoa,
+            DisplayName = StepUpGatewayConstants.GwDisplayNames.MinimalLoa,
             Description = new StringBuilder()
                                      .AppendLine("The LoA identifier indicating the minimal level of authentication to request from the Stepup-Gateway")
                                      .AppendLine("This value is typically dependent on the Stepup-Gateway being used.")
@@ -109,24 +109,24 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
         // Always "My" in local machine store and FindByThumbprint.
         public static Setting CertStoreSetting = new Setting
         {
-            InternalName = PluginConstants.InternalNames.CertificateStoreName,
-            DisplayName = PluginConstants.DisplayNames.CertificateStoreName,
+            InternalName = SetupConstants.AdapterInternalNames.CertificateStoreName,
+            DisplayName = SetupConstants.AdapterDisplayNames.CertificateStoreName,
             CurrentValue = "My",
             IsConfigurable = false
         };
 
         public static Setting CertLocationSetting = new Setting
         {
-            InternalName = PluginConstants.InternalNames.CertificateLocation,
-            DisplayName = PluginConstants.DisplayNames.CertificateLocation,
+            InternalName = SetupConstants.AdapterInternalNames.CertificateLocation,
+            DisplayName = SetupConstants.AdapterDisplayNames.CertificateLocation,
             CurrentValue = "LocalMachine",
             IsConfigurable = false
         };
 
         public static Setting CertFindCertSetting = new Setting
         {
-            InternalName = PluginConstants.InternalNames.FindBy,
-            DisplayName = PluginConstants.DisplayNames.FindBy,
+            InternalName = SetupConstants.AdapterInternalNames.FindBy,
+            DisplayName = SetupConstants.AdapterDisplayNames.FindBy,
             CurrentValue = "FindByThumbprint",
             IsConfigurable = false
         };

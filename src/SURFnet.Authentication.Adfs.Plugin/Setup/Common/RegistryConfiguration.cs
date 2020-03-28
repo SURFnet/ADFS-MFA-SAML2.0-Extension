@@ -76,7 +76,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Common
         {
             var pluginbase = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64);
             var subKey = pluginbase.CreateSubKey(pluginRoot);
-            var pluginKey = subKey?.CreateSubKey(Values.DefaultRegistrationName);
+            var pluginKey = subKey?.CreateSubKey(Values.AdapterRegistrationName);
             var spKey = pluginKey?.CreateSubKey(Values.DefaultRegisteryKey);
             spKey?.SetValue("MinimalLoa", minimalLoa.ToString());
         }
@@ -97,7 +97,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Common
                 {
                     pluginbase = subKey; // at the base of the plugin(s)
 
-                    var registration = Values.DefaultRegistrationName;
+                    var registration = Values.AdapterRegistrationName;
                     if (pluginbase.ValueCount > 0)
                     {
                         // if there is a "Registration" value, switch to it.

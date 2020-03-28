@@ -153,7 +153,7 @@
     <EmbeddedResource Include="Resources\Labels.1043.json" />
     <EmbeddedResource Include="Resources\Labels.1033.json" />
     <Content Include="SURFnet.Authentication.ADFS.MFA.Plugin.log4net">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <None Include="Sustainsys.Saml2.dll.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

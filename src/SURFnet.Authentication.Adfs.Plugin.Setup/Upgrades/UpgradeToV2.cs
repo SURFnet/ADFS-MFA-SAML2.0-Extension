@@ -24,7 +24,6 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Upgrades
     using SURFnet.Authentication.Adfs.Plugin.Setup.Models;
     using SURFnet.Authentication.Adfs.Plugin.Setup.Question;
     using SURFnet.Authentication.Adfs.Plugin.Setup.Services;
-    using SURFnet.Authentication.Adfs.Plugin.Setup.Services.Interfaces;
 
     /// <summary>
     /// Contains the steps to upgrade from 1.0.1 to 2.x
@@ -37,26 +36,23 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Upgrades
         public void Execute()
         {
             var fileService = new FileService();
-#if LOCAL
-            var adfsService = new FakeAdfsService();
-#else
-            var adfsService = new AdFsService(fileService);
-#endif
+            //var adfsService = new AdfsServer();
+
             //var server = new AdfsServer(adfsService);
             var certificateService = new CertificateService("pfrrrrrtttttt");  // TODO - BUG:
             var config = new ConfigurationFileService(fileService, certificateService);
 
             var metadata = this.ProcessConfigurationFiles(config);
             metadata.ACS = new Uri("http://todo"); // BUG:
-            fileService.SaveConfigurationData(metadata);
+            fileService.SaveRegistrationData(metadata);
 
             fileService.BackupOldConfig();
 
-            if (!fileService.CopyAssembliesToOutput())
-            {
-                Console.WriteLine("Please fix errors before continue;");
-                return;
-            }
+            //if (!fileService.CopyAssembliesToOutput())
+            //{
+            //    Console.WriteLine("Please fix errors before continue;");
+            //    return;
+            //}
 
             //server.UnregisterAdapter();
 
@@ -65,7 +61,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Upgrades
             //var service = new AssemblyService();
             //service.RemoveAssembliesFromGac();
 
-            fileService.CopyOutputToAdFsDirectory();
+            //fileService.CopyOutputToAdFsDirectory();
 
             AdfsServer.StartAdFsService();
             //server.RegisterAdapter();
@@ -76,33 +72,33 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Upgrades
         /// </summary>
         /// <param name="config">The configuration.</param>
         /// <returns><see cref="MfaExtensionMetadata"/>.</returns>
-        private MfaExtensionMetadata ProcessConfigurationFiles(IConfigurationFileService config)
+        private MfaExtensionMetadata ProcessConfigurationFiles(ConfigurationFileService config)
         {
             Console.WriteLine($"Reading existing ADFS config");
 
-            var pluginSettings = config.ExtractPluginConfigurationFromAdfsConfig();
-            var stepUpSettings = config.ExtractSustainSysConfigurationFromAdfsConfig();
-            var defaultConfigValues = config.LoadDefaults();
-            this.ValidateStepUpConfiguration(stepUpSettings, defaultConfigValues);
-            this.ValidatePluginSettings(pluginSettings);
+            List<Setting> pluginSettings = null; // config.ExtractPluginConfigurationFromAdfsConfig();
+            List<Setting> stepUpSettings = null; // config.ExtractSustainSysConfigurationFromAdfsConfig();
+            var defaultConfigValues = ConfigurationFileService.LoadGWDefaults();
+            //this.ValidateStepUpConfiguration(stepUpSettings, defaultConfigValues);
+            //this.ValidatePluginSettings(pluginSettings);
 
             ConsoleExtensions.WriteHeader("Configuration preparation");
             Console.WriteLine("Successfully prepared configuration");
 
-            var mergedSettings = pluginSettings;
+            var mergedSettings = stepUpSettings;
             mergedSettings.AddRange(stepUpSettings);
 
-            config.CreatePluginConfigurationFile(mergedSettings);
-            config.CreateSustainSysConfigFile(mergedSettings);
-            config.CreateCleanAdFsConfig();
-            config.WriteMinimalLoaInRegistery(stepUpSettings.First(s => s.InternalName.Equals(StepUpGatewayConstants.InternalNames.MinimalLoa)));
+            //config.CreatePluginConfigurationFile(mergedSettings);
+            //config.CreateSustainSysConfigFile(mergedSettings);
+            //config.CreateCleanAdFsConfig();
+            config.WriteMinimalLoaInRegistery(stepUpSettings.First(s => s.InternalName.Equals(StepUpGatewayConstants.GwInternalNames.MinimalLoa)));
             ConsoleExtensions.WriteHeader("Finished configuration preparation");
 
-            var entityId = pluginSettings.First(s => s.InternalName.Equals(PluginConstants.XmlAttribName.EntityId));
-            var cetificate = pluginSettings.First(s => s.InternalName.Equals(PluginConstants.InternalNames.CertificateThumbprint));
+            var entityId = pluginSettings.First(s => s.InternalName.Equals(SetupConstants.XmlAttribName.EntityId));
+            var cetificate = pluginSettings.First(s => s.InternalName.Equals(SetupConstants.AdapterInternalNames.CertificateThumbprint));
             var metadata = new MfaExtensionMetadata(new Uri(entityId.Value))
             {
-                SfoMfaExtensionCert = config.GetCertificate(cetificate.Value)
+                SfoMfaExtensionCert = ConfigurationFileService.GetCertificate(cetificate.Value)
             };
             return metadata;
         }
@@ -147,7 +143,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Upgrades
         private void ValidateStepUpConfiguration(ICollection<Setting> settings, IList<Dictionary<string, string>> defaultValues)
         {
             ConsoleExtensions.WriteHeader("StepUp config");
-            var curEntityId = settings.FirstOrDefault(s => s.InternalName.Equals(StepUpGatewayConstants.InternalNames.IdPEntityId));
+            var curEntityId = settings.FirstOrDefault(s => s.InternalName.Equals(StepUpGatewayConstants.GwInternalNames.IdPEntityId));
 
             if (string.IsNullOrWhiteSpace(curEntityId?.CurrentValue))
             {
@@ -155,7 +151,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Upgrades
             }
             else
             {
-                var curEnvironment = defaultValues.FirstOrDefault(s => s[StepUpGatewayConstants.DisplayNames.IdPEntityId].Equals(curEntityId.CurrentValue));
+                var curEnvironment = defaultValues.FirstOrDefault(s => s[StepUpGatewayConstants.GwDisplayNames.IdPEntityId].Equals(curEntityId.CurrentValue));
                 if (curEnvironment != null)
                 {
                     Console.WriteLine("We've found an active configuration:");

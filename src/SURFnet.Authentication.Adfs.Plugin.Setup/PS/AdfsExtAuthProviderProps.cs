@@ -18,7 +18,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.PS
         //public bool AllowedForPrimaryExtranet { get; set; }
         //public bool AllowedForPrimaryIntranet { get; set; }
         //public bool AllowedForAdditionalAuthentication { get; set; }
-        //public List<string> AuthenticationMethods { get; set; }
+        //public List<string> AuthenticationMethods { get; set; } // TODO: Do we want this to verify correctness? No because we will rewrite it!
         //public Dictionary<int, string> Descriptions { get; set; }
         //public Dictionary<int, string> DisplayNames { get; set; }
         public string Name { get; set; }

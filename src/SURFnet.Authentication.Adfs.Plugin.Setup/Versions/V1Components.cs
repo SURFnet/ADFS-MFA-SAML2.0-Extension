@@ -9,9 +9,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
 {
     public static class V1Components
     {
-        public static readonly StepupComponent Adapter = new StepupComponent()
+        public static readonly StepupComponent Adapter = new StepupComponent("StepupAdapter v1.0.1.0")
         {
-            ComponentName = "StepupAdapter",
             Assemblies = new AssemblySpec[1] { V1Assemblies.AdapterSpec },
             ConfigFilename = null
         };
@@ -20,15 +19,13 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
         {
             // Do not change the order of these components!!
             // The description relies on it!!!
-            new StepupComponent()
+            new StepupComponent("Saml2 Kentor v0.21.2")
             {
-                ComponentName = "Saml2",
                 Assemblies = new AssemblySpec[1] { V1Assemblies.Kentor0_21_2Spec },
                 ConfigFilename = null
             },
-            new StepupComponent()
+            new StepupComponent("log4net v2.0.8 in GAC")
             {
-                ComponentName = "log4net",
                 Assemblies = new AssemblySpec[1] { V1Assemblies.Log4Net2_0_8_GACSpec },
                 ConfigFilename = "SURFnet.Authentication.ADFS.MFA.Plugin.log4net"
             }
