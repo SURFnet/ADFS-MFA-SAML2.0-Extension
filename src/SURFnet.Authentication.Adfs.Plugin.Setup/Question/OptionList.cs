@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace SURFnet.Authentication.Adfs.Plugin.Setup.Question
 {
-    public class QuestionDescription
+    public class OptionList
     {
         public string Introduction { get; set; }
-        public string Question { get; set; }
         public string[] Options { get; set; }
+        public string Question { get; set; }
     }
 }

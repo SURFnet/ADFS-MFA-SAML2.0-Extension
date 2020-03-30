@@ -20,37 +20,50 @@ namespace Ui4Cfg
 
             string gwEnvList = CreateGwList();
 
-            Console.Write(gwEnvList);
-            var qenv = ShowAndGetInt.Create("Select a SingleFactorOnly gateway environment", 1, GwEnvironments.Count);
-            bool more = true;
-            while ( more )
+            NewTest();
+
+            ShowListGetDigit listQuestion = GetEnvSelection();
+
+            if ( listQuestion.Ask() )
             {
-                if ( qenv.Ask() )
-                {
-                    // valid choice
-                    int index = qenv.Value - '0';
-                    var dict = GwEnvironments[index-1];
-                    Console.WriteLine("Test output: OK, will do {0}. {1}", index, dict["Type"]);
-                    more = false;
-                }
-                else
-                {
-                    if ( qenv.IsAbort )
-                    {
-                        Console.WriteLine("Test output: 'x' => OK, dan niet.");
-                        more = false;
-                    }
-                    else if ( qenv.WantsDescription )
-                    {
-                        QuestionIO.WriteError("Gewoon een nummertje voor de omgeving kiezen....");
-                    }
-                }
+                int i = listQuestion.Value-'0';
+                var env = GwEnvironments[i - 1];
+                Console.WriteLine("Test output: OK, will do {0}. {1}", i, env["Type"]);
             }
+            else
+            {
+                Console.WriteLine("Test output: Beng! Aborted");
+            }
+            //bool more = true;
+            //while ( more )
+            //{
+            //    if ( qenv.Ask() )
+            //    {
+            //        // valid choice
+            //        int index = qenv.Value - '0';
+            //        var dict = GwEnvironments[index-1];
+            //        Console.WriteLine("Test output: OK, will do {0}. {1}", index, dict["Type"]);
+            //        more = false;
+            //    }
+            //    else
+            //    {
+            //        if ( qenv.IsAbort )
+            //        {
+            //            Console.WriteLine("Test output: 'x' => OK, dan niet.");
+            //            more = false;
+            //        }
+            //        else if ( qenv.WantsDescription )
+            //        {
+            //            QuestionIO.WriteError("Gewoon een nummertje voor de omgeving kiezen....");
+            //        }
+            //    }
+            //}
 
 
             AddIdP("https://sa-gw.surfconext.nl/second-factor-only/metadata");
             Add2012R2();
 
+            NewTest();
 
             var s = new SettingController(SetupSettings.ADAttributeSetting);
             if (s.Ask())
@@ -60,6 +73,35 @@ namespace Ui4Cfg
 
             Console.WriteLine("Test output: return to exit");
             Console.ReadLine();
+        }
+
+        private static ShowListGetDigit GetEnvSelection()
+        {
+            GwEnvironments = ConfigurationFileService.LoadGWDefaults();
+
+            string[] options = new string[GwEnvironments.Count];
+            int index = 1;
+            foreach (var dict in GwEnvironments)
+            {
+                options[index-1] = $"  {index}. {dict["Type"]}";
+                index++;
+            }
+
+            var ol = new OptionList()
+            {
+                Introduction = "There are different Single Factor Only gateways, the names suggest their usage.",
+                Options = options,
+                Question = "Select a SingleFactorOnly gateway environment"
+            };
+
+            return new ShowListGetDigit(ol);
+        }
+
+        private static void NewTest()
+        {
+            Console.WriteLine();
+            Console.WriteLine("NewTest (2 LFs)");
+            Console.WriteLine();
         }
 
         private static string CreateGwList()

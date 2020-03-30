@@ -60,7 +60,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Question
                     Value = answer;
                 }
 
-                Console.WriteLine();
+                // no WriteLine after ReadLine() 
             }
 
             return rc;

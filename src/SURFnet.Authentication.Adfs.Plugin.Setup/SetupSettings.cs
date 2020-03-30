@@ -27,6 +27,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
 
         public static Setting SchacHomeSetting = new Setting
         {
+            Introduction = "An organization name(id) is required when sending a request to the Stepup Only gateway",
             InternalName = SetupConstants.AdapterInternalNames.SchacHomeOrganization,
             DisplayName = SetupConstants.AdapterDisplayNames.SchacHomeOrganization,
             Description = new string[] {
@@ -39,6 +40,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
 
         public static Setting ADAttributeSetting = new Setting
         {
+            Introduction = "The name of the Active Directory attribute is required that contains the userID in the Stepup Only gateway",
             InternalName = SetupConstants.AdapterInternalNames.ActiveDirectoryUserIdAttribute,
             DisplayName = SetupConstants.AdapterDisplayNames.ActiveDirectoryUserIdAttribute,
             Description = new string[] {
@@ -51,6 +53,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
 
         public static Setting SPSigningThumbprint = new Setting()
         {
+            Introduction = "",
             InternalName = SetupConstants.AdapterInternalNames.CertificateThumbprint,
             DisplayName = SetupConstants.AdapterDisplayNames.CertificateThumbprint,
             Description = new string[] {
@@ -62,6 +65,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
 
         public static Setting SPEntityID = new Setting
         {
+            Introduction = "",
             InternalName = SetupConstants.AdapterInternalNames.SPEntityId,
             DisplayName = SetupConstants.AdapterDisplayNames.SPEntityId,
             Description = new string[] {
@@ -103,13 +107,14 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
 
         public static Setting MinimaLoaSetting = new Setting
         {
+            Introduction = "Each StepUp Only gateway has its own Authentication level URIs",
             InternalName = StepUpGatewayConstants.GwInternalNames.MinimalLoa,
             DisplayName = StepUpGatewayConstants.GwDisplayNames.MinimalLoa,
             Description = new string[] {
                 "The LoA identifier indicating the minimal level of authentication to request",
                 "from the Stepup-Gateway. This value is typically dependent on the",
                 "Stepup-Gateway being used.",
-                "These value is not independently configurable in the installer and is",
+                "The value is not independently configurable in the installer and is",
                 "selected as part of the environment.",
                 "Example: http://example.com/assurance/sfo-level2"
             }

@@ -29,7 +29,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Models
         /// <summary>
         /// The certification service.
         /// </summary>
-        private readonly CertificateService certificateService;
+        ///private readonly CertificateService certificateService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Setting" /> class.
@@ -44,21 +44,30 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Models
         /// Initializes a new instance of the <see cref="Setting"/> class.
         /// </summary>
         /// <param name="certificateService">The certification service.</param>
-        public Setting(CertificateService certificateService) : this()
-        {
-            this.certificateService = certificateService;
-            this.IsCertificate = true;
-        }
+        //public Setting(CertificateService certificateService) : this()
+        //{
+        //    this.certificateService = certificateService;
+        //    this.IsCertificate = true;
+        //}
+        //
+
 
         /// <summary>
-        /// Gets or sets the description.
+        /// A short introduction string always displayed before showing the Setting
+        /// when it is presented for Edit.
+        /// </summary>
+        public string Introduction { get; set; }
+
+        /// <summary>
+        /// Gets or sets the full description of the Setting.
+        /// Only shown when asked for with '?'.
         /// </summary>
         /// <value>The description.</value>
-        //public StringBuilder Description { get; set; }
         public string[] Description { get; set; }
 
         /// <summary>
-        /// Gets or sets the display name.
+        /// Gets or sets the display name which is shown to the user when asking
+        /// for a value of this settin.
         /// </summary>
         /// <value>The display name.</value>
         public string DisplayName { get; set; }

@@ -34,7 +34,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Question
 
             while ( ask )
             {
-                Show();
+                Show(); // let the base display it
 
                 // get Key
                 var input = Console.ReadKey();
@@ -76,7 +76,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Question
                             break;
                     }
 
-                    Console.WriteLine();  // Always position on a new line
+                    QuestionIO.WriteLine();  // Always position on a new line
                 }
 
             }

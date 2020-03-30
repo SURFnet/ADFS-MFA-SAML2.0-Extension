@@ -16,16 +16,11 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Question
             Setting = setting;
         }
 
-        public virtual void DisplayCurrent()
-        {
-            QuestionIO.WriteValue($"Current value for {Setting.DisplayName}: {Setting.FoundCfgValue}");
-        }
-
         public virtual void DisplayValue()
         {
             if (!string.IsNullOrWhiteSpace(Setting.Value))
             {
-                QuestionIO.WriteValue($"Value for {Setting.DisplayName}: {Setting.Value}");
+                QuestionIO.WriteValue($"Value for {Setting.DisplayName} now '{Setting.Value}'");
             }
         }
 
@@ -41,27 +36,28 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Question
             {
                 if (q.Ask())
                 {
-                    // valid answer
-                    ok = true;
+                    // valid Y/N answer
                     if (q.Value == 'n')
                         wantToChange = false;
                     else
                         wantToChange = true;
                     more = false;
+                    ok = true;
                 }
                 else
                 {
+                    // Not a Y/N answer
                     if (q.IsAbort)
                     {
-                        QuestionIO.WriteError("OK, stopping. Or do we want pose the RevertTo original value question?");
                         more = false;
                     }
                     else if (q.WantsDescription)
                     {
-                        QuestionIO.WriteDescription("Type 'y' (Yes) to change, 'n' (No) to use existing, '?' for this help, x (eXit) to return unchanged.");
+                        string[] help = { "Type 'y'(Yes) to change, 'n'(No) to use existing, '?' for this help, x(eXit) to return unchanged." };
+                        QuestionIO.WriteDescription(help);
                     }
                 }
-            } // more q1
+            } // end ask loop
 
             return ok;
         }
@@ -70,27 +66,27 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Question
         public virtual bool EditSetting()
         {
             bool ok = false;
-            var q3 = new ShowAndGetString($"Provide value for {Setting.DisplayName}. Value is now: \"{Setting.Value}\"");
+            var editQuestion = new ShowAndGetString($"Provide a value for '{Setting.DisplayName}'");
             bool more = true;
             while (more)
             {
-                if (q3.Ask())
+                if (editQuestion.Ask())
                 {
                     // valid answer
-                    Setting.NewValue = q3.Value;
+                    Setting.NewValue = editQuestion.Value;
                     more = false;
                     ok = true;
                 }
                 else
                 {
-                    if (q3.IsAbort)
+                    if (editQuestion.IsAbort)
                     {
                         QuestionIO.WriteError("OK, stopping.");
                         more = false;
                     }
-                    else if (q3.WantsDescription)
+                    else if (editQuestion.WantsDescription)
                     {
-                        QuestionIO.WriteDescription(Setting.Description.ToString());
+                        QuestionIO.WriteDescription(Setting.Description);
                     }
                 }
 
@@ -101,47 +97,51 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Question
 
         public virtual bool Ask()
         {
-            bool rc = false;
+            bool ok = false;
 
-            if (!string.IsNullOrWhiteSpace(Setting.FoundCfgValue))
-            {
-                DisplayCurrent();
-            }
+            // TODO: display Intro
+            if (string.IsNullOrWhiteSpace(Setting.Introduction))
+                QuestionIO.WriteIntro("TODO: Here comes the introduction........");
+            else
+                QuestionIO.WriteIntro(Setting.Introduction);
 
             bool keepasking = true;
             while ( keepasking )
             {
+                DisplayValue();
+
                 if (WantToChange(out bool wantToChange))
                 {
                     // valid Yes/No
                     if (wantToChange == false)
                     {
-                        keepasking = false;
-                        rc = true;
+                        // Does not want to change.
+                        keepasking = false; // break from while
+                        ok = true;
                     }
                     else
                     {
                         // allow Edit
-                        if (EditSetting())
+                        if ( EditSetting())
                         {
-                            // new value. Display it.
-                            DisplayValue();
+                            keepasking = false; // break from while
+                            ok = true;
                         }
                         else
                         {
-                            // aborting
+                            // aborting on Edit. NewValue was not set.
                             keepasking = false;
                         }
                     }
                 }
                 else
                 {
-                    // Can only be eXit; rc remains false
+                    // Abort/Exit on Y/N. Can only be eXit; ok remains false
                     keepasking = false;
                 }
             }
 
-            return rc;
+            return ok;
         }
     }
 }

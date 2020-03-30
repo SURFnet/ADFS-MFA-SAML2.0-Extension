@@ -8,14 +8,17 @@ using SURFnet.Authentication.Adfs.Plugin.Setup.Question;
 
 namespace UiSampler
 {
-    static class Program
+    /// <summary>
+    /// Scratch program to enable single stepping through Setup UI primitives.
+    /// </summary>
+    static class UiPrimitivesTest
     {
         static void Main(string[] args)
         {
             bool more;
 
-            var q1 = new ShowAndGetYesNo("Q1 - Continue with nothing");
-            var q2 = new ShowAndGetYesNo("Q2 - Continue with default", 'y');
+            var q1 = new ShowAndGetYesNo("Q1 YesNo - Continue without default");
+            var q2 = new ShowAndGetYesNo("Q2 YesNo - Continue with a default reponse", 'y');
 
             more = true;
             while (more)

@@ -15,14 +15,21 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Question
         //   ConsoleCancelEventArgs.Cancel=true   
         //       in: https://docs.microsoft.com/en-us/dotnet/api/system.console.cancelkeypress?view=netframework-4.8
         //
-        // use handler to set flag and privide: Poll() AtomicPollClear()  ?
+        // Use handler to set flag and provide: Poll() AtomicPollClear()  ?
+        //
 
-        public static void WriteHeader(string header)
+        private const string DescriptionIndent = "        "; // 8
+        private const string ErrorIndent = "    ";           // 4
+        private const string OptionsIndent = "    ";         // 4
+        private const string ValueIndent = "    ";           // 4
+
+        public static void WriteIntro(string intro)
         {
-            Console.WriteLine(header);
+            Console.WriteLine(intro);
         }
         public static void WriteValue(string currentValue)
         {
+            Console.Write(ValueIndent);
             Console.WriteLine(currentValue);
         }
 
@@ -30,8 +37,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Question
         {
             foreach ( var option in options )
             {
-                Console.Write("  ");
-                Console.WriteLine(options);
+                Console.Write(OptionsIndent);
+                Console.WriteLine(option);
             }
         }
 
@@ -40,16 +47,34 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Question
             Console.Write(question);
         }
 
-        public static void WriteDescription(string description)
+        public static void WriteDescription(string[] description)
         {
-            Console.Write("  ");
-            Console.WriteLine(description);
+            foreach (string s in description)
+            {
+                Console.Write(DescriptionIndent);
+                Console.WriteLine(s);
+            }
         }
 
         public static void WriteError(string error)
         {
-            Console.Write("  ");
+            Console.Write(ErrorIndent);
             Console.WriteLine(error);
+        }
+
+        public static void WriteLine()
+        {
+            Console.WriteLine();
+        }
+
+        public static ConsoleKeyInfo ReadKey()
+        {
+            return Console.ReadKey();
+        }
+        
+        public static string ReadLine()
+        {
+            return Console.ReadLine();
         }
     }
 }

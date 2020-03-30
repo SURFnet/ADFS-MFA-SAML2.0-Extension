@@ -34,7 +34,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Question
 
         public virtual void Show()
         {
-            Console.Write(Question);
+            QuestionIO.WriteQuestion(Question);
         }
 
         public abstract bool Ask();
