@@ -42,8 +42,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Question.SettingsQuestions
         /// <param name="required">if set to <c>true</c> an answer is required.</param>
         /// <param name="currentValue">The current setting value.</param>
         /// <param name="description">The description.</param>
-        public SettingsQuestion(string settingName, bool required, string currentValue, StringBuilder description)
-            : base($"{settingName}: {currentValue}. Change this setting?", description, DefaultAnswer.No)
+        public SettingsQuestion(string settingName, bool required, string currentValue, string[] description)
+            : base($"{settingName}: {currentValue}. Change this setting?", description, YesNo.No)
         {
             this.settingName = settingName;
             this.required = required;

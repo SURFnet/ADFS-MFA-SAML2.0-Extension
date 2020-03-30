@@ -21,7 +21,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Question
     /// <summary>
     /// Class NumericQuestion.
     /// </summary>
-    public class NumericQuestion : Question<int>
+    public class NumericQuestion : OldQuestion<int>
     {
         /// <summary>
         /// The minimum value.

@@ -21,24 +21,24 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Question
     /// <summary>
     /// Class YesNoQuestion.
     /// </summary>
-    public class YesNoQuestion : Question<YesNoAnswer>
+    public class YesNoQuestion : OldQuestion<YesNoAnswer>
     {
         /// <summary>
         /// The description to show as help.
         /// </summary>
-        private readonly StringBuilder description;
+        private readonly string[] description;
 
         /// <summary>
         /// The default answer.
         /// </summary>
-        private readonly DefaultAnswer defaultAnswer;
+        private readonly YesNo defaultAnswer;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="YesNoQuestion"/> class.
         /// </summary>
         /// <param name="question">The question.</param>
         /// <param name="defaultAnswer">The default answer.</param>
-        public YesNoQuestion(string question, DefaultAnswer defaultAnswer) : base($"{question} (Y/N)[{defaultAnswer.ToString()[0]}]")
+        public YesNoQuestion(string question, YesNo defaultAnswer) : base($"{question} (Y/N)[{defaultAnswer.ToString()[0]}]")
         {
             this.defaultAnswer = defaultAnswer;
         }
@@ -49,7 +49,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Question
         /// <param name="question">The question.</param>
         /// <param name="description">The description.</param>
         /// <param name="defaultAnswer">The default answer.</param>
-        public YesNoQuestion(string question, StringBuilder description, DefaultAnswer defaultAnswer) : base($"{question} (Y/N/?)[{defaultAnswer.ToString()[0]}]")
+        public YesNoQuestion(string question, string[] description, YesNo defaultAnswer) : base($"{question} (Y/N/?)[{defaultAnswer.ToString()[0]}]")
         {
             this.description = description;
             this.defaultAnswer = defaultAnswer;

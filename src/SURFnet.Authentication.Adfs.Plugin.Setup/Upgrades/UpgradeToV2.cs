@@ -110,7 +110,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Upgrades
         private void ValidatePluginSettings(ICollection<Setting> pluginSettings)
         {
             ConsoleExtensions.WriteHeader("ADFS MFA Extension");
-            if (pluginSettings.Any(s => !string.IsNullOrWhiteSpace(s.CurrentValue) && s.IsConfigurable))
+            if (pluginSettings.Any(s => !string.IsNullOrWhiteSpace(s.FoundCfgValue) && s.IsConfigurable))
             {
                 Console.WriteLine("Found local MFA extension settings");
 
@@ -120,7 +120,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Upgrades
                 }
             }
 
-            var question = new YesNoQuestion("Do you want to change this configuration", DefaultAnswer.No);
+            var question = new YesNoQuestion("Do you want to change this configuration", YesNo.No);
             var answer = question.ReadUserResponse();
             if (!answer.IsDefaultAnswer)
             {
@@ -145,13 +145,13 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Upgrades
             ConsoleExtensions.WriteHeader("StepUp config");
             var curEntityId = settings.FirstOrDefault(s => s.InternalName.Equals(StepUpGatewayConstants.GwInternalNames.IdPEntityId));
 
-            if (string.IsNullOrWhiteSpace(curEntityId?.CurrentValue))
+            if (string.IsNullOrWhiteSpace(curEntityId?.FoundCfgValue))
             {
                 VersionDetector.SetInstallationStatusToCleanInstall();
             }
             else
             {
-                var curEnvironment = defaultValues.FirstOrDefault(s => s[StepUpGatewayConstants.GwDisplayNames.IdPEntityId].Equals(curEntityId.CurrentValue));
+                var curEnvironment = defaultValues.FirstOrDefault(s => s[StepUpGatewayConstants.GwDisplayNames.IdPEntityId].Equals(curEntityId.FoundCfgValue));
                 if (curEnvironment != null)
                 {
                     Console.WriteLine("We've found an active configuration:");
@@ -159,7 +159,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Upgrades
                 }
             }
 
-            var question = new YesNoQuestion("Do you want to reconfigure or connect to a new environment?", DefaultAnswer.No);
+            var question = new YesNoQuestion("Do you want to reconfigure or connect to a new environment?", YesNo.No);
             var answer = question.ReadUserResponse();
             if (!answer.IsDefaultAnswer)
             {

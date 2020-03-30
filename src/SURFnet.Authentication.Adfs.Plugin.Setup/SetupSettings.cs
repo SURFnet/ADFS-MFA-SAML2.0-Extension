@@ -29,37 +29,46 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
         {
             InternalName = SetupConstants.AdapterInternalNames.SchacHomeOrganization,
             DisplayName = SetupConstants.AdapterDisplayNames.SchacHomeOrganization,
-            Description = new StringBuilder()
-                        .AppendLine("The value to use for schacHomeOranization when calculating the NameID for authenticating a user to the Stepup-Gateway")
-                        .AppendLine("This must be the same value as the value of the \"urn:mace:terena.org:attribute-def:schacHomeOrganization\" claim that the that AD FS server sends when a user authenticates to the Stepup-Gateway"),
+            Description = new string[] {
+                "The value to use for schacHomeOranization when calculating the NameID for",
+                "authenticating a user to the Stepup-Gateway. This must be the same",
+                "value as the value of the \"urn:mace:terena.org:attribute-def:schacHomeOrganization\"",
+                "claim that the that AD FS server sends when a user authenticates to the Stepup-Gateway."
+            }
         };
 
         public static Setting ADAttributeSetting = new Setting
         {
             InternalName = SetupConstants.AdapterInternalNames.ActiveDirectoryUserIdAttribute,
             DisplayName = SetupConstants.AdapterDisplayNames.ActiveDirectoryUserIdAttribute,
-            Description = new StringBuilder()
-                    .AppendLine("The name of the AD attribute that contains the user ID (\"uid\") used when calculating the NameID for authenticating a user to the Stepup-Gateway")
-                    .AppendLine("This AD attribute must contain the value of the \"urn:mace:dir:attribute-def:uid\" claim that the AD FS server sends when a user authenticates to the Stepup-Gateway"),
+            Description = new string[] {
+                "The name of the AD attribute that contains the user ID (\"uid\") used when calculating",
+                "the NameID for authenticating a user to the Stepup-Gateway.",
+                "This AD attribute must contain the value of the \"urn:mace:dir:attribute-def:uid\" claim that the",
+                "AD FS server sends when a user authenticates to the Stepup-Gateway."
+            }
         };
 
         public static Setting SPSigningThumbprint = new Setting()
         {
             InternalName = SetupConstants.AdapterInternalNames.CertificateThumbprint,
             DisplayName = SetupConstants.AdapterDisplayNames.CertificateThumbprint,
-            Description = new StringBuilder()
-                        .AppendLine("The thumbprint (i.e. the SHA1 hash of the DER X.509 certificate) of the signing certificate")
-                        .AppendLine("This is the self-signed certificate that we generated during install and that we installed in the certificate store"),
+            Description = new string[] {
+                "The thumbprint (i.e. the SHA1 hash of the DER X.509 certificate) of the signing certificate.",
+                "This is the self-signed certificate that we generated during install and that we",
+                "installed in the certificate store"
+            }
         };
 
         public static Setting SPEntityID = new Setting
         {
             InternalName = SetupConstants.AdapterInternalNames.SPEntityId,
             DisplayName = SetupConstants.AdapterDisplayNames.SPEntityId,
-            Description = new StringBuilder()
-                        .AppendLine("The EntityID of the Stepup ADFS MFA Extension")
-                        .AppendLine("This must be an URI in a namespace that you control.")
-                        .AppendLine("Example: http://<adfs domain name>/sfo-mfa-plugin")
+            Description = new string[] {
+                "The EntityID of the Stepup ADFS MFA Extension.",
+                "This must be an URI in a namespace that you control.",
+                "Example: http://<adfs domain name>/sfo-mfa-plugin"
+            }
         };
 
 
@@ -96,11 +105,14 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
         {
             InternalName = StepUpGatewayConstants.GwInternalNames.MinimalLoa,
             DisplayName = StepUpGatewayConstants.GwDisplayNames.MinimalLoa,
-            Description = new StringBuilder()
-                                     .AppendLine("The LoA identifier indicating the minimal level of authentication to request from the Stepup-Gateway")
-                                     .AppendLine("This value is typically dependent on the Stepup-Gateway being used.")
-                                     .AppendLine("These value is not independently configurable in the installer and is selected as part of the environment")
-                                     .AppendLine("Example: http://example.com/assurance/sfo-level2"),
+            Description = new string[] {
+                "The LoA identifier indicating the minimal level of authentication to request",
+                "from the Stepup-Gateway. This value is typically dependent on the",
+                "Stepup-Gateway being used.",
+                "These value is not independently configurable in the installer and is",
+                "selected as part of the environment.",
+                "Example: http://example.com/assurance/sfo-level2"
+            }
         };
 
         //
@@ -111,7 +123,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
         {
             InternalName = SetupConstants.AdapterInternalNames.CertificateStoreName,
             DisplayName = SetupConstants.AdapterDisplayNames.CertificateStoreName,
-            CurrentValue = "My",
+            FoundCfgValue = "My",
             IsConfigurable = false
         };
 
@@ -119,7 +131,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
         {
             InternalName = SetupConstants.AdapterInternalNames.CertificateLocation,
             DisplayName = SetupConstants.AdapterDisplayNames.CertificateLocation,
-            CurrentValue = "LocalMachine",
+            FoundCfgValue = "LocalMachine",
             IsConfigurable = false
         };
 
@@ -127,7 +139,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
         {
             InternalName = SetupConstants.AdapterInternalNames.FindBy,
             DisplayName = SetupConstants.AdapterDisplayNames.FindBy,
-            CurrentValue = "FindByThumbprint",
+            FoundCfgValue = "FindByThumbprint",
             IsConfigurable = false
         };
 

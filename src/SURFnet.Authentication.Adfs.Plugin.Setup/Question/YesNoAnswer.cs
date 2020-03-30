@@ -29,7 +29,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Question
         /// </summary>
         /// <param name="defaultAnswer">The default answer.</param>
         /// <param name="description">The description.</param>
-        public YesNoAnswer(DefaultAnswer defaultAnswer, StringBuilder description)
+        public YesNoAnswer(YesNo defaultAnswer, string[] description)
         {
             this.ReadAnswer(defaultAnswer, description);
         }
@@ -58,7 +58,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Question
         /// </summary>
         /// <param name="defaultAnswer">The default answer.</param>
         /// <param name="description">The description.</param>
-        private void ReadAnswer(DefaultAnswer defaultAnswer, StringBuilder description)
+        private void ReadAnswer(YesNo defaultAnswer, string[] description)
         {
             var defaultAnswerChar = char.ToLowerInvariant(defaultAnswer.ToString()[0]);
             var input = Console.ReadKey();

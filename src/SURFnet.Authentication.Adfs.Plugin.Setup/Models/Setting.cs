@@ -54,7 +54,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Models
         /// Gets or sets the description.
         /// </summary>
         /// <value>The description.</value>
-        public StringBuilder Description { get; set; }
+        //public StringBuilder Description { get; set; }
+        public string[] Description { get; set; }
 
         /// <summary>
         /// Gets or sets the display name.
@@ -72,7 +73,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Models
         /// Gets or sets the current value found in the local/old config file.
         /// </summary>
         /// <value>The current value.</value>
-        public string CurrentValue { get; set; }
+        public string FoundCfgValue { get; set; }
 
         /// <summary>
         /// Gets or sets the user input.
@@ -84,7 +85,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Models
         /// Gets the actual value to save in the new config file.
         /// </summary>
         /// <value>The value.</value>
-        public string Value => this.NewValue ?? this.CurrentValue;
+        public string Value => this.NewValue ?? this.FoundCfgValue;
         
         /// <summary>
         /// Gets or sets a value indicating whether this setting is mandatory.
@@ -117,12 +118,12 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Models
             // todo: should refactor to settings base class and create derived types for certificate and normal setting
             if (this.IsCertificate)
             {
-                var question = new SettingsQuestion<CertificateAnswer>(this.DisplayName, this.IsMandatory, this.CurrentValue, this.Description);
+                var question = new SettingsQuestion<CertificateAnswer>(this.DisplayName, this.IsMandatory, this.FoundCfgValue, this.Description);
                 this.NewValue = question.ReadUserResponse();
             }
             else
             {
-                var question = new SettingsQuestion<StringAnswer>(this.DisplayName, this.IsMandatory, this.CurrentValue, this.Description);
+                var question = new SettingsQuestion<StringAnswer>(this.DisplayName, this.IsMandatory, this.FoundCfgValue, this.Description);
                 this.NewValue = question.ReadUserResponse();
             }
 

@@ -24,7 +24,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Question
     /// Class Question.
     /// </summary>
     /// <typeparam name="T">The answer type.</typeparam>
-    public abstract class Question<T>
+    public abstract class OldQuestion<T>
     {
         /// <summary>
         /// The question.
@@ -32,10 +32,10 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Question
         private readonly string question;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Question{T}"/> class.
+        /// Initializes a new instance of the <see cref="OldQuestion{T}"/> class.
         /// </summary>
         /// <param name="question">The question.</param>
-        protected Question(string question)
+        protected OldQuestion(string question)
         {
             this.question = question;
             this.WriteQuestion();

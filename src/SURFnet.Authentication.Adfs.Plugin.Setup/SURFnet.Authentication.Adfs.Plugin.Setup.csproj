@@ -74,6 +74,15 @@
     <Compile Include="Models\PluginConfiguration.cs" />
     <Compile Include="Models\Setting.cs" />
     <Compile Include="Models\SustainSysConfiguration.cs" />
+    <Compile Include="Question\CertificateGUI.cs" />
+    <Compile Include="Question\QuestionDescription.cs" />
+    <Compile Include="Question\QuestionIO.cs" />
+    <Compile Include="Question\SettingController.cs" />
+    <Compile Include="Question\ShowAndGet.cs" />
+    <Compile Include="Question\ShowAndGetChar.cs" />
+    <Compile Include="Question\ShowAndGetInt.cs" />
+    <Compile Include="Question\ShowAndGetString.cs" />
+    <Compile Include="Question\ShowAndGetYesNo.cs" />
     <Compile Include="SetupConstants.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Assemblies\AssemblyList.cs" />
@@ -91,7 +100,7 @@
     <Compile Include="PS\AdfsSyncProps.cs" />
     <Compile Include="PS\AdfsSyncPropsCmds.cs" />
     <Compile Include="PS\PSUtil.cs" />
-    <Compile Include="Question\DefaultAnswer.cs" />
+    <Compile Include="Question\YesNo.cs" />
     <Compile Include="Question\NumericQuestion.cs" />
     <Compile Include="Question\SettingsQuestions\IAnswer.cs" />
     <Compile Include="Question\SettingsQuestions\SettingsQuestion.cs" />
@@ -99,7 +108,7 @@
     <Compile Include="Question\SettingsQuestions\StringAnswer.cs" />
     <Compile Include="Question\YesNoAnswer.cs" />
     <Compile Include="Question\YesNoQuestion.cs" />
-    <Compile Include="Question\Question.cs" />
+    <Compile Include="Question\OldQuestion.cs" />
     <Compile Include="Services\AdfsPSService.cs" />
     <Compile Include="Services\ConfigurationFileService.cs" />
     <Compile Include="Services\FileService.cs" />

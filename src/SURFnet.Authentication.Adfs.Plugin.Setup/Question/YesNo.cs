@@ -17,11 +17,11 @@
 namespace SURFnet.Authentication.Adfs.Plugin.Setup.Question
 {
     /// <summary>
-    /// Each yes no question can be configured with a default answer. This enum contains the default answers.
+    /// Enum for simpler testing, bool would have been another option.
     /// </summary>
-    public enum DefaultAnswer
+    public enum YesNo
     {
-        Yes,
-        No
+        No = 0,
+        Yes
     }
 }
