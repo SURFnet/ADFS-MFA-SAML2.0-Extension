@@ -22,6 +22,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Question
         private const string ErrorIndent = "    ";           // 4
         private const string OptionsIndent = "    ";         // 4
         private const string ValueIndent = "    ";           // 4
+        private const string EndSeparator = "-  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -";
 
         public static void WriteIntro(string intro)
         {
@@ -60,6 +61,12 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Question
         {
             Console.Write(ErrorIndent);
             Console.WriteLine(error);
+        }
+
+        public static void WriteEndSeparator()
+        {
+            Console.WriteLine(EndSeparator);
+            Console.WriteLine();
         }
 
         public static void WriteLine()

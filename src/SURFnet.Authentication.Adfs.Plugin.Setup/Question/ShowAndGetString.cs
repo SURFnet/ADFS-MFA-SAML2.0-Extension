@@ -23,7 +23,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Question
             {
                 Show();
 
-                string answer = Console.ReadLine().Trim();
+                string answer = QuestionIO.ReadLine().Trim();
                 if (string.IsNullOrWhiteSpace(answer) )
                 {
                     if ( HasDefault )

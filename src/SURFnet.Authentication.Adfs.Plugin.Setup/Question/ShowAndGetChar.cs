@@ -27,17 +27,22 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Question
         }
 
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns>true if OK.</returns>
         public override bool Ask()
         {
             bool rc = false;
             bool ask = true;
+            string error = null;
 
             while ( ask )
             {
                 Show(); // let the base display it
 
                 // get Key
-                var input = Console.ReadKey();
+                var input = QuestionIO.ReadKey();
                 if (input.Key == ConsoleKey.Enter)
                 {
                     if ( HasDefault )
@@ -72,11 +77,23 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Question
                                 ask = false;
                                 rc = true;
                             }
-                            // else: invalid answer => loop
+                            else
+                            {
+                                // invalid answer => loop
+                                QuestionIO.WriteLine();
+                                error = "Invalid choice";
+                            }
                             break;
                     }
 
-                    QuestionIO.WriteLine();  // Always position on a new line
+                    // Always position on a new line
+                    if ( null != error )
+                    {
+                        QuestionIO.WriteError(error);
+                        error = null;
+                    }
+                    else
+                        QuestionIO.WriteLine();
                 }
 
             }

@@ -17,74 +17,107 @@ namespace Ui4Cfg
 
         static void Main(string[] args)
         {
+            GwEnvironments = ConfigurationFileService.LoadGWDefaults();
+            bool ok;
 
-            string gwEnvList = CreateGwList();
-
-            NewTest();
-
-            ShowListGetDigit listQuestion = GetEnvSelection();
-
-            if ( listQuestion.Ask() )
+            // Demo for Gateway environment choice
+            ShowListGetDigit listQuestion = CreateEnvSelectionDialogue();
+            ok = listQuestion.Ask();
+            QuestionIO.WriteEndSeparator();
+            if (ok)
             {
-                int i = listQuestion.Value-'0';
-                var env = GwEnvironments[i - 1];
-                Console.WriteLine("Test output: OK, will do {0}. {1}", i, env["Type"]);
+                int index = Digit2Index(listQuestion.Value);
+                var env = GwEnvironments[index];
+                string result = string.Format("OK, will do {0}. {1}   ({2})",
+                        listQuestion.Value,
+                        env[SetupConstants.GwEnvironmentType],
+                        env[StepUpGatewayConstants.GwDisplayNames.IdPEntityId]);
+                WriteTestResult(result);
             }
             else
             {
-                Console.WriteLine("Test output: Beng! Aborted");
+                Console.WriteLine("Beng! Aborted");
             }
-            //bool more = true;
-            //while ( more )
-            //{
-            //    if ( qenv.Ask() )
-            //    {
-            //        // valid choice
-            //        int index = qenv.Value - '0';
-            //        var dict = GwEnvironments[index-1];
-            //        Console.WriteLine("Test output: OK, will do {0}. {1}", index, dict["Type"]);
-            //        more = false;
-            //    }
-            //    else
-            //    {
-            //        if ( qenv.IsAbort )
-            //        {
-            //            Console.WriteLine("Test output: 'x' => OK, dan niet.");
-            //            more = false;
-            //        }
-            //        else if ( qenv.WantsDescription )
-            //        {
-            //            QuestionIO.WriteError("Gewoon een nummertje voor de omgeving kiezen....");
-            //        }
-            //    }
-            //}
 
+            // Demo for Setting list
+            var adapterSettings = CreateAdapterSettingList();
+            foreach ( var tmpsetting in adapterSettings )
+            {
+                var controller = new SettingController(tmpsetting);
+                ok = controller.Ask();
+                QuestionIO.WriteEndSeparator();
+                if ( ok )
+                {
+                    WriteTestResult(tmpsetting.ToString());
+                }
+                else
+                {
+                    WriteTestResult("Main Beng! Aborted");
+                }
+            }
 
-            AddIdP("https://sa-gw.surfconext.nl/second-factor-only/metadata");
-            Add2012R2();
+            Console.WriteLine("Detection found a valid configuration");
 
-            NewTest();
-
-            var s = new SettingController(SetupSettings.ADAttributeSetting);
-            if (s.Ask())
-                Console.WriteLine($"Test output: Dat wordt dan: {s.Setting.Value}");
-            else
-                Console.WriteLine("Test output: OK dan niet.");
 
             Console.WriteLine("Test output: return to exit");
             Console.ReadLine();
         }
 
-        private static ShowListGetDigit GetEnvSelection()
+        static void WriteTestResult(string msg)
         {
-            GwEnvironments = ConfigurationFileService.LoadGWDefaults();
+            Console.Write("         Test OUTPUT: ");
+            Console.WriteLine(msg);
+            Console.WriteLine();
+        }
+
+        private static int Digit2Index(char digit)
+        {
+            int i = digit - '0' - 1;
+            return i;
+        }
+
+        private static char Index2Digit(int index)
+        {
+            char digit = (char)(index + 1 + '0');
+            return digit;
+        }
+
+        public static int EntityID2Index(string entityID)
+        {
+            int index = -1;
+
+            for ( int i=0; i<GwEnvironments.Count; i++ )
+            {
+                var env = GwEnvironments[i];
+                string s1 = env[StepUpGatewayConstants.GwDisplayNames.IdPEntityId];
+                if ( string.CompareOrdinal(s1, entityID) == 0 )
+                {
+                    index = i;
+                    break;
+                }
+            }
+
+            return index;
+        }
+
+        public static bool AskGwEnvIndex(out int index)
+        {
+            bool ok = false;
+            index = -1;
+
+           // watch it the digit is 1 based, not 0. Index is zero based
+
+            return ok;
+        }
+
+        public static ShowListGetDigit CreateEnvSelectionDialogue()
+        {
 
             string[] options = new string[GwEnvironments.Count];
-            int index = 1;
-            foreach (var dict in GwEnvironments)
+
+            for (int index = 0; index<options.Length; index++)
             {
-                options[index-1] = $"  {index}. {dict["Type"]}";
-                index++;
+                options[index] = GwIndexToEnvString(index);
             }
 
             var ol = new OptionList()
@@ -97,6 +130,45 @@ namespace Ui4Cfg
             return new ShowListGetDigit(ol);
         }
 
+        public static ShowListGetYesNo CreateSummaryDialogue(List<Setting> list)
+        {
+            string[] settingResult = new string[list.Count];
+
+            for ( int i=0; i<list.Count; i++ )
+            {
+                settingResult[i] = list[i].ToString();
+            }
+
+            var ol = new OptionList()
+            {
+                Introduction = "The following settings were specified:",
+                Options = settingResult,
+                Question = "Do you want to continue with the above settings"
+            };
+            ShowListGetYesNo dialogue = new ShowListGetYesNo(ol);
+
+            return dialogue;
+        }
+
+        public static string GwIndexToEnvString(int index)
+        {
+            var env = GwEnvironments[index];
+            return $"  {Index2Digit(index)}. {env[SetupConstants.GwEnvironmentType]}";
+        }
+
+        public static List<Setting> CreateAdapterSettingList()
+        {
+            var list = new List<Setting>
+            {
+                SetupSettings.SchacHomeSetting,
+                SetupSettings.ADAttributeSetting,
+                SetupSettings.SPEntityID,
+                SetupSettings.SPSigningThumbprint
+            };
+
+            return list;
+        }
+
         private static void NewTest()
         {
             Console.WriteLine();
@@ -106,15 +178,14 @@ namespace Ui4Cfg
 
         private static string CreateGwList()
         {
-            // "Type": "Production"
-
             StringBuilder sb = new StringBuilder();
 
             GwEnvironments = ConfigurationFileService.LoadGWDefaults();
-            int index = 1;
+            int index = 0;
             foreach ( var dict in GwEnvironments )
             {
-                sb.AppendLine($"  {index++}. {dict["Type"]}");
+                sb.AppendLine($"  {Index2Digit(index)}. {dict[StepUpGatewayConstants.GwDisplayNames.IdPEntityId]}");
+                index++;
             }
 
             return sb.ToString();

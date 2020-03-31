@@ -36,6 +36,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
         public const string Log4netFilename = "log4net.dll";
         public const string Log4netCfgFilename = "SURFnet.Authentication.ADFS.MFA.Plugin.log4net";
 
+        public const string GwEnvironmentType = "Type";
+
         public static class XmlAttribName
         {
             public const string EntityId = "entityId";

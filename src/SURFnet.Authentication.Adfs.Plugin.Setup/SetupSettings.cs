@@ -27,7 +27,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
 
         public static Setting SchacHomeSetting = new Setting
         {
-            Introduction = "An organization name(id) is required when sending a request to the Stepup Only gateway",
+            Introduction = "The unique name of the organization is required for a request to the Single Factor Only gateway",
             InternalName = SetupConstants.AdapterInternalNames.SchacHomeOrganization,
             DisplayName = SetupConstants.AdapterDisplayNames.SchacHomeOrganization,
             Description = new string[] {
@@ -53,7 +53,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
 
         public static Setting SPSigningThumbprint = new Setting()
         {
-            Introduction = "",
+            Introduction = "The MFA extension needs to sign the SAML2 requests to the Single Factor Only gateway, it needs a certificate (will be GUI)",
             InternalName = SetupConstants.AdapterInternalNames.CertificateThumbprint,
             DisplayName = SetupConstants.AdapterDisplayNames.CertificateThumbprint,
             Description = new string[] {
@@ -65,7 +65,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
 
         public static Setting SPEntityID = new Setting
         {
-            Introduction = "",
+            Introduction = "The MFA extension needs a worldwide unique URI as an idetifier in SAML2 requests",
+            DefaultValue = "http://hostname/todo",
             InternalName = SetupConstants.AdapterInternalNames.SPEntityId,
             DisplayName = SetupConstants.AdapterDisplayNames.SPEntityId,
             Description = new string[] {

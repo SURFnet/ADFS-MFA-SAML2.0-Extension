@@ -84,6 +84,7 @@
     <Compile Include="Question\ShowAndGetString.cs" />
     <Compile Include="Question\ShowAndGetYesNo.cs" />
     <Compile Include="Question\ShowListGetDigit.cs" />
+    <Compile Include="Question\ShowListGetYesNo.cs" />
     <Compile Include="SetupConstants.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Assemblies\AssemblyList.cs" />

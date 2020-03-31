@@ -66,7 +66,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Question
             do
             {
                 isInvalid = false;
-                var input = Console.ReadKey();
+                var input = QuestionIO.ReadKey();
                 Console.WriteLine();
                 if (!char.IsNumber(input.KeyChar) || !int.TryParse(input.KeyChar.ToString(), out value))
                 {

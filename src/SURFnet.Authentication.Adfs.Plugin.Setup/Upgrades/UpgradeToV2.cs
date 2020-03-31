@@ -155,7 +155,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Upgrades
                 if (curEnvironment != null)
                 {
                     Console.WriteLine("We've found an active configuration:");
-                    Console.WriteLine($"Current environment: {curEnvironment["Type"]}");
+                    Console.WriteLine($"Current environment: {curEnvironment[StepUpGatewayConstants.GwDisplayNames.IdPEntityId]}");
                 }
             }
 
@@ -166,7 +166,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Upgrades
                 Console.WriteLine($"Found default configurations:");
                 for (var i = 0; i < defaultValues.Count; i++)
                 {
-                    Console.WriteLine($"{i}. {defaultValues[i]["Type"]}");
+                    Console.WriteLine($"{i}. {defaultValues[i][StepUpGatewayConstants.GwDisplayNames.IdPEntityId]}");
                 }
 
                 var envQuestion = new NumericQuestion("Enter the number of the environment with which you want to connect to", 0, defaultValues.Count - 1);

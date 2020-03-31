@@ -87,11 +87,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                 Console.WriteLine(ex.ToString());
             }
 
-            return 0;
-
-
-            Console.WriteLine($"Starting SurfNet MFA Plugin setup. Detected installed version '{VersionDetector.InstalledVersion}'");
-            Console.WriteLine($"upgrading to version '{VersionDetector.SetupVersion}'. Is upgrade to version 2: '{VersionDetector.IsUpgradeToVersion2()}'");
+            //Console.WriteLine($"Starting SurfNet MFA Plugin setup. Detected installed version '{VersionDetector.InstalledVersion}'");
+            //Console.WriteLine($"upgrading to version '{VersionDetector.SetupVersion}'. Is upgrade to version 2: '{VersionDetector.IsUpgradeToVersion2()}'");
 
             //var question = new YesNoQuestion($"Do you want to reconfigure or connect to a new environment?", DefaultAnswer.No);
             //var answer = question.ReadUserResponse();
@@ -116,20 +113,20 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
 
 
             // Currently we only support v1.0.1 to v2.x
-            if (VersionDetector.IsUpgradeToVersion2())
-            {
-                var upgrade = new UpgradeToV2();
-                upgrade.Execute();
-            }
+            //if (VersionDetector.IsUpgradeToVersion2())
+            //{
+            //    var upgrade = new UpgradeToV2();
+            //    upgrade.Execute();
+            //}
 
-            Console.WriteLine($"Finished upgrade from version '{VersionDetector.InstalledVersion}' to '{VersionDetector.SetupVersion}'");
+            //Console.WriteLine($"Finished upgrade from version '{VersionDetector.InstalledVersion}' to '{VersionDetector.SetupVersion}'");
 
-            ConsoleExtensions.WriteHeader("End of installation");
-            Console.WriteLine("Type 'exit' to exit");
-            while (Console.ReadLine() != "exit")
-            {
-                Console.WriteLine("Type 'exit' to exit");
-            }
+            //ConsoleExtensions.WriteHeader("End of installation");
+            //Console.WriteLine("Type 'exit' to exit");
+            //while (Console.ReadLine() != "exit")
+            //{
+            //    Console.WriteLine("Type 'exit' to exit");
+            //}
 
             return rc;
         }

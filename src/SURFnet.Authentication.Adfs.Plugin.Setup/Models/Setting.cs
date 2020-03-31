@@ -41,18 +41,6 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Models
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Setting"/> class.
-        /// </summary>
-        /// <param name="certificateService">The certification service.</param>
-        //public Setting(CertificateService certificateService) : this()
-        //{
-        //    this.certificateService = certificateService;
-        //    this.IsCertificate = true;
-        //}
-        //
-
-
-        /// <summary>
         /// A short introduction string always displayed before showing the Setting
         /// when it is presented for Edit.
         /// </summary>
@@ -77,6 +65,12 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Models
         /// </summary>
         /// <value>The name of the internal.</value>
         public string InternalName { get; set; }
+
+        /// <summary>
+        /// Some settings will get a proposed defaul value.
+        /// Set it here.
+        /// </summary>
+        public string DefaultValue { get; set; }
 
         /// <summary>
         /// Gets or sets the current value found in the local/old config file.
@@ -137,29 +131,6 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Models
             }
 
 
-            //Console.WriteLine(this.Description);
-            //Console.WriteLine($"- Current value of {this.DisplayName}: {this.CurrentValue ?? "null"}.");
-
-            //if (VersionDetector.IsCleanInstall())
-            //{
-            //    Console.WriteLine($"No configuration Found. Please enter a value");
-            //    this.SetSettingValue();
-            //}
-            //else
-            //{
-            //    Console.Write("Press Enter to continue with current value. Press N to supply a new value:");
-            //    var input = Console.ReadKey();
-            //    Console.WriteLine();
-
-            //    if (!input.Key.Equals(ConsoleKey.Enter))
-            //    {
-            //        this.SetSettingValue();
-            //    }
-            //}
-
-            //Console.WriteLine();
-            //Console.WriteLine();
-            //Console.WriteLine("----");
         }
 
         /// <summary>
@@ -171,22 +142,6 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Models
             var name = this.DisplayName.PadRight(45);
             return $"{name}: {this.Value}";
         }
-
-        ///// <summary>
-        ///// Sets the setting value with the users input.
-        ///// </summary>
-        //private void SetSettingValue()
-        //{
-
-        //    if (this.IsCertificate)
-        //    {
-        //        this.ProcessCertificate();
-        //    }
-        //    else
-        //    {
-        //        this.ProcessNormalSetting();
-        //    }
-        //}
 
         ///// <summary>
         ///// Processes the certificate.
