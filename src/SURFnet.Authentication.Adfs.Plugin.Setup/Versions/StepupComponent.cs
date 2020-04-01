@@ -29,6 +29,10 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
             ComponentName = componentname;
         }
 
+        /// <summary>
+        /// Checks existence of Assemblies and presence of Configuration file.
+        /// </summary>
+        /// <returns>0 if OK</returns>
         public virtual int Verify()
         {
             int rc = 0; // assume OK
@@ -62,6 +66,11 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
             return rc;
         }
 
+        /// <summary>
+        /// This base returns an empty list.
+        /// Or throws if there is a configurationfile, but no handler in derived class.
+        /// </summary>
+        /// <returns>an empty list</returns>
         public virtual List<Setting> ReadConfiguration()
         {
             List<Setting> rc = null;

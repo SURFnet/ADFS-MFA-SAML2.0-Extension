@@ -123,6 +123,7 @@
     <Compile Include="Util\UAC.cs" />
     <Compile Include="VersionDetector.cs" />
     <Compile Include="Versions\ComponentAssemblies.cs" />
+    <Compile Include="Versions\Log4netV2_0_8Component.cs" />
     <Compile Include="Versions\Sustainsys_2_3_Component.cs" />
     <Compile Include="Versions\V1AdfsConfigHandler.cs" />
     <Compile Include="Versions\V1Components.cs" />
@@ -134,6 +135,7 @@
     <Compile Include="Versions\StepupComponent.cs" />
     <Compile Include="Versions\V1Assemblies.cs" />
     <Compile Include="Versions\V2Assemblies.cs" />
+    <Compile Include="Versions\V2_1ConfigHandler.cs" />
     <Compile Include="Versions\VersionDescription.cs" />
     <Compile Include="Versions\VersionDictionary.cs" />
     <Compile Include="Versions\VersionHeuristics.cs" />

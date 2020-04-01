@@ -26,6 +26,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Question
 
             bool rc = base.Ask();
 
+            QuestionIO.WriteEndSeparator();
             return rc;
         }
     }

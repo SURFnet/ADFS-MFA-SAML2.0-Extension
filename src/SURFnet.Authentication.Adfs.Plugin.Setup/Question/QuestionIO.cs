@@ -48,6 +48,13 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Question
             Console.Write(question);
         }
 
+        public static void WriteDefaultEcho(char c)
+        {
+            // TODO: remove this temp fix for new Keyreader!
+            Console.WriteLine(c);  // old situation ENTER not echoed
+        }
+
+
         public static void WriteDescription(string[] description)
         {
             foreach (string s in description)

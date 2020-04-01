@@ -22,7 +22,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
             string adfsCfgPath = FileService.OurDirCombine(FileDirectory.AdfsDir, SetupConstants.AdfsCfgFilename);
             adfsConfig = XDocument.Load( adfsCfgPath );
 
-            var settings = new List<Setting>
+            var settings = new List<Setting>    // TODO: Can remove???
             {
                 SetupSettings.CertLocationSetting,
                 SetupSettings.CertFindCertSetting,
@@ -37,12 +37,12 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
             var certificate = identityProvider?.Descendants(XName.Get("signingCertificate")).FirstOrDefault();
 
             var nameAttribute = XName.Get("name");
-            
-            SetupSettings.SchacHomeSetting.FoundCfgValue = xmlSettings.FirstOrDefault(s => s.Attribute(nameAttribute)?.Value.Equals(SetupConstants.AdapterInternalNames.SchacHomeOrganization) ?? false)?.Value;
+
             //if ( null == SetupSettings.SchacHomeSetting.CurrentValue )
             //{
             //    LogService.WriteWarning("Failed to get: " + SetupSettings.SchacHomeSetting.DisplayName);
             //}
+            SetupSettings.SchacHomeSetting.FoundCfgValue = xmlSettings.FirstOrDefault(s => s.Attribute(nameAttribute)?.Value.Equals(SetupConstants.AdapterInternalNames.SchacHomeOrganization) ?? false)?.Value;
             settings.Add(SetupSettings.SchacHomeSetting);
 
             SetupSettings.ADAttributeSetting.FoundCfgValue = xmlSettings.FirstOrDefault(s => s.Attribute(nameAttribute)?.Value.Equals(SetupConstants.AdapterInternalNames.ActiveDirectoryUserIdAttribute) ?? false)?.Value;
@@ -51,7 +51,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
             SetupSettings.SPEntityID.FoundCfgValue = kentorConfigSection?.Attribute(XName.Get(SetupConstants.XmlAttribName.EntityId))?.Value;
             settings.Add(SetupSettings.SPEntityID);
 
-            SetupSettings.SPSigningThumbprint.FoundCfgValue = xmlSettings.FirstOrDefault(s => s.Attribute(nameAttribute)?.Value.Equals(SetupConstants.AdapterInternalNames.CertificateThumbprint) ?? false)?.Value;
+            SetupSettings.SPSigningThumbprint.FoundCfgValue = xmlSettings.FirstOrDefault(s => s.Attribute(nameAttribute)?.Value.Equals(SetupConstants.AdapterInternalNames.SPSignThumb1) ?? false)?.Value;
             settings.Add(SetupSettings.SPSigningThumbprint);
 
             // Now IdP / SFO gateway

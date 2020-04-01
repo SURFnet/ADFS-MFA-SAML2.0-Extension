@@ -15,6 +15,8 @@ namespace Ui4Cfg
         static List<Setting> testCfg = new List<Setting>();
         static List<Dictionary<string, string>> GwEnvironments;
 
+        static readonly bool IsDemo = true;    // true to disable result printing.
+
         static void Main(string[] args)
         {
             GwEnvironments = ConfigurationFileService.LoadGWDefaults();
@@ -23,7 +25,6 @@ namespace Ui4Cfg
             // Demo for Gateway environment choice
             ShowListGetDigit listQuestion = CreateEnvSelectionDialogue();
             ok = listQuestion.Ask();
-            QuestionIO.WriteEndSeparator();
             if (ok)
             {
                 int index = Digit2Index(listQuestion.Value);
@@ -36,7 +37,7 @@ namespace Ui4Cfg
             }
             else
             {
-                Console.WriteLine("Beng! Aborted");
+                WriteTestResult("Beng! Aborted");
             }
 
             // Demo for Setting list
@@ -45,7 +46,6 @@ namespace Ui4Cfg
             {
                 var controller = new SettingController(tmpsetting);
                 ok = controller.Ask();
-                QuestionIO.WriteEndSeparator();
                 if ( ok )
                 {
                     WriteTestResult(tmpsetting.ToString());
@@ -65,6 +65,11 @@ namespace Ui4Cfg
 
         static void WriteTestResult(string msg)
         {
+            if ( IsDemo )
+            {
+                return;
+            }
+
             Console.Write("         Test OUTPUT: ");
             Console.WriteLine(msg);
             Console.WriteLine();

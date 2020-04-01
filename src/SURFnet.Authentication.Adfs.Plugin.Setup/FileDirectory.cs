@@ -14,6 +14,6 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
         AdfsDir = 0,
         GAC,
         // maybe add other setup directories?
-        Sentinel  // for arraysize and 
+        Sentinel  // Must be last for arraysize in FileService.cs
     }
 }

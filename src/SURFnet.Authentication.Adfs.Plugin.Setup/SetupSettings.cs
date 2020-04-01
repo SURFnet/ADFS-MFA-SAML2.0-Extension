@@ -54,7 +54,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
         public static Setting SPSigningThumbprint = new Setting()
         {
             Introduction = "The MFA extension needs to sign the SAML2 requests to the Single Factor Only gateway, it needs a certificate (will be GUI)",
-            InternalName = SetupConstants.AdapterInternalNames.CertificateThumbprint,
+            InternalName = SetupConstants.AdapterInternalNames.SPSignThumb1,
             DisplayName = SetupConstants.AdapterDisplayNames.CertificateThumbprint,
             Description = new string[] {
                 "The thumbprint (i.e. the SHA1 hash of the DER X.509 certificate) of the signing certificate.",

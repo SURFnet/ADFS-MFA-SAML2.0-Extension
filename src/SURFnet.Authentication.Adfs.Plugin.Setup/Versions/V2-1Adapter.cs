@@ -27,14 +27,18 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
 
         public override List<Setting> ReadConfiguration()
         {
-            throw new NotImplementedException("Must write the 2_1 adapter configuration reader!");
+            var v2_3handler = new V2_1ConfigHandler();
+
+            var settings = v2_3handler.ExctractAdapterConfig();
+
+            return settings;
         }
 
         public override int WriteConfiguration(List<Setting> settings)
         {
             // TODO: error handling; ugh uses DisplayName!!
             int rc = 0;
-            var contents = FileService.LoadCfgSrcFile(ConfigFilename);
+            var contents = FileService.LoadCfgSrcFileFromDist(ConfigFilename);
 
             foreach ( string parameter in ConfigParameters )
             {
@@ -43,7 +47,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
             }
 
             var document = XDocument.Parse(contents); // TODO: wow soliciting exception....
-            FileService.SaveXmlConfigurationFile(document, SetupConstants.AdapterCfgFilename);
+            ConfigurationFileService.SaveXmlConfigurationFile(document, SetupConstants.AdapterCfgFilename);
 
             return rc;
         }

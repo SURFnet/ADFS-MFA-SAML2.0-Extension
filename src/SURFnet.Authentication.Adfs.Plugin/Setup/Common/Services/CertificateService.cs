@@ -21,7 +21,6 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Common.Services
     using System.Text;
 
     using SURFnet.Authentication.Adfs.Plugin.Setup.Common.Exceptions;
-    using SURFnet.Authentication.Adfs.Plugin.Setup.Common.Services.Interfaces;
 
     /// <summary>
     /// Class CertificateService.

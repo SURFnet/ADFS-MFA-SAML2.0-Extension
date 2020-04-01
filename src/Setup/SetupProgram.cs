@@ -54,12 +54,11 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
             {
                 FileService.InitFileService();
 
-                // check ADFS service state etc.
-
                 // now the settings
                 List<Setting> allSettings;
 
-                VersionDescription vdesc = AllDescriptions.V1_0_1_0;
+                //VersionDescription vdesc = AllDescriptions.V1_0_1_0;
+                VersionDescription vdesc = AllDescriptions.V2_1_17_9;
                 allSettings = vdesc.ReadConfiguration();
 
                 if (allSettings != null)

@@ -36,6 +36,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Question
 
             if ( false == string.IsNullOrWhiteSpace(TempResult) )
             {
+                QuestionIO.WriteLine();
                 QuestionIO.WriteValue($"Value for {Setting.DisplayName} now '{TempResult}'");
                 hasValue = true;
                 return true;
@@ -199,6 +200,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Question
                 }
             }
 
+            QuestionIO.WriteEndSeparator();
             return ok;
         }
     }

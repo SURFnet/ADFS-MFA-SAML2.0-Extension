@@ -142,7 +142,6 @@
     <Compile Include="Setup\Common\Exceptions\SurfNetException.cs" />
     <Compile Include="Setup\Common\RegistryConfiguration.cs" />
     <Compile Include="Setup\Common\Services\CertificateService.cs" />
-    <Compile Include="Setup\Common\Services\Interfaces\ICertificateService.cs" />
     <Compile Include="Setup\Common\Values.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -40,13 +40,13 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Upgrades
 
             //var server = new AdfsServer(adfsService);
             var certificateService = new CertificateService("pfrrrrrtttttt");  // TODO - BUG:
-            var config = new ConfigurationFileService(fileService, certificateService);
+            //var config = new ConfigurationFileService(fileService, certificateService);
 
-            var metadata = this.ProcessConfigurationFiles(config);
+            MfaExtensionMetadata metadata = null; // this.ProcessConfigurationFiles(config);
             metadata.ACS = new Uri("http://todo"); // BUG:
-            fileService.SaveRegistrationData(metadata);
+            //fileService.SaveRegistrationData(metadata);
 
-            fileService.BackupOldConfig();
+            //fileService.BackupOldConfig();
 
             //if (!fileService.CopyAssembliesToOutput())
             //{
@@ -95,10 +95,10 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Upgrades
             ConsoleExtensions.WriteHeader("Finished configuration preparation");
 
             var entityId = pluginSettings.First(s => s.InternalName.Equals(SetupConstants.XmlAttribName.EntityId));
-            var cetificate = pluginSettings.First(s => s.InternalName.Equals(SetupConstants.AdapterInternalNames.CertificateThumbprint));
+            var cetificate = pluginSettings.First(s => s.InternalName.Equals(SetupConstants.AdapterInternalNames.SPSignThumb1));
             var metadata = new MfaExtensionMetadata(new Uri(entityId.Value))
             {
-                SfoMfaExtensionCert = ConfigurationFileService.GetCertificate(cetificate.Value)
+                SfoMfaExtensionCert = null // ConfigurationFileService.GetCertificate(cetificate.Value)
             };
             return metadata;
         }

@@ -47,6 +47,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Question
                 {
                     if ( HasDefault )
                     {
+                        // TODO: Remove when all ReadLine!!
+                        QuestionIO.WriteDefaultEcho(DefaultChar);
                         IsDefault = true;
                         Value = DefaultValue;
                         ask = false;

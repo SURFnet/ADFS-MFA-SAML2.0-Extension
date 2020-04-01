@@ -23,7 +23,6 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
     using log4net;
 
     using SURFnet.Authentication.Adfs.Plugin.Setup.Common.Exceptions;
-    using SURFnet.Authentication.Adfs.Plugin.Setup.Common.Services.Interfaces;
     using SURFnet.Authentication.Adfs.Plugin.Configuration;
     using SURFnet.Authentication.Adfs.Plugin.Models;
 
@@ -81,9 +80,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
         public static CryptographicService Create(string thumbprint)
         {
             CryptographicService rc = null; // just for idiots that did not check. It will throwup on the first test!
-            string error;
 
-            if (CertificateService.IsValidThumbPrint(thumbprint, out error))
+            if (CertificateService.IsValidThumbPrint(thumbprint, out string error))
             {
                 var certWrapper = new CertificateService(thumbprint);
                 if (certWrapper.TryGetCertificate(false)) // generic fetch, we do not care about the key.
