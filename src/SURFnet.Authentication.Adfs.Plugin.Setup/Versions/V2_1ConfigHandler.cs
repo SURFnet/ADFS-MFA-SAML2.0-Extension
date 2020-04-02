@@ -13,6 +13,12 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
     {
         // TODO:  There is no error handling at all... Should at least catch and report!!
 
+        // Will almost certainly move to V2_1ConfigHandler, the only one using it.
+        public const string AdapterCfgInstitution = "institution";
+        public const string AdapterCfgLocalSP = "localSP";
+        public const string AdapterCfgStepupIdP = "stepUpIdP";
+
+
         /// <summary>
         /// S.Xml.Linq parser for Adapter configuration file.
         /// </summary>
@@ -26,20 +32,29 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
 
 
             var adapterSection = adapterConfig.Descendants(XName.Get(SetupConstants.XmlElementName.AdapterCfgSection));
-            var institutionEl = adapterSection.Descendants(XName.Get(SetupConstants.XmlElementName.AdapterCfgInstitution)).FirstOrDefault();
-            var localSPEl = adapterSection.Descendants(XName.Get(SetupConstants.XmlElementName.AdapterCfgLocalSP)).FirstOrDefault();
-            //var stepUpIdP = adapterSection.Descendants(XName.Get(SetupConstants.XmlElementName.AdapterCfgStepupIdP)).FirstOrDefault();
 
             var nameAttribute = XName.Get("name");
 
-            SetupSettings.SchacHomeSetting.FoundCfgValue = institutionEl?.Attribute(XName.Get(SetupConstants.XmlAttribName.AdapterSchacHomeOrganization))?.Value;
-            settings.Add(SetupSettings.SchacHomeSetting);
+            // institution
+            var institutionEl = adapterSection.Descendants(XName.Get(AdapterCfgInstitution)).FirstOrDefault();
+            ConfigSettings.SchacHomeSetting.FoundCfgValue = institutionEl?.Attribute(XName.Get(SetupConstants.XmlAttribName.AdapterSchacHomeOrganization))?.Value;
+            settings.Add(ConfigSettings.SchacHomeSetting);
 
-            SetupSettings.ADAttributeSetting.FoundCfgValue = institutionEl?.Attribute(XName.Get(SetupConstants.XmlAttribName.AdapterADAttribute))?.Value;
-            settings.Add(SetupSettings.ADAttributeSetting);
+            ConfigSettings.ADAttributeSetting.FoundCfgValue = institutionEl?.Attribute(XName.Get(SetupConstants.XmlAttribName.AdapterADAttribute))?.Value;
+            settings.Add(ConfigSettings.ADAttributeSetting);
 
-            SetupSettings.SPSigningThumbprint.FoundCfgValue = localSPEl?.Attribute(XName.Get(SetupConstants.XmlAttribName.AdapterSPSigner1))?.Value;
-            settings.Add(SetupSettings.SPSigningThumbprint);
+            // localSP
+            var localSPEl = adapterSection.Descendants(XName.Get(AdapterCfgLocalSP)).FirstOrDefault();
+            ConfigSettings.SPPrimarySigningThumbprint.FoundCfgValue = localSPEl?.Attribute(XName.Get(SetupConstants.XmlAttribName.AdapterSPSigner1))?.Value;
+            settings.Add(ConfigSettings.SPPrimarySigningThumbprint);
+
+            ConfigSettings.MinimaLoaSetting.FoundCfgValue = localSPEl?.Attribute(XName.Get(SetupConstants.XmlAttribName.AdapterMinimalLoa))?.Value;
+            settings.Add(ConfigSettings.MinimaLoaSetting);
+
+            // stepUpIdP
+            var stepUpIdP = adapterSection.Descendants(XName.Get(AdapterCfgStepupIdP)).FirstOrDefault();
+            ConfigSettings.IdPSSOLocationSetting.FoundCfgValue = stepUpIdP?.Attribute(XName.Get(SetupConstants.XmlAttribName.AdapterSFOEndpoint))?.Value;
+            settings.Add(ConfigSettings.MinimaLoaSetting);
 
             return settings;
         }
@@ -55,14 +70,14 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
 
             var sustainsysSection = sustainsysConfig.Descendants(XName.Get(SetupConstants.XmlElementName.SustainsysSaml2Section)).FirstOrDefault();
 
-            SetupSettings.SPEntityID.FoundCfgValue = sustainsysSection?.Attribute(XName.Get(SetupConstants.XmlAttribName.EntityId))?.Value;
-            settings.Add(SetupSettings.SPEntityID);
+            ConfigSettings.SPEntityID.FoundCfgValue = sustainsysSection?.Attribute(XName.Get(SetupConstants.XmlAttribName.EntityId))?.Value;
+            settings.Add(ConfigSettings.SPEntityID);
 
             var identityProvider = sustainsysSection?.Descendants(XName.Get("add")).FirstOrDefault();
             var certificate = identityProvider?.Descendants(XName.Get(SetupConstants.XmlElementName.SustainIdPSigningCert)).FirstOrDefault();
-
-            SetupSettings.IdPEntityID.FoundCfgValue = identityProvider?.Attribute(XName.Get(SetupConstants.XmlAttribName.EntityId))?.Value;
-            settings.Add(SetupSettings.IdPEntityID);
+            // TODO: Stor cert thumpPrint! or do not fetch it!
+            ConfigSettings.IdPEntityID.FoundCfgValue = identityProvider?.Attribute(XName.Get(SetupConstants.XmlAttribName.EntityId))?.Value;
+            settings.Add(ConfigSettings.IdPEntityID);
 
             return settings;
         }

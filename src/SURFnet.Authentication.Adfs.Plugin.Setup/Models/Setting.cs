@@ -51,7 +51,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Models
         /// Only shown when asked for with '?'.
         /// </summary>
         /// <value>The description.</value>
-        public string[] Description { get; set; }
+        public string[] HelpLines { get; set; }
 
         /// <summary>
         /// Gets or sets the display name which is shown to the user when asking
@@ -121,12 +121,12 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Models
             // todo: should refactor to settings base class and create derived types for certificate and normal setting
             if (this.IsCertificate)
             {
-                var question = new SettingsQuestion<CertificateAnswer>(this.DisplayName, this.IsMandatory, this.FoundCfgValue, this.Description);
+                var question = new SettingsQuestion<CertificateAnswer>(this.DisplayName, this.IsMandatory, this.FoundCfgValue, this.HelpLines);
                 this.NewValue = question.ReadUserResponse();
             }
             else
             {
-                var question = new SettingsQuestion<StringAnswer>(this.DisplayName, this.IsMandatory, this.FoundCfgValue, this.Description);
+                var question = new SettingsQuestion<StringAnswer>(this.DisplayName, this.IsMandatory, this.FoundCfgValue, this.HelpLines);
                 this.NewValue = question.ReadUserResponse();
             }
 

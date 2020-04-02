@@ -142,7 +142,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Question
                     }
                     else if (editQuestion.WantsDescription)
                     {
-                        QuestionIO.WriteDescription(Setting.Description);
+                        QuestionIO.WriteDescription(Setting.HelpLines);
                     }
                 }
 

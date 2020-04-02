@@ -115,15 +115,19 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
             return directoryMap[(int)value];
         }
 
-        public static string OurDirCombine(FileDirectory direnum, string name)
+        public static string OurDirCombine(FileDirectory direnum, string filename)
         {
-            string tmp = Path.Combine(Enum2Directory(direnum), name);
+            if (string.IsNullOrWhiteSpace(filename)) ThrowOnNullFilename("OurDirCombine()");
+
+            string tmp = Path.Combine(Enum2Directory(direnum), filename);
             // optional GetFullPath()
             return tmp;
         }
 
         public static string CombineToCfgOutputPath(string filename)
         {
+            if (string.IsNullOrWhiteSpace(filename)) ThrowOnNullFilename("CombineToCfgOutputPath()");
+
             return Path.Combine(OutputFolder, filename);
         }
 
@@ -135,6 +139,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
         /// <returns>The file contents.</returns>
         public static string LoadCfgSrcFileFromDist(string filename)
         {
+            if (string.IsNullOrWhiteSpace(filename)) ThrowOnNullFilename("LoadCfgSrcFileFromDist()");
+
             string filepath = Path.Combine(DistFolder, filename);
             try
             {
@@ -151,9 +157,58 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
         ///
         ///  Backup stuff
         ///
+        public static int CopyFromAdfsDirToBackupAndDelete(string filename)
+        {
+            if (string.IsNullOrWhiteSpace(filename)) ThrowOnNullFilename("CopyFromAdfsDirToBackupAndDelete()");
+
+            int rc = -1;
+
+            EnsureBackupFolder();
+
+            string srcpath = Path.Combine(AdfsDir, filename);
+            if ( 0==CopyToBackupFolder(srcpath, filename) )
+            {
+                // OK copied!
+                try
+                {
+                    File.Delete(srcpath);
+                    rc = 0;
+                }
+                catch (Exception ex2)
+                {
+                    LogService.WriteFatalException($"Failed to delete '{filename}' from ADFS directory.", ex2);
+                }
+            }
+            // else: Already logged.
+
+            return rc;
+        }
+
+        public static int CopyToBackupFolder(string fullSrcFilepath, string filename)
+        {
+            if (string.IsNullOrWhiteSpace(filename)) ThrowOnNullFilename($"CopyFromAdfsDirToBackupAndDelete(..., {nameof(filename)})");
+            if (string.IsNullOrWhiteSpace(fullSrcFilepath)) ThrowOnNullFilename($"CopyFromAdfsDirToBackupAndDelete({nameof(fullSrcFilepath)}, ...)");
+
+            int rc = -1;
+
+            try
+            {
+                string destpath = Path.Combine(BackupFolder, filename);
+                File.Copy(fullSrcFilepath, destpath, true); // overwrite, should not be necessary. It would be a bug...
+                rc = 0;
+            }
+            catch (Exception ex)
+            {
+                LogService.WriteFatalException($"Failed to copy '{fullSrcFilepath}' to backup directory.", ex);
+            }
+
+            return rc;
+        }
 
         public static bool FileExistsInCurrentBackup(string filename)
         {
+            if (string.IsNullOrWhiteSpace(filename)) ThrowOnNullFilename("FileExistsInCurrentBackup()");
+
             bool rc = false;
 
             if ( Directory.Exists(BackupFolder) )
@@ -169,16 +224,37 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
             return rc;
         }
 
-        public static void CopyFromAdfsDirToBackup(string filename)
+        /// <summary>
+        /// Specifically for log4net, or other very wellknown dependecies,
+        /// where we want to preserve any modified log4net configuration.
+        /// Many administrators know how to deal with those file.
+        /// </summary>
+        /// <param name="filename"></param>
+        public static void CopyFromBackupToOutput(string filename)
         {
-            EnsureBackupFolder();  /// mmmm replace with dirextory exists test?
+            if ( string.IsNullOrWhiteSpace(filename) ) ThrowOnNullFilename("CopyFromBackupToOutput()");
 
-            string destpath = Path.Combine(BackupFolder, filename);
-            string srcpath = Path.Combine(AdfsDir, filename);
+            string srcpath = Path.Combine(BackupFolder, filename);
+            if ( File.Exists(srcpath) )
+            {
+                string destpath = Path.Combine(OutputFolder, filename);
 
-            File.Copy(srcpath, destpath);
+                File.Copy(srcpath, destpath, true);
+            }
         }
 
+        public static void CopyFromDistToOutput(string filename)
+        {
+            if (string.IsNullOrWhiteSpace(filename)) ThrowOnNullFilename("CopyFromDistToOutput()");
+
+            string srcpath = Path.Combine(DistFolder, filename);
+            if (File.Exists(srcpath))
+            {
+                string destpath = Path.Combine(OutputFolder, filename);
+
+                File.Copy(srcpath, destpath, true);
+            }
+        }
 
         /// <summary>
         /// Ensures the backup folder exists.
@@ -235,6 +311,19 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
                 LogService.WriteFatal("Missing dist folder with installation files. Cannot continue.");
                 throw new DirectoryNotFoundException("Missing dist folder. Cannot continue.");
             }
+        }
+
+        /// <summary>
+        /// This is a BUG check mehod. Somthing called a method with a null filename.
+        /// 99% sure a programming bug in the component or other descriptor initialization!
+        /// Typically called before each Path.Combine(), to isolate bug at test time!!
+        /// The Stacktrace will probably help to find the culprit.
+        /// </summary>
+        /// <param name="methodname"></param>
+        private static void ThrowOnNullFilename(string methodname)
+        {
+            LogService.Log.Fatal($"Argument null in: {methodname}.");
+            throw new ArgumentNullException("From: "+methodname);
         }
     }
 }

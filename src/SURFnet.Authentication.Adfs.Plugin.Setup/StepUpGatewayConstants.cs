@@ -21,33 +21,25 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
     /// </summary>
     public static class StepUpGatewayConstants
     {
-        public static class GwInternalNames
-        {
-            public const string SecondFactorEndpoint = "SecondFactorEndpoint";
-
-            public const string IdPEntityId = "IdPentityId";
-
-            public const string SigningCertificateThumbprint = "findValue";
-
-            public const string SecondCertificate = "Certificate";
-            
-            public const string MinimalLoa = "MinimalLoa";
-        }
+        //public static class GwInternalNames
+        //{
+        //    public const string IdPSSOLocation = "SecondFactorEndpoint";
+        //    public const string IdPEntityId = "IdPentityId";
+        //    public const string IdPSigningCertificate = "findValue";
+        //    public const string IdPSigningCertificate2 = "Certificate";
+        //    public const string MinimalLoa = "MinimalLoa";
+        //}
 
         /// <summary>
         /// Class FriendlyNames. These values Must match with the property names in the JSON file
         /// </summary>
-        public static class GwDisplayNames
-        {
-            public const string SecondFactorEndpoint = "StepupGatewaySSOLocation";  // TODO: ???? rename to endpoint ???? of URL??
-
-            public const string IdPEntityId = "StepupGatewayEntityID";
-
-            public const string SigningCertificateThumbprint = "StepupGatewaySigningCertificate";
-
-            public const string SecondCertificate = "StepupGatewaySigningCertificate2";
-
-            public const string MinimalLoa = "MinimalLoa";
-        }
+        //public static class GwDisplayNames
+        //{
+        //    public const string SecondFactorEndpoint = "IdPSSOLocation";  // TODO: ???? rename to endpoint ???? of URL??
+        //    public const string IdPEntityId = "StepupGatewayEntityID";
+        //    public const string SigningCertificateThumbprint = "StepupGatewaySigningCertificate";
+        //    public const string SecondCertificate = "StepupGatewaySigningCertificate2";
+        //    public const string MinimalLoa = "MinimalLoa";
+        //}
     }
 }

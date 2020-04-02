@@ -40,18 +40,25 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
         public const string GwEnvironmentType = "Type";
 
 
-        // TODO: merge these names with Adapter and SteupGW Setting names! They refer to excatly the same!!!!
+        // TODO: Merge these names with Adapter and StepupIdP Setting names in JSON file!
+        //       They refer to excatly the same!!!! Or remove!!
         public static class XmlElementName
         {
             public const string AdapterCfgSection = "SURFnet.Authentication.Adfs.StepUp"; // TODO: is actually shared with plugin assembly
-            public const string AdapterCfgInstitution = "institution";
-            public const string AdapterCfgLocalSP = "localSP";
-            public const string AdapterCfgStepupIdP = "stepUpIdP";
 
+            //// Will almost certainly move to V2_1ConfigHandler, the only one using it.
+            //public const string AdapterCfgSection = "SURFnet.Authentication.Adfs.StepUp"; // TODO: is actually shared with plugin assembly
+            //public const string AdapterCfgInstitution = "institution";
+            //public const string AdapterCfgLocalSP = "localSP";
+            //public const string AdapterCfgStepupIdP = "stepUpIdP";
+
+            // This may remain it is the same for all Sustainsys.Saml2 sections.
             public const string SustainsysSaml2Section = "sustainsys.saml2";
             public const string SustainIdentityProviders = "identityProviders";
             public const string SustainIdPSigningCert = "signingCertificate";
         }
+
+        // Will almost certainly move some part to V2_1ConfigHandler, the only one using it.
         public static class XmlAttribName
         {
             public const string EntityId = "entityId";
@@ -63,37 +70,5 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
             public const string AdapterMinimalLoa = "minimalLoa";
             public const string AdapterSFOEndpoint = "secondFactorEndPoint";
         }
-
-
-        /// <summary>
-        /// Unique names for configuration settings, used Internally.
-        /// </summary>
-        public static class AdapterInternalNames
-        {
-            public const string SchacHomeOrganization = "schacHomeOrganization";
-            public const string ActiveDirectoryUserIdAttribute = "ActiveDirectoryUserIdAttribute";
-            public const string SPEntityId = "SP-entityId";
-            public const string SPSignThumb1 = "SpSigningCertificate";
-            public const string SPSignThumb2 = "SpSigningCert2";
-
-            public const string CertificateStoreName = "storeName";
-            public const string CertificateLocation = "storeLocation";
-            public const string FindBy = "x509FindType";
-        }
-
-        /// <summary>
-        /// 'Friendly' names for configuration settings, used in displays.
-        /// </summary>
-        public static class AdapterDisplayNames
-        {
-            public const string SchacHomeOrganization = "SFOMfaExtensionSchacHomeOrganization";
-            public const string ActiveDirectoryUserIdAttribute = "SFOMfaExtensionactiveDirectoryUserIdAttribute";
-            public const string SPEntityId = "SFOMfaExtensionEntityId";
-            public const string CertificateThumbprint = "SFOMfaExtensionCertThumbprint";
-            public const string CertificateStoreName = "storeName";
-            public const string CertificateLocation = "storeLocation";
-            public const string FindBy = "certificateIdType";
-        }
-
     }
 }

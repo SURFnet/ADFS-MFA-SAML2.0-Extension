@@ -5,7 +5,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
 {
     public static class V2Assemblies
     {
-        static public readonly AssemblySpec[] AdapterSpec = new AssemblySpec[]
+        static public readonly AssemblySpec[] Adapter_2_1_Spec = new AssemblySpec[]
         {
             new AssemblySpec(SetupConstants.AdapterFilename)
             {

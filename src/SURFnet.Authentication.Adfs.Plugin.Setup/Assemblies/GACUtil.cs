@@ -1,16 +1,19 @@
 ﻿using SURFnet.Authentication.Adfs.Plugin.Setup.Services;
 using System;
+using System.EnterpriseServices.Internal;
 using System.IO;
 using System.Reflection;
 
 namespace SURFnet.Authentication.Adfs.Plugin.Setup.Assemblies
 {
 
-    static public class GACCheck
+    static public class GACUtil
     {
 
         /// <summary>
-        /// Super tricky code to verify presence in GAC.
+        /// AssemblySpec extension to verify existence in GAC.
+        /// 
+        /// Super tricky and weird code......
         /// Uses a ton of methods to verify. Work in progress.
         /// Steep and long learning curve.
         /// </summary>
@@ -92,29 +95,31 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Assemblies
             }
         }
 
+        // Do not want to load
         //public static bool IsAssemblyInGAC(Assembly assembly)
         //{
         //    return assembly.GlobalAssemblyCache;  // returns a bool for an already loaded assembly.
         //}
 
-        public static string[] GetAllFromOldGAC(string filename)
-        {
-            string[] rc = null;
-            try
-            {
-                string gacpath = Path.Combine(
-                        Environment.GetFolderPath(Environment.SpecialFolder.Windows),
-                        "Assembly");
+        // Not using it....
+        //public static string[] GetAllFromOldGAC(string filename)
+        //{
+        //    string[] rc = null;
+        //    try
+        //    {
+        //        string gacpath = Path.Combine(
+        //                Environment.GetFolderPath(Environment.SpecialFolder.Windows),
+        //                "Assembly");
 
-                rc = Directory.GetFiles(gacpath, filename, SearchOption.AllDirectories);
-            }
-            catch (Exception ex)
-            {
-                LogService.Log.Error("Old GAC search exception: "+ex.ToString());
-            }
+        //        rc = Directory.GetFiles(gacpath, filename, SearchOption.AllDirectories);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        LogService.Log.Error("Old GAC search exception: "+ex.ToString());
+        //    }
 
-            return rc;
-        }
+        //    return rc;
+        //}
 
         public static string[] GetAllFromV4GAC(string filename)
         {
@@ -131,6 +136,45 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Assemblies
             {
                 LogService.Log.Error("V4GAC search exception: " + ex.ToString());
             }
+
+            return rc;
+        }
+
+        public static int RemoveFromGAC(string fullPathInBackup)
+        {
+            int rc = -1;
+
+            try
+            {
+                var publisher = new Publish();
+                publisher.GacRemove(fullPathInBackup);
+                rc = 0;
+            }
+            catch (Exception ex)
+            {
+                LogService.WriteFatalException($"Publish.GacRemove({fullPathInBackup}) failed.", ex);
+            }
+
+            return rc;
+        }
+
+        public static int RemoveThroughBackup(AssemblySpec assemblyspec)
+        {
+            int rc = -1;
+
+            // find in V4 GAC
+            if ( assemblyspec.IsInGAC(out string pathInGAC) )
+            {
+                // Copy to backup.
+                if (0 == FileService.CopyToBackupFolder(pathInGAC, assemblyspec.InternalName))
+                {
+                    // It is in the backup directory. Use that one to remove.
+                    string pathInGac = Path.Combine(FileService.BackupFolder, assemblyspec.InternalName);
+                    rc = RemoveFromGAC(pathInGAC); // Errors were already logged.
+                }
+                // else: Darn!!! But already logged.
+            }
+            // else: was exception; already logged.
 
             return rc;
         }

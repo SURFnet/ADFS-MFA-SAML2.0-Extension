@@ -108,8 +108,16 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
 
         public static void WriteFatalException(string error, Exception ex)
         {
-            Console.WriteLine(error+ex.Message);
-            LogService.Log.Fatal(error+ex.ToString());
+            StringBuilder sb = new StringBuilder();
+
+            sb.AppendLine(error);
+            sb.AppendLine(ex.Message);
+            Console.WriteLine(sb.ToString());
+
+            sb.Clear();
+            sb.AppendLine(error);
+            sb.AppendLine(ex.ToString());
+            LogService.Log.Fatal( sb.ToString() );
         }
     }
 }

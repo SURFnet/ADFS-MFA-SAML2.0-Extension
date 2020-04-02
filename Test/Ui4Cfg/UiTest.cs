@@ -32,7 +32,7 @@ namespace Ui4Cfg
                 string result = string.Format("OK, will do {0}. {1}   ({2})",
                         listQuestion.Value,
                         env[SetupConstants.GwEnvironmentType],
-                        env[StepUpGatewayConstants.GwDisplayNames.IdPEntityId]);
+                        env[ConfigSettings.IdPEntityId]);
                 WriteTestResult(result);
             }
             else
@@ -94,7 +94,7 @@ namespace Ui4Cfg
             for ( int i=0; i<GwEnvironments.Count; i++ )
             {
                 var env = GwEnvironments[i];
-                string s1 = env[StepUpGatewayConstants.GwDisplayNames.IdPEntityId];
+                string s1 = env[ConfigSettings.IdPEntityId];
                 if ( string.CompareOrdinal(s1, entityID) == 0 )
                 {
                     index = i;
@@ -165,10 +165,10 @@ namespace Ui4Cfg
         {
             var list = new List<Setting>
             {
-                SetupSettings.SchacHomeSetting,
-                SetupSettings.ADAttributeSetting,
-                SetupSettings.SPEntityID,
-                SetupSettings.SPSigningThumbprint
+                ConfigSettings.SchacHomeSetting,
+                ConfigSettings.ADAttributeSetting,
+                ConfigSettings.SPEntityID,
+                ConfigSettings.SPPrimarySigningThumbprint
             };
 
             return list;
@@ -189,7 +189,7 @@ namespace Ui4Cfg
             int index = 0;
             foreach ( var dict in GwEnvironments )
             {
-                sb.AppendLine($"  {Index2Digit(index)}. {dict[StepUpGatewayConstants.GwDisplayNames.IdPEntityId]}");
+                sb.AppendLine($"  {Index2Digit(index)}. {dict[ConfigSettings.IdPEntityId]}");
                 index++;
             }
 
@@ -198,20 +198,20 @@ namespace Ui4Cfg
 
         static void AddIdP(string entityID)
         {
-            SetupSettings.IdPEntityID.FoundCfgValue = entityID;
-            testCfg.Add(SetupSettings.IdPEntityID);
+            ConfigSettings.IdPEntityID.FoundCfgValue = entityID;
+            testCfg.Add(ConfigSettings.IdPEntityID);
         }
 
         static void Add2012R2()
         {
-            SetupSettings.SchacHomeSetting.FoundCfgValue = "institution-b.nl";
-            testCfg.Add(SetupSettings.SchacHomeSetting);
-            SetupSettings.ADAttributeSetting.FoundCfgValue = "employeeNumber";
-            testCfg.Add(SetupSettings.ADAttributeSetting);
-            SetupSettings.SPSigningThumbprint.FoundCfgValue = "6d962ac67093d7ed6bcee8a35b0cd1068c473f5d";
-            testCfg.Add(SetupSettings.SPSigningThumbprint);
-            SetupSettings.SPEntityID.FoundCfgValue = "http://adfs-2012.test2.surfconext.nl/stepup-mfa";
-            testCfg.Add(SetupSettings.SPEntityID);
+            ConfigSettings.SchacHomeSetting.FoundCfgValue = "institution-b.nl";
+            testCfg.Add(ConfigSettings.SchacHomeSetting);
+            ConfigSettings.ADAttributeSetting.FoundCfgValue = "employeeNumber";
+            testCfg.Add(ConfigSettings.ADAttributeSetting);
+            ConfigSettings.SPPrimarySigningThumbprint.FoundCfgValue = "6d962ac67093d7ed6bcee8a35b0cd1068c473f5d";
+            testCfg.Add(ConfigSettings.SPPrimarySigningThumbprint);
+            ConfigSettings.SPEntityID.FoundCfgValue = "http://adfs-2012.test2.surfconext.nl/stepup-mfa";
+            testCfg.Add(ConfigSettings.SPEntityID);
         }
     }
 }

@@ -76,30 +76,30 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Upgrades
         {
             Console.WriteLine($"Reading existing ADFS config");
 
-            List<Setting> pluginSettings = null; // config.ExtractPluginConfigurationFromAdfsConfig();
-            List<Setting> stepUpSettings = null; // config.ExtractSustainSysConfigurationFromAdfsConfig();
-            var defaultConfigValues = ConfigurationFileService.LoadGWDefaults();
+            //List<Setting> pluginSettings = null; // config.ExtractPluginConfigurationFromAdfsConfig();
+            //List<Setting> stepUpSettings = null; // config.ExtractSustainSysConfigurationFromAdfsConfig();
+            //var defaultConfigValues = ConfigurationFileService.LoadGWDefaults();
             //this.ValidateStepUpConfiguration(stepUpSettings, defaultConfigValues);
             //this.ValidatePluginSettings(pluginSettings);
 
             ConsoleExtensions.WriteHeader("Configuration preparation");
             Console.WriteLine("Successfully prepared configuration");
 
-            var mergedSettings = stepUpSettings;
-            mergedSettings.AddRange(stepUpSettings);
+            //var mergedSettings = stepUpSettings;
+            //mergedSettings.AddRange(stepUpSettings);
 
             //config.CreatePluginConfigurationFile(mergedSettings);
             //config.CreateSustainSysConfigFile(mergedSettings);
             //config.CreateCleanAdFsConfig();
-            config.WriteMinimalLoaInRegistery(stepUpSettings.First(s => s.InternalName.Equals(StepUpGatewayConstants.GwInternalNames.MinimalLoa)));
+            //config.WriteMinimalLoaInRegistery(stepUpSettings.First(s => s.InternalName.Equals(ConfigSettings.MinimalLoa)));
             ConsoleExtensions.WriteHeader("Finished configuration preparation");
 
-            var entityId = pluginSettings.First(s => s.InternalName.Equals(SetupConstants.XmlAttribName.EntityId));
-            var cetificate = pluginSettings.First(s => s.InternalName.Equals(SetupConstants.AdapterInternalNames.SPSignThumb1));
-            var metadata = new MfaExtensionMetadata(new Uri(entityId.Value))
-            {
-                SfoMfaExtensionCert = null // ConfigurationFileService.GetCertificate(cetificate.Value)
-            };
+            //var entityId = pluginSettings.First(s => s.InternalName.Equals(SetupConstants.XmlAttribName.EntityId));
+            //var cetificate = pluginSettings.First(s => s.InternalName.Equals(ConfigSettings.SPSignThumb1));
+            MfaExtensionMetadata metadata = null; // new MfaExtensionMetadata(new Uri(entityId.Value))
+            //{
+            //    SfoMfaExtensionCert = null // ConfigurationFileService.GetCertificate(cetificate.Value)
+            //};
             return metadata;
         }
 
@@ -143,7 +143,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Upgrades
         private void ValidateStepUpConfiguration(ICollection<Setting> settings, IList<Dictionary<string, string>> defaultValues)
         {
             ConsoleExtensions.WriteHeader("StepUp config");
-            var curEntityId = settings.FirstOrDefault(s => s.InternalName.Equals(StepUpGatewayConstants.GwInternalNames.IdPEntityId));
+            var curEntityId = settings.FirstOrDefault(s => s.InternalName.Equals(ConfigSettings.IdPEntityId));
 
             if (string.IsNullOrWhiteSpace(curEntityId?.FoundCfgValue))
             {
@@ -151,11 +151,11 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Upgrades
             }
             else
             {
-                var curEnvironment = defaultValues.FirstOrDefault(s => s[StepUpGatewayConstants.GwDisplayNames.IdPEntityId].Equals(curEntityId.FoundCfgValue));
+                var curEnvironment = defaultValues.FirstOrDefault(s => s[ConfigSettings.IdPEntityId].Equals(curEntityId.FoundCfgValue));
                 if (curEnvironment != null)
                 {
                     Console.WriteLine("We've found an active configuration:");
-                    Console.WriteLine($"Current environment: {curEnvironment[StepUpGatewayConstants.GwDisplayNames.IdPEntityId]}");
+                    Console.WriteLine($"Current environment: {curEnvironment[ConfigSettings.IdPEntityId]}");
                 }
             }
 
@@ -166,7 +166,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Upgrades
                 Console.WriteLine($"Found default configurations:");
                 for (var i = 0; i < defaultValues.Count; i++)
                 {
-                    Console.WriteLine($"{i}. {defaultValues[i][StepUpGatewayConstants.GwDisplayNames.IdPEntityId]}");
+                    Console.WriteLine($"{i}. {defaultValues[i][ConfigSettings.IdPEntityId]}");
                 }
 
                 var envQuestion = new NumericQuestion("Enter the number of the environment with which you want to connect to", 0, defaultValues.Count - 1);

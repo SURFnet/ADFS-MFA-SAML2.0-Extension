@@ -52,7 +52,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
 
             try
             {
-                FileService.InitFileService();
+                //FileService.InitFileService();
 
                 // now the settings
                 List<Setting> allSettings;
@@ -141,7 +141,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
         {
             int rc = 0;
 
-            Console.WriteLine($"Setup for Single Factor Only ADFS MFA extension (version: {SetupSettings.SetupVersion})");
+            Console.WriteLine($"Setup for Single Factor Only ADFS MFA extension (version: {ConfigSettings.SetupVersion})");
 
             if (args.Length == 0)
             {
@@ -192,7 +192,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                     //Version faking = SetupSettings.SetupVersion;
 
                     AdfsPSService.FakeIt(faking);
-                    Console.WriteLine("Faking version: " + faking.ToString());
+                    Console.WriteLine("Faking Configured Version in ADFS: " + faking.ToString());
 #else
                     LogService.WriteFatal("No ADFS service on this machine! This program configures ADFS. Stopping.");
                     rc = 8;

@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
 {
     /// <summary>
+    /// Description in the order of the method calls in time.
     /// The basic idea is:
     ///      Each component or higher layer (set of components)
     ///      must implement this interface.
@@ -29,23 +30,27 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
     {
         /// <summary>
         /// Must verify the presence of all its parts: Configuration files, assemblies and other paraphernalia.
+        /// This is the component and dependencies checker.
+        /// Configuration is later in .
         /// </summary>
         /// <returns>0 if OK</returns>
         int Verify();
 
         /// <summary>
-        /// Reads all configuration parameters from the configuration file(s) and returns
-        /// them as a list. Which higher layers can add to the global list.
-        /// The higher layer must stop and fail when any of the subordinate fails.
+        /// Reads all source configuration parameters from the current active configuration file(s) and returns
+        /// file(s) and returns them as a list. Which higher layers can add to the global list.
+        /// The higher layer must stop and fail when any of the subordinates fails.
+        /// It must read all the configuration data. It cannot assume that older or
+        /// newer versions know how to decide on missing or additional parameters.
         /// </summary>
         /// <returns>null on error, otherwise (possibly empty) list.</returns>
         List<Setting> ReadConfiguration();
 
         /// <summary>
-        /// Each component may need some configuration parameters.
-        /// This method can expand the parameter set. For instance adding all
-        /// Stepup Gateway (SFO IdP) parameters base on the entityID of the gateway.
-        /// It should also signal missing values (by returning non-zero).
+        /// It should signal missing values for the new installation or update by adding
+        /// them to the settings argument and/or setting the IsMandatory propertyof a Setting.
+        /// Each Target component may need some configuration parameters, this is
+        /// the method to specify that.
         /// </summary>
         /// <returns>0 if OK</returns>
         int CheckConfigurationParameters(List<Setting> settings);

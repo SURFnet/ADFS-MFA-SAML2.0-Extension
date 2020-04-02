@@ -14,14 +14,14 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
     {
         public Sustainsys_2_3_Component() : base("Sustainsys.Saml2 v2.3")
         {
+            ConfigFilename = SetupConstants.SustainCfgFilename;
         }
 
 
         private static readonly string[] ConfigParameters =
         {
-            SetupConstants.AdapterDisplayNames.SPEntityId,
-            StepUpGatewayConstants.GwDisplayNames.IdPEntityId,
-            StepUpGatewayConstants.GwDisplayNames.SigningCertificateThumbprint
+            ConfigSettings.SPEntityId,
+            ConfigSettings.IdPEntityId
         };
 
         public override List<Setting> ReadConfiguration()
@@ -40,7 +40,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
 
             foreach (string parameter in ConfigParameters)
             {
-                Setting setting = settings.Find(s => s.DisplayName.Equals(parameter));
+                Setting setting = settings.Find(s => s.InternalName.Equals(parameter));
                 if ( setting != null )
                 {
                     if ( null != setting.Value )
@@ -50,13 +50,13 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
                     }
                     else
                     {
-                        LogService.WriteFatal($"{ConfigFilename} needs {setting.DisplayName}. However, it has value null.");
+                        LogService.WriteFatal($"{ConfigFilename} needs {setting.InternalName}. However, it has value null.");
                         rc = -1;
                     }
                 }
                 else
                 {
-                    LogService.WriteFatal("Missing setting with DisplayName: " + parameter);
+                    LogService.WriteFatal($"{ConfigFilename} missing setting with Name: {parameter}");
                     rc = -1;
                 }
             }

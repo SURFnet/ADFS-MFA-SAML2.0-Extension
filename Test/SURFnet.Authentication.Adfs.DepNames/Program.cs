@@ -34,8 +34,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Test.DepNames
             Console.WriteLine("Working on: {0}", dirpath);
 
             // just to see the code returning an empty list if nothing there.
-            files = GACCheck.GetAllFromV4GAC("system.dll");
-            files = GACCheck.GetAllFromV4GAC("MfaTest1.dll");
+            files = GACUtil.GetAllFromV4GAC("system.dll");
+            files = GACUtil.GetAllFromV4GAC("MfaTest1.dll");
 
             if (null != (files = AssemblyList.GetAssemblies(dirpath)))
             {

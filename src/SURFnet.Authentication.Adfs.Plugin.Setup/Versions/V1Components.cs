@@ -12,7 +12,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
         public static readonly StepupComponent Adapter = new StepupComponent("StepupAdapter v1.0.1.0")
         {
             Assemblies = new AssemblySpec[1] { V1Assemblies.AdapterSpec },
-            ConfigFilename = null
+            // ConfigFilename = null   // Config reader/writer at Description level. Is in ADFS config file
         };
 
         public static readonly StepupComponent[] Components = new StepupComponent[]
@@ -22,12 +22,11 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
             new StepupComponent("Saml2 Kentor v0.21.2")
             {
                 Assemblies = new AssemblySpec[1] { V1Assemblies.Kentor0_21_2Spec },
-                ConfigFilename = null
             },
-            new StepupComponent("log4net v2.0.8 in GAC")
+            new Log4netV2_0_8BaseComponent("log4net v2.0.8 in GAC")
             {
+                // Replace with the GAC version, for special Uninstall().
                 Assemblies = new AssemblySpec[1] { V1Assemblies.Log4Net2_0_8_GACSpec },
-                ConfigFilename = "SURFnet.Authentication.ADFS.MFA.Plugin.log4net"
             }
         };
     }

@@ -32,7 +32,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Assemblies
         }
 
         public string FilePath { get; private set; }  // full path
-        public string InternalName { get; set; }  // filename only
+        public string InternalName { get; set; }  // Filename only (FileVersionInfo.InternalName).
         public FileDirectory TargetDirectory { get; private set; } = FileDirectory.Illegal;  // Throw on bug.
         public string AssemblyFullName { get; set; }
         public Version AssemblyVersion { get; set; }

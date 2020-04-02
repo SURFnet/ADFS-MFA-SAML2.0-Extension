@@ -12,6 +12,17 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
 {
     public class V1AdfsConfigHandler
     {
+        public const string V1Name_SecondFactorEndpoint = "SecondFactorEndpoint";
+        public const string V1Name_SpSigningCertificate = "SpSigningCertificate";
+        public const string V1Name_MinimalLoa = "MinimalLoa";
+        public const string V1Name_schacHomeOrganization = "schacHomeOrganization";
+        public const string V1Name_ActiveDirectoryName = "ActiveDirectoryName";
+        public const string V1Name_ActiveDirectoryUserIdAttribute = "ActiveDirectoryUserIdAttribute";
+
+        public const string V1SettingsSectionName = "SURFnet.Authentication.Adfs.Plugin.Properties.Settings";
+        public const string V1KentorSectionName = "kentor.authServices";
+
+        public const string V1Attrib_EntityId = "entityId";
 
         // TODO:  There is no error handling at all... Should at least catch and report!!
 
@@ -22,42 +33,38 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
             string adfsCfgPath = FileService.OurDirCombine(FileDirectory.AdfsDir, SetupConstants.AdfsCfgFilename);
             adfsConfig = XDocument.Load( adfsCfgPath );
 
-            var settings = new List<Setting>    // TODO: Can remove???
-            {
-                SetupSettings.CertLocationSetting,
-                SetupSettings.CertFindCertSetting,
-                SetupSettings.CertStoreSetting
-            };
+            var settings = new List<Setting>();    // TODO: Can remove???
+            //{
+            //    SetupSettings.CertLocationSetting,
+            //    SetupSettings.CertFindCertSetting,
+            //    SetupSettings.CertStoreSetting
+            //};
 
-            var adapterSettings = adfsConfig.Descendants(XName.Get("SURFnet.Authentication.Adfs.Plugin.Properties.Settings"));
+            var adapterSettings = adfsConfig.Descendants(XName.Get(V1SettingsSectionName));
             var xmlSettings = adapterSettings.Descendants(XName.Get("setting")).ToList();
 
-            var kentorConfigSection = adfsConfig.Descendants(XName.Get("kentor.authServices")).FirstOrDefault();
+            var kentorConfigSection = adfsConfig.Descendants(XName.Get(V1KentorSectionName)).FirstOrDefault();
             var identityProvider = kentorConfigSection?.Descendants(XName.Get("add")).FirstOrDefault();
             var certificate = identityProvider?.Descendants(XName.Get("signingCertificate")).FirstOrDefault();
 
             var nameAttribute = XName.Get("name");
 
-            //if ( null == SetupSettings.SchacHomeSetting.CurrentValue )
-            //{
-            //    LogService.WriteWarning("Failed to get: " + SetupSettings.SchacHomeSetting.DisplayName);
-            //}
-            SetupSettings.SchacHomeSetting.FoundCfgValue = xmlSettings.FirstOrDefault(s => s.Attribute(nameAttribute)?.Value.Equals(SetupConstants.AdapterInternalNames.SchacHomeOrganization) ?? false)?.Value;
-            settings.Add(SetupSettings.SchacHomeSetting);
+            ConfigSettings.SchacHomeSetting.FoundCfgValue = xmlSettings.FirstOrDefault(s => s.Attribute(nameAttribute)?.Value.Equals(V1Name_schacHomeOrganization) ?? false)?.Value;
+            settings.Add(ConfigSettings.SchacHomeSetting);
 
-            SetupSettings.ADAttributeSetting.FoundCfgValue = xmlSettings.FirstOrDefault(s => s.Attribute(nameAttribute)?.Value.Equals(SetupConstants.AdapterInternalNames.ActiveDirectoryUserIdAttribute) ?? false)?.Value;
-            settings.Add(SetupSettings.ADAttributeSetting);
+            ConfigSettings.ADAttributeSetting.FoundCfgValue = xmlSettings.FirstOrDefault(s => s.Attribute(nameAttribute)?.Value.Equals(V1Name_ActiveDirectoryUserIdAttribute) ?? false)?.Value;
+            settings.Add(ConfigSettings.ADAttributeSetting);
 
-            SetupSettings.SPEntityID.FoundCfgValue = kentorConfigSection?.Attribute(XName.Get(SetupConstants.XmlAttribName.EntityId))?.Value;
-            settings.Add(SetupSettings.SPEntityID);
+            ConfigSettings.SPEntityID.FoundCfgValue = kentorConfigSection?.Attribute(XName.Get(V1Attrib_EntityId))?.Value;
+            settings.Add(ConfigSettings.SPEntityID);
 
-            SetupSettings.SPSigningThumbprint.FoundCfgValue = xmlSettings.FirstOrDefault(s => s.Attribute(nameAttribute)?.Value.Equals(SetupConstants.AdapterInternalNames.SPSignThumb1) ?? false)?.Value;
-            settings.Add(SetupSettings.SPSigningThumbprint);
+            ConfigSettings.SPPrimarySigningThumbprint.FoundCfgValue = xmlSettings.FirstOrDefault(s => s.Attribute(nameAttribute)?.Value.Equals(V1Name_SpSigningCertificate) ?? false)?.Value;
+            settings.Add(ConfigSettings.SPPrimarySigningThumbprint);
 
             // Now IdP / SFO gateway
             // No need to fetch anything but entityID.
-            SetupSettings.IdPEntityID.FoundCfgValue = identityProvider?.Attribute(XName.Get(SetupConstants.XmlAttribName.EntityId))?.Value;
-            settings.Add(SetupSettings.IdPEntityID);
+            ConfigSettings.IdPEntityID.FoundCfgValue = identityProvider?.Attribute(XName.Get(V1Attrib_EntityId))?.Value;
+            settings.Add(ConfigSettings.IdPEntityID);
 
             return settings;
         }
@@ -65,24 +72,27 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
         public void WriteCleanAdFsConfig()
         {
             var sectionDeclarations = this.adfsConfig.Descendants(XName.Get("section")).ToList();
-            var kentorSection = sectionDeclarations.FirstOrDefault(section => section.Attribute(XName.Get("name"))?.Value.Equals("kentor.authServices") ?? false);
+            var nameAttribute = XName.Get("name");
+
+
+            var kentorSection = sectionDeclarations.FirstOrDefault(section => section.Attribute(nameAttribute)?.Value.Equals(V1KentorSectionName) ?? false);
             kentorSection?.Remove();
 
-            var pluginSection = sectionDeclarations.FirstOrDefault(section => section.Attribute(XName.Get("name"))?.Value.Equals("SURFnet.Authentication.Adfs.Plugin.Properties.Settings") ?? false);
+            var pluginSection = sectionDeclarations.FirstOrDefault(section => section.Attribute(nameAttribute)?.Value.Equals(V1SettingsSectionName) ?? false);
             pluginSection?.Remove();
 
-            var identitySection = sectionDeclarations.FirstOrDefault(section => section.Attribute(XName.Get("name"))?.Value.Equals("system.identityModel") ?? false);
+            var identitySection = sectionDeclarations.FirstOrDefault(section => section.Attribute(nameAttribute)?.Value.Equals("system.identityModel") ?? false);
             identitySection?.Remove();
 
-            var kentorConfig = this.adfsConfig.Descendants(XName.Get("kentor.authServices")).FirstOrDefault();
+            var kentorConfig = this.adfsConfig.Descendants(XName.Get(V1KentorSectionName)).FirstOrDefault();
             kentorConfig?.Remove();
 
-            var pluginConfig = this.adfsConfig.Descendants(XName.Get("SURFnet.Authentication.Adfs.Plugin.Properties.Settings"));
+            var pluginConfig = this.adfsConfig.Descendants(XName.Get( V1SettingsSectionName));
             pluginConfig?.Remove();
             // TODO: not urgent. We are leaving a probaly empty <applicationSettings /> behind. If empty, should remove.
             // And its <sectionGroup> too.
 
-            var path = Path.Combine(FileService.OutputFolder, "Microsoft.IdentityServer.Servicehost.exe.config");
+            var path = Path.Combine(FileService.OutputFolder, SetupConstants.AdfsCfgFilename);
             adfsConfig.Save(path);
         }
     }

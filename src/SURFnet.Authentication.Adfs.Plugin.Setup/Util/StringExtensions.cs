@@ -12,8 +12,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Util
     {
         public static string CheckedStringReplace(this string contents, Setting setting, string configFilename)
         {
-            string percentstring = $"%{setting.DisplayName}%";
-            int index = contents.IndexOf(setting.DisplayName);
+            string percentstring = $"%{setting.InternalName}%";
+            int index = contents.IndexOf(setting.InternalName);
             if (index <= 0)
             {
                 LogService.WriteWarning($"{percentstring} not present in sourcefile for configuration of: {configFilename}");

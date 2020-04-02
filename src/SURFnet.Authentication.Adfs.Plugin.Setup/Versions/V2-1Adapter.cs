@@ -13,16 +13,17 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
     {
         public V2_1Adapter() : base ("Adapter V2.1.*")
         {
-
+            Assemblies = V2Assemblies.Adapter_2_1_Spec;
+            ConfigFilename = SetupConstants.AdapterCfgFilename;
         }
 
         private static readonly string[] ConfigParameters =
         {
-            SetupConstants.AdapterDisplayNames.SchacHomeOrganization,
-            SetupConstants.AdapterDisplayNames.ActiveDirectoryUserIdAttribute,
-            SetupConstants.AdapterDisplayNames.CertificateThumbprint,
-            StepUpGatewayConstants.GwDisplayNames.MinimalLoa,
-            StepUpGatewayConstants.GwDisplayNames.SecondFactorEndpoint
+            ConfigSettings.SchacHomeOrganization,
+            ConfigSettings.ActiveDirectoryUserIdAttribute,
+            ConfigSettings.SPSignThumb1,
+            ConfigSettings.MinimalLoa,
+            ConfigSettings.IdPSSOLocation
         };
 
         public override List<Setting> ReadConfiguration()
@@ -36,14 +37,22 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
 
         public override int WriteConfiguration(List<Setting> settings)
         {
-            // TODO: error handling; ugh uses DisplayName!!
             int rc = 0;
             var contents = FileService.LoadCfgSrcFileFromDist(ConfigFilename);
 
             foreach ( string parameter in ConfigParameters )
             {
-                Setting setting = settings.Find(s => s.DisplayName.Equals(parameter));
-                contents = contents.Replace($"%{setting.DisplayName}%", setting.Value);
+                Setting setting = settings.Find(s => s.InternalName.Equals(parameter));
+                // TODONOW:  Move to generic verifier!
+                if ( setting==null )
+                {
+                    LogService.WriteFatal($"Component '{ComponentName}' needs Setting with InternalName: '{parameter}' which is not (yet) in the List<Setting>");
+                }
+                else if ( string.IsNullOrWhiteSpace(setting.Value) )
+                {
+                    LogService.WriteFatal($"Component '{ComponentName}' the Setting: '{parameter}' IsNullOrWhiteSpace.");
+                }
+                contents = contents.Replace($"%{setting.InternalName}%", setting.Value);
             }
 
             var document = XDocument.Parse(contents); // TODO: wow soliciting exception....

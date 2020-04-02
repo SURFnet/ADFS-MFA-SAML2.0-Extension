@@ -17,9 +17,9 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
     {
         // TODO: better with Constructor(x,y,z) and/or private setters?
 
-        public string ComponentName { get; set; }
+        public string ComponentName { get; private set; }
         public AssemblySpec[] Assemblies { get; set; }
-        public string ConfigFilename { get; set; }
+        public string ConfigFilename { get; set; }   // probably safest to set this in the constructor of specifc derived class.
         public readonly FileDirectory ConfigFileDirectory = FileDirectory.AdfsDir; // never in GAC, nor other places
 
         private StepupComponent() { } // hide
@@ -81,7 +81,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
             }
             else
             {
-                throw new NotImplementedException("Whoops! Stepup component with a configuration filename, but no reader!");
+                throw new NotImplementedException($"Whoops! Stepup component ({ComponentName}) with a configuration filename, but no reader!");
             }
 
             return rc;
@@ -110,18 +110,18 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
 
             LogService.Log.Debug("Install: " + ComponentName);
 
-            // Copy configuration
+            // Copy configuration form output directory to ADFS directory
             if (ConfigFilename != null)
             {
+                string src = Path.Combine(FileService.OutputFolder, ConfigFilename);
                 string dest = FileService.OurDirCombine(ConfigFileDirectory, ConfigFilename);
-                string src = Path.Combine(FileService.RegistrationDataFolder, ConfigFilename);
                 try
                 {
                     File.Copy(src, dest, true); // force overwrite
                 }
                 catch (Exception ex)
                 {
-                    string error = $"Failed to copy configuration of {ComponentName} to target {dest}: ";
+                    string error = $"Failed to copy configuration of {ComponentName} ConfigurationFile: {ConfigFilename} to target {dest}.";
                     LogService.WriteFatalException(error, ex);
                     rc = -1;
                 }
