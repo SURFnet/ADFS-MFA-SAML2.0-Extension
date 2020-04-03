@@ -110,22 +110,31 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Assemblies
             return rc;
         }
 
-        public int DeleteTarget()
+        public int BackupAndDelete()
         {
             int rc = -1;
 
             LogService.Log.Debug($" Deleting: {FilePath}");
 
-            try
+            if ( TargetDirectory == FileDirectory.GAC )
             {
-                File.Delete(FilePath);
-                rc = 0;
+                rc = this.RemoveThroughBackup();
             }
-            catch (Exception ex)
+            else
             {
-                string error = $"Failed to delete {FilePath} threw: ";
-                LogService.WriteFatalException(error, ex);
+                rc = FileService.CopyFromAdfsDirToBackupAndDelete(InternalName);
             }
+            //// begin old
+            //try
+            //{
+            //    File.Delete(FilePath);
+            //    rc = 0;
+            //}
+            //catch (Exception ex)
+            //{
+            //    string error = $"Failed to delete {FilePath} threw: ";
+            //    LogService.WriteFatalException(error, ex);
+            //}
 
             return rc;
         }

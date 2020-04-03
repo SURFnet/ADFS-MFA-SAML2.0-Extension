@@ -151,7 +151,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
             // Delete assemblies
             foreach (var spec in Assemblies)
             {
-                if (spec.DeleteTarget() != 0)
+                if (spec.BackupAndDelete() != 0)
                     rc = -1;
             }
 

@@ -225,7 +225,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
             {
                 foreach (var assembly in ExtraAssemblies)
                 {
-                    int tmprc = assembly.DeleteTarget();
+                    int tmprc = assembly.BackupAndDelete();
                     if (0 != tmprc)
                     {
                         rc = tmprc; // error message was already written

@@ -9,25 +9,16 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
 {
     public static class V1Components
     {
-        public static readonly StepupComponent Adapter = new StepupComponent("StepupAdapter v1.0.1.0")
-        {
-            Assemblies = new AssemblySpec[1] { V1Assemblies.AdapterSpec },
-            // ConfigFilename = null   // Config reader/writer at Description level. Is in ADFS config file
-        };
+        public static readonly StepupComponent Adapter = new V1010Adapter();
 
         public static readonly StepupComponent[] Components = new StepupComponent[]
         {
+            // TODONOW: Volgens mij is hard coded description gebruik het niet meer???
             // Do not change the order of these components!!
             // The description relies on it!!!
-            new StepupComponent("Saml2 Kentor v0.21.2")
-            {
-                Assemblies = new AssemblySpec[1] { V1Assemblies.Kentor0_21_2Spec },
-            },
-            new Log4netV2_0_8BaseComponent("log4net v2.0.8 in GAC")
-            {
-                // Replace with the GAC version, for special Uninstall().
-                Assemblies = new AssemblySpec[1] { V1Assemblies.Log4Net2_0_8_GACSpec },
-            }
+            new Kentorv0_21_Component(),
+
+            new Log4netV2_0_8GAC()
         };
     }
 }

@@ -20,7 +20,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
                 ConfigFilename = SetupConstants.SustainCfgFilename
             },
 
-            new Log4netV2_0_8BaseComponent("log4net V2.0.8.0"),
+            new Log4netV2_0_8Component("log4net V2.0.8.0"),
 
             new StepupComponent("Newtonsoft v12.0.3")
             {

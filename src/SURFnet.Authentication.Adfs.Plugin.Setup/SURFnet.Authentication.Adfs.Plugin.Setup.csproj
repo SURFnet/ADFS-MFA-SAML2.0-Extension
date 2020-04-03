@@ -123,9 +123,11 @@
     <Compile Include="Util\UAC.cs" />
     <Compile Include="VersionDetector.cs" />
     <Compile Include="Versions\ComponentAssemblies.cs" />
-    <Compile Include="Versions\Log4netGAC.cs" />
-    <Compile Include="Versions\Log4netV2_0_8BaseComponent.cs" />
+    <Compile Include="Versions\Kentorv0_21_Component.cs" />
+    <Compile Include="Versions\Log4netV2_0_8GAC.cs" />
+    <Compile Include="Versions\Log4netV2_0_8Component.cs" />
     <Compile Include="Versions\Sustainsys_2_3_Component.cs" />
+    <Compile Include="Versions\V1010Adapter.cs" />
     <Compile Include="Versions\V1AdfsConfigHandler.cs" />
     <Compile Include="Versions\V1Components.cs" />
     <Compile Include="Versions\ISetupHandler.cs" />

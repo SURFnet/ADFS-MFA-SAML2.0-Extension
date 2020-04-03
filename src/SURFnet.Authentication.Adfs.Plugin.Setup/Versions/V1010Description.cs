@@ -43,7 +43,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
             }
 
             
-            if ( V1Assemblies.AdapterSpec.IsInGAC(out adapterPathInGAC))
+            if ( V1Assemblies.AdapterV1010Spec.IsInGAC(out adapterPathInGAC))
             {
                 // Kentor
                 if ( V1Assemblies.Kentor0_21_2Spec.IsInGAC(out kentorPathInGAC) )
