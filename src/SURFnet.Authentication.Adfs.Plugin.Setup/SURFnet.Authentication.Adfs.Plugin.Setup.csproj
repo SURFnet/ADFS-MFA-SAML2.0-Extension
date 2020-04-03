@@ -69,6 +69,7 @@
     <Compile Include="AdfsServer.cs" />
     <Compile Include="FileDirectory.cs" />
     <Compile Include="ConsoleExtensions.cs" />
+    <Compile Include="Models\AdfsConfiguration.cs" />
     <Compile Include="Models\MfaExtensionMetadata.cs" />
     <Compile Include="Models\IdentityProvider.cs" />
     <Compile Include="Models\PluginConfiguration.cs" />
@@ -97,10 +98,10 @@
     <Compile Include="PS\AdfsAuthnMethodDesc.cs" />
     <Compile Include="PS\AdfsExtAuthProviderProps.cs" />
     <Compile Include="PS\AdfsGlobAuthPolicy.cs" />
-    <Compile Include="PS\AdfsProps.cs" />
-    <Compile Include="PS\AdfsPropsCmds.cs" />
-    <Compile Include="PS\AdfsSyncProps.cs" />
-    <Compile Include="PS\AdfsSyncPropsCmds.cs" />
+    <Compile Include="PS\AdfsProperties.cs" />
+    <Compile Include="PS\AdfsPropertiesCmds.cs" />
+    <Compile Include="PS\AdfsSyncProperties.cs" />
+    <Compile Include="PS\AdfsSyncPropertiesCmds.cs" />
     <Compile Include="PS\PSUtil.cs" />
     <Compile Include="Question\YesNo.cs" />
     <Compile Include="Question\NumericQuestion.cs" />
@@ -119,7 +120,6 @@
     <Compile Include="ConfigSettings.cs" />
     <Compile Include="StepUpGatewayConstants.cs" />
     <Compile Include="Upgrades\UpgradeToV2.cs" />
-    <Compile Include="Util\StringExtensions.cs" />
     <Compile Include="Util\UAC.cs" />
     <Compile Include="VersionDetector.cs" />
     <Compile Include="Versions\ComponentAssemblies.cs" />
@@ -138,9 +138,7 @@
     <Compile Include="Versions\StepupComponent.cs" />
     <Compile Include="Versions\V1Assemblies.cs" />
     <Compile Include="Versions\V2Assemblies.cs" />
-    <Compile Include="Versions\V2_1ConfigHandler.cs" />
     <Compile Include="Versions\VersionDescription.cs" />
-    <Compile Include="Versions\VersionDictionary.cs" />
     <Compile Include="Versions\VersionHeuristics.cs" />
   </ItemGroup>
   <ItemGroup>

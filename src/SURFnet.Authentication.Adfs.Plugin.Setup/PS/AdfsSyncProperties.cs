@@ -2,7 +2,7 @@
 
 namespace SURFnet.Authentication.Adfs.Plugin.Setup.PS
 {
-    public class AdfsSyncProps
+    public class AdfsSyncProperties
     {
         public string Role { get; set; }
         public string PrimaryComputerName { get; set; }

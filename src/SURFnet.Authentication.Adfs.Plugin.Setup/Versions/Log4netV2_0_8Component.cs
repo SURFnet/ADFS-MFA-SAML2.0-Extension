@@ -34,10 +34,13 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
             return new List<Setting>(0);
         }
 
-        //public override int WriteConfiguration(List<Setting> settings)
-        //{
-        //    // gets existing from backup or from distfolder
-        //}
+        public override int WriteConfiguration(List<Setting> settings)
+        {
+            // copy from distfolder to configuration output directory
+            FileService.CopyFromDistToOutput(ConfigFilename);
+
+            return 0;
+        }
 
         public override int Install()
         {
@@ -46,11 +49,6 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
                 // Some Uninstall() has written it to backup.
                 // Copy from backup to configuration output directory.
                 FileService.CopyFromBackupToOutput(ConfigFilename);
-            }
-            else
-            {
-                // copy from distfolder to configuration output directory
-                FileService.CopyFromDistToOutput(ConfigFilename);
             }
 
             return base.Install();

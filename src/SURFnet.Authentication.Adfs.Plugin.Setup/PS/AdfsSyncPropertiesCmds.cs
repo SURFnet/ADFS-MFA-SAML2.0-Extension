@@ -8,15 +8,17 @@ using System.Threading.Tasks;
 
 namespace SURFnet.Authentication.Adfs.Plugin.Setup.PS
 {
-    static public class AdfsSyncPropsCmds
+    static public class AdfsSyncPropertiesCmds
     {
         /// <summary>
         /// In the end calling: GetSyncPropertiesCommand
         /// </summary>
         /// <returns></returns>
-        static public AdfsSyncProps GetSyncProperties()
+        static public AdfsSyncProperties GetSyncProperties()
         {
-            AdfsSyncProps rc = null;
+            AdfsSyncProperties rc = null;
+            LogService.Log.Info("Enter AdfsSynPropertiesCmds.GetSyncProperties()");
+
             try
             {
                 PowerShell ps = PowerShell.Create();
@@ -35,10 +37,10 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.PS
                 }
                 else
                 {
-                    string role;
-                    if (result[0].TryGetPropertyString("Role", out role))
+                    if (result[0].TryGetPropertyString("Role", out string role))
                     {
-                        rc = new AdfsSyncProps() { Role = role };
+                        LogService.Log.Info($"Get-AdfsSyncProperties  role: {role}");
+                        rc = new AdfsSyncProperties() { Role = role };
                     }
                     else
                     {
@@ -47,13 +49,9 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.PS
                     }
                 }
             }
-            catch (ApplicationException)
-            {
-                throw; // retrow because we want this to bubble up all the way.
-            }
             catch (Exception ex)
             {
-                PSUtil.ReportFatalPS("Get-AdfsSyncPropertiesGet-AdfsSyncProperties", ex);
+                PSUtil.ReportFatalPS("Get-AdfsSyncProperties", ex);
             }
 
             return rc;

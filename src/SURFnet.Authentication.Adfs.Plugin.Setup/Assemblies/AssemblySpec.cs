@@ -16,7 +16,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Assemblies
         {
             InternalName = filename;
             TargetDirectory = direnum;
-            FilePath = FileService.Enum2Directory(direnum);
+            FilePath = FileService.OurDirCombine(direnum, filename);
             // Caller must initialize the other properties!
         }
 

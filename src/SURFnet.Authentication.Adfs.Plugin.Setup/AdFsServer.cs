@@ -22,13 +22,47 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
     using SURFnet.Authentication.Adfs.Plugin.Setup.Services;
 
     /// <summary>
-    /// Class AdFsServer.
+    /// Controls the ADFS server background service: Start/Stop etc.
     /// </summary>
     public static class AdfsServer
     {
         private const int DefaultRetries = 29;
         private const int DefaultSleepMs = 1000;
         private const string DefaultAdfsSvcName = "adfssrv";
+
+
+
+        /// <summary>
+        /// Gets the ADFS service controller.
+        /// </summary>
+        /// <returns><see cref="ServiceController"/>null on error</returns>
+        public static ServiceController CheckAdFsService()
+        {
+            SvcController = null;
+
+            try
+            {
+                ServiceController tmp = new ServiceController("adfssrv");
+                // trigger exception if not on machine.
+                var beng = tmp.Status;
+                SvcController = tmp;
+            }
+            catch (InvalidOperationException ex1)
+            {
+                LogService.WriteFatalException("No ADFS on this machine.", ex1);
+            }
+            catch (ArgumentException ex2)
+            {
+                // Why is this here? According to DOC, this never happens!
+                LogService.WriteFatalException("Invalid name for ADFS service on this machine.", ex2);
+            }
+            catch (Exception ex)
+            {
+                LogService.WriteFatalException("Trying to get a ServiceController threw an unexpectedexception!", ex);
+            }
+
+            return SvcController;
+        }
 
         ///
         /// The polling is theoretically not 100% correct.
@@ -233,37 +267,6 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
             }
 
             return rc;
-        }
-
-        /// <summary>
-        /// Gets the ADFS service controller.
-        /// </summary>
-        /// <returns><see cref="ServiceController"/>null on error</returns>
-        public static ServiceController CheckAdFsService()
-        {
-            SvcController = null;
-
-            try
-            {
-                ServiceController tmp = new ServiceController("adfssrv");
-                // trigger exception if not on machine.
-                var beng = tmp.Status;
-                SvcController = tmp;
-            }
-            catch (InvalidOperationException ex1)
-            {
-                LogService.WriteFatalException("No ADFS on this machine.", ex1);
-            }
-            catch (ArgumentException ex2)
-            {
-                LogService.WriteFatalException("Invalid name for ADFS service on this machine.", ex2);
-            }
-            catch (Exception ex)
-            {
-                LogService.WriteFatalException("Trying to get a ServiceController threw an unexpectedexception!", ex);
-            }
-
-            return SvcController;
         }
     }
 }

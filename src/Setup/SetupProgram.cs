@@ -21,6 +21,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
     using System.ServiceProcess;
     using log4net;
     using SURFnet.Authentication.Adfs.Plugin.Setup.Models;
+    using SURFnet.Authentication.Adfs.Plugin.Setup.PS;
     using SURFnet.Authentication.Adfs.Plugin.Setup.Question;
     using SURFnet.Authentication.Adfs.Plugin.Setup.Question.SettingsQuestions;
     using SURFnet.Authentication.Adfs.Plugin.Setup.Services;
@@ -38,7 +39,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
         // TODO: not a nice place. Bit of a smell?
         //
         static List<Dictionary<string, string>> GwEnvironments;
-        static Version VersionRegisteredInAdfsConfig;
+        static AdfsConfiguration AdfsConfig;
+        //static Version VersionRegisteredInAdfsConfig;
 
         /// <summary>
         /// Defines the entry point of the application.
@@ -52,79 +54,72 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
 
             try
             {
-                //FileService.InitFileService();
-
                 // now the settings
                 List<Setting> allSettings;
 
-                //VersionDescription vdesc = AllDescriptions.V1_0_1_0;
-                VersionDescription vdesc = AllDescriptions.V2_1_17_9;
-                allSettings = vdesc.ReadConfiguration();
+                ////VersionDescription vdesc = AllDescriptions.V1_0_1_0;
+                //VersionDescription vdesc = AllDescriptions.V2_1_17_9;
+                //allSettings = vdesc.ReadConfiguration();
 
-                if (allSettings != null)
+                //if (allSettings != null)
+                //{
+                //    var result = AllDescriptions.V2_1_17_9.WriteConfiguration(allSettings);
+                //}
+
+                var heuristic = new VersionHeuristics(); /// Static would be fine too isn't it?
+                if (false == heuristic.Probe(out VersionDescription versionDescriptor))
                 {
-                    var result = AllDescriptions.V2_1_17_9.WriteConfiguration(allSettings);
+                    rc = 8; // this is fatal, version detection and or verification went wrong.
+                    LogService.Log.Fatal("Fatal Probe!");
                 }
-
-                var heuristic = new VersionHeuristics();
-                vdesc = heuristic.Probe();
-                if ( vdesc != null )
+                else
                 {
-                    Console.WriteLine($"Heuristic detected version on local disk: {heuristic.AdapterFileVersion}");
-                    int result = vdesc.Verify();
-                    if (result == 0)
+                    // TO, move the messages to the detector+CfgReader.
+                    if ( versionDescriptor.DistributionVersion.Major == 0)
                     {
-                        // so far, so good.
-                        LogService.Log.Info("Verify() result: so far, so good.");
+                        Console.WriteLine("No version detected on this machine");
+                        allSettings = new List<Setting>();  // TODO: get from Versdion Description!
+                    }
+                    else
+                    {
+                        Console.WriteLine(heuristic.AdapterFileVersion.VersionToString("Version detected on local disk"));
+                        Console.WriteLine(AdfsConfig.RegisteredAdapterVersion.VersionToString("ADFS configured version"));
+                        WriteAdfsInfo(AdfsConfig);
 
+                        if ( null != (allSettings = versionDescriptor.ReadConfiguration()) )
+                        {
+                            // TODO: the cfg verifier.
+
+
+                            if ( 0!= versionDescriptor.WriteConfiguration(allSettings) )
+                            {
+                                Console.WriteLine("Error while writing configuration files.");
+                            }
+                            else
+                            {
+                                Console.WriteLine("MAIN: Configuration Written");
+                            }
+
+                        }
+                        else
+                        {
+                            LogService.Log.Fatal("Fatal in WriteConfiguration().");
+                        }
                     }
                 }
 
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.ToString());
+                LogService.WriteFatalException("LastResort catch(). Caught in Main()", ex);
+                //Console.WriteLine(ex.ToString());
             }
 
-            //Console.WriteLine($"Starting SurfNet MFA Plugin setup. Detected installed version '{VersionDetector.InstalledVersion}'");
-            //Console.WriteLine($"upgrading to version '{VersionDetector.SetupVersion}'. Is upgrade to version 2: '{VersionDetector.IsUpgradeToVersion2()}'");
-
-            //var question = new YesNoQuestion($"Do you want to reconfigure or connect to a new environment?", DefaultAnswer.No);
-            //var answer = question.ReadUserResponse();
-            //if (answer.IsDefaultAnswer)
-            //{
-            //    Console.WriteLine("The default");
-            //}
-
-            //Console.WriteLine($"You entered: {answer.Value}");
-
-            //var numQuestion = new NumericQuestion("Enter the number", 0, 3);
-            //var answer1 = numQuestion.ReadUserResponse();
-            //Console.WriteLine($"You entered: {answer1}");
-
-            //var settingsQuestion = new SettingsQuestion<StringAnswer>("schacHomeOrganization", true, "institution-b.nl", null);
-            //var answer2 = settingsQuestion.ReadUserResponse();
-            //Console.WriteLine($"You entered: {answer2}");
-
-            //var certSettingsQuestion = new SettingsQuestion<CertificateAnswer>("Certificate", true, "BD047", null);
-            //var answer3 = certSettingsQuestion.ReadUserResponse();
-            //Console.WriteLine($"You entered: {answer3}");
-
-
-            // Currently we only support v1.0.1 to v2.x
-            //if (VersionDetector.IsUpgradeToVersion2())
-            //{
-            //    var upgrade = new UpgradeToV2();
-            //    upgrade.Execute();
-            //}
-
-            //Console.WriteLine($"Finished upgrade from version '{VersionDetector.InstalledVersion}' to '{VersionDetector.SetupVersion}'");
-
-            //ConsoleExtensions.WriteHeader("End of installation");
-            //Console.WriteLine("Type 'exit' to exit");
-            //while (Console.ReadLine() != "exit")
+            //string answer = string.Empty;
+            //while (answer != "exit")
             //{
             //    Console.WriteLine("Type 'exit' to exit");
+            //    answer = Console.ReadLine();
             //}
 
             return rc;
@@ -141,7 +136,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
         {
             int rc = 0;
 
-            Console.WriteLine($"Setup for Single Factor Only ADFS MFA extension (version: {ConfigSettings.SetupVersion})");
+            Console.WriteLine(ConfigSettings.SetupVersion.VersionToString("Setup program version"));
 
             if (args.Length == 0)
             {
@@ -169,7 +164,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                 return 4;
             }
 
-            LogService.Log.Debug("Main: After ParseOptions()");
+            LogService.Log.Debug("PrepareForSetup: After ParseOptions()");
 
             try
             {
@@ -182,28 +177,33 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                     throw new ApplicationException("Some error in the Stepup Gateway (IdP) environment descriptions.");
                 }
 
-                ServiceController controller = AdfsServer.CheckAdFsService();
-                if ( controller == null )
+                ServiceController svcController = AdfsServer.CheckAdFsService();
+                if ( svcController == null )
                 {
                     // ai, no ADFS service on this machine.
 #if DEBUG
-                    // Choose which version to fake.
-                    Version faking = new Version(1, 0, 1, 0);
-                    //Version faking = SetupSettings.SetupVersion;
-
-                    AdfsPSService.FakeIt(faking);
-                    Console.WriteLine("Faking Configured Version in ADFS: " + faking.ToString());
+                    AdfsConfig = new AdfsConfiguration()
+                    {
+                        RegisteredAdapterVersion = new Version(1, 0, 1, 0),
+                        AdfsProps = new AdfsProperties()
+                        {
+                            HostName = "server7.com",
+                            HttpsPort = 443,
+                            // FederationPassiveAddress = ""
+                        },
+                        SyncProps = new AdfsSyncProperties()
+                        {
+                            Role = "Primary"
+                        },
+                    };
+                    Console.WriteLine("Faking Configured Version in ADFS: ");
+                    WriteAdfsInfo(AdfsConfig);
 #else
                     LogService.WriteFatal("No ADFS service on this machine! This program configures ADFS. Stopping.");
                     rc = 8;
 #endif
                 }
-                else if ( AdfsPSService.CheckRegisteredAdapterVersion(out VersionRegisteredInAdfsConfig) )
-                {
-                    // no exceptions. 0.0.0.0 means green field?
-                    Console.WriteLine("MFA extension registered in the ADFS configuration: "+VersionRegisteredInAdfsConfig.ToString());
-                }
-                else
+                else if ( false == AdfsPSService.GetAdfsConfiguration(out AdfsConfig) )
                 {
                     rc = 8; // Some ADFS access failure (most likely) or weird Version fetch failure.
                 }
@@ -214,6 +214,21 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                 rc = 8;
             }
             return rc;
+        }
+
+        static string VersionToString(this Version version, string text)
+        {
+            return string.Format("{0}: {1}", text.PadLeft(40), version.ToString());
+        }
+
+        static void WriteAdfsInfo(AdfsConfiguration cfg)
+        {
+            const int padding = 20;
+
+            Console.WriteLine();
+            Console.WriteLine("Adfs properties:");
+            Console.WriteLine("ADFS hostname: ".PadLeft(padding) + AdfsConfig.AdfsProps.HostName);
+            Console.WriteLine("Role of this server: ".PadLeft(padding) + AdfsConfig.SyncProps.Role);
         }
 
         private static int ParseOptions(string[] args)

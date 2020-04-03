@@ -10,7 +10,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.PS
     /// A subset of the Microsoft.IdentityServer.Management.Resources.ServiceProperties.
     /// We do not need all of them.
     /// </summary>
-    public class AdfsProps
+    public class AdfsProperties
     {
         public string FederationPassiveAddress { get; set; }
         public string HostName { get; set; }

@@ -154,9 +154,16 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
             }
         }
 
-        ///
-        ///  Backup stuff
-        ///
+        //
+        //  Backup stuff
+        //
+
+
+        /// <summary>
+        /// Copying to backup folder. Not a move() to avoid ACL issues!
+        /// </summary>
+        /// <param name="filename"></param>
+        /// <returns></returns>
         public static int CopyFromAdfsDirToBackupAndDelete(string filename)
         {
             if (string.IsNullOrWhiteSpace(filename)) ThrowOnNullFilename("CopyFromAdfsDirToBackupAndDelete()");
@@ -164,6 +171,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
             int rc = -1;
 
             EnsureBackupFolder();
+
+            LogService.Log.Info($"Copy2BackupAndDelete: {filename}");
 
             string srcpath = Path.Combine(AdfsDir, filename);
             if ( 0==CopyToBackupFolder(srcpath, filename) )
@@ -239,7 +248,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
             {
                 string destpath = Path.Combine(OutputFolder, filename);
 
-                File.Copy(srcpath, destpath, true);
+                File.Copy(srcpath, destpath, true);  // overwrite!
             }
         }
 

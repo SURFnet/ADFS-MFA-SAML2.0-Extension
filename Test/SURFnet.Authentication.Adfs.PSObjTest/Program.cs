@@ -43,9 +43,9 @@ namespace SURFnet.Authentication.Adfs.PSObjTest
             {
                 // tests in the same order as the PSUtil file
 
-                var adfsprops = AdfsPropsCmds.GetAdfsProps();
+                var adfsprops = AdfsPropertiesCmds.GetAdfsProps();
 
-                var syncprops = AdfsSyncPropsCmds.GetSyncProperties();
+                var syncprops = AdfsSyncPropertiesCmds.GetSyncProperties();
 
                 var providers = AdfsAuthnCmds.GetAuthProviderProps(null);
                 var myprovider = AdfsAuthnCmds.GetAuthProviderProps(MyName);

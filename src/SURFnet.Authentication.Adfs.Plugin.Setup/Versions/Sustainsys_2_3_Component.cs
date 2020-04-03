@@ -21,50 +21,64 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
         private static readonly string[] ConfigParameters =
         {
             ConfigSettings.SPEntityId,
-            ConfigSettings.IdPEntityId
+            ConfigSettings.IdPEntityId,
+            ConfigSettings.IdPSigningCertificate   
         };
 
         public override List<Setting> ReadConfiguration()
         {
-            var v2_3handler = new V2_1ConfigHandler();
+            LogService.Log.Info($"Reading Settings from {ConfigFilename} for {ComponentName}.");
 
-            var settings = v2_3handler.ExctractSustainsyConfig();
+            var settings = ExctractSustainsyConfig();
+            if ( settings == null )
+            {
+                LogService.WriteFatal($"  Reading settings from {ConfigFilename} for '{ComponentName}' failed.");
+            }
 
             return settings;
         }
 
-        public override int WriteConfiguration(List<Setting> settings)
+        public override int WriteConfiguration(List<Setting> allsettings)
         {
             int rc = 0;
-            var contents = FileService.LoadCfgSrcFileFromDist(ConfigFilename);
 
-            foreach (string parameter in ConfigParameters)
+            LogService.Log.Info($"  Writing settings of {ComponentName} configuration to {ConfigFilename}");
+
+            if ( false == ConfigurationFileService.ReplaceInXmlCfgFile(ConfigFilename, ConfigParameters, allsettings) )
             {
-                Setting setting = settings.Find(s => s.InternalName.Equals(parameter));
-                if ( setting != null )
-                {
-                    if ( null != setting.Value )
-                    {
-                        // TODO: invent a way to do error checking here!!
-                        contents = contents.CheckedStringReplace(setting, ConfigFilename);
-                    }
-                    else
-                    {
-                        LogService.WriteFatal($"{ConfigFilename} needs {setting.InternalName}. However, it has value null.");
-                        rc = -1;
-                    }
-                }
-                else
-                {
-                    LogService.WriteFatal($"{ConfigFilename} missing setting with Name: {parameter}");
-                    rc = -1;
-                }
+                LogService.WriteFatal($"Content problem(s) in {ConfigFilename} for component: {ComponentName}");
+                rc = -1;
             }
-
-            var document = XDocument.Parse(contents); // TODO: wow soliciting exception....
-            ConfigurationFileService.SaveXmlConfigurationFile(document, SetupConstants.AdapterCfgFilename);
 
             return rc;
         }
+
+
+        // private code
+        private List<Setting> ExctractSustainsyConfig()
+        {
+            List<Setting> settings = new List<Setting>();
+
+            string sustainsysCfgPath = FileService.OurDirCombine(FileDirectory.AdfsDir, SetupConstants.SustainCfgFilename);
+            var sustainsysConfig = XDocument.Load(sustainsysCfgPath);
+
+            //var nameAttribute = XName.Get("name");
+
+            var sustainsysSection = sustainsysConfig.Descendants(XName.Get(SetupConstants.XmlElementName.SustainsysSaml2Section)).FirstOrDefault();
+
+            ConfigSettings.SPEntityID.FoundCfgValue = sustainsysSection?.Attribute(XName.Get(SetupConstants.XmlAttribName.EntityId))?.Value;
+            settings.Add(ConfigSettings.SPEntityID);
+
+            var identityProvider = sustainsysSection?.Descendants(XName.Get("add")).FirstOrDefault();
+            var certificate = identityProvider?.Descendants(XName.Get(SetupConstants.XmlElementName.SustainIdPSigningCert)).FirstOrDefault();
+            ConfigSettings.IdPSigningThumbPrint_1_Setting.FoundCfgValue = certificate?.Attribute(XName.Get(SetupConstants.XmlAttribName.CertFindValue))?.Value;
+            settings.Add(ConfigSettings.IdPSigningThumbPrint_1_Setting);
+
+            ConfigSettings.IdPEntityID.FoundCfgValue = identityProvider?.Attribute(XName.Get(SetupConstants.XmlAttribName.EntityId))?.Value;
+            settings.Add(ConfigSettings.IdPEntityID);
+
+            return settings;
+        }
+
     }
 }

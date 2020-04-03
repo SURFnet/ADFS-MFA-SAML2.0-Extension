@@ -60,7 +60,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
         /// Install() will later copy them to the TargetDirectory.
         /// </summary>
         /// <param name="settings">The global settings list (all).</param>
-        /// <returns></returns>
+        /// <returns>0 if OK</returns>
         int WriteConfiguration(List<Setting> settings);
 
         /// <summary>

@@ -13,9 +13,6 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
 
         public static readonly StepupComponent[] Components = new StepupComponent[]
         {
-            // TODONOW: Volgens mij is hard coded description gebruik het niet meer???
-            // Do not change the order of these components!!
-            // The description relies on it!!!
             new Kentorv0_21_Component(),
 
             new Log4netV2_0_8GAC()

@@ -35,6 +35,46 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
     public class ConfigurationFileService
     {
 
+        public static bool ReplaceInXmlCfgFile(string filename, string[] settings, List<Setting> allsettings)
+        {
+            bool ok = true;
+
+            var contents = FileService.LoadCfgSrcFileFromDist(filename);
+
+            foreach (string parameter in settings)
+            {
+                // Double check, mainly for development. Setings checker has already done this.
+                Setting setting = allsettings.Find(s => s.InternalName.Equals(parameter));
+                if (setting == null)
+                {
+                    LogService.WriteFatal($"Missing setting with InternalName: '{parameter}' in allSettings for {filename}.");
+                }
+                else if (string.IsNullOrWhiteSpace(setting.Value))
+                {
+                    LogService.WriteFatal($"Value for Setting: '{parameter}' in {filename} IsNullOrWhiteSpace.");
+                }
+                else
+                {
+                    string percented = $"%{setting.InternalName}%";
+                    if ( contents.IndexOf(setting.InternalName) > 0)
+                    {
+                        // yes is there
+                        contents = contents.Replace(percented, setting.Value);
+                    }
+                    else
+                    {
+                        ok = false;
+                        LogService.WriteFatal($"Missing {percented} in {filename}");
+                    }
+                }
+            }
+
+            var document = XDocument.Parse(contents); // wow soliciting exception....
+            ConfigurationFileService.SaveXmlConfigurationFile(document, filename);
+
+            return ok;
+        }
+
         public static void SaveXmlConfigurationFile(XDocument document, string filename)
         {
             // TODO: move to config stuff.

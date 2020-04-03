@@ -98,7 +98,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
         {
             if (ConfigFilename != null)
             {
-                throw new NotImplementedException("Whoops! Stepup component with a configuration filename, but no writer!");
+                throw new NotImplementedException($"Whoops! Stepup component ({ComponentName}) with a configuration filename, but no writer!");
             }
 
             return 0;

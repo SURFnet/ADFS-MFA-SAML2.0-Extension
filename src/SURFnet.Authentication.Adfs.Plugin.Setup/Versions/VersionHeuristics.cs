@@ -10,6 +10,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
 {
     public class VersionHeuristics
     {
+        public readonly static Version NullVersion = new Version(0, 0, 0, 0); // no version found!
+
         public AssemblySpec GACAssembly { get; private set; }
         public AssemblySpec AdfsDirAssembly { get; private set; }
 
@@ -17,34 +19,63 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
         public Version AdfsConfigVersion { get; private set; }
 
 
-        public VersionDescription Probe()
+        /// <summary>
+        /// Looks for adapters and returns an out VersionDescripton.
+        /// Not finding a versio is not an error. Then a clean install would be best
+        /// and "out found" will be null.
+        /// </summary>
+        /// <returns>false on fatal errors</returns>
+        public bool Probe(out VersionDescription found)
         {
-            VersionDescription rc = null;
+            bool ok = false;
+            VersionDescription tmpDesc = null;
+            found = null;
 
             if ( TryFindAdapter() )
             {
-                if ( AdapterFileVersion == VersionDictionary.V1010.DistributionVersion )
+                //LogService.Log.Info("Probe did not fail...");
+                if ( AdapterFileVersion == AllDescriptions.V1_0_1_0.DistributionVersion )
                 {
-                    rc = VersionDictionary.V1010;
+                    tmpDesc = AllDescriptions.V1_0_1_0;
                 }
                 else if ( AdapterFileVersion==AllDescriptions.V2_1_17_9.DistributionVersion )
                 {
-                    rc = AllDescriptions.V2_1_17_9;
+                    tmpDesc = AllDescriptions.V2_1_17_9;
                 }
 
-                // TODO: Verify!
-
+                if (tmpDesc != null)
+                {
+                    LogService.Log.Info($"On disk version: {tmpDesc.DistributionVersion}, start Verify()");
+                    if ( 0==tmpDesc.Verify() )
+                    {
+                        ok = true;
+                        found = tmpDesc;
+                        //LogService.Log.Info($"  Verify() OK.");
+                    }
+                    else
+                    {
+                        LogService.Log.Fatal($"   Verify() failed on {tmpDesc.DistributionVersion}");
+                    }
+                }
+            }
+            else
+            {
+                LogService.Log.Fatal("VersionHeuristic.TryFindAdapterFailed");
             }
 
-            return rc;
+            return ok;
         }
 
+        /// <summary>
+        /// Looks in ADFS directory and GAC to see if there are Adapter assemblies.
+        /// </summary>
+        /// <returns>true if a single Adapter assembly found, else fals</returns>
         bool TryFindAdapter()
         {
             bool rc = false;
             int cnt = 0;
 
-            LogService.Log.Debug("VersionHeuristics: TryFindAdapter1.");
+            LogService.Log.Info("VersionHeuristics: Try find adapters in GAC and ADFS directory.");
 
             if ( TryGetAdapterAssembly(FileService.AdfsDir, SetupConstants.AdapterFilename, out AssemblySpec tmpSpec) )
             {
@@ -55,8 +86,6 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
                 rc = true;
             }
 
-            LogService.Log.Debug("VersionHeuristics: TryFindAdapter2.");
-
             if (TryGetAdapterAssembly(FileService.GACDir, SetupConstants.AdapterFilename, out tmpSpec))
             {
                 GACAssembly = tmpSpec;
@@ -65,14 +94,13 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
                 rc = true;
             }
 
-            LogService.Log.Debug("VersionHeuristics: just before finishing touch.");
-
             if ( rc )
             {
                 if (cnt>1)
                 {
                     // found multiple versions, that is fatal!!
                     rc = false;
+                    LogService.Log.Error("VersionHeuristics: Found multiple adapters!");
                 }
                 else
                 {

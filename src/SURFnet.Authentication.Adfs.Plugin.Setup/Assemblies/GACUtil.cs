@@ -162,6 +162,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Assemblies
         {
             int rc = -1;
 
+            LogService.Log.Info($"Attempting remove from GAC: {assemblyspec.AssemblyFullName}");
+
             // find in V4 GAC
             if ( assemblyspec.IsInGAC(out string pathInGAC) )
             {
