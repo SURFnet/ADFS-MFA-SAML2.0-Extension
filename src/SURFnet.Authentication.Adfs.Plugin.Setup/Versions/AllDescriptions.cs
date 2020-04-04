@@ -8,6 +8,16 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
 {
     public static class AllDescriptions
     {
+
+
+        static public readonly VersionDescription V0_0_0_0 = new VersionDescription()
+        {
+            DistributionVersion = V0Assemblies.AssemblyNullVersion,
+            Adapter = V0Adapter.Adapterv0_0_0_0,
+            Components = null,
+            ExtraAssemblies = null
+        };
+
         static public readonly VersionDescription V1_0_1_0 = new V1010Description()
         {
             DistributionVersion = new Version("1.0.1.0"),

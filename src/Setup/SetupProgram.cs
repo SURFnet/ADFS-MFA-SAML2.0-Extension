@@ -75,17 +75,16 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                 else
                 {
                     // TO, move the messages to the detector+CfgReader.
+                    Console.WriteLine(heuristic.AdapterFileVersion.VersionToString("Installed version"));
+                    Console.WriteLine(AdfsConfig.RegisteredAdapterVersion.VersionToString("ADFS configured version"));
+                    WriteAdfsInfo(AdfsConfig);
+
                     if ( versionDescriptor.DistributionVersion.Major == 0)
                     {
-                        Console.WriteLine("No version detected on this machine");
                         allSettings = new List<Setting>();  // TODO: get from Versdion Description!
                     }
                     else
                     {
-                        Console.WriteLine(heuristic.AdapterFileVersion.VersionToString("Version detected on local disk"));
-                        Console.WriteLine(AdfsConfig.RegisteredAdapterVersion.VersionToString("ADFS configured version"));
-                        WriteAdfsInfo(AdfsConfig);
-
                         if ( null != (allSettings = versionDescriptor.ReadConfiguration()) )
                         {
                             // TODO: the cfg verifier.
@@ -218,17 +217,36 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
 
         static string VersionToString(this Version version, string text)
         {
-            return string.Format("{0}: {1}", text.PadLeft(40), version.ToString());
+            string rc;
+
+            string s = text.PadLeft(25);
+
+            if ( version.Major == 0 )
+            {
+                rc = s + ": No version detected";
+            }
+            else
+            {
+                rc = string.Format("{0}: {1}", s, version.ToString());
+            }
+
+            return rc;
         }
 
         static void WriteAdfsInfo(AdfsConfiguration cfg)
         {
-            const int padding = 20;
+            const int padding = 17;
 
             Console.WriteLine();
             Console.WriteLine("Adfs properties:");
-            Console.WriteLine("ADFS hostname: ".PadLeft(padding) + AdfsConfig.AdfsProps.HostName);
-            Console.WriteLine("Role of this server: ".PadLeft(padding) + AdfsConfig.SyncProps.Role);
+            if (cfg.AdfsProps != null)
+            {
+                Console.WriteLine("ADFS hostname: ".PadLeft(padding) + cfg.AdfsProps.HostName);
+            }
+            if (cfg.SyncProps != null)
+            {
+                Console.WriteLine("Server Role: ".PadLeft(padding) + cfg.SyncProps.Role);
+            }
         }
 
         private static int ParseOptions(string[] args)

@@ -128,11 +128,13 @@
         /// Server (against best-practice).
         /// </summary>
         /// <param name="adfsConfig"></param>
-        /// <returns>True, no unexpected issues, out parameter may still be half empty. False, fatal error.</returns>
+        /// <returns>True, no unexpected issues, out parameter may still be half empty. False on fatal error.</returns>
         public static bool GetAdfsConfiguration(out AdfsConfiguration adfsConfig)
         {
             bool rc = false;
             adfsConfig = new AdfsConfiguration();
+
+            // TODO: Should add OS version info. But that is a lot of work with Manifest and targeting!
 
             DateTime start = DateTime.UtcNow;
 

@@ -37,6 +37,10 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.PS
                 }
                 else
                 {
+                    // On S2019, there are more documented properties. Should check some day
+                    // if we could get to the these properties on the older versions too.
+
+                    // Just Role, for now.
                     if (result[0].TryGetPropertyString("Role", out string role))
                     {
                         LogService.Log.Info($"Get-AdfsSyncProperties  role: {role}");

@@ -10,14 +10,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
 {
     public class VersionHeuristics
     {
-        public readonly static Version NullVersion = new Version(0, 0, 0, 0); // no version found!
-
-        public AssemblySpec GACAssembly { get; private set; }
-        public AssemblySpec AdfsDirAssembly { get; private set; }
-
         public Version AdapterFileVersion { get; private set; }
-        public Version AdfsConfigVersion { get; private set; }
-
 
         /// <summary>
         /// Looks for adapters and returns an out VersionDescripton.
@@ -29,28 +22,34 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
         {
             bool ok = false;
             VersionDescription tmpDesc = null;
-            found = null;
+            found = AllDescriptions.V0_0_0_0;
 
-            if ( TryFindAdapter() )
+            if ( TryFindAdapter(out Version foundVersion) )
             {
+                AdapterFileVersion = foundVersion;
+
                 //LogService.Log.Info("Probe did not fail...");
-                if ( AdapterFileVersion == AllDescriptions.V1_0_1_0.DistributionVersion )
+                if (foundVersion == AllDescriptions.V1_0_1_0.DistributionVersion )
                 {
                     tmpDesc = AllDescriptions.V1_0_1_0;
                 }
-                else if ( AdapterFileVersion==AllDescriptions.V2_1_17_9.DistributionVersion )
+                else if (foundVersion == AllDescriptions.V2_1_17_9.DistributionVersion )
                 {
                     tmpDesc = AllDescriptions.V2_1_17_9;
                 }
+                else
+                {
+                    tmpDesc = AllDescriptions.V0_0_0_0;
+                    ok = true;
+                }
 
-                if (tmpDesc != null)
+                if (tmpDesc.DistributionVersion.Major != 0)
                 {
                     LogService.Log.Info($"On disk version: {tmpDesc.DistributionVersion}, start Verify()");
                     if ( 0==tmpDesc.Verify() )
                     {
                         ok = true;
                         found = tmpDesc;
-                        //LogService.Log.Info($"  Verify() OK.");
                     }
                     else
                     {
@@ -69,54 +68,42 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
         /// <summary>
         /// Looks in ADFS directory and GAC to see if there are Adapter assemblies.
         /// </summary>
-        /// <returns>true if a single Adapter assembly found, else fals</returns>
-        bool TryFindAdapter()
+        /// <returns>true, false: multiple adpaters found or something fatal throws.</returns>
+        bool TryFindAdapter(out Version versionfound)
         {
-            bool rc = false;
-            int cnt = 0;
+            bool rc = true;
+            List<AssemblySpec> adapters = new List<AssemblySpec>(1);  // assume there is only one....
 
             LogService.Log.Info("VersionHeuristics: Try find adapters in GAC and ADFS directory.");
 
+            versionfound = V0Assemblies.AssemblyNullVersion;
             if ( TryGetAdapterAssembly(FileService.AdfsDir, SetupConstants.AdapterFilename, out AssemblySpec tmpSpec) )
             {
                 // Found one in ADFS directory
-                AdfsDirAssembly = tmpSpec;
+                adapters.Add(tmpSpec);
                 LogService.Log.Info($"Found in ADFS directory: {tmpSpec.FileVersion}");
-                cnt++;
-                rc = true;
             }
 
             if (TryGetAdapterAssembly(FileService.GACDir, SetupConstants.AdapterFilename, out tmpSpec))
             {
-                GACAssembly = tmpSpec;
+                adapters.Add(tmpSpec);
                 LogService.Log.Info($"Found in GAC: {tmpSpec.FileVersion}");
-                cnt++;
-                rc = true;
             }
 
-            if ( rc )
+            if ( adapters.Count==1 )
             {
-                if (cnt>1)
-                {
-                    // found multiple versions, that is fatal!!
-                    rc = false;
-                    LogService.Log.Error("VersionHeuristics: Found multiple adapters!");
-                }
-                else
-                {
-                    LogService.Log.Debug("VersionHeuristics: setting versions.");
-                    if ( AdfsDirAssembly != null )
-                    {
-                        AdapterFileVersion = AdfsDirAssembly.FileVersion;
-                    }
-                    else
-                    {
-                        AdapterFileVersion = GACAssembly.FileVersion;
-                    }
-                }
+                versionfound = adapters[0].FileVersion;
             }
-
-            LogService.Log.Debug("VersionHeuristics: returning.");
+            else if (adapters.Count>1)
+            {
+                // found multiple versions, that is fatal!!
+                rc = false;
+                LogService.Log.Error("VersionHeuristics: Found multiple adapters!");
+            }
+            else
+            {
+                LogService.Log.Info("No Adapater found, reporting NullVersion");
+            }
 
             return rc;
         }
