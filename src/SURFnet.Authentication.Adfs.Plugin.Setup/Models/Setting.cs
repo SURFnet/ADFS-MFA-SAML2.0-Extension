@@ -111,26 +111,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Models
         /// <summary>
         /// Give the user the ability to change the setting.
         /// </summary>
-        public void VerifySetting()
+        public virtual void VerifySetting()
         {
-            if (!this.IsConfigurable)
-            {
-                return;
-            }
-
-            // todo: should refactor to settings base class and create derived types for certificate and normal setting
-            if (this.IsCertificate)
-            {
-                var question = new SettingsQuestion<CertificateAnswer>(this.DisplayName, this.IsMandatory, this.FoundCfgValue, this.HelpLines);
-                this.NewValue = question.ReadUserResponse();
-            }
-            else
-            {
-                var question = new SettingsQuestion<StringAnswer>(this.DisplayName, this.IsMandatory, this.FoundCfgValue, this.HelpLines);
-                this.NewValue = question.ReadUserResponse();
-            }
-
-
         }
 
         /// <summary>

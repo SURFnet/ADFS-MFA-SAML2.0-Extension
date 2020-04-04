@@ -103,15 +103,7 @@
     <Compile Include="PS\AdfsSyncProperties.cs" />
     <Compile Include="PS\AdfsSyncPropertiesCmds.cs" />
     <Compile Include="PS\PSUtil.cs" />
-    <Compile Include="Question\YesNo.cs" />
-    <Compile Include="Question\NumericQuestion.cs" />
-    <Compile Include="Question\SettingsQuestions\IAnswer.cs" />
-    <Compile Include="Question\SettingsQuestions\SettingsQuestion.cs" />
     <Compile Include="Question\SettingsQuestions\CertificateAnswer.cs" />
-    <Compile Include="Question\SettingsQuestions\StringAnswer.cs" />
-    <Compile Include="Question\YesNoAnswer.cs" />
-    <Compile Include="Question\YesNoQuestion.cs" />
-    <Compile Include="Question\OldQuestion.cs" />
     <Compile Include="Services\AdfsPSService.cs" />
     <Compile Include="Services\ConfigurationFileService.cs" />
     <Compile Include="Services\FileService.cs" />

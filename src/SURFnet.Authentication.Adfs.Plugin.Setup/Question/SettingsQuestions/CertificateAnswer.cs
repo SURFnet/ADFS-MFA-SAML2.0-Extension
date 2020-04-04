@@ -23,7 +23,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Question.SettingsQuestions
     /// <summary>
     /// Class CertificateAnswer.
     /// </summary>
-    public class CertificateAnswer : IAnswer
+    public class CertificateAnswer // : IAnswer
     {
         /// <summary>
         /// Gets or sets a value indicating whether this answer is mandatory.
@@ -47,8 +47,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Question.SettingsQuestions
             Console.WriteLine("How do you want to set the certificate?");
             Console.WriteLine("1. Use my own");
             Console.WriteLine("2. Generate new certificate");
-            var question = new NumericQuestion("Enter the number of the option you want to select", 1, 2);
-            var answer = question.ReadUserResponse();
+            //var question = null; // new NumericQuestion("Enter the number of the option you want to select", 1, 2);
+            var answer = 1; // question.ReadUserResponse();
 
             if (answer == 1)
             {

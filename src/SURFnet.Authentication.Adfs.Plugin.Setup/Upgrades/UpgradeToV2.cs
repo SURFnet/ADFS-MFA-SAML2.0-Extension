@@ -120,17 +120,17 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Upgrades
                 }
             }
 
-            var question = new YesNoQuestion("Do you want to change this configuration", YesNo.No);
-            var answer = question.ReadUserResponse();
-            if (!answer.IsDefaultAnswer)
-            {
-                Console.WriteLine();
-                Console.WriteLine();
-                foreach (var setting in pluginSettings)
-                {
-                    setting.VerifySetting();
-                }
-            }
+            //var question = new YesNoQuestion("Do you want to change this configuration", YesNo.No);
+            //var answer = question.ReadUserResponse();
+            //if (!answer.IsDefaultAnswer)
+            //{
+            //    Console.WriteLine();
+            //    Console.WriteLine();
+            //    foreach (var setting in pluginSettings)
+            //    {
+            //        setting.VerifySetting();
+            //    }
+            //}
 
             ConsoleExtensions.WriteHeader("End ADFS MFA Extension");
         }
@@ -159,44 +159,44 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Upgrades
                 }
             }
 
-            var question = new YesNoQuestion("Do you want to reconfigure or connect to a new environment?", YesNo.No);
-            var answer = question.ReadUserResponse();
-            if (!answer.IsDefaultAnswer)
-            {
-                Console.WriteLine($"Found default configurations:");
-                for (var i = 0; i < defaultValues.Count; i++)
-                {
-                    Console.WriteLine($"{i}. {defaultValues[i][ConfigSettings.IdPEntityId]}");
-                }
+            //var question = new YesNoQuestion("Do you want to reconfigure or connect to a new environment?", YesNo.No);
+            //var answer = question.ReadUserResponse();
+            //if (!answer.IsDefaultAnswer)
+            //{
+            //    Console.WriteLine($"Found default configurations:");
+            //    for (var i = 0; i < defaultValues.Count; i++)
+            //    {
+            //        Console.WriteLine($"{i}. {defaultValues[i][ConfigSettings.IdPEntityId]}");
+            //    }
 
-                var envQuestion = new NumericQuestion("Enter the number of the environment with which you want to connect to", 0, defaultValues.Count - 1);
-                var envAnswer = envQuestion.ReadUserResponse();
+            //    var envQuestion = new NumericQuestion("Enter the number of the environment with which you want to connect to", 0, defaultValues.Count - 1);
+            //    var envAnswer = envQuestion.ReadUserResponse();
 
-                var environment = defaultValues[envAnswer];
-                Console.WriteLine();
+            //    var environment = defaultValues[envAnswer];
+            //    Console.WriteLine();
 
-                foreach (var defaultSetting in environment)
-                {
-                    var curSetting = settings.FirstOrDefault(s => s.DisplayName.Equals(defaultSetting.Key));
-                    if (curSetting != null)
-                    {
-                        curSetting.NewValue = defaultSetting.Value;
-                    }
-                }
+            //    foreach (var defaultSetting in environment)
+            //    {
+            //        var curSetting = settings.FirstOrDefault(s => s.DisplayName.Equals(defaultSetting.Key));
+            //        if (curSetting != null)
+            //        {
+            //            curSetting.NewValue = defaultSetting.Value;
+            //        }
+            //    }
 
-                Console.WriteLine($"Prepared new StepUp Gateway configuration.");
-            }
+            //    Console.WriteLine($"Prepared new StepUp Gateway configuration.");
+            //}
 
-            if (answer.IsDefaultAnswer && VersionDetector.IsCleanInstall())
-            {
-                Console.WriteLine();
-                Console.WriteLine();
-                Console.WriteLine("No existing installation found! Please enter a desired configuration.");
+            //if (answer.IsDefaultAnswer && VersionDetector.IsCleanInstall())
+            //{
+            //    Console.WriteLine();
+            //    Console.WriteLine();
+            //    Console.WriteLine("No existing installation found! Please enter a desired configuration.");
 
-                // Keep retrying
-                this.ValidateStepUpConfiguration(settings, defaultValues);
-                return;
-            }
+            //    // Keep retrying
+            //    this.ValidateStepUpConfiguration(settings, defaultValues);
+            //    return;
+            //}
 
             ConsoleExtensions.WriteHeader("End StepUp config");
         }
