@@ -17,28 +17,68 @@
 namespace SURFnet.Authentication.Adfs.Plugin.Setup.Models
 {
     using System;
+    using System.Collections.Generic;
     using System.Text;
     using SURFnet.Authentication.Adfs.Plugin.Setup.Common.Services;
     using SURFnet.Authentication.Adfs.Plugin.Setup.Question.SettingsQuestions;
+    using SURFnet.Authentication.Adfs.Plugin.Setup.Services;
 
     /// <summary>
     /// Class Setting.
     /// </summary>
     public class Setting
     {
-        /// <summary>
-        /// The certification service.
-        /// </summary>
-        ///private readonly CertificateService certificateService;
+        private static readonly Dictionary<string, Setting> SettingDict = new Dictionary<string, Setting>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Setting" /> class.
         /// </summary>
-        public Setting()
+        public Setting(string internalname, string parent = null)
         {
-            this.IsMandatory = true;
-            this.IsConfigurable = true;
+            IsMandatory = false;
+            InternalName = internalname;
+            Parent = parent;
+            if ( parent == null )
+            {
+                IsConfigurable = true;
+            }
+            else
+            {
+                IsConfigurable = false;
+            }
+
+            SettingDict.Add(internalname, this);
         }
+
+        public static void LinkChildren()
+        {
+            foreach (var kvp in SettingDict )
+            {
+                string parent = kvp.Value.Parent;
+                if ( parent != null )
+                {
+                    SettingDict[parent].ChildrenNames.Add(kvp.Value.InternalName);
+                }
+            }
+        }
+
+        public static Setting GetSettingByName(string internalname)
+        {
+            Setting rc = null;
+            try
+            {
+                rc = SettingDict[internalname];
+            }
+            catch (Exception ex)
+            {
+                LogService.WriteFatalException($"Indexing in {internalname} threw up", ex);
+                throw; // logic bug!! Probably internal name mismatch in Component.ConfigParameters!
+            }
+
+            return rc;
+        }
+
+        public readonly List<string> ChildrenNames = new List<string>();
 
         /// <summary>
         /// A short introduction string always displayed before showing the Setting
@@ -64,7 +104,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Models
         /// Gets or sets the internal name (to get the setting from the XML config files).
         /// </summary>
         /// <value>The name of the internal.</value>
-        public string InternalName { get; set; }
+        public string InternalName { get; private set; }
 
         /// <summary>
         /// Some settings will get a proposed defaul value.
@@ -86,27 +126,37 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Models
 
         /// <summary>
         /// Gets the actual value to save in the new config file.
+        /// TODO: (PL) we do use it in IdP JSON updater, but is the Question and its updates OK too. CFG writer too?
         /// </summary>
         /// <value>The value.</value>
-        public string Value => this.NewValue ?? this.FoundCfgValue;
+        public string Value => this.NewValue ?? this.FoundCfgValue ?? this.DefaultValue;
         
         /// <summary>
         /// Gets or sets a value indicating whether this setting is mandatory.
         /// </summary>
-        /// <value><c>true</c> if this setting is mandatory; otherwise, <c>false</c>.</value>
+        /// <value><c>true</c> if this setting is mandatory; otherwise <c>false</c>.</value>
         public bool IsMandatory { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether this setting is configurable by the user.
+        /// Typically not if it came from a JSON file....
         /// </summary>
         /// <value><c>true</c> if this setting is configurable; otherwise, <c>false</c>.</value>
         public bool IsConfigurable { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether this setting is a certificate setting. Certificates are handled differently.
+        /// Set if the checker decided to update, because there is different configuration data 
+        /// in some configuration file (JSON). Helps for save/no-save decision.
+        /// An updated value, goes directly to NewValue.
         /// </summary>
-        /// <value><c>true</c> if this setting is a certificate; otherwise, <c>false</c>.</value>
-        public bool IsCertificate { get; set; }
+        public bool IsUpdated { get; set; }
+
+        /// <summary>
+        /// Helper to decide if we need to write while reconfiguring.
+        /// </summary>
+        public bool IsChangedByUser { get; set; }
+
+        public string Parent { get; private set; }
 
         /// <summary>
         /// Give the user the ability to change the setting.

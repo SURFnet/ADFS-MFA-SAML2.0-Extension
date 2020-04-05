@@ -94,7 +94,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
 
             OutputFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "output");
             DistFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "dist");
-            BackupFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $"backup{DateTime.Now.ToString("yyMMddHHmmss")}");
+            BackupFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $"backup{DateTime.Now.ToString("yyyy-MM-ddTHHmmss")}");
             RegistrationDataFolder = Path.Combine(OutputFolder, "configuration");
         }
 
@@ -164,7 +164,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
         /// </summary>
         /// <param name="filename"></param>
         /// <returns></returns>
-        public static int CopyFromAdfsDirToBackupAndDelete(string filename)
+        public static int Copy2BackupAndDelete(string filename, FileDirectory filedirectory = FileDirectory.AdfsDir)
         {
             if (string.IsNullOrWhiteSpace(filename)) ThrowOnNullFilename("CopyFromAdfsDirToBackupAndDelete()");
 
@@ -174,12 +174,14 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
 
             LogService.Log.Info($"Copy2BackupAndDelete: {filename}");
 
-            string srcpath = Path.Combine(AdfsDir, filename);
+            string path = Enum2Directory(filedirectory);
+            string srcpath = Path.Combine(path, filename);
             if ( 0==CopyToBackupFolder(srcpath, filename) )
             {
                 // OK copied!
                 try
                 {
+                    // Delete src
                     File.Delete(srcpath);
                     rc = 0;
                 }
@@ -195,8 +197,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
 
         public static int CopyToBackupFolder(string fullSrcFilepath, string filename)
         {
-            if (string.IsNullOrWhiteSpace(filename)) ThrowOnNullFilename($"CopyFromAdfsDirToBackupAndDelete(..., {nameof(filename)})");
-            if (string.IsNullOrWhiteSpace(fullSrcFilepath)) ThrowOnNullFilename($"CopyFromAdfsDirToBackupAndDelete({nameof(fullSrcFilepath)}, ...)");
+            if (string.IsNullOrWhiteSpace(filename)) ThrowOnNullFilename($"CopyToBackupFolder(..., {nameof(filename)})");
+            if (string.IsNullOrWhiteSpace(fullSrcFilepath)) ThrowOnNullFilename($"CopyToBackupFolder({nameof(fullSrcFilepath)}, ...)");
 
             int rc = -1;
 

@@ -158,7 +158,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Assemblies
             return rc;
         }
 
-        public static int RemoveThroughBackup(this AssemblySpec assemblyspec)
+        public static int RemoveFromGACThroughBackup(this AssemblySpec assemblyspec)
         {
             int rc = -1;
 

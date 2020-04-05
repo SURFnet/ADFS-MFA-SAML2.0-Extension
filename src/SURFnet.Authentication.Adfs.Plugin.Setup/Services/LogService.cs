@@ -111,6 +111,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
             StringBuilder sb = new StringBuilder();
 
             sb.AppendLine(error);
+            sb.Append("ex.Message: ");
             sb.AppendLine(ex.Message);
             Console.WriteLine(sb.ToString());
 

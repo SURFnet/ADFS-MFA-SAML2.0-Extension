@@ -1,4 +1,5 @@
-﻿using SURFnet.Authentication.Adfs.Plugin.Setup.Models;
+﻿using SURFnet.Authentication.Adfs.Plugin.Setup.Configuration;
+using SURFnet.Authentication.Adfs.Plugin.Setup.Models;
 using SURFnet.Authentication.Adfs.Plugin.Setup.Services;
 using System;
 using System.Collections.Generic;

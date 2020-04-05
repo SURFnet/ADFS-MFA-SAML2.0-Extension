@@ -35,15 +35,15 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Upgrades
         /// </summary>
         public void Execute()
         {
-            var fileService = new FileService();
+            //var fileService = new FileService();
             //var adfsService = new AdfsServer();
 
             //var server = new AdfsServer(adfsService);
-            var certificateService = new CertificateService("pfrrrrrtttttt");  // TODO - BUG:
+            //var certificateService = new CertificateService("pfrrrrrtttttt");  // TODO - BUG:
             //var config = new ConfigurationFileService(fileService, certificateService);
 
-            MfaExtensionMetadata metadata = null; // this.ProcessConfigurationFiles(config);
-            metadata.ACS = new Uri("http://todo"); // BUG:
+            //MfaExtensionMetadata metadata = null; // this.ProcessConfigurationFiles(config);
+            //metadata.ACS = new Uri("http://todo"); // BUG:
             //fileService.SaveRegistrationData(metadata);
 
             //fileService.BackupOldConfig();
@@ -56,14 +56,14 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Upgrades
 
             //server.UnregisterAdapter();
 
-            AdfsServer.StopAdFsService();
+            //AdfsServer.StopAdFsService();
 
             //var service = new AssemblyService();
             //service.RemoveAssembliesFromGac();
 
             //fileService.CopyOutputToAdFsDirectory();
 
-            AdfsServer.StartAdFsService();
+            //AdfsServer.StartAdFsService();
             //server.RegisterAdapter();
         }
 
@@ -72,9 +72,9 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Upgrades
         /// </summary>
         /// <param name="config">The configuration.</param>
         /// <returns><see cref="MfaExtensionMetadata"/>.</returns>
-        private MfaExtensionMetadata ProcessConfigurationFiles(ConfigurationFileService config)
-        {
-            Console.WriteLine($"Reading existing ADFS config");
+        //private MfaExtensionMetadata ProcessConfigurationFiles(ConfigurationFileService config)
+        //{
+            //Console.WriteLine($"Reading existing ADFS config");
 
             //List<Setting> pluginSettings = null; // config.ExtractPluginConfigurationFromAdfsConfig();
             //List<Setting> stepUpSettings = null; // config.ExtractSustainSysConfigurationFromAdfsConfig();
@@ -82,8 +82,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Upgrades
             //this.ValidateStepUpConfiguration(stepUpSettings, defaultConfigValues);
             //this.ValidatePluginSettings(pluginSettings);
 
-            ConsoleExtensions.WriteHeader("Configuration preparation");
-            Console.WriteLine("Successfully prepared configuration");
+            //ConsoleExtensions.WriteHeader("Configuration preparation");
+            //Console.WriteLine("Successfully prepared configuration");
 
             //var mergedSettings = stepUpSettings;
             //mergedSettings.AddRange(stepUpSettings);
@@ -92,33 +92,33 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Upgrades
             //config.CreateSustainSysConfigFile(mergedSettings);
             //config.CreateCleanAdFsConfig();
             //config.WriteMinimalLoaInRegistery(stepUpSettings.First(s => s.InternalName.Equals(ConfigSettings.MinimalLoa)));
-            ConsoleExtensions.WriteHeader("Finished configuration preparation");
+            //ConsoleExtensions.WriteHeader("Finished configuration preparation");
 
             //var entityId = pluginSettings.First(s => s.InternalName.Equals(SetupConstants.XmlAttribName.EntityId));
             //var cetificate = pluginSettings.First(s => s.InternalName.Equals(ConfigSettings.SPSignThumb1));
-            MfaExtensionMetadata metadata = null; // new MfaExtensionMetadata(new Uri(entityId.Value))
+            //MfaExtensionMetadata metadata = null; // new MfaExtensionMetadata(new Uri(entityId.Value))
             //{
             //    SfoMfaExtensionCert = null // ConfigurationFileService.GetCertificate(cetificate.Value)
             //};
-            return metadata;
+            //return metadata;
         }
 
         /// <summary>
         /// Validates the plugin settings.
         /// </summary>
         /// <param name="pluginSettings">The plugin settings.</param>
-        private void ValidatePluginSettings(ICollection<Setting> pluginSettings)
-        {
-            ConsoleExtensions.WriteHeader("ADFS MFA Extension");
-            if (pluginSettings.Any(s => !string.IsNullOrWhiteSpace(s.FoundCfgValue) && s.IsConfigurable))
-            {
-                Console.WriteLine("Found local MFA extension settings");
+        //private void ValidatePluginSettings(ICollection<Setting> pluginSettings)
+        //{
+        //    ConsoleExtensions.WriteHeader("ADFS MFA Extension");
+        //    if (pluginSettings.Any(s => !string.IsNullOrWhiteSpace(s.FoundCfgValue) && s.IsConfigurable))
+        //    {
+        //        Console.WriteLine("Found local MFA extension settings");
 
-                foreach (var setting in pluginSettings.Where(s => s.IsConfigurable))
-                {
-                    Console.WriteLine(setting);
-                }
-            }
+        //        foreach (var setting in pluginSettings.Where(s => s.IsConfigurable))
+        //        {
+        //            Console.WriteLine(setting);
+        //        }
+        //    }
 
             //var question = new YesNoQuestion("Do you want to change this configuration", YesNo.No);
             //var answer = question.ReadUserResponse();
@@ -132,73 +132,73 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Upgrades
             //    }
             //}
 
-            ConsoleExtensions.WriteHeader("End ADFS MFA Extension");
-        }
+        //    ConsoleExtensions.WriteHeader("End ADFS MFA Extension");
+        //}
 
         /// <summary>
         /// Prints the current configuration.
         /// </summary>
         /// <param name="settings">The settings.</param>
         /// <param name="defaultValues">The default values.</param>
-        private void ValidateStepUpConfiguration(ICollection<Setting> settings, IList<Dictionary<string, string>> defaultValues)
-        {
-            ConsoleExtensions.WriteHeader("StepUp config");
-            var curEntityId = settings.FirstOrDefault(s => s.InternalName.Equals(ConfigSettings.IdPEntityId));
+    //    private void ValidateStepUpConfiguration(ICollection<Setting> settings, IList<Dictionary<string, string>> defaultValues)
+    //    {
+    //        ConsoleExtensions.WriteHeader("StepUp config");
+    //        var curEntityId = settings.FirstOrDefault(s => s.InternalName.Equals(ConfigSettings.IdPEntityId));
 
-            if (string.IsNullOrWhiteSpace(curEntityId?.FoundCfgValue))
-            {
-                VersionDetector.SetInstallationStatusToCleanInstall();
-            }
-            else
-            {
-                var curEnvironment = defaultValues.FirstOrDefault(s => s[ConfigSettings.IdPEntityId].Equals(curEntityId.FoundCfgValue));
-                if (curEnvironment != null)
-                {
-                    Console.WriteLine("We've found an active configuration:");
-                    Console.WriteLine($"Current environment: {curEnvironment[ConfigSettings.IdPEntityId]}");
-                }
-            }
+    //        if (string.IsNullOrWhiteSpace(curEntityId?.FoundCfgValue))
+    //        {
+    //            VersionDetector.SetInstallationStatusToCleanInstall();
+    //        }
+    //        else
+    //        {
+    //            var curEnvironment = defaultValues.FirstOrDefault(s => s[ConfigSettings.IdPEntityId].Equals(curEntityId.FoundCfgValue));
+    //            if (curEnvironment != null)
+    //            {
+    //                Console.WriteLine("We've found an active configuration:");
+    //                Console.WriteLine($"Current environment: {curEnvironment[ConfigSettings.IdPEntityId]}");
+    //            }
+    //        }
 
-            //var question = new YesNoQuestion("Do you want to reconfigure or connect to a new environment?", YesNo.No);
-            //var answer = question.ReadUserResponse();
-            //if (!answer.IsDefaultAnswer)
-            //{
-            //    Console.WriteLine($"Found default configurations:");
-            //    for (var i = 0; i < defaultValues.Count; i++)
-            //    {
-            //        Console.WriteLine($"{i}. {defaultValues[i][ConfigSettings.IdPEntityId]}");
-            //    }
+    //        //var question = new YesNoQuestion("Do you want to reconfigure or connect to a new environment?", YesNo.No);
+    //        //var answer = question.ReadUserResponse();
+    //        //if (!answer.IsDefaultAnswer)
+    //        //{
+    //        //    Console.WriteLine($"Found default configurations:");
+    //        //    for (var i = 0; i < defaultValues.Count; i++)
+    //        //    {
+    //        //        Console.WriteLine($"{i}. {defaultValues[i][ConfigSettings.IdPEntityId]}");
+    //        //    }
 
-            //    var envQuestion = new NumericQuestion("Enter the number of the environment with which you want to connect to", 0, defaultValues.Count - 1);
-            //    var envAnswer = envQuestion.ReadUserResponse();
+    //        //    var envQuestion = new NumericQuestion("Enter the number of the environment with which you want to connect to", 0, defaultValues.Count - 1);
+    //        //    var envAnswer = envQuestion.ReadUserResponse();
 
-            //    var environment = defaultValues[envAnswer];
-            //    Console.WriteLine();
+    //        //    var environment = defaultValues[envAnswer];
+    //        //    Console.WriteLine();
 
-            //    foreach (var defaultSetting in environment)
-            //    {
-            //        var curSetting = settings.FirstOrDefault(s => s.DisplayName.Equals(defaultSetting.Key));
-            //        if (curSetting != null)
-            //        {
-            //            curSetting.NewValue = defaultSetting.Value;
-            //        }
-            //    }
+    //        //    foreach (var defaultSetting in environment)
+    //        //    {
+    //        //        var curSetting = settings.FirstOrDefault(s => s.DisplayName.Equals(defaultSetting.Key));
+    //        //        if (curSetting != null)
+    //        //        {
+    //        //            curSetting.NewValue = defaultSetting.Value;
+    //        //        }
+    //        //    }
 
-            //    Console.WriteLine($"Prepared new StepUp Gateway configuration.");
-            //}
+    //        //    Console.WriteLine($"Prepared new StepUp Gateway configuration.");
+    //        //}
 
-            //if (answer.IsDefaultAnswer && VersionDetector.IsCleanInstall())
-            //{
-            //    Console.WriteLine();
-            //    Console.WriteLine();
-            //    Console.WriteLine("No existing installation found! Please enter a desired configuration.");
+    //        //if (answer.IsDefaultAnswer && VersionDetector.IsCleanInstall())
+    //        //{
+    //        //    Console.WriteLine();
+    //        //    Console.WriteLine();
+    //        //    Console.WriteLine("No existing installation found! Please enter a desired configuration.");
 
-            //    // Keep retrying
-            //    this.ValidateStepUpConfiguration(settings, defaultValues);
-            //    return;
-            //}
+    //        //    // Keep retrying
+    //        //    this.ValidateStepUpConfiguration(settings, defaultValues);
+    //        //    return;
+    //        //}
 
-            ConsoleExtensions.WriteHeader("End StepUp config");
-        }
-    }
+    //        ConsoleExtensions.WriteHeader("End StepUp config");
+    //    }
+    //}
 }

@@ -14,7 +14,7 @@
 * limitations under the License.
 */
 
-namespace SURFnet.Authentication.Adfs.Plugin.Setup
+namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
 {
     /// <summary>
     /// Class Constants.
@@ -38,6 +38,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
 
         // extra property names in JSON file. Not really a setting. The rest is in: .
         public const string GwEnvironmentType = "Type";
+        public const string GwProdTypeValue = "Production";
 
 
         // TODO: Merge these names with Adapter and StepupIdP Setting names in JSON file!
@@ -46,13 +47,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
         {
             public const string AdapterCfgSection = "SURFnet.Authentication.Adfs.StepUp"; // TODO: is actually shared with plugin assembly
 
-            //// Will almost certainly move to V2_1ConfigHandler, the only one using it.
-            //public const string AdapterCfgSection = "SURFnet.Authentication.Adfs.StepUp"; // TODO: is actually shared with plugin assembly
-            //public const string AdapterCfgInstitution = "institution";
-            //public const string AdapterCfgLocalSP = "localSP";
-            //public const string AdapterCfgStepupIdP = "stepUpIdP";
-
-            // This may remain it is the same for all Sustainsys.Saml2 sections.
+           // This may remain here, it is the same for all Sustainsys.Saml2 sections.
             public const string SustainsysSaml2Section = "sustainsys.saml2";
             public const string SustainIdentityProviders = "identityProviders";
             public const string SustainIdPSigningCert = "signingCertificate";

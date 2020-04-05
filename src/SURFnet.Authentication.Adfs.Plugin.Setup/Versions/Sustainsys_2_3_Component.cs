@@ -1,4 +1,5 @@
-﻿using SURFnet.Authentication.Adfs.Plugin.Setup.Models;
+﻿using SURFnet.Authentication.Adfs.Plugin.Setup.Configuration;
+using SURFnet.Authentication.Adfs.Plugin.Setup.Models;
 using SURFnet.Authentication.Adfs.Plugin.Setup.Services;
 using SURFnet.Authentication.Adfs.Plugin.Setup.Util;
 using System;
@@ -15,15 +16,14 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
         public Sustainsys_2_3_Component() : base("Sustainsys.Saml2 v2.3")
         {
             ConfigFilename = SetupConstants.SustainCfgFilename;
+            ConfigParameters = new string[]
+            {
+                ConfigSettings.SPEntityId,
+                ConfigSettings.IdPEntityId,
+                ConfigSettings.IdPSigningCertificate
+            };
         }
 
-
-        private static readonly string[] ConfigParameters =
-        {
-            ConfigSettings.SPEntityId,
-            ConfigSettings.IdPEntityId,
-            ConfigSettings.IdPSigningCertificate   
-        };
 
         public override List<Setting> ReadConfiguration()
         {

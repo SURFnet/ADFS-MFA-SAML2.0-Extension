@@ -1,4 +1,5 @@
 ﻿using SURFnet.Authentication.Adfs.Plugin.Setup.Assemblies;
+using SURFnet.Authentication.Adfs.Plugin.Setup.Configuration;
 using SURFnet.Authentication.Adfs.Plugin.Setup.Services;
 using System;
 using System.Collections.Generic;
@@ -10,7 +11,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
 {
     public class VersionHeuristics
     {
-        public Version AdapterFileVersion { get; private set; }
+        public VersionDescription Description { get; private set; } = null;
 
         /// <summary>
         /// Looks for adapters and returns an out VersionDescripton.
@@ -18,48 +19,39 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
         /// and "out found" will be null.
         /// </summary>
         /// <returns>false on fatal errors</returns>
-        public bool Probe(out VersionDescription found)
+        public bool Probe(out Version found)
         {
-            bool ok = false;
+            bool ok = true;
             VersionDescription tmpDesc = null;
-            found = AllDescriptions.V0_0_0_0;
 
-            if ( TryFindAdapter(out Version foundVersion) )
+            if ( TryFindAdapter(out found) )
             {
-                AdapterFileVersion = foundVersion;
-
                 //LogService.Log.Info("Probe did not fail...");
-                if (foundVersion == AllDescriptions.V1_0_1_0.DistributionVersion )
+                if (found == AllDescriptions.V1_0_1_0.DistributionVersion )
                 {
                     tmpDesc = AllDescriptions.V1_0_1_0;
                 }
-                else if (foundVersion == AllDescriptions.V2_1_17_9.DistributionVersion )
+                else if (found == AllDescriptions.V2_1_17_9.DistributionVersion )
                 {
                     tmpDesc = AllDescriptions.V2_1_17_9;
                 }
-                else
-                {
-                    tmpDesc = AllDescriptions.V0_0_0_0;
-                    ok = true;
-                }
 
-                if (tmpDesc.DistributionVersion.Major != 0)
+                if (found.Major != 0)
                 {
+                    Description = tmpDesc; // store it for the List<Setting> reader..... 
+
                     LogService.Log.Info($"On disk version: {tmpDesc.DistributionVersion}, start Verify()");
-                    if ( 0==tmpDesc.Verify() )
-                    {
-                        ok = true;
-                        found = tmpDesc;
-                    }
-                    else
+                    if ( 0!=tmpDesc.Verify() )
                     {
                         LogService.Log.Fatal($"   Verify() failed on {tmpDesc.DistributionVersion}");
+                        ok = false;
                     }
                 }
             }
             else
             {
                 LogService.Log.Fatal("VersionHeuristic.TryFindAdapterFailed");
+                ok = false;
             }
 
             return ok;

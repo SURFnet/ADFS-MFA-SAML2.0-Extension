@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SURFnet.Authentication.Adfs.Plugin.Setup.Configuration;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;

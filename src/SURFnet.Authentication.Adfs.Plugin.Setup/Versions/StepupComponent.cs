@@ -22,6 +22,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
         public string ConfigFilename { get; set; }   // probably safest to set this in the constructor of specifc derived class.
         public readonly FileDirectory ConfigFileDirectory = FileDirectory.AdfsDir; // never in GAC, nor other places
 
+        public string[] ConfigParameters { get; protected set; }
+
         private StepupComponent() { } // hide
 
         public StepupComponent(string componentname)
@@ -87,10 +89,28 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
             return rc;
         }
 
-        public virtual int CheckConfigurationParameters(List<Setting> settings)
+        public virtual int SpecifyRequiredSettings(List<Setting> settings)
         {
             int rc = 0;
 
+            if ( ConfigParameters!=null && ConfigParameters.Length>0 )
+            {
+                foreach ( string name in ConfigParameters )
+                {
+                    Setting setting = Setting.GetSettingByName(name);
+                    if ( settings.Contains(setting) )
+                    {
+                        LogService.Log.Info($"SpecifyRequiredSettings: {name} was already there.");
+                        setting.IsMandatory = true;
+                    }
+                    else
+                    {
+                        LogService.Log.Info($"SpecifyRequiredSettings: adding {name}.");
+                        setting.IsMandatory = true;
+                        settings.Add(setting);
+                    }
+                }
+            }
             return rc;
         }
 
@@ -158,18 +178,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
             // Delete Configuration file
             if ( null != ConfigFilename )
             {
-                string tmp = FileService.OurDirCombine(ConfigFileDirectory, ConfigFilename);
-                try
-                {
-                    // no need to test for existence. It was there on Verify()!
-                    LogService.Log.Debug("Deleting configuration: " + tmp);
-                    File.Delete(tmp);
-                }
-                catch (Exception ex)
-                {
-                    LogService.WriteFatalException($"File.Delete on {tmp} failed with: ", ex);
-                    rc = -1;
-                }
+                rc = FileService.Copy2BackupAndDelete(ConfigFilename, ConfigFileDirectory);
             }
 
             return rc;

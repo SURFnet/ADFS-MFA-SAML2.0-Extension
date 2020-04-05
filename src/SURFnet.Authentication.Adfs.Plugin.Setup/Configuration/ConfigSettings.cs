@@ -1,22 +1,23 @@
 ﻿using SURFnet.Authentication.Adfs.Plugin.Setup.Common;
 using SURFnet.Authentication.Adfs.Plugin.Setup.Models;
+using SURFnet.Authentication.Adfs.Plugin.Setup.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SURFnet.Authentication.Adfs.Plugin.Setup
+namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
 {
     public static class ConfigSettings
     {
-        public static readonly Version SetupVersion = new Version(Values.FileVersion);
 
-        public static SetupFlags CurrentMode { get; private set; } = SetupFlags.Check;
-
-        public static void InitializeSetupMode(SetupFlags mode)
+        static ConfigSettings()
         {
-            CurrentMode = mode;
+
+            // First initializers of this class, which adds them.
+            // Then this static constructor which links them.
+            Setting.LinkChildren();
         }
 
 
@@ -31,10 +32,9 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
         public const string SPSignThumb1 = "SPSigningThumprint";
         public const string SPSignThumb2 = "SPSigningThumprint2";
 
-        public static Setting SchacHomeSetting = new Setting
+        public readonly static Setting SchacHomeSetting = new Setting(ConfigSettings.SchacHomeOrganization)
         {
             Introduction = "The unique name of the organization is required for a request to the Single Factor Only gateway",
-            InternalName = ConfigSettings.SchacHomeOrganization,
             DisplayName = "SFOMfaExtensionSchacHomeOrganization",
             HelpLines = new string[] {
                 "The value to use for schacHomeOranization when calculating the NameID for",
@@ -44,10 +44,9 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
             }
         };
 
-        public static Setting ADAttributeSetting = new Setting
+        public readonly static Setting ADAttributeSetting = new Setting(ConfigSettings.ActiveDirectoryUserIdAttribute)
         {
             Introduction = "The name of the Active Directory attribute is required that contains the userID in the Stepup Only gateway",
-            InternalName = ConfigSettings.ActiveDirectoryUserIdAttribute,
             DisplayName = "SFOMfaExtensionactiveDirectoryUserIdAttribute",
             HelpLines = new string[] {
                 "The name of the AD attribute that contains the user ID (\"uid\") used when calculating",
@@ -57,10 +56,9 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
             }
         };
 
-        public static Setting SPPrimarySigningThumbprint = new Setting()
+        public readonly static Setting SPPrimarySigningThumbprint = new Setting(ConfigSettings.SPSignThumb1)
         {
             Introduction = "The MFA extension needs to sign the SAML2 requests to the Single Factor Only gateway, it needs a certificate (will be GUI)",
-            InternalName = ConfigSettings.SPSignThumb1,
             DisplayName = "SFOMfaExtensionCertThumbprint",
             HelpLines = new string[] {
                 "The thumbprint (i.e. the SHA1 hash of the DER X.509 certificate) of the signing certificate.",
@@ -69,11 +67,10 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
             }
         };
 
-        public static Setting SPEntityID = new Setting
+        public readonly static Setting SPEntityID = new Setting(ConfigSettings.SPEntityId)
         {
             Introduction = "The MFA extension needs a worldwide unique URI as an idetifier in SAML2 requests",
             DefaultValue = "http://hostname/stepup-mfa",
-            InternalName = ConfigSettings.SPEntityId,
             DisplayName = "SFOMfaExtensionEntityId",
             HelpLines = new string[] {
                 "The EntityID of the Stepup ADFS MFA Extension.",
@@ -85,42 +82,37 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
 
         //
         // IdP (Remote Stepup Gateway) settings.
+        // Always a child of the IdPentityID
         //
         public const string IdPSSOLocation = "IdPSSOLocation";
         public const string IdPEntityId = "IdPentityId";
         public const string IdPSigningCertificate = "IdPfindValue";   // TODO: Is SustainSys 2.33 specific!!!
-        public const string IdPSigningCertificate2 = "Certificate";   // TODO: Although not used there, is SustainSys 2.33 specific!!!
+        public const string IdPSigningCertificate2 = "Certificate";   // TODO: Although not used in 2.3, is SustainSys 2.33 specific!!!
         public const string MinimalLoa = "MinimalLoa";
 
-        public static Setting IdPEntityID = new Setting
+        public readonly static Setting IdPEntityID = new Setting(ConfigSettings.IdPEntityId)
         {
-            InternalName = ConfigSettings.IdPEntityId,
             DisplayName = "StepupGatewayEntityID",
         };
 
-        public static Setting IdPSSOLocationSetting = new Setting
+        public readonly static Setting IdPSSOLocationSetting = new Setting(ConfigSettings.IdPSSOLocation, ConfigSettings.IdPEntityId)
         {
-            InternalName = ConfigSettings.IdPSSOLocation,
             DisplayName = "IdPSSOLocation",
         };
 
-        public static Setting IdPSigningThumbPrint_1_Setting = new Setting
+        public readonly static Setting IdPSigningThumbPrint_1_Setting = new Setting(ConfigSettings.IdPSigningCertificate, ConfigSettings.IdPEntityId)
         {
-            InternalName = ConfigSettings.IdPSigningCertificate,
-            DisplayName = "SHA1 hash (thumbprint) IdP signer",
+            DisplayName = "SHA1 hash (thumbprint) of IdP signer",
         };
 
-        public static Setting IdPSigningThumbPrint_2_Setting = new Setting
+        public readonly static Setting IdPSigningThumbPrint_2_Setting = new Setting(ConfigSettings.IdPSigningCertificate2, ConfigSettings.IdPEntityId)
         {
-            InternalName = ConfigSettings.IdPSigningCertificate2,
             DisplayName = "StepupGatewaySigningCertificate2",
-            IsMandatory = false
         };
 
-        public static Setting MinimaLoaSetting = new Setting
+        public readonly static Setting MinimaLoaSetting = new Setting(ConfigSettings.MinimalLoa, ConfigSettings.IdPEntityId)
         {
             Introduction = "Each StepUp Only gateway has its own Authentication level URIs",
-            InternalName = ConfigSettings.MinimalLoa,
             DisplayName = "MinimalLoa",
             HelpLines = new string[] {
                 "The LoA identifier indicating the minimal level of authentication to request",
@@ -131,34 +123,6 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                 "Example: http://example.com/assurance/sfo-level2"
             }
         };
-
-        //
-        // Certificate Store settings.
-        // Same for all certs.
-        // Always "My" in local machine store and FindByThumbprint.
-        //public static Setting CertStoreSetting = new Setting
-        //{
-        //    InternalName = SetupConstants.AdapterInternalNames.CertificateStoreName,
-        //    DisplayName = SetupConstants.AdapterDisplayNames.CertificateStoreName,
-        //    FoundCfgValue = "My",
-        //    IsConfigurable = false
-        //};
-
-        //public static Setting CertLocationSetting = new Setting
-        //{
-        //    InternalName = SetupConstants.AdapterInternalNames.CertificateLocation,
-        //    DisplayName = SetupConstants.AdapterDisplayNames.CertificateLocation,
-        //    FoundCfgValue = "LocalMachine",
-        //    IsConfigurable = false
-        //};
-
-        //public static Setting CertFindCertSetting = new Setting
-        //{
-        //    InternalName = SetupConstants.AdapterInternalNames.FindBy,
-        //    DisplayName = SetupConstants.AdapterDisplayNames.FindBy,
-        //    FoundCfgValue = "FindByThumbprint",
-        //    IsConfigurable = false
-        //};
 
     }
 }

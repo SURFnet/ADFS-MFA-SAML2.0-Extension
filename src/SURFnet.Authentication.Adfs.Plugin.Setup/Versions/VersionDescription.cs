@@ -135,9 +135,19 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
             return allSettings;
         }
 
-        public virtual int CheckConfigurationParameters(List<Setting> settings)
+        public virtual int SpecifyRequiredSettings(List<Setting> settings)
         {
             int rc = 0;
+
+            Adapter.SpecifyRequiredSettings(settings);
+
+            if ( Components!=null && Components.Length>0 )
+            {
+                foreach (var component in Components )
+                {
+                    component.SpecifyRequiredSettings(settings);
+                }
+            }
 
             return rc;
         }
@@ -234,7 +244,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
             // start with adapter
             if ( Adapter!=null )
             {
-                rc = Adapter.Install();
+                rc = Adapter.UnInstall();
             }
 
             // then dependencies

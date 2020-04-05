@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
 {
     /// <summary>
+    /// Interface that cComponents and Descriptors must implement.
+    /// Done in the base classes.
+    /// 
     /// Description in the order of the method calls in time.
     /// The basic idea is:
     ///      Each component or higher layer (set of components)
@@ -53,7 +56,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
         /// the method to specify that.
         /// </summary>
         /// <returns>0 if OK</returns>
-        int CheckConfigurationParameters(List<Setting> settings);
+        int SpecifyRequiredSettings(List<Setting> settings);
 
         /// <summary>
         /// Writes the new configuration files to the configuration directory.

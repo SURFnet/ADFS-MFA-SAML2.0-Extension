@@ -1,11 +1,12 @@
 ﻿using SURFnet.Authentication.Adfs.Plugin.Setup.Models;
+using SURFnet.Authentication.Adfs.Plugin.Setup.Question;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SURFnet.Authentication.Adfs.Plugin.Setup.Question
+namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
 {
     /// <summary>
     /// Still kludgy....
@@ -18,8 +19,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Question
 
         private string TempResult { get; set; }
 
-        private bool triedCfg = false;      // kludgy flag
-        private bool triedDefault = false;  // kludgy flag
+        private bool triedCfg = false;      // TODO: kludgy flag
+        private bool triedDefault = false;  // TODO: kludgy flag
 
         public SettingController(Setting setting)
         {

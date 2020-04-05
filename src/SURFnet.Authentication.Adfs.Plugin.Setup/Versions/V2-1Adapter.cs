@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using SURFnet.Authentication.Adfs.Plugin.Setup.Configuration;
 using SURFnet.Authentication.Adfs.Plugin.Setup.Models;
 using SURFnet.Authentication.Adfs.Plugin.Setup.Services;
 
@@ -15,16 +16,16 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
         {
             Assemblies = V2Assemblies.Adapter_2_1_Spec;
             ConfigFilename = SetupConstants.AdapterCfgFilename;
+            ConfigParameters = new string[]
+            {
+                ConfigSettings.SchacHomeOrganization,
+                ConfigSettings.ActiveDirectoryUserIdAttribute,
+                ConfigSettings.SPSignThumb1,
+                ConfigSettings.MinimalLoa,
+                ConfigSettings.IdPSSOLocation
+            };
         }
 
-        private static readonly string[] ConfigParameters =
-        {
-            ConfigSettings.SchacHomeOrganization,
-            ConfigSettings.ActiveDirectoryUserIdAttribute,
-            ConfigSettings.SPSignThumb1,
-            ConfigSettings.MinimalLoa,
-            ConfigSettings.IdPSSOLocation
-        };
 
         public override List<Setting> ReadConfiguration()
         {

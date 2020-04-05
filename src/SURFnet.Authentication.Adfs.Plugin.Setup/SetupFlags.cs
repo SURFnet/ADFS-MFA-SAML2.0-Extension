@@ -11,8 +11,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
     {
         Check = 0x1, 
         Backup = 0x2,
-        Configure = 0x4,
-        Repair = 0x8,
+        Reconfigure = 0x4,
+        Fix = 0x8,
         Uninstall = 0x10,
         Install = 0x20
     }

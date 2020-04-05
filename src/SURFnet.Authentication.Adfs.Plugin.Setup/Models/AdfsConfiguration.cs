@@ -9,8 +9,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Models
 {
     public class AdfsConfiguration
     {
-        public Version RegisteredAdapterVersion;
-        public AdfsSyncProperties SyncProps;
-        public AdfsProperties AdfsProps;
+        public Version RegisteredAdapterVersion = new Version(0,0,0,0);
+        public AdfsSyncProperties SyncProps = new AdfsSyncProperties();
+        public AdfsProperties AdfsProps = new AdfsProperties();
     }
 }

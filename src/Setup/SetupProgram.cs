@@ -20,6 +20,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
     using System.Collections.Generic;
     using System.ServiceProcess;
     using log4net;
+    using SURFnet.Authentication.Adfs.Plugin.Setup.Configuration;
     using SURFnet.Authentication.Adfs.Plugin.Setup.Models;
     using SURFnet.Authentication.Adfs.Plugin.Setup.PS;
     using SURFnet.Authentication.Adfs.Plugin.Setup.Question;
@@ -38,8 +39,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
         // Preaparation results.
         // TODO: not a nice place. Bit of a smell?
         //
-        static List<Dictionary<string, string>> GwEnvironments;
-        static AdfsConfiguration AdfsConfig;
+        //static List<Dictionary<string, string>> GwEnvironments;
+        //static AdfsConfiguration AdfsConfig;
         //static Version VersionRegisteredInAdfsConfig;
 
         /// <summary>
@@ -48,62 +49,84 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
         /// <param name="args">The arguments.</param>
         public static int Main(string[] args)
         {
-            int rc = PrepareForSetup(args);
+            SetupState setupstate = new SetupState();
+            int rc = PrepareForSetup(args, setupstate);
             if (rc != 0)
                 return rc;
 
             try
             {
-                // now the settings
-                List<Setting> allSettings;
-
-                ////VersionDescription vdesc = AllDescriptions.V1_0_1_0;
-                //VersionDescription vdesc = AllDescriptions.V2_1_17_9;
-                //allSettings = vdesc.ReadConfiguration();
-
-                //if (allSettings != null)
-                //{
-                //    var result = AllDescriptions.V2_1_17_9.WriteConfiguration(allSettings);
-                //}
-
-                var heuristic = new VersionHeuristics(); /// Static would be fine too isn't it?
-                if (false == heuristic.Probe(out VersionDescription versionDescriptor))
+                if (false == DetectAndRead.TryDetectAndReadCfg(setupstate))
                 {
-                    rc = 8; // this is fatal, version detection and or verification went wrong.
-                    LogService.Log.Fatal("Fatal Probe!");
+                    rc = 8;
+                    Console.WriteLine("Falling out after TryDetectAndReadCfg() in Main()");
                 }
-                else
+                else if ( setupstate.mode == SetupFlags.Check )
                 {
-                    // TO, move the messages to the detector+CfgReader.
-                    Console.WriteLine(heuristic.AdapterFileVersion.VersionToString("Installed version"));
-                    Console.WriteLine(AdfsConfig.RegisteredAdapterVersion.VersionToString("ADFS configured version"));
-                    WriteAdfsInfo(AdfsConfig);
-
-                    if ( versionDescriptor.DistributionVersion.Major == 0)
+                    rc = 0;
+                    Console.WriteLine("Checked the installation: did not find any errors.");
+                }
+                else if ( 0 != (setupstate.mode & SetupFlags.Uninstall) )
+                {
+                    if ( setupstate.DetectedVersion.Major == 0 )
                     {
-                        allSettings = new List<Setting>();  // TODO: get from Versdion Description!
+                        LogService.WriteFatal("No installed version. Cannot \"Uninstall\"!");
+                        rc = 4;
                     }
                     else
                     {
-                        if ( null != (allSettings = versionDescriptor.ReadConfiguration()) )
+                        Console.WriteLine($"Uninstall({setupstate.InstalledVersionDescription})");
+                        // should say what it will uninstall (if anything there), and ask for confirmation.
+                        setupstate.InstalledVersionDescription.UnInstall();
+                        Console.WriteLine("Uninstalled!");
+                    }
+                }
+                else
+                {
+                    // select next step: Reconfigure, Fix or Install
+                    if (0 != (setupstate.mode & SetupFlags.Install) )
+                    {
+                        setupstate.TargetVersionDescription = AllDescriptions.V2_1_17_9;
+                        if (0 != SettingsChecker.VerifySettingsComplete(setupstate))
                         {
-                            // TODO: the cfg verifier.
-
-
-                            if ( 0!= versionDescriptor.WriteConfiguration(allSettings) )
-                            {
-                                Console.WriteLine("Error while writing configuration files.");
-                            }
-                            else
-                            {
-                                Console.WriteLine("MAIN: Configuration Written");
-                            }
-
+                            rc = 8;
                         }
                         else
                         {
-                            LogService.Log.Fatal("Fatal in WriteConfiguration().");
+                            Console.WriteLine("main() so far OK.");
                         }
+                    }
+                    else if (0 != (setupstate.mode & SetupFlags.Fix))
+                    {
+                        if ( setupstate.DetectedVersion != setupstate.SetupProgramVersion )
+                        {
+                            LogService.WriteFatal($"This setup program can only try to fix version {setupstate.SetupProgramVersion}, not {setupstate.InstalledVersionDescription}");
+                            rc = 4;
+                        }
+                        else
+                        {
+                            LogService.WriteFatal("Fix flow not yet implemented.");
+                            rc = 8;
+                        }
+                    }
+                    else if (0 != (setupstate.mode & SetupFlags.Reconfigure))
+                    {
+                        if (setupstate.DetectedVersion.Major == 0)
+                        {
+                            LogService.WriteFatal("No installed version. Cannot \"Reconfigure\"!");
+                            rc = 4;
+                        }
+                        else
+                        {
+                            setupstate.TargetVersionDescription = setupstate.InstalledVersionDescription;
+                            LogService.WriteFatal("Reconfigure flow not yet implemented.");
+                            rc = 8;
+                        }
+                    }
+                    else
+                    {
+                        LogService.WriteFatal("Unknown setup mode! A programming error!");
+                        rc = 8;
                     }
                 }
 
@@ -111,7 +134,6 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
             catch (Exception ex)
             {
                 LogService.WriteFatalException("LastResort catch(). Caught in Main()", ex);
-                //Console.WriteLine(ex.ToString());
             }
 
             //string answer = string.Empty;
@@ -122,7 +144,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
             //}
 
             return rc;
-        }
+        }  // Main()
 
         /// <summary>
         /// Initializes the setup program reads environment files, checks if ADFS is
@@ -131,21 +153,17 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
         /// </summary>
         /// <param name="args">returns 0 if OK</param>
         /// <returns></returns>
-        private static int PrepareForSetup(string[] args)
+        private static int PrepareForSetup(string[] args, SetupState setupstate)
         {
             int rc = 0;
 
-            Console.WriteLine(ConfigSettings.SetupVersion.VersionToString("Setup program version"));
-
-            if (args.Length == 0)
-            {
-                Help();
-                return 4;
-            }
+            Console.WriteLine(setupstate.SetupProgramVersion.VersionToString("Setup program version"));
 
             if (!UAC.HasAdministratorPrivileges())
             {
-                Console.WriteLine("Must be a member of local Administrators and run with Administrative privileges.");
+                Console.WriteLine("Must be a member of local Administrators and run with local");
+                Console.WriteLine("Administrative privileges.");
+                Console.WriteLine("\"Run as Administrator\" or start from an Administator command prompt");
                 return 4;
             }
 
@@ -156,7 +174,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
             LogService.Log.Info("Log Started");  // just to check if logging works. Needs Admin etc.
 #endif
 
-            rc = ParseOptions(args);
+            rc = ParseOptions(args, setupstate);
             if (rc != 0)
             {
                 Help();
@@ -169,11 +187,19 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
             {
                 FileService.InitFileService();
 
-                GwEnvironments = ConfigurationFileService.LoadGWDefaults();
-                if ( GwEnvironments==null || GwEnvironments.Count<3)
+                var gwEnvironments = setupstate.GwEnvironments = ConfigurationFileService.LoadGWDefaults();
+                if ( gwEnvironments==null || gwEnvironments.Count<3)
                 {
                     // Darn, no error check at low level?
                     throw new ApplicationException("Some error in the Stepup Gateway (IdP) environment descriptions.");
+                }
+                else
+                {
+                    // set default SP to Production. Has essential side effect:
+                    //    it fills the setting Dictionary!
+                    var prodDict = gwEnvironments[0];  // TODO: Should search the production environment!  This is too rude!!
+                    var defaultEntityID = prodDict[ConfigSettings.IdPEntityId];
+                    ConfigSettings.IdPEntityID.DefaultValue = defaultEntityID;
                 }
 
                 ServiceController svcController = AdfsServer.CheckAdFsService();
@@ -181,9 +207,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                 {
                     // ai, no ADFS service on this machine.
 #if DEBUG
-                    AdfsConfig = new AdfsConfiguration()
+                    setupstate.AdfsConfig = new AdfsConfiguration()
                     {
-                        RegisteredAdapterVersion = new Version(1, 0, 1, 0),
                         AdfsProps = new AdfsProperties()
                         {
                             HostName = "server7.com",
@@ -194,17 +219,16 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                         {
                             Role = "Primary"
                         },
+                        RegisteredAdapterVersion = new Version(1, 0, 1, 0)
                     };
-                    Console.WriteLine("Faking Configured Version in ADFS: ");
-                    WriteAdfsInfo(AdfsConfig);
 #else
-                    LogService.WriteFatal("No ADFS service on this machine! This program configures ADFS. Stopping.");
+                    LogService.WriteFatal("No ADFS service on this machine! This program must configure ADFS. Stopping.");
                     rc = 8;
 #endif
                 }
-                else if ( false == AdfsPSService.GetAdfsConfiguration(out AdfsConfig) )
+                else if ( false == AdfsPSService.GetAdfsConfiguration(out setupstate.AdfsConfig) )
                 {
-                    rc = 8; // Some ADFS access failure (most likely) or weird Version fetch failure.
+                    rc = 8; // Some ADFS access failure.
                 }
             }
             catch (Exception ex)
@@ -215,41 +239,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
             return rc;
         }
 
-        static string VersionToString(this Version version, string text)
-        {
-            string rc;
-
-            string s = text.PadLeft(25);
-
-            if ( version.Major == 0 )
-            {
-                rc = s + ": No version detected";
-            }
-            else
-            {
-                rc = string.Format("{0}: {1}", s, version.ToString());
-            }
-
-            return rc;
-        }
-
-        static void WriteAdfsInfo(AdfsConfiguration cfg)
-        {
-            const int padding = 17;
-
-            Console.WriteLine();
-            Console.WriteLine("Adfs properties:");
-            if (cfg.AdfsProps != null)
-            {
-                Console.WriteLine("ADFS hostname: ".PadLeft(padding) + cfg.AdfsProps.HostName);
-            }
-            if (cfg.SyncProps != null)
-            {
-                Console.WriteLine("Server Role: ".PadLeft(padding) + cfg.SyncProps.Role);
-            }
-        }
-
-        private static int ParseOptions(string[] args)
+        private static int ParseOptions(string[] args, SetupState setupstate)
         {
             int rc = 0;
 
@@ -276,26 +266,44 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
 
                             case 'c':
                                 // Check/analyze the current installation
+                                setupstate.mode |= SetupFlags.Check;
                                 break;
 
                             case 'f':
                                 // Fix/Repair
+                                if (SetupModeOK(setupstate.mode))
+                                    setupstate.mode |= SetupFlags.Fix;
+                                else
+                                    rc = 4;
                                 break;
 
                             case 'i':
                                 // Install
+                                if (SetupModeOK(setupstate.mode))
+                                    setupstate.mode |= SetupFlags.Install;
+                                else
+                                    rc = 4;
                                 break;
 
                             case 'r':
                                 // (Re)configure
+                                if (SetupModeOK(setupstate.mode))
+                                    setupstate.mode |= SetupFlags.Reconfigure;
+                                else
+                                    rc = 4;
                                 break;
 
                             case 'x':
                                 // Uninstall
+                                if (SetupModeOK(setupstate.mode))
+                                    setupstate.mode |= SetupFlags.Uninstall;
+                                else
+                                    rc = 4;
                                 break;
 
                             default:
                                 Console.WriteLine($"Invalid option: {arg}");
+                                rc = 4;
                                 break;
                         }
                 }
@@ -303,6 +311,19 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                 {
                     // not an option. Not '-'
                 }
+            }
+
+            return rc;
+        }
+
+        private static bool SetupModeOK(SetupFlags mode)
+        {
+            bool rc = true;
+
+            if ( 0 != (mode & (~SetupFlags.Check)) )
+            {
+                Console.WriteLine("Cannot combine Setup mode flags");
+                rc = false;
             }
 
             return rc;
