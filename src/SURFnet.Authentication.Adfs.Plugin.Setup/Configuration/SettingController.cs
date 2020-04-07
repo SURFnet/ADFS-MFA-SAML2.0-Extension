@@ -38,7 +38,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
             if ( false == string.IsNullOrWhiteSpace(TempResult) )
             {
                 QuestionIO.WriteLine();
-                QuestionIO.WriteValue($"Value for {Setting.DisplayName} now '{TempResult}'");
+                QuestionIO.WriteValue($"Value for '{Setting.DisplayName}' now '{TempResult}'");
                 hasValue = true;
                 return true;
             }
@@ -52,19 +52,19 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
                     // there was something in configuration
                     triedCfg = true;  // one shot
                     TempResult = Setting.FoundCfgValue;
-                    QuestionIO.WriteValue($"Configuration has a value for {Setting.DisplayName}: {TempResult}");
+                    QuestionIO.WriteValue($"Configured value for '{Setting.DisplayName}': {TempResult}");
                 }
                 else if (false==triedDefault  &&  false==string.IsNullOrWhiteSpace(Setting.DefaultValue))
                 {
                     // Yes a default!
                     triedDefault = true;    // one shot
                     TempResult = Setting.DefaultValue;
-                    QuestionIO.WriteValue($"The default value for {Setting.DisplayName} is: '{TempResult}'");
+                    QuestionIO.WriteValue($"The default value for '{Setting.DisplayName}' is: '{TempResult}'");
                 }
                 else
                 {
                     // Really nothing
-                    QuestionIO.WriteValue($"There is no value for {Setting.DisplayName}");
+                    QuestionIO.WriteValue($"There is no value for '{Setting.DisplayName}'");
                     TempResult = null;
                 }
             }
@@ -72,7 +72,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
             {
                 // There was a newValue from previous rounds.
                 TempResult = Setting.NewValue;
-                QuestionIO.WriteValue($"Value for {Setting.DisplayName} now '{TempResult}'");
+                QuestionIO.WriteValue($"Value for '{Setting.DisplayName}' now '{TempResult}'");
                 hasValue = true;
             }
 
@@ -159,12 +159,20 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
             if (string.IsNullOrWhiteSpace(Setting.Introduction))
                 QuestionIO.WriteIntro("TODO: Here should be an introduction to the question........");
             else
-                QuestionIO.WriteIntro(Setting.Introduction);
+            {
+                string intro;
+                if (Setting.Introduction.Contains("{0}"))
+                {
+                    intro = string.Format(Setting.Introduction, Setting.DisplayName);
+                }
+                else
+                    intro = Setting.Introduction;
+                QuestionIO.WriteIntro(intro);
+            }
 
             bool keepasking = true;
             while ( keepasking )
             {
-                //bool hasValue = DisplayValue();
                 DisplayValue();
 
                 if ( string.IsNullOrWhiteSpace(TempResult) )

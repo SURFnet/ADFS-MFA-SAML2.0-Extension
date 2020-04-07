@@ -14,25 +14,25 @@ namespace Ui4Cfg
     static class Program
     {
         static List<Setting> testCfg = new List<Setting>();
-        static List<Dictionary<string, string>> GwEnvironments;
+        static List<Dictionary<string, string>> IdPEnvironments;
 
         static readonly bool IsDemo = true;    // true to disable result printing.
 
         static void Main(string[] args)
         {
-            GwEnvironments = ConfigurationFileService.LoadGWDefaults();
+            IdPEnvironments = ConfigurationFileService.LoadGWDefaults();
             bool ok;
 
-            // Demo for Gateway environment choice
+            // Demo for IdP environment choice
             ShowListGetDigit listQuestion = CreateEnvSelectionDialogue();
             ok = listQuestion.Ask();
             if (ok)
             {
                 int index = Digit2Index(listQuestion.Value);
-                var env = GwEnvironments[index];
+                var env = IdPEnvironments[index];
                 string result = string.Format("OK, will do {0}. {1}   ({2})",
                         listQuestion.Value,
-                        env[SetupConstants.GwEnvironmentType],
+                        env[SetupConstants.IdPEnvironmentType],
                         env[ConfigSettings.IdPEntityId]);
                 WriteTestResult(result);
             }
@@ -92,9 +92,9 @@ namespace Ui4Cfg
         {
             int index = -1;
 
-            for ( int i=0; i<GwEnvironments.Count; i++ )
+            for ( int i=0; i<IdPEnvironments.Count; i++ )
             {
-                var env = GwEnvironments[i];
+                var env = IdPEnvironments[i];
                 string s1 = env[ConfigSettings.IdPEntityId];
                 if ( string.CompareOrdinal(s1, entityID) == 0 )
                 {
@@ -106,7 +106,7 @@ namespace Ui4Cfg
             return index;
         }
 
-        public static bool AskGwEnvIndex(out int index)
+        public static bool AskIdPEnvIndex(out int index)
         {
             bool ok = false;
             index = -1;
@@ -119,21 +119,21 @@ namespace Ui4Cfg
         public static ShowListGetDigit CreateEnvSelectionDialogue()
         {
 
-            string[] options = new string[GwEnvironments.Count];
+            string[] options = new string[IdPEnvironments.Count];
 
             for (int index = 0; index<options.Length; index++)
             {
-                options[index] = GwIndexToEnvString(index);
+                options[index] = IdPIndexToEnvString(index);
             }
 
             var ol = new OptionList()
             {
-                Introduction = "There are different Single Factor Only gateways, the names suggest their usage.",
+                Introduction = "There are different Second Factor Only gateways, the names suggest their usage.",
                 Options = options,
-                Question = "Select a SingleFactorOnly gateway environment"
+                Question = "Select a SecondFactorOnly gateway environment"
             };
 
-            return new ShowListGetDigit(ol);
+            return new ShowListGetDigit(ol, 0);
         }
 
         public static ShowListGetYesNo CreateSummaryDialogue(List<Setting> list)
@@ -156,10 +156,10 @@ namespace Ui4Cfg
             return dialogue;
         }
 
-        public static string GwIndexToEnvString(int index)
+        public static string IdPIndexToEnvString(int index)
         {
-            var env = GwEnvironments[index];
-            return $"  {Index2Digit(index)}. {env[SetupConstants.GwEnvironmentType]}";
+            var env = IdPEnvironments[index];
+            return $"  {Index2Digit(index)}. {env[SetupConstants.IdPEnvironmentType]}";
         }
 
         public static List<Setting> CreateAdapterSettingList()
@@ -182,13 +182,13 @@ namespace Ui4Cfg
             Console.WriteLine();
         }
 
-        private static string CreateGwList()
+        private static string CreateIdPList()
         {
             StringBuilder sb = new StringBuilder();
 
-            GwEnvironments = ConfigurationFileService.LoadGWDefaults();
+            IdPEnvironments = ConfigurationFileService.LoadGWDefaults();
             int index = 0;
-            foreach ( var dict in GwEnvironments )
+            foreach ( var dict in IdPEnvironments )
             {
                 sb.AppendLine($"  {Index2Digit(index)}. {dict[ConfigSettings.IdPEntityId]}");
                 index++;

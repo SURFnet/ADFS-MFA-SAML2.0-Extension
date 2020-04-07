@@ -57,7 +57,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
         /// Gets the instance.
         /// </summary>
         /// <value>The instance.</value>
-        public static AdapterMetadata Instance => instance; // property to return the Singleton
+        public static AdapterMetadata Instance => instance; // property to return the Sinleton
 
         /// <summary>
         /// Returns an array of strings containing URIs indicating the set of authentication methods implemented by the adapter

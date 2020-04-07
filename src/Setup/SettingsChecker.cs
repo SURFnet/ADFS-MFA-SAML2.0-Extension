@@ -13,7 +13,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
         public static int VerifySettingsComplete(SetupState setupstate)
         {
             int rc = 0;
-            var worker = new SettingCollector(setupstate.FoundSettings, setupstate.GwEnvironments);
+            var worker = new SettingCollector(setupstate.FoundSettings, setupstate.IdPEnvironments);
 
             rc = worker.GetAll(setupstate.TargetVersionDescription);
 

@@ -116,7 +116,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
         }
 
         /// <summary>
-        /// Gets the metadata Singleton.
+        /// Gets the metadata Secondton.
         /// </summary>
         /// <value>The metadata.</value>
         public IAuthenticationAdapterMetadata Metadata => AdapterMetadata.Instance;
@@ -159,7 +159,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
             //
             //bool rc = false;
             //var tmpuser = new UserForStepup(identityClaim);
-            //if (tmpuser.TryGetStepupGwUidValue())
+            //if (tmpuser.TryGetSfoUidValue())
             //{
             //    // OK, attribute was there.
             //    _user4Stepup = tmpuser;
@@ -196,10 +196,10 @@ namespace SURFnet.Authentication.Adfs.Plugin
 
                 string stepUpUid;
                 var tmpuser = new UserForStepup(identityClaim);
-                if (tmpuser.TryGetStepupGwUidValue())
+                if (tmpuser.TryGetSfoUidValue())
                 {
                     // OK, attribute was there.
-                    stepUpUid = tmpuser.StepupGwUid;
+                    stepUpUid = tmpuser.SfoUid;
                 }
                 else
                 {
@@ -335,11 +335,10 @@ namespace SURFnet.Authentication.Adfs.Plugin
 
             try
             {
-                string errors;
 
                 ReadConfigurationFromSection(); // read Adapter configuration, throws on error.
                 // now check if the private key is available etc.
-                if ( false==CertificateService.CertificateExists(StepUpConfig.Current.LocalSpConfig.SPSigningCertificate, true, out errors) )
+                if ( false==CertificateService.CertificateExists(StepUpConfig.Current.LocalSpConfig.SPSigningCertificate, true, out string errors) )
                 {
                     throw new Exception(errors);
                 }

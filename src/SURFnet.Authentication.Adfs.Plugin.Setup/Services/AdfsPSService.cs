@@ -133,14 +133,20 @@
         {
             bool rc = false;
             adfsConfig = new AdfsConfiguration();
-
+            DateTime start;
+            DateTime afterFirst = DateTime.MinValue;
+            DateTime stop;
             // TODO: Should add OS version info. But that is a lot of work with Manifest and targeting!
 
-            DateTime start = DateTime.UtcNow;
+            Console.Write("Contacting ADFS server......");
+            start = DateTime.UtcNow;
 
             var syncProps = AdfsSyncPropertiesCmds.GetSyncProperties();
+            Console.Write("\r                                 \r");
             if (syncProps != null)
             {
+                afterFirst = DateTime.UtcNow;
+
                 // As expected: should work on secondaries too.
                 LogService.Log.Info($"ServerRole: {syncProps.Role}");
                 adfsConfig.SyncProps = syncProps;
@@ -176,13 +182,13 @@
             }
             // else: Errors were already reported. And rc == false.
 
-            DateTime stop = DateTime.UtcNow;
+            stop = DateTime.UtcNow;
 
-            var x = stop - start;
-            LogService.Log.Info($"ADFS.PS took: {x.ToString()})");
+            ReportTimes(start, afterFirst, stop);
 
             return rc;
         }
+
 
 
         /// <summary>
@@ -269,5 +275,16 @@
 
             return rc;
         }
+
+        private static void ReportTimes(DateTime start, DateTime afterFirst, DateTime stop)
+        {
+#if DEBUG
+            var x = afterFirst - start;
+            LogService.Log.Info($"ADFS.PS first call took: {x.ToString()})");
+            x = stop - start;
+            LogService.Log.Info($"ADFS.PS total took: {x.ToString()})");
+#endif
+        }
+
     }
 }

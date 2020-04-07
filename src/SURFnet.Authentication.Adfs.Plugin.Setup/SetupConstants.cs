@@ -14,7 +14,7 @@
 * limitations under the License.
 */
 
-namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
+namespace SURFnet.Authentication.Adfs.Plugin.Setup
 {
     /// <summary>
     /// Class Constants.
@@ -37,8 +37,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
         public const string Log4netCfgFilename = "SURFnet.Authentication.ADFS.MFA.Plugin.log4net";
 
         // extra property names in JSON file. Not really a setting. The rest is in: .
-        public const string GwEnvironmentType = "Type";
-        public const string GwProdTypeValue = "Production";
+        public const string IdPEnvironmentType = "Type";
+        public const string IdPProdTypeValue = "Production";
 
 
         // TODO: Merge these names with Adapter and StepupIdP Setting names in JSON file!

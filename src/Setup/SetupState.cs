@@ -23,7 +23,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
         public Version RegisteredVersionInAdfs = new Version(0,0,0,0);    // set in main.Init....
         public Version DetectedVersion = new Version(0, 0, 0, 0);         // Set in DetectAndReadCfg
 
-        public List<Dictionary<string, string>> GwEnvironments;
+        public List<Dictionary<string, string>> IdPEnvironments;
         public AdfsConfiguration AdfsConfig;
 
 

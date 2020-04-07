@@ -30,6 +30,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.PS
         // interfaces and enums are not the same. Officially the Assembly Versions should be different then too.
 
         // Get-AdfsProperties
+        // Not on secondaries!
         // S2012R2: GetServicePropertiesCommand : Cmdlet
         // S2016:  GetServicePropertiesCommand : PSCmdletBase
         // S2019:  GetServicePropertiesCommand : PSCmdletBase

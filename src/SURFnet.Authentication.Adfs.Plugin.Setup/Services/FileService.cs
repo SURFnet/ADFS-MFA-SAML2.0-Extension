@@ -78,7 +78,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
         private static bool backupInitialized = false;
 
         /// <summary>
-        /// Contains the extension information needed to configure the StepUp Gateway.
+        /// Contains the extension information needed to configure the SFO server.
         /// </summary>
         public static string RegistrationDataFolder { get; private set; }
 

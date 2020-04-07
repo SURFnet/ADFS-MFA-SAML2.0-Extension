@@ -153,9 +153,20 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Models
 
         /// <summary>
         /// Helper to decide if we need to write while reconfiguring.
+        /// TODO: actually set the flag in the UI!!!
         /// </summary>
         public bool IsChangedByUser { get; set; }
 
+        /// <summary>
+        /// The UI use a list of reuired settings. The UI must walk the list
+        /// and let the Admin confirm each setting. This one is true if confirmed.
+        /// </summary>
+        public bool IsConfirmed { get; set; }
+
+        /// <summary>
+        /// Some settings (like IDP settings) depend on another setting.
+        /// This property contains the InternalName of that "parent" Setting.
+        /// </summary>
         public string Parent { get; private set; }
 
         /// <summary>

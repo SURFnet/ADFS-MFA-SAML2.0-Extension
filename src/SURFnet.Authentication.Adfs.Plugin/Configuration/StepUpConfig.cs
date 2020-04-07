@@ -52,7 +52,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Configuration
         private static readonly object InitLock = new object();
 
         /// <summary>
-        ///  the real configuration Singleton
+        ///  the real configuration Secondton
         /// </summary>
         private static StepUpConfig current;
 
@@ -182,7 +182,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Configuration
 
                     if (Section != null)
                     {
-                        // Fill the Singleton only if there is a valid section
+                        // Fill the Secondton only if there is a valid section
                         current = Create(Section);
                     }
 

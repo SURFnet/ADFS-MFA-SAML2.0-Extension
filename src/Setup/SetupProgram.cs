@@ -35,13 +35,6 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
     /// </summary>
     public static class SetupProgram
     {
-        //
-        // Preaparation results.
-        // TODO: not a nice place. Bit of a smell?
-        //
-        //static List<Dictionary<string, string>> GwEnvironments;
-        //static AdfsConfiguration AdfsConfig;
-        //static Version VersionRegisteredInAdfsConfig;
 
         /// <summary>
         /// Defines the entry point of the application.
@@ -52,11 +45,19 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
             SetupState setupstate = new SetupState();
             int rc = PrepareForSetup(args, setupstate);
             if (rc != 0)
+            {
+                WaitForEnter();
                 return rc;
+            }
 
             try
             {
-                if (false == DetectAndRead.TryDetectAndReadCfg(setupstate))
+                if (false == AdfsServer.IsAdfsRunning())
+                {
+                    Console.WriteLine("Please start the ADFS service!");  // second check for debug build
+                    rc = 8;
+                }
+                else if (false == DetectAndRead.TryDetectAndReadCfg(setupstate))
                 {
                     rc = 8;
                     Console.WriteLine("Falling out after TryDetectAndReadCfg() in Main()");
@@ -66,6 +67,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                     rc = 0;
                     Console.WriteLine("Checked the installation: did not find any errors.");
                 }
+                /**** UN-INSTALL ****/
                 else if ( 0 != (setupstate.mode & SetupFlags.Uninstall) )
                 {
                     if ( setupstate.DetectedVersion.Major == 0 )
@@ -75,61 +77,52 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                     }
                     else
                     {
-                        Console.WriteLine($"Uninstall({setupstate.InstalledVersionDescription})");
-                        // should say what it will uninstall (if anything there), and ask for confirmation.
-                        setupstate.InstalledVersionDescription.UnInstall();
-                        Console.WriteLine("Uninstalled!");
+                        // TODO: change to a specific method - CanUninstall(setupstate).
+                        if ( 'y' == AskYesNo.Ask($"Do you really want to UNINSTALL version: {setupstate.DetectedVersion}") )
+                        {
+                            setupstate.InstalledVersionDescription.UnInstall();
+                            Console.WriteLine("Uninstalled!");
+                        }
+                        else
+                        {
+                            rc = 4;
+                        }
+                    }
+                }
+                /**** INSTALL ****/
+                else if (0 != (setupstate.mode & SetupFlags.Install) )
+                {
+                    setupstate.TargetVersionDescription = AllDescriptions.V2_1_17_9;
+                    if (0 != SettingsChecker.VerifySettingsComplete(setupstate))
+                    {
+                        rc = 8;
+                    }
+                    else
+                    {
+                        Console.WriteLine("Would start real installation.....");
+                    }
+                }
+                /**** RECONFIGURE ****/
+                else if (0 != (setupstate.mode & SetupFlags.Reconfigure))
+                {
+                    if (setupstate.DetectedVersion.Major == 0)
+                    {
+                        LogService.WriteFatal("No installed version. Cannot \"Reconfigure\"!");
+                        rc = 4;
+                    }
+                    else
+                    {
+                        setupstate.TargetVersionDescription = setupstate.InstalledVersionDescription;
+                        LogService.WriteFatal("Reconfigure flow not yet implemented.");
+                        rc = 8;
                     }
                 }
                 else
                 {
-                    // select next step: Reconfigure, Fix or Install
-                    if (0 != (setupstate.mode & SetupFlags.Install) )
-                    {
-                        setupstate.TargetVersionDescription = AllDescriptions.V2_1_17_9;
-                        if (0 != SettingsChecker.VerifySettingsComplete(setupstate))
-                        {
-                            rc = 8;
-                        }
-                        else
-                        {
-                            Console.WriteLine("main() so far OK.");
-                        }
-                    }
-                    else if (0 != (setupstate.mode & SetupFlags.Fix))
-                    {
-                        if ( setupstate.DetectedVersion != setupstate.SetupProgramVersion )
-                        {
-                            LogService.WriteFatal($"This setup program can only try to fix version {setupstate.SetupProgramVersion}, not {setupstate.InstalledVersionDescription}");
-                            rc = 4;
-                        }
-                        else
-                        {
-                            LogService.WriteFatal("Fix flow not yet implemented.");
-                            rc = 8;
-                        }
-                    }
-                    else if (0 != (setupstate.mode & SetupFlags.Reconfigure))
-                    {
-                        if (setupstate.DetectedVersion.Major == 0)
-                        {
-                            LogService.WriteFatal("No installed version. Cannot \"Reconfigure\"!");
-                            rc = 4;
-                        }
-                        else
-                        {
-                            setupstate.TargetVersionDescription = setupstate.InstalledVersionDescription;
-                            LogService.WriteFatal("Reconfigure flow not yet implemented.");
-                            rc = 8;
-                        }
-                    }
-                    else
-                    {
-                        LogService.WriteFatal("Unknown setup mode! A programming error!");
-                        rc = 8;
-                    }
+                    /**** BUG ****/
+                    LogService.WriteFatal("Unknown setup mode! A programming error!");
+                    rc = 8;
                 }
-
             }
             catch (Exception ex)
             {
@@ -145,6 +138,12 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
 
             return rc;
         }  // Main()
+
+        static void WaitForEnter()
+        {
+            Console.Write("Hit 'Enter' to exit.");
+            Console.ReadLine();
+        }
 
         /// <summary>
         /// Initializes the setup program reads environment files, checks if ADFS is
@@ -174,11 +173,10 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
             LogService.Log.Info("Log Started");  // just to check if logging works. Needs Admin etc.
 #endif
 
-            rc = ParseOptions(args, setupstate);
-            if (rc != 0)
+            if ( args.Length == 0 || 0!=(rc=ParseOptions(args, setupstate)) )
             {
+                rc = 4;
                 Help();
-                return 4;
             }
 
             LogService.Log.Debug("PrepareForSetup: After ParseOptions()");
@@ -187,16 +185,16 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
             {
                 FileService.InitFileService();
 
-                var gwEnvironments = setupstate.GwEnvironments = ConfigurationFileService.LoadGWDefaults();
+                var gwEnvironments = setupstate.IdPEnvironments = ConfigurationFileService.LoadGWDefaults();
                 if ( gwEnvironments==null || gwEnvironments.Count<3)
                 {
                     // Darn, no error check at low level?
-                    throw new ApplicationException("Some error in the Stepup Gateway (IdP) environment descriptions.");
+                    throw new ApplicationException("Some error in the SFO server (IdP) environment descriptions.");
                 }
                 else
                 {
                     // set default SP to Production. Has essential side effect:
-                    //    it fills the setting Dictionary!
+                    // - It fills the setting Dictionary!
                     var prodDict = gwEnvironments[0];  // TODO: Should search the production environment!  This is too rude!!
                     var defaultEntityID = prodDict[ConfigSettings.IdPEntityId];
                     ConfigSettings.IdPEntityID.DefaultValue = defaultEntityID;
@@ -222,7 +220,6 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                         RegisteredAdapterVersion = new Version(1, 0, 1, 0)
                     };
 #else
-                    LogService.WriteFatal("No ADFS service on this machine! This program must configure ADFS. Stopping.");
                     rc = 8;
 #endif
                 }
@@ -267,14 +264,6 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                             case 'c':
                                 // Check/analyze the current installation
                                 setupstate.mode |= SetupFlags.Check;
-                                break;
-
-                            case 'f':
-                                // Fix/Repair
-                                if (SetupModeOK(setupstate.mode))
-                                    setupstate.mode |= SetupFlags.Fix;
-                                else
-                                    rc = 4;
                                 break;
 
                             case 'i':
@@ -332,11 +321,10 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
         private static void Help()
         {
             Console.WriteLine("Setup program for ADFS MFA Stepup Extension.");
-            Console.WriteLine("   Adds Single Factor Only MFA extension to an ADFS server.");
+            Console.WriteLine("   Adds Second Factor Only MFA extension to an ADFS server.");
             Console.WriteLine(" -? -h  This help");
-            Console.WriteLine(" -c     Check/Analyze existing installation");
+            Console.WriteLine(" -c     Check/Analyze existing installation only");
             Console.WriteLine(" -r     Reconfigure existing installation");
-            Console.WriteLine(" -f     Fix/Repair existing installation");
             Console.WriteLine(" -i     Install (including automatic upgrade)");
             Console.WriteLine(" -x     Uninstall");
         }

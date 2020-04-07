@@ -13,7 +13,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Repositories
     {
         public Claim UserClaim { get; private set; }
         public string ErrorMsg { get; private set; }
-        public string StepupGwUid { get; private set; }
+        public string SfoUid { get; private set; }
 
         private UserForStepup() { }
 
@@ -22,26 +22,24 @@ namespace SURFnet.Authentication.Adfs.Plugin.Repositories
             UserClaim = claim;
         }
 
-        public bool TryGetStepupGwUidValue()
+        public bool TryGetSfoUidValue()
         {
             bool rc = false;
             var linewidthsaver = StepUpConfig.Current.InstitutionConfig.ActiveDirectoryUserIdAttribute;
             // Claim is windowsaccountname claim. Fixe in Metadata! No need to check.
 
             var domainName = UserClaim.Value.Split('\\')[0];
-            string error;
-            string userid;
 
-            if ( ActiveDirectoryRepository.TryGetAttributeValue(domainName, UserClaim.Value, linewidthsaver, out userid, out error))
+            if (ActiveDirectoryRepository.TryGetAttributeValue(domainName, UserClaim.Value, linewidthsaver, out string userid, out string error))
             {
                 // OK there was an attribute
-                if ( string.IsNullOrWhiteSpace(userid) )
+                if (string.IsNullOrWhiteSpace(userid))
                 {
                     ErrorMsg = $"The {linewidthsaver} attribute for {UserClaim.Value} IsNullOrWhiteSpace()";
                 }
                 else
                 {
-                    StepupGwUid = userid;
+                    SfoUid = userid;
                     rc = true;
                 }
             }

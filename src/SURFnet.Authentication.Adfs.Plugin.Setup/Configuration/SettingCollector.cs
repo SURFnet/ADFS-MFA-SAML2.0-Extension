@@ -1,4 +1,5 @@
 ﻿using SURFnet.Authentication.Adfs.Plugin.Setup.Models;
+using SURFnet.Authentication.Adfs.Plugin.Setup.Question;
 using SURFnet.Authentication.Adfs.Plugin.Setup.Services;
 using SURFnet.Authentication.Adfs.Plugin.Setup.Versions;
 using System;
@@ -41,20 +42,236 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
                 rc = -1;
             }
             // update orinal values (if any) with values from JSON files iff different.
-            else if ( 0!=UpDateValuesFromFiles(newSettings))
+            else if ( 0!=UpdateIdPValuesFromFiles(ConfigSettings.IdPEntityID))
             {
                 // and it failed.....
                 rc = -2;
             }
-
-
-            // Ask for completion/confirmation.
-
-            // if any chagenges to parents, update its children.
+            else if ( 0!=WalkThroughSettings() )
+            {
+                rc = -3;
+                QuestionIO.WriteError("The configuration settings wer not properly specified.");
+            }
 
             return rc;
         }
 
+        int WalkThroughSettings()
+        {
+            int rc = -1;
+
+            var uiSettings = CreatSettingList();
+            // loop over all settings
+            bool more = true;
+            bool okSofar = true;
+            do
+            {
+                foreach (Setting setting in uiSettings)
+                {
+                    bool ok = HandleSetting(setting);
+                    if (ok)
+                    {
+                        setting.IsConfirmed = true;
+                    }
+                    else
+                    {
+                        // ask if they want continue with others
+                        okSofar = ContinueWithOtherSettings();
+                        break;
+                    }
+                }
+
+                if (okSofar)
+                {
+                    more = HasUnconfirmedSettings(uiSettings);
+                    if (more == false)
+                    {
+                        // Ask for completion/confirmation.
+                        switch (AskConfirmation(uiSettings))
+                        {
+                            case 'y':
+                                // this terminates the loop: more is already false
+                                rc = 0;
+                                break;
+
+                            case 'n':
+                                more = true;
+                                ClearConfirmed(uiSettings);
+                                break;
+
+                            case 'x':
+                                // abort on final confirmation
+                                okSofar = false;
+                                break;
+
+                            default:
+                                LogService.WriteFatal("Bug check! SettingCollector.AskConfirmation() returned an incorrect char!");
+                                break;
+                        } // confirmation switch()
+                    }
+                } // okSofar
+
+            } while (okSofar && more);
+
+            return rc;
+        }
+
+        bool HandleSetting(Setting setting)
+        {
+            bool ok = true;
+
+            if (setting.InternalName.Equals(ConfigSettings.IdPEntityId, StringComparison.Ordinal))
+            {
+                // do IDP environment choice
+                int index = IdPChoiceUtil.EntityID2Index(setting.Value, IdPEnvironments);
+                var dialogue = new IdPChoiceController(IdPEnvironments, index);
+                if ( dialogue.Ask() )
+                {
+                    if ( false == dialogue.IsDefault )
+                    {
+                        index = dialogue.ChoosenIndex;
+                        setting.NewValue = IdPEnvironments[index][ConfigSettings.IdPEntityId];
+                        UpdateIdPValuesFromFiles(setting);
+                    }
+                }
+                else
+                {
+                    // Abort!!
+                    ok = false;
+                    LogService.WriteWarning("Aborting IdP Selection!");
+                }
+            } // end IdP selection
+            else
+            {
+                // regular setting
+                var dialogue = new SettingController(setting);
+                if ( false == dialogue.Ask() )
+                {
+                    ok = false;
+                    LogService.WriteWarning($"Aborting {setting.DisplayName} configuration setting!");
+                }
+            }
+
+            return ok;
+        }
+
+        bool ContinueWithOtherSettings()
+        {
+            bool yes = true;
+
+            switch ( AskYesNo.Ask("Do you want to continue with other settings?") )
+            {
+                case 'y':
+                    yes = true;
+                    break;
+
+                default:
+                    yes = false;
+                    break;
+            }
+
+            //var question = new ShowAndGetYesNo("Do you want to continue with other settings?");
+            //if ( question.Ask() )
+            //{
+            //    // was YesOrNo
+            //    if ( question.Value != 'y' )
+            //    {
+            //        yes = false;
+            //    }
+            //}
+            //else
+            //{
+            //    // was abort
+            //    yes = false;
+            //}
+
+            return yes;
+        }
+
+        char AskConfirmation(List<Setting> settings)
+        {
+            char rc = '\0';
+
+            string[] values = new string[settings.Count];
+
+            int index = 0;
+            foreach ( Setting setting in settings )
+            {
+                values[index++] = setting.ToString();
+            }
+            var options = new OptionList()
+            {
+                Introduction = "The (new) configuration settings are now as follows",
+                Options = values,
+                Question = "Do you want to continue with these settings?"
+            };
+
+            var dialogue = new ShowListGetYesNo(options);
+            if ( dialogue.Ask() )
+            {
+                // Yes or No
+                switch ( dialogue.Value )
+                {
+                    case 'y':
+                    case 'n':
+                        rc = dialogue.Value;
+                        break;
+
+                    default:
+                        LogService.WriteFatal("Bug Check! In SettingCollector.AskConfimation() ShowListGetYesNo returned: non yn.");
+                        break;
+                }
+            }
+            else
+            {
+                // abort
+                rc = 'x';
+            }
+
+            return rc;
+        }
+
+        bool HasUnconfirmedSettings(List<Setting> settings)
+        {
+            bool more = false;
+
+            foreach (Setting setting in settings)
+            {
+                if ( false == setting.IsConfirmed )
+                {
+                    more = true;
+                    break;
+                }
+            }
+
+            return more;
+        }
+
+        List<Setting> CreatSettingList()
+        {
+            List<Setting> list = new List<Setting>
+            {
+                ConfigSettings.IdPEntityID,
+                ConfigSettings.SchacHomeSetting,
+                ConfigSettings.ADAttributeSetting,
+                ConfigSettings.SPEntityID,
+                ConfigSettings.SPPrimarySigningThumbprint
+            };
+
+            ClearConfirmed(list);
+
+            return list;
+        }
+
+        /// <summary>
+        /// Call this to (re)start the UI questions.
+        /// </summary>
+        /// <param name="settings"></param>
+        void ClearConfirmed(List<Setting> settings)
+        {
+            foreach (Setting setting in settings)
+                setting.IsConfirmed = false;
+        }
 
         /*
          *  IdP environment selection things
@@ -68,44 +285,36 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
         /// </summary>
         /// <param name="newSettings"></param>
         /// <returns>0 if OK</returns>
-        private int UpDateValuesFromFiles(List<Setting> newSettings)
+        private int UpdateIdPValuesFromFiles(Setting idpSetting)
         {
             int rc = 0;
 
             try   // a lot of potentially throwing indexing...
             {
                 // get the IdP entityID setting
-                if ( newSettings.Contains(ConfigSettings.IdPEntityID) )
+                string entityID = idpSetting.Value;
+                LogService.Log.Info("Start updating IdP settings for: "+entityID);
+
+                int index = IdPChoiceUtil.EntityID2Index(entityID, IdPEnvironments);
+                Dictionary<string, string> idpsettings = IdPEnvironments[index];
+
+                // for all children of ConfigSettings.IdPEntityID: get possibly updated value.
+                foreach (string name in ConfigSettings.IdPEntityID.ChildrenNames)
                 {
-                    string entityID = ConfigSettings.IdPEntityID.Value;
+                    Setting setting = Setting.GetSettingByName(name);
+                    LogService.Log.Info($"  Check setting: {name} with current value: {setting.Value??string.Empty}");
 
-                    if ( ! string.IsNullOrWhiteSpace(entityID) )
+                    if ( idpsettings.TryGetValue(name, out string jsonValueForIdP) )
                     {
-                        // OK there is some value for the IdP entityID
-                        LogService.Log.Info("Start updating IdP settings for: "+entityID);
-
-                        int index = IdPChoiceUtil.EntityID2Index(entityID, IdPEnvironments);
-                        Dictionary<string, string> idpsettings = IdPEnvironments[index];
-
-                        // for all children of ConfigSettings.IdPEntityID: get possibly updated value.
-                        foreach (string name in ConfigSettings.IdPEntityID.ChildrenNames)
+                        if ( jsonValueForIdP.Equals(setting.Value, StringComparison.Ordinal) )
                         {
-                            Setting setting = Setting.GetSettingByName(name);
-                            LogService.Log.Info($"  Check setting: {name} with current value: {setting.Value??string.Empty}");
-
-                            if ( idpsettings.TryGetValue(name, out string jsonValueForIdP) )
-                            {
-                                if ( jsonValueForIdP.Equals(setting.Value, StringComparison.Ordinal) )
-                                {
-                                    LogService.Log.Info($"    Not updating {name}");
-                                }
-                                else
-                                {
-                                    LogService.Log.Info($"    Updating {name} to: {jsonValueForIdP}");
-                                    setting.NewValue = jsonValueForIdP;
-                                    setting.IsUpdated = true;
-                                }
-                            }
+                            LogService.Log.Info($"    Not updating {name}");
+                        }
+                        else
+                        {
+                            LogService.Log.Info($"    Updating {name} to: {jsonValueForIdP}");
+                            setting.NewValue = jsonValueForIdP;
+                            setting.IsUpdated = true;
                         }
                     }
                 }

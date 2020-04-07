@@ -43,9 +43,17 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
             try
             {
                 ServiceController tmp = new ServiceController("adfssrv");
-                // trigger exception if not on machine.
-                var beng = tmp.Status;
-                SvcController = tmp;
+
+                var status = tmp.Status; // trigger exception if not on machine.
+                if ( status != ServiceControllerStatus.Running )
+                {
+                    LogService.WriteFatal("ADFS service not running, cannot analyze/setup. Start the service.");
+                }
+                else
+                {
+                    SvcController = tmp;
+                }
+
             }
             catch (InvalidOperationException ex1)
             {
@@ -67,7 +75,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
         ///
         /// The polling is theoretically not 100% correct.
         /// The official algorithm is more complex. If the machine
-        /// is not under severe stress then this will work.
+        /// is not under severe stress, then this will work.
         ///
 
         /// <summary>
@@ -265,6 +273,25 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
             {
                 rc = 1; // timeout
             }
+
+            return rc;
+        }
+
+        public static bool IsAdfsRunning()
+        {
+            bool rc = false;
+
+            try
+            {
+                if (SvcController != null)
+                {
+                    SvcController.Refresh();
+                    if (SvcController.Status == ServiceControllerStatus.Running)
+                        rc = true;
+                }
+            }
+            catch (Exception )
+            { } //silently discard...
 
             return rc;
         }

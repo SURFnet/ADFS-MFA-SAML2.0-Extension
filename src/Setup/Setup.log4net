@@ -1,6 +1,6 @@
 ﻿<log4net>
   <appender name="Setup" type="log4net.Appender.FileAppender" >
-    <file value="MFA-extesion.SetupLog.txt" />
+    <file value="MFA-extension.SetupLog.txt" />
     <appendToFile value="true" />
     <layout type="log4net.Layout.PatternLayout">
     <conversionPattern value="%date %-5level %logger - %message%newline" />

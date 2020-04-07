@@ -34,34 +34,34 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
 
         public readonly static Setting SchacHomeSetting = new Setting(ConfigSettings.SchacHomeOrganization)
         {
-            Introduction = "The unique name of the organization is required for a request to the Single Factor Only gateway",
-            DisplayName = "SFOMfaExtensionSchacHomeOrganization",
+            Introduction = "Every organization has a unique identifier '{0}'. Together with userid it is unique in SFO",
+            DisplayName = "schacHomeOrganization",
             HelpLines = new string[] {
                 "The value to use for schacHomeOranization when calculating the NameID for",
-                "authenticating a user to the Stepup-Gateway. This must be the same",
+                "authenticating a user to the SFO server. This must be the same",
                 "value as the value of the \"urn:mace:terena.org:attribute-def:schacHomeOrganization\"",
-                "claim that the that AD FS server sends when a user authenticates to the Stepup-Gateway."
+                "claim that the that AD FS server sends when a user authenticates at the SFO server."
             }
         };
 
         public readonly static Setting ADAttributeSetting = new Setting(ConfigSettings.ActiveDirectoryUserIdAttribute)
         {
             Introduction = "The name of the Active Directory attribute is required that contains the userID in the Stepup Only gateway",
-            DisplayName = "SFOMfaExtensionactiveDirectoryUserIdAttribute",
+            DisplayName = "Active Directory SFO userid Attribute",
             HelpLines = new string[] {
                 "The name of the AD attribute that contains the user ID (\"uid\") used when calculating",
-                "the NameID for authenticating a user to the Stepup-Gateway.",
+                "the NameID for authenticating a user to the SFO server.",
                 "This AD attribute must contain the value of the \"urn:mace:dir:attribute-def:uid\" claim that the",
-                "AD FS server sends when a user authenticates to the Stepup-Gateway."
+                "AD FS server sends when a user authenticates to the SFO server."
             }
         };
 
         public readonly static Setting SPPrimarySigningThumbprint = new Setting(ConfigSettings.SPSignThumb1)
         {
-            Introduction = "The MFA extension needs to sign the SAML2 requests to the Single Factor Only gateway, it needs a certificate (will be GUI)",
-            DisplayName = "SFOMfaExtensionCertThumbprint",
+            Introduction = "The MFA extension signs the SAML2 requests to the SFO server. The thumbprint identifies the certificate.",
+            DisplayName = "MFA Extension (SP) signing thumbprint",
             HelpLines = new string[] {
-                "The thumbprint (i.e. the SHA1 hash of the DER X.509 certificate) of the signing certificate.",
+                "The thumbprint (i.e. the SHA1 hash) of the X.509 signing certificate.",
                 "This is the self-signed certificate that we generated during install and that we",
                 "installed in the certificate store"
             }
@@ -69,9 +69,9 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
 
         public readonly static Setting SPEntityID = new Setting(ConfigSettings.SPEntityId)
         {
-            Introduction = "The MFA extension needs a worldwide unique URI as an idetifier in SAML2 requests",
+            Introduction = "The MFA extension needs a worldwide unique URI as an identifier in SAML2 requests",
             DefaultValue = "http://hostname/stepup-mfa",
-            DisplayName = "SFOMfaExtensionEntityId",
+            DisplayName = "MFA Extension (SP) entityID",
             HelpLines = new string[] {
                 "The EntityID of the Stepup ADFS MFA Extension.",
                 "This must be an URI in a namespace that you control.",
@@ -81,7 +81,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
 
 
         //
-        // IdP (Remote Stepup Gateway) settings.
+        // IdP (Remote SFO server) settings.
         // Always a child of the IdPentityID
         //
         public const string IdPSSOLocation = "IdPSSOLocation";
@@ -92,7 +92,12 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
 
         public readonly static Setting IdPEntityID = new Setting(ConfigSettings.IdPEntityId)
         {
-            DisplayName = "StepupGatewayEntityID",
+            Introduction = "Specify which SFO server (IdP) to use (equivalentt of entityID of IdP)",
+            DisplayName = "SFO server (IdP) entityID",
+            HelpLines = new string[] {
+                "TODO: ",
+                "TODO: "
+            }
         };
 
         public readonly static Setting IdPSSOLocationSetting = new Setting(ConfigSettings.IdPSSOLocation, ConfigSettings.IdPEntityId)
@@ -107,17 +112,17 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
 
         public readonly static Setting IdPSigningThumbPrint_2_Setting = new Setting(ConfigSettings.IdPSigningCertificate2, ConfigSettings.IdPEntityId)
         {
-            DisplayName = "StepupGatewaySigningCertificate2",
+            DisplayName = "IdPSigningCertificate2",
         };
 
         public readonly static Setting MinimaLoaSetting = new Setting(ConfigSettings.MinimalLoa, ConfigSettings.IdPEntityId)
         {
-            Introduction = "Each StepUp Only gateway has its own Authentication level URIs",
+            Introduction = "Each SFO server has its own authentication level URIs",
             DisplayName = "MinimalLoa",
             HelpLines = new string[] {
-                "The LoA identifier indicating the minimal level of authentication to request",
-                "from the Stepup-Gateway. This value is typically dependent on the",
-                "Stepup-Gateway being used.",
+                "The LoA identifier indicating the minimal level of authentication in requests",
+                "to the SFO server. This value is dependens on the",
+                "SFO server being used.",
                 "The value is not independently configurable in the installer and is",
                 "selected as part of the environment.",
                 "Example: http://example.com/assurance/sfo-level2"
