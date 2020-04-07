@@ -20,8 +20,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
         public SetupFlags mode = SetupFlags.Check;
 
         public readonly Version SetupProgramVersion = new Version(Values.FileVersion);
-        public Version RegisteredVersionInAdfs = new Version(0,0,0,0);    // set in main.Init....
-        public Version DetectedVersion = new Version(0, 0, 0, 0);         // Set in DetectAndReadCfg
+        public Version RegisteredVersionInAdfs = V0Assemblies.AssemblyNullVersion; // set in main.Init....
+        public Version DetectedVersion = V0Assemblies.AssemblyNullVersion;         // Set in DetectAndReadCfg
 
         public List<Dictionary<string, string>> IdPEnvironments;
         public AdfsConfiguration AdfsConfig;

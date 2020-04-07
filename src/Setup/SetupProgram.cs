@@ -65,6 +65,21 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                 else if ( setupstate.mode == SetupFlags.Check )
                 {
                     rc = 0;
+                    Console.WriteLine();
+                    Console.WriteLine("Current Settings:");
+                    if (setupstate.FoundSettings != null && setupstate.FoundSettings.Count > 0)
+                    {
+                        foreach (Setting setting in setupstate.FoundSettings)
+                        {
+                            Console.WriteLine(setting.ToString());
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("     None");
+                    }
+
+                    Console.WriteLine();
                     Console.WriteLine("Checked the installation: did not find any errors.");
                 }
                 /**** UN-INSTALL ****/
@@ -77,11 +92,10 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                     }
                     else
                     {
-                        // TODO: change to a specific method - CanUninstall(setupstate).
-                        if ( 'y' == AskYesNo.Ask($"Do you really want to UNINSTALL version: {setupstate.DetectedVersion}") )
+                        if ( SetupRules.CanUNinstall(setupstate) )
                         {
-                            setupstate.InstalledVersionDescription.UnInstall();
-                            Console.WriteLine("Uninstalled!");
+                            //setupstate.InstalledVersionDescription.UnInstall();
+                            AdapterMaintenance.Uninstall(setupstate.InstalledVersionDescription);
                         }
                         else
                         {
@@ -95,11 +109,22 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                     setupstate.TargetVersionDescription = AllDescriptions.V2_1_17_9;
                     if (0 != SettingsChecker.VerifySettingsComplete(setupstate))
                     {
+                        // SETTING PROBLEM
                         rc = 8;
                     }
-                    else
+                    else if ( setupstate.DetectedVersion.Major == 0 )
                     {
-                        Console.WriteLine("Would start real installation.....");
+                        // GREEN FIELD, only install
+                        rc = AdapterMaintenance.Install(setupstate.TargetVersionDescription, setupstate.FoundSettings);
+                    }
+                    else if ( SetupRules.CanUNinstall(setupstate, false)
+                                            && SetupRules.CanInstall(setupstate) )
+                    {
+                        // UPGRADE
+                        Console.WriteLine($"Starting Upgrade to {setupstate.SetupProgramVersion}");
+                        rc = AdapterMaintenance.Upgrade(setupstate.InstalledVersionDescription,
+                                            setupstate.TargetVersionDescription,
+                                            setupstate.FoundSettings);
                     }
                 }
                 /**** RECONFIGURE ****/

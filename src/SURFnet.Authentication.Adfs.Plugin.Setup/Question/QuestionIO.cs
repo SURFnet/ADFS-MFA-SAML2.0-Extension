@@ -27,6 +27,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Question
         public static void WriteIntro(string intro)
         {
             Console.WriteLine(intro);
+            Console.WriteLine();
         }
         public static void WriteValue(string currentValue)
         {
@@ -41,6 +42,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Question
                 Console.Write(OptionsIndent);
                 Console.WriteLine(option);
             }
+            Console.WriteLine();
         }
 
         public static void WriteQuestion(string question)

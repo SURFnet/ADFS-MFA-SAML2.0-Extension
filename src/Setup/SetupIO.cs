@@ -41,6 +41,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
             {
                 Console.WriteLine("Server Role: ".PadLeft(padding) + cfg.SyncProps.Role);
             }
+            Console.WriteLine();
         }
     }
 }

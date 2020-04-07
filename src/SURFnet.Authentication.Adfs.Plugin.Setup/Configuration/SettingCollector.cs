@@ -50,7 +50,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
             else if ( 0!=WalkThroughSettings() )
             {
                 rc = -3;
-                QuestionIO.WriteError("The configuration settings wer not properly specified.");
+                QuestionIO.WriteError("The configuration settings were not properly specified.");
             }
 
             return rc;
@@ -96,7 +96,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
 
                             case 'n':
                                 more = true;
-                                ClearConfirmed(uiSettings);
+                                ClearConfirmedProperties(uiSettings);
                                 break;
 
                             case 'x':
@@ -108,6 +108,10 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
                                 LogService.WriteFatal("Bug check! SettingCollector.AskConfirmation() returned an incorrect char!");
                                 break;
                         } // confirmation switch()
+                    }
+                    else
+                    {
+                        LogService.Log.Warn("There are unconfirmed settings! Loop through questions.");
                     }
                 } // okSofar
 
@@ -170,21 +174,6 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
                     break;
             }
 
-            //var question = new ShowAndGetYesNo("Do you want to continue with other settings?");
-            //if ( question.Ask() )
-            //{
-            //    // was YesOrNo
-            //    if ( question.Value != 'y' )
-            //    {
-            //        yes = false;
-            //    }
-            //}
-            //else
-            //{
-            //    // was abort
-            //    yes = false;
-            //}
-
             return yes;
         }
 
@@ -193,7 +182,6 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
             char rc = '\0';
 
             string[] values = new string[settings.Count];
-
             int index = 0;
             foreach ( Setting setting in settings )
             {
@@ -258,7 +246,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
                 ConfigSettings.SPPrimarySigningThumbprint
             };
 
-            ClearConfirmed(list);
+            ClearConfirmedProperties(list);
 
             return list;
         }
@@ -267,7 +255,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
         /// Call this to (re)start the UI questions.
         /// </summary>
         /// <param name="settings"></param>
-        void ClearConfirmed(List<Setting> settings)
+        void ClearConfirmedProperties(List<Setting> settings)
         {
             foreach (Setting setting in settings)
                 setting.IsConfirmed = false;
@@ -316,6 +304,10 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
                             setting.NewValue = jsonValueForIdP;
                             setting.IsUpdated = true;
                         }
+                    }
+                    else
+                    {
+                        LogService.Log.Info($"    Ooops {name} not in JSON file.");
                     }
                 }
             }

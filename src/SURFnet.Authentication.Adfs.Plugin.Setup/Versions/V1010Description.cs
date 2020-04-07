@@ -82,18 +82,5 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
             Console.WriteLine("This setup program will not Install version 1.0.1.0!");
             return -1; // No we will never install 1.0.1.0
         }
-
-        //public override int UnInstall()
-        //{
-        //    int rc = -1;
-        //    // Copy GAC assemblies to backup.
-        //    // Technically we need the original file for GAC removal.
-
-        //    // Copy clean ADFS configuration to ADFS directory.
-
-        //    // Uninstall GAC assemblies
-
-        //    return rc;
-        //}
     }
 }

@@ -138,11 +138,10 @@
             DateTime stop;
             // TODO: Should add OS version info. But that is a lot of work with Manifest and targeting!
 
-            Console.Write("Contacting ADFS server......");
+            Console.Write("Contacting ADFS server.....");
             start = DateTime.UtcNow;
 
             var syncProps = AdfsSyncPropertiesCmds.GetSyncProperties();
-            Console.Write("\r                                 \r");
             if (syncProps != null)
             {
                 afterFirst = DateTime.UtcNow;
@@ -150,8 +149,9 @@
                 // As expected: should work on secondaries too.
                 LogService.Log.Info($"ServerRole: {syncProps.Role}");
                 adfsConfig.SyncProps = syncProps;
-
                 // else: Errors were already reported.
+
+                Console.Write("...");
                 rc = CheckRegisteredAdapterVersion(out adfsConfig.RegisteredAdapterVersion);
                 if (rc == true)
                 {
@@ -161,6 +161,7 @@
 
                 if ( syncProps.Role.Equals("PrimaryComputer", StringComparison.OrdinalIgnoreCase) )
                 {
+                    Console.Write("...");
                     var adfsProps = AdfsPropertiesCmds.GetAdfsProps();
                     if (adfsProps != null)
                     {
@@ -183,6 +184,7 @@
             // else: Errors were already reported. And rc == false.
 
             stop = DateTime.UtcNow;
+            Console.Write("\r                                                    \r");
 
             ReportTimes(start, afterFirst, stop);
 

@@ -135,11 +135,12 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Assemblies
             try
             {
                 File.Copy(srcfilepath, FilePath, true);  // force overwrite
+                LogService.Log.Info($"Copied {srcfilepath} to {FilePath}");
                 rc = 0;
             }
             catch (Exception ex)
             {
-                LogService.WriteFatalException($"Copy to {FilePath} failed: ", ex);
+                LogService.WriteFatalException($"Copy from {srcfilepath} to {FilePath} failed: ", ex);
             }
 
             return rc;

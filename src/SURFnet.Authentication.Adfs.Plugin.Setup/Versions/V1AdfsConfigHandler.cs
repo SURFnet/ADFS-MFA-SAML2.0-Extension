@@ -17,7 +17,6 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
         public const string V1Name_SpSigningCertificate = "SpSigningCertificate";
         public const string V1Name_MinimalLoa = "MinimalLoa";
         public const string V1Name_schacHomeOrganization = "schacHomeOrganization";
-        public const string V1Name_ActiveDirectoryName = "ActiveDirectoryName";
         public const string V1Name_ActiveDirectoryUserIdAttribute = "ActiveDirectoryUserIdAttribute";
 
         public const string V1SettingsSectionName = "SURFnet.Authentication.Adfs.Plugin.Properties.Settings";

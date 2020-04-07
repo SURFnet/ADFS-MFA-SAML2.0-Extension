@@ -121,6 +121,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
                 throw new NotImplementedException($"Whoops! Stepup component ({ComponentName}) with a configuration filename, but no writer!");
             }
 
+            LogService.Log.Info("StepupComponent base.WriteConfiguration()");
+
             return 0;
         }
 

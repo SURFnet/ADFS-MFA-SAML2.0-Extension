@@ -3,6 +3,7 @@ using SURFnet.Authentication.Adfs.Plugin.Setup.Models;
 using SURFnet.Authentication.Adfs.Plugin.Setup.Services;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -139,6 +140,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
         {
             int rc = 0;
 
+            LogService.Log.Info($"VersionDescription.SpecifyRequiredSettings() for version: {DistributionVersion}");
+
             Adapter.SpecifyRequiredSettings(settings);
 
             if ( Components!=null && Components.Length>0 )
@@ -199,13 +202,15 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
         {
             int rc = 0;
 
+            LogService.Log.Info($"VersionDescription.Install() for version: {DistributionVersion}");
+
             // First extra assemblies
             if ( ExtraAssemblies!=null && ExtraAssemblies.Length>0 )
             {
-                string srcdir = FileService.DistFolder;
-                foreach( var assembly in ExtraAssemblies )
+                foreach ( var assembly in ExtraAssemblies )
                 {
-                    int tmprc = assembly.CopyToTarget(srcdir);
+                    string srcpath = Path.Combine(FileService.DistFolder, assembly.InternalName);
+                    int tmprc = assembly.CopyToTarget(srcpath);
                     if (0 != tmprc)
                     {
                         rc = tmprc; // error message was already written
@@ -240,6 +245,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
         public virtual int UnInstall()
         {
             int rc = 0;
+
+            LogService.Log.Info($"VersionDescription.Uninstall() for version: {DistributionVersion}");
 
             // start with adapter
             if ( Adapter!=null )

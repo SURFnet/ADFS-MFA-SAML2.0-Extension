@@ -16,10 +16,10 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
             bool ok = true;
 
             var heuristic = new VersionHeuristics(); /// Static would be fine too isn't it?
-            if (false == heuristic.Probe(out setupstate.DetectedVersion))
+            if (false == heuristic.Probe(out setupstate.DetectedVersion, setupstate.SetupProgramVersion))
             {
                 ok = false; // this is fatal, version detection and or verification went wrong.
-                LogService.Log.Fatal("Fatal Probe!");
+                LogService.Log.Fatal("Version detection did not produce a version.....");
             }
             else
             {

@@ -72,6 +72,23 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
             return SvcController;
         }
 
+
+        public static int StopAdfsIfRunning()
+        {
+            int rc = 0;
+
+            if (IsAdfsRunning())
+            {
+                if (0 != StopAdFsService())
+                {
+                    LogService.WriteFatal("Failed to stop ADFS service.");
+                    rc = 1;
+                }
+            }
+
+            return rc;
+        }
+
         ///
         /// The polling is theoretically not 100% correct.
         /// The official algorithm is more complex. If the machine

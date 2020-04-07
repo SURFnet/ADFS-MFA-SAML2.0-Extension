@@ -52,6 +52,7 @@
     <Compile Include="SettingsChecker.cs" />
     <Compile Include="SetupIO.cs" />
     <Compile Include="SetupProgram.cs" />
+    <Compile Include="SetupRules.cs" />
     <Compile Include="SetupState.cs" />
   </ItemGroup>
   <ItemGroup>

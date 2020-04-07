@@ -20,7 +20,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
             {
                 ConfigSettings.SPEntityId,
                 ConfigSettings.IdPEntityId,
-                ConfigSettings.IdPSigningCertificate
+                ConfigSettings.IdPSignThumb1
             };
         }
 

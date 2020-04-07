@@ -19,14 +19,13 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
         /// and "out found" will be null.
         /// </summary>
         /// <returns>false on fatal errors</returns>
-        public bool Probe(out Version found)
+        public bool Probe(out Version found, Version thisVersion)
         {
             bool ok = true;
             VersionDescription tmpDesc = null;
 
             if ( TryFindAdapter(out found) )
             {
-                //LogService.Log.Info("Probe did not fail...");
                 if (found == AllDescriptions.V1_0_1_0.DistributionVersion )
                 {
                     tmpDesc = AllDescriptions.V1_0_1_0;
@@ -38,13 +37,21 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
 
                 if (found.Major != 0)
                 {
-                    Description = tmpDesc; // store it for the List<Setting> reader..... 
-
-                    LogService.Log.Info($"On disk version: {tmpDesc.DistributionVersion}, start Verify()");
-                    if ( 0!=tmpDesc.Verify() )
+                    if ( found > thisVersion )
                     {
-                        LogService.Log.Fatal($"   Verify() failed on {tmpDesc.DistributionVersion}");
+                        LogService.WriteFatal($"Installed version v{found} appears newer then setup version v{thisVersion}. Use the newest setup.");
                         ok = false;
+                    }
+                    else
+                    {
+                        Description = tmpDesc; // store it for the List<Setting> reader..... 
+
+                        LogService.Log.Info($"On disk version: {tmpDesc.DistributionVersion}, start Verify()");
+                        if (0 != tmpDesc.Verify())
+                        {
+                            LogService.Log.Fatal($"   Verify() failed on {tmpDesc.DistributionVersion}");
+                            ok = false;
+                        }
                     }
                 }
             }

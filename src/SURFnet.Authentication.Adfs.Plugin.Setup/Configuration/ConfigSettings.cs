@@ -62,7 +62,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
             DisplayName = "MFA Extension (SP) signing thumbprint",
             HelpLines = new string[] {
                 "The thumbprint (i.e. the SHA1 hash) of the X.509 signing certificate.",
-                "This is the self-signed certificate that we generated during install and that we",
+                "This is typically the self-signed certificate that we generated during install and that we",
                 "installed in the certificate store"
             }
         };
@@ -86,8 +86,9 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
         //
         public const string IdPSSOLocation = "IdPSSOLocation";
         public const string IdPEntityId = "IdPentityId";
-        public const string IdPSigningCertificate = "IdPfindValue";   // TODO: Is SustainSys 2.33 specific!!!
-        public const string IdPSigningCertificate2 = "Certificate";   // TODO: Although not used in 2.3, is SustainSys 2.33 specific!!!
+        public const string IdPSignThumb1 = "IdPSignThumb1";   // TODO: Is SustainSys 2.3 specific!!!
+        public const string IdPSignCert1 = "IdPSignCert1";
+        public const string IdPSignCert2 = "IdPSignCert2";
         public const string MinimalLoa = "MinimalLoa";
 
         public readonly static Setting IdPEntityID = new Setting(ConfigSettings.IdPEntityId)
@@ -105,14 +106,9 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
             DisplayName = "IdPSSOLocation",
         };
 
-        public readonly static Setting IdPSigningThumbPrint_1_Setting = new Setting(ConfigSettings.IdPSigningCertificate, ConfigSettings.IdPEntityId)
+        public readonly static Setting IdPSigningThumbPrint_1_Setting = new Setting(ConfigSettings.IdPSignThumb1, ConfigSettings.IdPEntityId)
         {
             DisplayName = "SHA1 hash (thumbprint) of IdP signer",
-        };
-
-        public readonly static Setting IdPSigningThumbPrint_2_Setting = new Setting(ConfigSettings.IdPSigningCertificate2, ConfigSettings.IdPEntityId)
-        {
-            DisplayName = "IdPSigningCertificate2",
         };
 
         public readonly static Setting MinimaLoaSetting = new Setting(ConfigSettings.MinimalLoa, ConfigSettings.IdPEntityId)
