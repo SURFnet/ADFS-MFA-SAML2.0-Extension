@@ -70,7 +70,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
         public readonly static Setting SPEntityID = new Setting(ConfigSettings.SPEntityId)
         {
             Introduction = "The MFA extension needs a worldwide unique URI as an identifier in SAML2 requests",
-            DefaultValue = "http://hostname/stepup-mfa",
+            //DefaultValue = "http://hostname/stepup-mfa",
             DisplayName = "MFA Extension (SP) entityID",
             HelpLines = new string[] {
                 "The EntityID of the Stepup ADFS MFA Extension.",

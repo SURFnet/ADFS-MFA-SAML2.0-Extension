@@ -31,6 +31,5 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
         public VersionDescription TargetVersionDescription;
 
         public List<Setting> FoundSettings;
-        public List<Setting> AllSettings;
     }
 }

@@ -210,19 +210,17 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
             {
                 FileService.InitFileService();
 
-                var gwEnvironments = setupstate.IdPEnvironments = ConfigurationFileService.LoadGWDefaults();
-                if ( gwEnvironments==null || gwEnvironments.Count<3)
+                var IdPEnvironments = setupstate.IdPEnvironments = ConfigurationFileService.LoadIdPDefaults();
+                if ( IdPEnvironments==null || IdPEnvironments.Count<3)
                 {
                     // Darn, no error check at low level?
                     throw new ApplicationException("Some error in the SFO server (IdP) environment descriptions.");
                 }
                 else
                 {
-                    // set default SP to Production. Has essential side effect:
-                    // - It fills the setting Dictionary!
-                    var prodDict = gwEnvironments[0];  // TODO: Should search the production environment!  This is too rude!!
-                    var defaultEntityID = prodDict[ConfigSettings.IdPEntityId];
-                    ConfigSettings.IdPEntityID.DefaultValue = defaultEntityID;
+                    //var prodDict = gwEnvironments[0];  // TODO: Should search the production environment!  This is too rude!!
+                    //var defaultEntityID = prodDict[ConfigSettings.IdPEntityId];
+                    //ConfigSettings.IdPEntityID.DefaultValue = defaultEntityID;
                 }
 
                 ServiceController svcController = AdfsServer.CheckAdFsService();
@@ -240,7 +238,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                         },
                         SyncProps = new AdfsSyncProperties()
                         {
-                            Role = "Primary"
+                            Role = "PrimaryComputer"
                         },
                         RegisteredAdapterVersion = new Version(1, 0, 1, 0)
                     };
@@ -251,6 +249,20 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                 else if ( false == AdfsPSService.GetAdfsConfiguration(out setupstate.AdfsConfig) )
                 {
                     rc = 8; // Some ADFS access failure.
+                }
+                else
+                {
+                    // set default SP entityID. Has essential an side effect:
+                    //   - It fills the setting Dictionary!
+                    if (setupstate.AdfsConfig.SyncProps.IsPrimary)
+                    {
+                        // then we have a hostname.
+                        ConfigSettings.SPEntityID.DefaultValue = $"http://{setupstate.AdfsConfig.AdfsProps.HostName}/stepup-mfa";
+                    }
+                    else
+                    {
+                        ConfigSettings.SPEntityID.DefaultValue = null; // always trigger!
+                    }
                 }
             }
             catch (Exception ex)

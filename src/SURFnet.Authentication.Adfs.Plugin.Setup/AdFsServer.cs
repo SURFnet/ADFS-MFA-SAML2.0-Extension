@@ -42,16 +42,18 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
 
             try
             {
-                ServiceController tmp = new ServiceController("adfssrv");
+                LogService.Log.Info("Checking ADFS Service presence");
 
-                var status = tmp.Status; // trigger exception if not on machine.
+                ServiceController tmpController = new ServiceController("adfssrv");
+
+                var status = tmpController.Status; // trigger exception if not on machine.
                 if ( status != ServiceControllerStatus.Running )
                 {
                     LogService.WriteFatal("ADFS service not running, cannot analyze/setup. Start the service.");
                 }
                 else
                 {
-                    SvcController = tmp;
+                    SvcController = tmpController;
                 }
 
             }
@@ -157,6 +159,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
             int rc = -1;
             bool more = true;
             int retriesLeft = MaxRetries;
+            LogService.Log.Info("Starting ADFS service.");
 
             try
             {
@@ -196,12 +199,13 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
             }
             catch (Exception ex)
             {
-                LogService.WriteFatalException("Failed to stop the ADFS service.", ex);
+                LogService.WriteFatalException("Failed to start the ADFS service.", ex);
                 rc = -2;
             }
 
             if (rc == -1 && retriesLeft <= 0)
             {
+                LogService.Log.Error("Start ADFS Service timeout.");
                 rc = 1; // timeout
             }
 
@@ -243,6 +247,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
             int rc = -1;
             bool more = true;
             int retriesLeft = MaxRetries;
+            LogService.Log.Info("Stopping ADFS service.");
 
             try
             {
@@ -288,6 +293,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
 
             if ( rc==-1 && retriesLeft<=0 )
             {
+                LogService.Log.Error("Stop ADFS Service timeout.");
                 rc = 1; // timeout
             }
 

@@ -69,15 +69,15 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
         {
             int rc = -1;
 
-            // check if ADFS stopped, otherwise stop it.
-            if ( 0!=AdfsServer.StopAdfsIfRunning() )
-            {
-                LogService.WriteFatal("Installation not started.");
-            }
-            else if ( 0 != (rc = desc.WriteConfiguration(settings)) )
+            if ( 0 != (rc = desc.WriteConfiguration(settings)) )
             {
                 LogService.WriteFatal("writing Settings FAILED.");
                 LogService.WriteFatal("Installation ABORTED. Must Start the ADFS server manually and/or do other manual recovery.");
+            }
+            // check if ADFS stopped, otherwise stop it.
+            else if (0 != AdfsServer.StopAdfsIfRunning())
+            {
+                LogService.WriteFatal("Installation not started.");
             }
             // Install
             else if ( 0 != (rc=desc.Install()) )

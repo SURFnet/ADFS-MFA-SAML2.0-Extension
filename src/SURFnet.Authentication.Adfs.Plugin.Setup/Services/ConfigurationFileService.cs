@@ -20,6 +20,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
+    using System.Security.Cryptography.X509Certificates;
     using System.Text;
     using System.Xml.Linq;
 
@@ -27,6 +28,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
 
     using SURFnet.Authentication.Adfs.Plugin.Setup.Common;
     using SURFnet.Authentication.Adfs.Plugin.Setup.Common.Services;
+    using SURFnet.Authentication.Adfs.Plugin.Setup.Configuration;
     using SURFnet.Authentication.Adfs.Plugin.Setup.Models;
 
     /// <summary>
@@ -35,6 +37,14 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
     public class ConfigurationFileService
     {
 
+        /// <summary>
+        /// Replace the setting.InternalName (between '%') in a file with the Value in the
+        /// Setting instance
+        /// </summary>
+        /// <param name="filename">Filename of src</param>
+        /// <param name="settings">the array of internal names to replace</param>
+        /// <param name="allsettings">Setting instances with the values for replace()</param>
+        /// <returns></returns>
         public static bool ReplaceInXmlCfgFile(string filename, string[] settings, List<Setting> allsettings)
         {
             bool ok = true;
@@ -48,10 +58,12 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
                 if (setting == null)
                 {
                     LogService.WriteFatal($"Missing setting with InternalName: '{parameter}' in allSettings for {filename}.");
+                    ok = false;
                 }
                 else if (string.IsNullOrWhiteSpace(setting.Value))
                 {
                     LogService.WriteFatal($"Value for Setting: '{parameter}' in {filename} IsNullOrWhiteSpace.");
+                    ok = false;
                 }
                 else
                 {
@@ -86,7 +98,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
         /// Loads the default StepUp configuration.
         /// </summary>
         /// <returns>A list with the config values for each environment.</returns>
-        public static List<Dictionary<string, string>> LoadGWDefaults()
+        public static List<Dictionary<string, string>> LoadIdPDefaults()
         {
             // TODO: Error handling! Exception is fine?
             // TODO: Path manipulation should go to FileService,
@@ -101,6 +113,25 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
                 var dict = item.Children<JProperty>().ToDictionary(child => child.Name, child => child.Value.Value<string>());
 
                 result.Add(dict);
+            }
+
+            // For each IdP dictionary exctract the thumbprint from the
+            // signing certificate and add as pair to the same dictionary.
+            foreach ( var dict in result )
+            {
+                if ( dict.TryGetValue(ConfigSettings.IdPSignCert1, out string base64cert) )
+                {
+                    if ( ! string.IsNullOrEmpty(base64cert) )
+                    {
+                        byte[] raw = Convert.FromBase64String(base64cert);
+                        X509Certificate2 cert = new X509Certificate2(raw);
+                        dict.Add(ConfigSettings.IdPSignThumb1, cert.Thumbprint);
+                    }
+                }
+                else
+                {
+                    LogService.WriteFatal($"Missing {ConfigSettings.IdPSignCert1} in {dict[SetupConstants.IdPEnvironmentType]}");
+                }
             }
 
             return result;

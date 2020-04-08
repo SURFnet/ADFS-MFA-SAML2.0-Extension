@@ -32,10 +32,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
         {
             int rc = 0;
 
-            List<Setting> newSettings = new List<Setting>(FoundSettings);
-
             // ask target what it needs
-            if ( 0!=targetVersion.SpecifyRequiredSettings(newSettings) )
+            if ( 0!=targetVersion.SpecifyRequiredSettings(FoundSettings) )
             {
                 // almost unthinkable, but something went wrong while just adding things to a list...
                 LogService.WriteFatal($"Fatal failure while fetching required parameters for {targetVersion.DistributionVersion}.");
@@ -277,10 +275,17 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
         {
             int rc = 0;
 
+            // get the IdP entityID setting
+            string entityID = idpSetting.Value;
+            if (string.IsNullOrWhiteSpace(entityID))
+            {
+                LogService.Log.Warn("IdP entityID not yet set, skip expanding.");
+                return 0;
+            }
+
             try   // a lot of potentially throwing indexing...
             {
-                // get the IdP entityID setting
-                string entityID = idpSetting.Value;
+
                 LogService.Log.Info("Start updating IdP settings for: "+entityID);
 
                 int index = IdPChoiceUtil.EntityID2Index(entityID, IdPEnvironments);

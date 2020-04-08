@@ -28,7 +28,7 @@
     "MinimalLoa": "http://test2.surfconext.nl/assurance/sfo-level2",
     "IdPSSOLocation": "https://sa-gw.test2.surfconext.nl/second-factor-only/single-sign-on",
     "IdPentityId": "https://sa-gw.test2.surfconext.nl/second-factor-only/metadata",
-    "IdPSignCert1": "MIITEST2=",
+    "IdPSignCert1": null,
     "IdPSignCert2": null
   }
 ]

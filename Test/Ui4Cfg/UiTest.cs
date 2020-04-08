@@ -20,7 +20,7 @@ namespace Ui4Cfg
 
         static void Main(string[] args)
         {
-            IdPEnvironments = ConfigurationFileService.LoadGWDefaults();
+            IdPEnvironments = ConfigurationFileService.LoadIdPDefaults();
             bool ok;
 
             // Demo for IdP environment choice
@@ -186,7 +186,7 @@ namespace Ui4Cfg
         {
             StringBuilder sb = new StringBuilder();
 
-            IdPEnvironments = ConfigurationFileService.LoadGWDefaults();
+            IdPEnvironments = ConfigurationFileService.LoadIdPDefaults();
             int index = 0;
             foreach ( var dict in IdPEnvironments )
             {
