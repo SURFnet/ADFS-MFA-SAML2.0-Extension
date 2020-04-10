@@ -75,6 +75,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
         /// <returns>0 if OK</returns>
         int Install();
 
+        int InstallCfgOnly();
+
         /// <summary>
         /// After configuration was saved (in backup and/or inside the setup program),
         /// removes all files, configuration, etc.

@@ -132,6 +132,28 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
 
             LogService.Log.Debug("Install: " + ComponentName);
 
+            if ( 0 == (rc=InstallCfgOnly()) )
+            {
+                // Copy assemblies
+                if (Assemblies != null)
+                {
+                    // Only if configuration was succesfully copied.
+                    foreach (var spec in Assemblies)
+                    {
+                        string src = Path.Combine(FileService.DistFolder, spec.InternalName);
+                        if (spec.CopyToTarget(src) != 0)
+                            rc = -1;
+                    }
+                }
+            }
+
+            return rc;
+        }
+
+        public virtual int InstallCfgOnly()
+        {
+            int rc = 0;
+
             // Copy configuration form output directory to ADFS directory
             if (ConfigFilename != null)
             {
@@ -146,18 +168,6 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
                     string error = $"Failed to copy configuration of {ComponentName} ConfigurationFile: {ConfigFilename} to target {dest}.";
                     LogService.WriteFatalException(error, ex);
                     rc = -1;
-                }
-            }
-
-            // Copy assemblies
-            if ( rc==0 && Assemblies!=null )
-            {
-                // Only if configuration was succesfully copied.
-                foreach (var spec in Assemblies)
-                {
-                    string src = Path.Combine(FileService.DistFolder, spec.InternalName);
-                    if (spec.CopyToTarget(src) != 0)
-                        rc = -1;
                 }
             }
 

@@ -171,7 +171,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                     {
                         case ServiceControllerStatus.Paused:
                         case ServiceControllerStatus.Stopped:
-                            SvcController.Start();
+                            SvcController.Start();  // must wait? do not thinks so...
                             Console.Write(".");
                             break;
 

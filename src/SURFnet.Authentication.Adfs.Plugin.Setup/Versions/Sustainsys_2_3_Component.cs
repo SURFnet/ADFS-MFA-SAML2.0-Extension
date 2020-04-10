@@ -20,7 +20,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
             {
                 ConfigSettings.SPEntityId,
                 ConfigSettings.IdPEntityId,
-                ConfigSettings.IdPSignThumb1
+                ConfigSettings.IdPSignThumb1,
+                ConfigSettings.IdPSignThumb2
             };
         }
 
@@ -70,9 +71,12 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
             settings.Add(ConfigSettings.SPEntityID);
 
             var identityProvider = sustainsysSection?.Descendants(XName.Get("add")).FirstOrDefault();
-            var certificate = identityProvider?.Descendants(XName.Get(SetupConstants.XmlElementName.SustainIdPSigningCert)).FirstOrDefault();
-            ConfigSettings.IdPSigningThumbPrint_1_Setting.FoundCfgValue = certificate?.Attribute(XName.Get(SetupConstants.XmlAttribName.CertFindValue))?.Value;
-            settings.Add(ConfigSettings.IdPSigningThumbPrint_1_Setting);
+            var idpCerts = identityProvider?.Descendants(XName.Get(SetupConstants.XmlElementName.SustainIdPSigningCert));
+            if (idpCerts != null)
+                SetIdPCerts(idpCerts, settings);
+            //var certificate = identityProvider?.Descendants(XName.Get(SetupConstants.XmlElementName.SustainIdPSigningCert)).FirstOrDefault();
+            //ConfigSettings.IdPSigningThumbPrint_1_Setting.FoundCfgValue = certificate?.Attribute(XName.Get(SetupConstants.XmlAttribName.CertFindValue))?.Value;
+            //settings.Add(ConfigSettings.IdPSigningThumbPrint_1_Setting);
 
             ConfigSettings.IdPEntityID.FoundCfgValue = identityProvider?.Attribute(XName.Get(SetupConstants.XmlAttribName.EntityId))?.Value;
             settings.Add(ConfigSettings.IdPEntityID);
@@ -80,5 +84,29 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
             return settings;
         }
 
+        private void SetIdPCerts(IEnumerable<XElement> idpCertElements, List<Setting> settings)
+        {
+            int cnt = 0;
+            foreach ( var element in idpCertElements )
+            {
+                switch ( cnt )
+                {
+                    case 0:
+                        ConfigSettings.IdPSigningThumbPrint_1_Setting.FoundCfgValue = element?.Attribute(XName.Get(SetupConstants.XmlAttribName.CertFindValue))?.Value;
+                        settings.Add(ConfigSettings.IdPSigningThumbPrint_1_Setting);
+                        break;
+
+                    case 1:
+                        ConfigSettings.IdPSigningThumbPrint_2_Setting.FoundCfgValue = element?.Attribute(XName.Get(SetupConstants.XmlAttribName.CertFindValue))?.Value;
+                        settings.Add(ConfigSettings.IdPSigningThumbPrint_2_Setting);
+                        break;
+
+                    default:
+                        LogService.Log.Error($"Too many IdP certs in configuration, ignoring #{cnt + 1}");
+                        break;
+                }
+                cnt++;
+            }
+        }
     }
 }

@@ -20,16 +20,18 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
         /// <returns></returns>
         public static bool CanUNinstall(SetupState setupstate, bool askConfirmation = true)
         {
-            bool doit = false;
+            bool doit = true;
 
             if ( setupstate.SetupProgramVersion < setupstate.DetectedVersion )
             {
                 // TODO: unlikey but could detect the adapter version.
                 LogService.WriteFatal($"Cannot uninstall a newer version {setupstate.DetectedVersion} with this older version {setupstate.DetectedVersion}. Please use the newest version of this program.");
+                doit = false;
             }
             else if (setupstate.DetectedVersion == V0Assemblies.AssemblyNullVersion)
             {
                 LogService.WriteFatal($"Cannot uninstall when this program did not detect a version.");
+                doit = false;
             }
             else if ( setupstate.AdfsConfig.RegisteredAdapterVersion == V0Assemblies.AssemblyNullVersion)
             {
@@ -46,16 +48,16 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                 else
                 {
                     LogService.WriteFatal("Will not Uninstall.");
+                    doit = false;
                 }
             }
             // Everything else was OK now last confirmation question (if actually needed)
-            else if (askConfirmation &&
+            else if ( askConfirmation &&
                         ('y' == AskYesNo.Ask($"Do you really want to UNINSTALL version: {setupstate.DetectedVersion}"))
-                        )
+                    )
             {
                 doit = true;
             }
-            // else: doit remains false
 
             return doit;
         }

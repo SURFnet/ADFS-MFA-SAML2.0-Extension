@@ -45,6 +45,10 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
                 // and it failed.....
                 rc = -2;
             }
+            else if ( 0==AskCurrentOK(FoundSettings) )
+            {
+                rc = 0;
+            }
             else if ( 0!=WalkThroughSettings() )
             {
                 rc = -3;
@@ -52,6 +56,53 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
             }
 
             return rc;
+        }
+
+        int AskCurrentOK(List<Setting> foundSettings)
+        {
+            int rc = -1;
+
+            if ( AllMandatoryHaveValue(foundSettings) )
+            {
+                // Ask for quick GO confirmation.
+                switch (AskConfirmation(foundSettings, "Setup found correct configuration settings as follows: "))
+                {
+                    case 'y':
+                        rc = 0;
+                        break;
+
+                    case 'n':
+                    case 'x':
+                        rc = -1;
+                        break;
+
+                    default:
+                        rc = -1;
+                        LogService.WriteFatal("Bug check! SettingCollector.AskConfirmation() returned an incorrect char!");
+                        break;
+                }
+            }
+
+            return rc;
+        }
+
+        bool AllMandatoryHaveValue(List<Setting> settings)
+        {
+            bool allthere = true;
+
+            foreach (Setting setting in settings)
+            {
+                if (setting.IsMandatory)
+                {
+                    if ( string.IsNullOrWhiteSpace(setting.Value))
+                    {
+                        allthere = false;
+                        break;
+                    }
+                }
+            }
+
+            return allthere;
         }
 
         int WalkThroughSettings()
@@ -85,7 +136,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
                     if (more == false)
                     {
                         // Ask for completion/confirmation.
-                        switch (AskConfirmation(uiSettings))
+                        switch (AskConfirmation(uiSettings, "The (new) configuration settings are now as follows"))
                         {
                             case 'y':
                                 // this terminates the loop: more is already false
@@ -175,7 +226,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
             return yes;
         }
 
-        char AskConfirmation(List<Setting> settings)
+        char AskConfirmation(List<Setting> settings, string introduction)
         {
             char rc = '\0';
 
@@ -187,7 +238,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
             }
             var options = new OptionList()
             {
-                Introduction = "The (new) configuration settings are now as follows",
+                Introduction = introduction,
                 Options = values,
                 Question = "Do you want to continue with these settings?"
             };

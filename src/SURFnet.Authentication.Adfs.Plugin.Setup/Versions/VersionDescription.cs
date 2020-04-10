@@ -198,6 +198,26 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
             return rc;
         }
 
+        public virtual int InstallCfgOnly()
+        {
+            int rc = 0;
+
+            if (Components != null && Components.Length > 0)
+            {
+                foreach (var component in Components)
+                {
+                    int tmprc = component.InstallCfgOnly();
+                    if (0 != tmprc)
+                    {
+                        rc = tmprc; // error message was already written
+                        break; // stop Installing
+                    }
+                }
+            }
+
+            return rc;
+        }
+
         public virtual int Install()
         {
             int rc = 0;

@@ -71,8 +71,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
 
             if ( 0 != (rc = desc.WriteConfiguration(settings)) )
             {
-                LogService.WriteFatal("writing Settings FAILED.");
-                LogService.WriteFatal("Installation ABORTED. Must Start the ADFS server manually and/or do other manual recovery.");
+                LogService.WriteFatal("Writing Settings FAILED.");
+                LogService.WriteFatal("Installation ABORTED. Installation not started.");
             }
             // check if ADFS stopped, otherwise stop it.
             else if (0 != AdfsServer.StopAdfsIfRunning())
@@ -113,6 +113,40 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
             else if (0 == Install(newDesc, settings) )
             {
                 rc = 0;
+            }
+
+            return rc;
+        }
+
+        public static int ReConfigure(VersionDescription desc, List<Setting> settings)
+        {
+            int rc = -1;
+
+            if (0 != (rc = desc.WriteConfiguration(settings)))
+            {
+                LogService.WriteFatal("Writing Settings FAILED.");
+                LogService.WriteFatal("Reconfiguration ABORTED.");
+            }
+            // check if ADFS stopped, otherwise stop it.
+            else if (0 != AdfsServer.StopAdfsIfRunning())
+            {
+                LogService.WriteFatal("Installation not started.");
+            }
+            // Install
+            else if (0 != (rc = desc.InstallCfgOnly()))
+            {
+                LogService.WriteFatal("Reconfiguration FAILED. Must Start the ADFS server manually and/or do other manual recovery.");
+            }
+            else
+            {
+                LogService.WriteWarning("Reconfiguration succesfull.");
+
+                // Start ADFS.
+                if (0 != (rc = AdfsServer.StartAdFsService()))
+                {
+                    LogService.WriteFatal("Starting ADFS server FAILED.");
+                    LogService.WriteFatal("   Take a look at the ADFS server EventLog *and* the MFA extension EventLog.");
+                }
             }
 
             return rc;
