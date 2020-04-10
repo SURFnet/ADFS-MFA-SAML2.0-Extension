@@ -65,7 +65,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
             if ( AllMandatoryHaveValue(foundSettings) )
             {
                 // Ask for quick GO confirmation.
-                switch (AskConfirmation(foundSettings, "Setup found correct configuration settings as follows: "))
+                switch (AskConfirmation(foundSettings, "*** Setup did find a CORRECT CONFIGURATION. With settings as follows: "))
                 {
                     case 'y':
                         rc = 0;
@@ -346,7 +346,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
                 foreach (string name in ConfigSettings.IdPEntityID.ChildrenNames)
                 {
                     Setting setting = Setting.GetSettingByName(name);
-                    LogService.Log.Info($"  Check setting: {name} with current value: {setting.Value??string.Empty}");
+                    LogService.Log.Info($"  Check setting: {name} with current value: {setting.Value??"-"}");
 
                     if ( idpsettings.TryGetValue(name, out string jsonValueForIdP) )
                     {

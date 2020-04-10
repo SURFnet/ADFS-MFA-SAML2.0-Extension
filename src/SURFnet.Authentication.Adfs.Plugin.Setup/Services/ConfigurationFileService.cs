@@ -132,6 +132,21 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
                 {
                     LogService.WriteFatal($"Missing {ConfigSettings.IdPSignCert1} in {dict[SetupConstants.IdPEnvironmentType]}");
                 }
+
+                if (dict.TryGetValue(ConfigSettings.IdPSignCert2, out base64cert))
+                {
+                    if (!string.IsNullOrEmpty(base64cert))
+                    {
+                        byte[] raw = Convert.FromBase64String(base64cert);
+                        X509Certificate2 cert = new X509Certificate2(raw);
+                        dict.Add(ConfigSettings.IdPSignThumb2, cert.Thumbprint);
+                    }
+                }
+                else
+                {
+                    LogService.WriteFatal($"Missing {ConfigSettings.IdPSignCert2} in {dict[SetupConstants.IdPEnvironmentType]}");
+                }
+
             }
 
             return result;
