@@ -182,8 +182,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Models
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
         public override string ToString()
         {
-            var name = this.DisplayName.PadLeft(40);
-            return $"{name}: {this.Value}";
+            var name = this.DisplayName.PadRight(45);
+            return $"{name} : {this.Value}";
         }
 
         ///// <summary>

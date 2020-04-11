@@ -39,7 +39,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
                 {
                     if ( found > thisVersion )
                     {
-                        LogService.WriteFatal($"Installed version v{found} appears newer then setup version v{thisVersion}. Use the newest setup.");
+                        LogService.WriteFatal($"Installed version v{found} appears newer then this setup version v{thisVersion}.");
+                        LogService.WriteFatal(" Use the newest setup.");
                         ok = false;
                     }
                     else
@@ -64,10 +65,12 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
             return ok;
         }
 
+
         /// <summary>
         /// Looks in ADFS directory and GAC to see if there are Adapter assemblies.
         /// </summary>
-        /// <returns>true, false: multiple adpaters found or something fatal throws.</returns>
+        /// <param name="versionfound">will hold a valid version, 0.0.0.0 if nothing detected</param>
+        /// <returns>true normally, false: multiple adpaters found or something fatal throws.</returns>
         bool TryFindAdapter(out Version versionfound)
         {
             bool rc = true;

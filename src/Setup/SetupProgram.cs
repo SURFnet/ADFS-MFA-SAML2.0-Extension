@@ -170,12 +170,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                 LogService.WriteFatalException("LastResort catch(). Caught in Main()", ex);
             }
 
-            //string answer = string.Empty;
-            //while (answer != "exit")
-            //{
-            //    Console.WriteLine("Type 'exit' to exit");
-            //    answer = Console.ReadLine();
-            //}
+            if (rc != 0)
+                WaitForEnter();
 
             return rc;
         }  // Main()
@@ -207,17 +203,13 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                 return 4;
             }
 
-            // would not log without Admin!
-            ILog log = LogManager.GetLogger("Setup");
-            LogService.InsertLoggerDependency(log);
-#if DEBUG
-            LogService.Log.Info("Log Started");  // just to check if logging works. Needs Admin etc.
-#endif
+            if (0 != SetupIO.InitializeLog4net())
+                return 8;
 
             if ( args.Length == 0 || 0!=(rc=ParseOptions(args, setupstate)) )
             {
-                rc = 4;
                 Help();
+                return 4;
             }
 
             LogService.Log.Debug("PrepareForSetup: After ParseOptions()");

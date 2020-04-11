@@ -133,6 +133,7 @@
         {
             bool rc = false;
             adfsConfig = new AdfsConfiguration();
+            adfsConfig.RegisteredAdapterVersion = new Version(0, 0, 0, 0);
             DateTime start;
             DateTime afterFirst = DateTime.MinValue;
             DateTime stop;
@@ -152,7 +153,7 @@
                 // else: Errors were already reported.
 
                 Console.Write("...");
-                rc = CheckRegisteredAdapterVersion(out adfsConfig.RegisteredAdapterVersion);
+                rc = CheckRegisteredAdapterVersion(ref adfsConfig.RegisteredAdapterVersion);
                 if (rc == true)
                 {
                     LogService.Log.Info($"ADFS configured version: {adfsConfig.RegisteredAdapterVersion}");
@@ -199,10 +200,10 @@
         /// </summary>
         /// <param name="registeredAdapterVersion">Whatever comes from the ADFS configuration</param>
         /// <returns>true if OK, false on fatal error.</returns>
-        public static bool CheckRegisteredAdapterVersion(out Version registeredAdapterVersion)
+        public static bool CheckRegisteredAdapterVersion(ref Version registeredAdapterVersion)
         {
             bool rc = false;
-            registeredAdapterVersion = null;
+            //registeredAdapterVersion = new Version(0,0,0,0);
 
             ServiceController adfsService = AdfsServer.SvcController;
             try

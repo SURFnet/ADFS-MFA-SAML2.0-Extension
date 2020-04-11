@@ -64,7 +64,10 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
 
             if ( AllMandatoryHaveValue(foundSettings) )
             {
+
                 // Ask for quick GO confirmation.
+                QuestionIO.WriteLine();
+                QuestionIO.WriteLine();
                 switch (AskConfirmation(foundSettings, "*** Setup did find a CORRECT CONFIGURATION. With settings as follows: "))
                 {
                     case 'y':
