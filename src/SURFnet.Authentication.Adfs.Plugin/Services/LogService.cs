@@ -23,6 +23,9 @@ using log4net.Util;
 using Microsoft.IdentityServer.Web.Authentication.External;
 using SURFnet.Authentication.Adfs.Plugin.Setup.Common;
 using SURFnet.Authentication.Adfs.Plugin.Configuration;
+using System.Reflection;
+using System.IO;
+using log4net.Config;
 
 namespace SURFnet.Authentication.Adfs.Plugin.Services
 {
@@ -52,11 +55,19 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
                 {
                     if (Log == null)
                     {
+                        string dir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                        string cfgfilepath = Path.Combine(dir, Values.Log4netCfgFilename);
+                        FileInfo fi = new FileInfo(cfgfilepath);
+                        XmlConfigurator.ConfigureAndWatch(fi);
+
                         Log = LogManager.GetLogger("ADFS Plugin"); //masterLogInterface;
-                        PrepareCorrelatedLogger("000", "000");  // for static constructor of adapter
+                        PrepareCorrelatedLogger("000", "000");
                         // SetDesiredLogLevel();
+
+                        Log.Info(" CfgFilePath: " + cfgfilepath);
                     }
                 }
+
             }
         }
 
@@ -80,6 +91,9 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
                     }
                 }
             }
+
+            LogService.PrepareCorrelatedLogger("CfgDependencies", "CfgDependencies");
+
         }
 
         /// <summary>

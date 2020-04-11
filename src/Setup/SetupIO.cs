@@ -21,18 +21,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
 
             try
             {
-                var a = Assembly.GetExecutingAssembly();
-                string dir = Path.GetDirectoryName(a.Location);
-                string filepath = Path.Combine(dir, filename);
-
-
                 string cfgFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, filename);
-
-
-                Console.WriteLine("Fullpath: " + cfgFilePath);
-
                 FileInfo fi = new FileInfo(cfgFilePath);
-
                 XmlConfigurator.Configure(fi);
 
                 ILog log = LogManager.GetLogger("Setup");

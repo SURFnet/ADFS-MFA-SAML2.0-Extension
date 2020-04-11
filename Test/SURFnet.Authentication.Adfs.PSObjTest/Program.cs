@@ -10,10 +10,17 @@ using System.Threading.Tasks;
 
 namespace SURFnet.Authentication.Adfs.PSObjTest
 {
+    /// <summary>
+    /// SUPER IMPORTANT!!!
+    /// This program does the adapter loading. Even though it uses
+    /// (currently) the Adapter in the ADFS directory for version number
+    /// etc., it ACTUALLY LOADS from the ==>  DIST  == directory.
+    /// 
+    /// ==>  Copy to DIST is a manual operation!!!!
+    /// ==> do not forget it when you test.
+    /// </summary>
     class Program
     {
-        // TODO: Specify only the filename of the Adapter. Get the rest from the adapter itself!
-
         static private string MyName { get; set; } = "ADFS.SCSA";
         static private string MyAssemblyName = "SURFnet.Authentication.Adfs.Plugin.dll";
         static private string MyTypeName { get; set; }

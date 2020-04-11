@@ -14,6 +14,8 @@
 * limitations under the License.
 */
 
+using SURFnet.Authentication.Adfs.Plugin.Setup.Common;
+
 namespace SURFnet.Authentication.Adfs.Plugin.Setup
 {
     /// <summary>
@@ -34,7 +36,6 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
         public const string SustainCfgFilename = SustainsysFilename + ".config";
 
         public const string Log4netFilename = "log4net.dll";
-        public const string Log4netCfgFilename = "SURFnet.Authentication.ADFS.MFA.Plugin.log4net";
 
         // extra property names in JSON file. Not really a setting. The rest is in: .
         public const string IdPEnvironmentType = "Type";

@@ -38,9 +38,11 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Common
         public const string ProductVersion = "2.1.0.0";
 
         /// <summary>
-        /// The default adapter registration name. Used in Registry at Registration time.
+        /// Used as -Name parameter in registration. First part of AdminName. Also in Registry at Registration time.
         /// </summary>
         public const string AdapterRegistrationName = "ADFS.SCSA";
+
+        public const string Log4netCfgFilename = "SURFnet.Authentication.ADFS.MFA.Plugin.log4net";
 
         /// <summary>
         /// The default registery key.

@@ -1,4 +1,5 @@
-﻿using SURFnet.Authentication.Adfs.Plugin.Setup.Configuration;
+﻿using SURFnet.Authentication.Adfs.Plugin.Setup.Common;
+using SURFnet.Authentication.Adfs.Plugin.Setup.Configuration;
 using SURFnet.Authentication.Adfs.Plugin.Setup.Models;
 using SURFnet.Authentication.Adfs.Plugin.Setup.Services;
 using System;
@@ -20,7 +21,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
         public Log4netV2_0_8Component(string componentname) : base(componentname)
         {
             Assemblies = ComponentAssemblies.Log4Net2_0_8Spec;
-            ConfigFilename = SetupConstants.Log4netCfgFilename;
+            ConfigFilename = Values.Log4netCfgFilename;
         }
 
         /// <summary>

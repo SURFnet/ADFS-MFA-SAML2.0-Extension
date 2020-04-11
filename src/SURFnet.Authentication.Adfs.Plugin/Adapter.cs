@@ -328,7 +328,6 @@ namespace SURFnet.Authentication.Adfs.Plugin
         public static void ConfigureDependencies()
         {
             LogService.InitializeLogger();
-            LogService.PrepareCorrelatedLogger("CfgDependencies", "CfgDependencies");
 #if DEBUG
             LogService.Log.Info("Logging initialized");
 #endif
