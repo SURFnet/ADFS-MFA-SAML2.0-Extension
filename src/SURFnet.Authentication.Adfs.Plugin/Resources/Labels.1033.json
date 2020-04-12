@@ -2,7 +2,7 @@
   "ERROR_0000": "An unexpected error occured. Please try again. Please contact your IT admin and provide the following details: ContextId '{0}', ActivityId '{1}'",
   "ERROR_0001": "Verification failed. Please contact your IT admin and provide the following details: ContextId '{0}', ActivityId '{1}'",
   "ERROR_0002": "The StepUp configuration is incorrect. Please contact your IT admin and provide the following details: ContextId '{0}', ActivityId '{1}'",
-  "ERROR_0003": "Your account in the Active Directory isn't configured for MFA. Please contact your IT admin and provide the following details: ContextId '{0}', ActivityId '{1}'",
+  "ERROR_0003": "Your account is not configured for MFA in the Active Directory . Please contact your IT admin and provide the following details: ContextId '{0}', ActivityId '{1}'",
   "AuthFailedFormTitle": "Authentication failed",
   "NoJavascript": "You have disabled Javascript. Please enable it to continue.",
   "OneMomentPlease": "One moment please...",

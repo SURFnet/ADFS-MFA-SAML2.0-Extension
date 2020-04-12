@@ -64,7 +64,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
 
         public static void WriteAdfsInfo(AdfsConfiguration cfg)
         {
-            const int padding = 20;
+            const int padding = 25;
 
             Console.WriteLine();
             Console.WriteLine("Adfs properties:");

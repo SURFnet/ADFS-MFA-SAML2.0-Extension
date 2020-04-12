@@ -147,7 +147,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
             }
             else
             {
-                LogService.WriteWarning("Reconfiguration succesfull.");
+                LogService.WriteWarning("New configuration written.");
 
                 // Start ADFS.
                 if (0 != (rc = AdfsServer.StartAdFsService()))

@@ -291,9 +291,9 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                 if ( arg[0] == '-' )
                 {
                     // option
-                    if ( arg.Length < 2 )
+                    if ( arg.Length != 2 )
                     {
-                        Console.WriteLine($"Invalide option length ({arg.Length}): {arg}");
+                        Console.WriteLine($"Invalid option length ({arg.Length}): {arg}");
                         rc = 4;
                     }
                     else

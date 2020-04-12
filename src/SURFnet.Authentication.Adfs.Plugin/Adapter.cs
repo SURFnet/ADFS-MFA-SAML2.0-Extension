@@ -105,14 +105,19 @@ namespace SURFnet.Authentication.Adfs.Plugin
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Adapter"/> class.
+        /// Does nothing at registration time. Initializes a cert in normal operation.
         /// </summary>
         public Adapter()
         {
             if (false==RegistrationLog.IsRegistration)
             {
-                // existance was verified in static constructor.
-                this.cryptographicService = CryptographicService.Create(StepUpConfig.Current.LocalSpConfig.SPSigningCertificate);
+                // TODO: investigate if we can use the cert without going through thumbprint
+                // and creating our own.
+                // Probably depends on the CSP being thread safe/re-entrant. No final answer.
+
+                // Existance was verified in Sustainsys.Saml2 (in static constructor)
+                var spThumbprint = Sustainsys.Saml2.Configuration.Options.FromConfiguration.SPOptions.SigningServiceCertificate.Thumbprint;
+                this.cryptographicService = CryptographicService.Create(spThumbprint);
             }
         }
 
@@ -409,10 +414,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
             var adapterAssembly = Assembly.GetExecutingAssembly();
             var assemblyConfigPath = adapterAssembly.Location + ".config";
 
-            var map = new ExeConfigurationFileMap
-            {
-                ExeConfigFilename = assemblyConfigPath
-            };
+            var map = new ExeConfigurationFileMap { ExeConfigFilename = assemblyConfigPath };
             var cfg = ConfigurationManager.OpenMappedExeConfiguration(map, ConfigurationUserLevel.None);
 
             var stepUpSection = (StepUpSection)cfg.GetSection(StepUpSection.AdapterSectionName);
