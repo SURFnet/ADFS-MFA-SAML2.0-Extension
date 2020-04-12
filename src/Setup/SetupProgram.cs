@@ -79,6 +79,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                         Console.WriteLine("     None");
                     }
 
+                    // TODO: Report on relation between Server role and settings in ADFS.
+
                     Console.WriteLine();
                     Console.WriteLine("Checked the installation: did not find any errors.");
                 }
@@ -115,7 +117,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                     else if ( setupstate.DetectedVersion.Major == 0 )
                     {
                         // GREEN FIELD, only install
-                        rc = AdapterMaintenance.Install(setupstate.TargetVersionDescription, setupstate.FoundSettings);
+                        rc = AdapterMaintenance.Install(setupstate.TargetVersionDescription,
+                                                    setupstate.FoundSettings);
                     }
                     else if ( SetupRules.CanUNinstall(setupstate, false)
                                             && SetupRules.CanInstall(setupstate) )
@@ -224,37 +227,31 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                     // Darn, no error check at low level?
                     throw new ApplicationException("Some error in the SFO server (IdP) environment descriptions.");
                 }
-                else
-                {
-                    //var prodDict = gwEnvironments[0];  // TODO: Should search the production environment!  This is too rude!!
-                    //var defaultEntityID = prodDict[ConfigSettings.IdPEntityId];
-                    //ConfigSettings.IdPEntityID.DefaultValue = defaultEntityID;
-                }
 
-                ServiceController svcController = AdfsServer.CheckAdFsService();
+                setupstate.AdfsConfig = new AdfsConfiguration();
+                ServiceController svcController = AdfsServer.CheckAdFsService(out setupstate.AdfsConfig.AdfsProductVersion);
                 if ( svcController == null )
                 {
                     // ai, no ADFS service on this machine.
 #if DEBUG
-                    setupstate.AdfsConfig = new AdfsConfiguration()
+                    setupstate.AdfsConfig.AdfsProps = new AdfsProperties()
                     {
-                        AdfsProps = new AdfsProperties()
-                        {
-                            HostName = "server7.com",
-                            HttpsPort = 443,
-                            // FederationPassiveAddress = ""
-                        },
-                        SyncProps = new AdfsSyncProperties()
-                        {
-                            Role = "PrimaryComputer"
-                        },
-                        RegisteredAdapterVersion = new Version(1, 0, 1, 0)
+                        HostName = "server7.com",
+                        HttpsPort = 443,
+                        // FederationPassiveAddress = ""
                     };
+                    setupstate.AdfsConfig.SyncProps = new AdfsSyncProperties()
+                    {
+                        Role = "PrimaryComputer"
+                    };
+                    setupstate.AdfsConfig.RegisteredAdapterVersion = new Version(1, 0, 1, 0);
 #else
+                    // TODO: must log Error !
+                    //       And remove test in main!!
                     rc = 8;
 #endif
                 }
-                else if ( false == AdfsPSService.GetAdfsConfiguration(out setupstate.AdfsConfig) )
+                else if ( false == AdfsPSService.GetAdfsConfiguration(setupstate.AdfsConfig) )
                 {
                     rc = 8; // Some ADFS access failure.
                 }
@@ -297,6 +294,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                     if ( arg.Length < 2 )
                     {
                         Console.WriteLine($"Invalide option length ({arg.Length}): {arg}");
+                        rc = 4;
                     }
                     else
                         switch ( char.ToLower(arg[1]) )
@@ -344,6 +342,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                 else
                 {
                     // not an option. Not '-'
+                    Console.WriteLine("Ignoring: "+arg);
+                    rc = 4;
                 }
             }
 

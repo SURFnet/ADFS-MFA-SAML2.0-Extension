@@ -64,7 +64,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
 
         public static void WriteAdfsInfo(AdfsConfiguration cfg)
         {
-            const int padding = 17;
+            const int padding = 20;
 
             Console.WriteLine();
             Console.WriteLine("Adfs properties:");
@@ -76,6 +76,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
             {
                 Console.WriteLine("Server Role: ".PadLeft(padding) + cfg.SyncProps.Role);
             }
+            Console.WriteLine("ADFS Productversion: ".PadLeft(padding) + cfg.AdfsProductVersion);
             Console.WriteLine();
         }
     }

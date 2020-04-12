@@ -16,6 +16,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
     public class StepupComponent : ISetupHandler
     {
         // TODO: better with Constructor(x,y,z) and/or private setters?
+        // TODONOW: derive for Adapters with only a single assembly, not multiple and a property to get it!!!
 
         public string ComponentName { get; private set; }
         public AssemblySpec[] Assemblies { get; set; }

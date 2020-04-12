@@ -23,9 +23,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
     /// </summary>
     public static class SetupConstants
     {
-        //public const string AdapterRegistrationName = "ADFS.SCSA";
-
-        public const string AdfsCfgFilename = "Microsoft.IdentityServer.Servicehost.exe.config";
+        public const string AdfsFilename = "Microsoft.IdentityServer.Servicehost.exe";
+        public const string AdfsCfgFilename = AdfsFilename+".config";
 
         public const string AdapterName = "SURFnet.Authentication.ADFS.Plugin";
         public const string AdapterFilename = AdapterName + ".dll";

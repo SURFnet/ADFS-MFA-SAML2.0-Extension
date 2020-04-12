@@ -53,7 +53,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
         /// </returns>
         public static Saml2AuthenticationSecondFactorRequest CreateAuthnRequest(string userid, string authnRequestId, Uri ascUri)
         {
-            string stepupNameID = GetNameId(userid);  // This code should move up to the adapter, should not be in SAML code
+            string stepupNameID = GetNameId(userid);  // TODO: This code should move up to the adapter, should not be in SAML code
 
             var nameIdentifier = new Saml2NameIdentifier(stepupNameID, new Uri("urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified"));
             Log.DebugFormat("Creating AuthnRequest for NameID '{0}'", nameIdentifier);

@@ -64,7 +64,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
                         PrepareCorrelatedLogger("000", "000");
                         // SetDesiredLogLevel();
 
-                        Log.Info(" CfgFilePath: " + cfgfilepath);
+                        //Log.Info(" CfgFilePath: " + cfgfilepath);
                     }
                 }
 

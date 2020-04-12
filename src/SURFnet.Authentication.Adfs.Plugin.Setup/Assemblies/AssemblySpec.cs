@@ -90,15 +90,20 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Assemblies
             return rc;
         }
 
-        static public AssemblySpec GetAssemblySpec(string path)
+        /// <summary>
+        /// Fetches all relevant infirmation of an Assembly if there. Does not load it.
+        /// </summary>
+        /// <param name="filepath">full path</param>
+        /// <returns>Null if not there, AssemblySpec if there.</returns>
+        static public AssemblySpec GetAssemblySpec(string filepath)
         {
             AssemblySpec rc = null;
             try
             {
-                if (File.Exists(path))
+                if (File.Exists(filepath))
                 {
-                    FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(path);
-                    AssemblyName asmname = AssemblyName.GetAssemblyName(path);
+                    FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(filepath);
+                    AssemblyName asmname = AssemblyName.GetAssemblyName(filepath);
                     rc = new AssemblySpec(fvi, asmname);
                 }
             }

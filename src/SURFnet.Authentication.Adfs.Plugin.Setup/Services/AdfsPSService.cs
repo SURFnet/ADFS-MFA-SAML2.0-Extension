@@ -21,14 +21,29 @@
         private static readonly string adapterName = Values.AdapterRegistrationName;
         private static readonly Version Version1010 = new Version(1, 0, 1, 0);
 
+        private static AdfsConfiguration localAdfsConfiguration;  // For later (De)Registration
+
         /// <summary>
         /// Registers the ADFS MFA extension and adds it to the
-        /// GlobalAutenticationPolicy.
+        /// GlobalAutenticationPolicy. Does nothing on secondary.
         /// </summary>
+        /// <param name="spec">spec of Adapter</param>
+        /// <returns>true if no errors.</returns>
         public static bool RegisterAdapter(AssemblySpec spec)
         {
             //var adapterName = Values.AdapterRegistrationName;
             bool ok = true;
+
+            if ( localAdfsConfiguration.SyncProps.IsPrimary == false )
+            {
+                LogService.Log.Info("Secondary server; no Registration.");
+                return true; 
+            }
+            else if ( localAdfsConfiguration.RegisteredAdapterVersion >= spec.FileVersion )
+            {
+                LogService.Log.Info("Primary server, registration in ADFS configuration is equal or newer.");
+                return true;
+            }
 
             try
             {
@@ -78,11 +93,23 @@
         }
 
         /// <summary>
-        /// Unregisters the ADFS MFA extension adapter.
+        /// Unregisters the ADFS MFA extension adapter. Does nothing on secondary.
         /// </summary>
+        /// <returns>true if no errors</returns>
         public static bool UnregisterAdapter()
         {
             bool ok = false;
+
+            if (localAdfsConfiguration.SyncProps.IsPrimary == false)
+            {
+                LogService.Log.Info("Secondary server; no DE-registration.");
+                return true;
+            }
+            else if (localAdfsConfiguration.RegisteredAdapterVersion.Major == 0)
+            {
+                LogService.Log.Info("Primary server, without registration. No need to Unregister.");
+                return true;
+            }
 
             var policy = AdfsAuthnCmds.GetGlobAuthnPol();
             if ( policy != null )
@@ -129,15 +156,15 @@
         /// </summary>
         /// <param name="adfsConfig"></param>
         /// <returns>True, no unexpected issues, out parameter may still be half empty. False on fatal error.</returns>
-        public static bool GetAdfsConfiguration(out AdfsConfiguration adfsConfig)
+        public static bool GetAdfsConfiguration(AdfsConfiguration adfsConfig)
         {
             bool rc = false;
-            adfsConfig = new AdfsConfiguration();
+            localAdfsConfiguration = adfsConfig; // remember in a local copy.
             adfsConfig.RegisteredAdapterVersion = new Version(0, 0, 0, 0);
+
             DateTime start;
             DateTime afterFirst = DateTime.MinValue;
             DateTime stop;
-            // TODO: Should add OS version info. But that is a lot of work with Manifest and targeting!
 
             Console.Write("Contacting ADFS server.....");
             start = DateTime.UtcNow;
@@ -160,6 +187,8 @@
                 }
                 // else: errors were already logged
 
+
+                // TODONOW: Should use the IsPrimary Property!! Now two hardcoded strings.
                 if ( syncProps.Role.Equals("PrimaryComputer", StringComparison.OrdinalIgnoreCase) )
                 {
                     Console.Write("...");
@@ -171,7 +200,7 @@
                     }
                     else
                     {
-                        // erros wer logged, but this is fatal, report it.
+                        // errors were logged, but this is fatal, report it.
                         rc = false;
                     }
                 }

@@ -62,13 +62,29 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
         {
             int rc = -1;
 
-            if ( AllMandatoryHaveValue(foundSettings) )
+            List<Setting> minimalSubset = new List<Setting>();
+            foreach ( Setting setting in foundSettings )
+            {
+                if ( setting.Parent == null && setting.IsMandatory )
+                {
+                    minimalSubset.Add(setting);
+                }
+            }
+            //{
+            //    ConfigSettings.IdPEntityID,
+            //    ConfigSettings.SPEntityID,
+            //    ConfigSettings.SchacHomeSetting,
+            //    ConfigSettings.ADAttributeSetting,
+            //    ConfigSettings.SPPrimarySigningThumbprint
+            //};
+
+            if ( AllMandatoryHaveValue(minimalSubset) )
             {
 
                 // Ask for quick GO confirmation.
                 QuestionIO.WriteLine();
                 QuestionIO.WriteLine();
-                switch (AskConfirmation(foundSettings, "*** Setup did find a CORRECT CONFIGURATION. With settings as follows: "))
+                switch (AskConfirmation(minimalSubset, "*** Setup did find a CORRECT CONFIGURATION. With settings as follows: "))
                 {
                     case 'y':
                         rc = 0;

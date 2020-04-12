@@ -30,7 +30,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.PS
         // interfaces and enums are not the same. Officially the Assembly Versions should be different then too.
 
         // Get-AdfsProperties
-        // Not on secondaries!
+        //      *** Not on secondaries! ***
         // S2012R2: GetServicePropertiesCommand : Cmdlet
         // S2016:  GetServicePropertiesCommand : PSCmdletBase
         // S2019:  GetServicePropertiesCommand : PSCmdletBase
@@ -48,6 +48,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.PS
         // S2019:  GetAuthProviderPropertiesCommand : Cmdlet
 
         // Register-AdfsAuthenticationProvider
+        //      *** Not on secondaries! ***
         // S2012R2: AddExternalAuthProviderCommand : PSCmdlet
         // S2016:  AddExternalAuthProviderCommand : PSCmdletBase
         // S2019:  AddExternalAuthProviderCommand : PSCmdletBase
@@ -58,6 +59,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.PS
         // S2019:  RemoveExternalAuthProviderCommand : PSCmdletBase
 
         // Get-AdfsGlobalAuthenticationPolicy
+        //      *** Not on secondaries! ***
         // S2012R2: GetGlobalAuthenticationPolicyCommand : Cmdlet
         // S2016:  GetGlobalAuthenticationPolicyCommand : PSCmdletBase
         // S2019:  GetGlobalAuthenticationPolicyCommand : PSCmdletBase

@@ -24,11 +24,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
             else
             {
                 Console.WriteLine(setupstate.DetectedVersion.VersionToString("Installed version"));
-                LogService.Log.Info("AfterDetected");
                 Console.WriteLine(setupstate.AdfsConfig.RegisteredAdapterVersion.VersionToString("ADFS registered version"));
-                LogService.Log.Info("AfterADFS");
                 SetupIO.WriteAdfsInfo(setupstate.AdfsConfig);
-                LogService.Log.Info("");
 
                 if (setupstate.DetectedVersion.Major == 0)
                 {

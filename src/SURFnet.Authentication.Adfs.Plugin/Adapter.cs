@@ -35,6 +35,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
 
     using Sustainsys.Saml2.Saml2P;
     using SURFnet.Authentication.Adfs.Plugin.Repositories;
+    using System.Security.Cryptography.X509Certificates;
 
     /// <summary>
     /// The ADFS MFA Adapter.
@@ -385,10 +386,18 @@ namespace SURFnet.Authentication.Adfs.Plugin
 
                 // Call now to localize/isolate parsing errors.
                 var unused = Sustainsys.Saml2.Configuration.Options.FromConfiguration;
+
+                // Just some experimental typework for the certs....
+                //var idpDict = unused.IdentityProviders;
+                //if ( idpDict.TryGetValue(new Sustainsys.Saml2.Metadata.EntityId(), out Sustainsys.Saml2.IdentityProvider idp) )
+                //{
+                //    var y = idp.SigningKeys;
+                //    y.AddConfiguredKey(new X509Certificate2(""));
+                //}
             }
             catch (Exception ex)
             {
-                throw new InvalidConfigurationException("Accessing Sustainsys configuration failed", ex);
+                throw new InvalidConfigurationException("Accessing Sustainsys configuration failed. Caught in Adapter!", ex);
             }
         }
 

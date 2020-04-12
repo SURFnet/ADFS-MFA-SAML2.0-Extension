@@ -34,8 +34,12 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
         {
             int rc = -1;
 
+            if ( false==AdfsPSService.UnregisterAdapter() )
+            {
+                LogService.WriteFatal("Removal from ADFS configuration database failed.");
+            }
             // Stop ADFS if running.
-            if ( 0 != (rc=AdfsServer.StopAdfsIfRunning()) )
+            else if ( 0 != (rc=AdfsServer.StopAdfsIfRunning()) )
             {
                 LogService.WriteFatal("Stopping ADFS server failed. Uninstall not started.");
             }
@@ -84,16 +88,20 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
             {
                 LogService.WriteFatal("Installation FAILED. Must Start the ADFS server manually and/or do other manual recovery.");
             }
+            // Start ADFS.
+            else if (0 != (rc = AdfsServer.StartAdFsService()))
+            {
+                LogService.WriteFatal("Starting ADFS server FAILED.");
+                LogService.WriteFatal("   Take a look at the ADFS server EventLog *and* the MFA extension EventLog.");
+            }
+            else if ( false == AdfsPSService.RegisterAdapter(desc.Adapter.Assemblies[0]) )
+            {
+                LogService.WriteFatal("Adapter registration in ADFS failed. Check with Powershell what happened.");
+                LogService.WriteFatal("Use Get-AdfsAuthenticationProvider and related commands.");
+            }
             else
             {
                 LogService.WriteWarning("Installation succesfull.");
-
-                // Start ADFS.
-                if ( 0 != (rc=AdfsServer.StartAdFsService()) )
-                {
-                    LogService.WriteFatal("Starting ADFS server FAILED.");
-                    LogService.WriteFatal("   Take a look at the ADFS server EventLog *and* the MFA extension EventLog.");
-                }
             }
 
             return rc;

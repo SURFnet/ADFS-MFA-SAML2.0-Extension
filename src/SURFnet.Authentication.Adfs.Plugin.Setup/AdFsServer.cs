@@ -19,7 +19,9 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
     using System;
     using System.ServiceProcess;
     using System.Threading;
+    using SURFnet.Authentication.Adfs.Plugin.Setup.Assemblies;
     using SURFnet.Authentication.Adfs.Plugin.Setup.Services;
+    using SURFnet.Authentication.Adfs.Plugin.Setup.Versions;
 
     /// <summary>
     /// Controls the ADFS server background service: Start/Stop etc.
@@ -36,14 +38,21 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
         /// Gets the ADFS service controller.
         /// </summary>
         /// <returns><see cref="ServiceController"/>null on error</returns>
-        public static ServiceController CheckAdFsService()
+        public static ServiceController CheckAdFsService(out Version adfsProductVersion)
         {
             SvcController = null;
 
+            adfsProductVersion = GetAdfsFileVersion();
+            if ( adfsProductVersion.Major == 0 )
+            {
+                // No need to check the rest...
+                // Avoiding the silly exceptions in 99 out 0f 100?
+                LogService.Log.Info("No AdfsAssembly in ADFS directory");
+                return (SvcController);
+            }
+
             try
             {
-                LogService.Log.Info("Checking ADFS Service presence");
-
                 ServiceController tmpController = new ServiceController("adfssrv");
 
                 var status = tmpController.Status; // trigger exception if not on machine.
@@ -74,6 +83,27 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
             return SvcController;
         }
 
+        private static Version GetAdfsFileVersion()
+        {
+            // This is some dereadfull mess. The Windows file explorer displays a different FileVersion
+            // then my AssemblySpec!! Looking at the exact values it is some ADFS madness??
+            // So we take the Product version which looks like less nonsense. Or is it my bug? (PL)
+
+            Version rc = V0Assemblies.AssemblyNullVersion;
+
+            string adfsPath = FileService.OurDirCombine(FileDirectory.AdfsDir, SetupConstants.AdfsFilename);
+            AssemblySpec adfsAssembly = AssemblySpec.GetAssemblySpec(adfsPath);
+            if ( adfsAssembly!=null )
+            {
+                LogService.Log.Info($"ADFS Filversion: {adfsAssembly.FileVersion.ToString()}");
+                LogService.Log.Info($"ADFS ProductVersion: {adfsAssembly.ProductVersion.ToString()}");
+                LogService.Log.Info($"ADFS AssemblyVersion: {adfsAssembly.AssemblyVersion.ToString()}");
+
+                rc = adfsAssembly.ProductVersion;
+            }
+
+            return rc;
+        }
 
         public static int StopAdfsIfRunning()
         {
