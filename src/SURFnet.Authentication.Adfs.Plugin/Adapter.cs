@@ -212,7 +212,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
                     // Ouch user is not configured for StepUp in AD
                     if ( null!= tmpuser.ErrorMsg)
                     {
-                        LogService.Log.Info(tmpuser.ErrorMsg);  // low level error!
+                        LogService.Log.Warn(tmpuser.ErrorMsg);  // low level error!
                     }
                     return new AuthFailedForm(false, "ERROR_0003", context.ContextId, context.ActivityId);
                 }
@@ -335,7 +335,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
         {
             LogService.InitializeLogger();
 #if DEBUG
-            LogService.Log.Info("Logging initialized");
+            LogService.Log.Debug("Logging initialized");
 #endif
 
             try
