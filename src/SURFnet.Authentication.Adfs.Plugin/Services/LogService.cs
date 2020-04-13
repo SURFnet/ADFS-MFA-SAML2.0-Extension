@@ -138,7 +138,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
                 throw;
             }
 
-            Log.Info(sb);
+            Log.Warn(sb);
         }
 
         /// <summary>

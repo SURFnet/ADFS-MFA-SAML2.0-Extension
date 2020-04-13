@@ -389,8 +389,16 @@ namespace SURFnet.Authentication.Adfs.Plugin
                 var configuration = ConfigurationManager.OpenExeConfiguration(exePathSustainsys);
                 Sustainsys.Saml2.Configuration.SustainsysSaml2Section.Configuration = configuration;
 
-                // Call now to localize/isolate parsing errors.
-                var unused = Sustainsys.Saml2.Configuration.Options.FromConfiguration;
+                // Call now to provoke/localize/isolate parsing errors.
+                var defaultIdP = Sustainsys.Saml2.Configuration.Options.FromConfiguration.IdentityProviders.Default;
+
+                //defaultIdP.SigningKeys.AddConfiguredKey(new X509Certificate2());
+                int keycnt = 0;
+                foreach ( var x in defaultIdP.SigningKeys )
+                {
+                    keycnt++;
+                }
+                LogService.Log.Debug($"{keycnt} signing keys for {defaultIdP.EntityId}");
 
                 // Just some experimental typework for the certs....
                 //var idpDict = unused.IdentityProviders;

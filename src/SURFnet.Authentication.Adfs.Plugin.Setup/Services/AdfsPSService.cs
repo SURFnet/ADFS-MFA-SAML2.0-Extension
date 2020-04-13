@@ -8,6 +8,7 @@
     using System.ServiceProcess;
     using System.Collections.Generic;
     using SURFnet.Authentication.Adfs.Plugin.Setup.Models;
+    using SURFnet.Authentication.Adfs.Plugin.Setup.Versions;
 
     /// <summary>
     /// High level ADFS PowerShell command combinations.
@@ -45,9 +46,11 @@
                 return true;
             }
 
+            LogService.Log.Info("Start adding AuthenticationProvider to the ADFS configuration database");
             try
             {
                 AdfsAuthnCmds.RegisterAuthnProvider(adapterName, spec.AssemblyFullName);
+                LogService.Log.Info("AuthenticationProvider Registered");
             }
             catch (Exception ex)
             {
@@ -64,6 +67,7 @@
                     {
                         if (!policy.AdditionalAuthenticationProviders.Contains(adapterName))
                         {
+                            LogService.Log.Info("Add AuthenticationProvider to GlobalAuthentication policy.");
                             policy.AdditionalAuthenticationProviders.Add(adapterName);
                             try
                             {
@@ -111,15 +115,18 @@
                 return true;
             }
 
+            LogService.Log.Info("Start AuthenticationProvider from ADFS configuration");
             var policy = AdfsAuthnCmds.GetGlobAuthnPol();
             if ( policy != null )
             {
                 if (policy.AdditionalAuthenticationProviders.Contains(adapterName))
                 {
+                    LogService.Log.Info("Removing it from GlobalAuthenticationPolicy.");
                     policy.AdditionalAuthenticationProviders.Remove(adapterName);
                     try
                     {
                         AdfsAuthnCmds.SetGlobAuthnPol(policy);
+                        localAdfsConfiguration.RegisteredAdapterVersion = new Version(0, 0, 0, 0);
                         ok = true;
                     }
                     catch (Exception ex)
@@ -130,6 +137,7 @@
 
                 if ( ok )
                 {
+                    LogService.Log.Info("Do Unregister-AdfsAuthenticationProvider");
                     try
                     {
                         AdfsAuthnCmds.UnregisterAuthnProvider(adapterName);

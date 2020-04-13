@@ -98,6 +98,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
             {
                 LogService.WriteFatal("Adapter registration in ADFS failed. Check with Powershell what happened.");
                 LogService.WriteFatal("Use Get-AdfsAuthenticationProvider and related commands.");
+                rc = 8;
             }
             else
             {
