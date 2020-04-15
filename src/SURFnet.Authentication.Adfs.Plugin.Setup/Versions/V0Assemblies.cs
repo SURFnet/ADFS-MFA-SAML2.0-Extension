@@ -10,14 +10,5 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
     public static class V0Assemblies
     {
         public readonly static Version AssemblyNullVersion = new Version(0, 0, 0, 0); // no version found!
-
-        static public readonly AssemblySpec AdapterV0Spec = new AssemblySpec("DoesNotExist.dll", FileDirectory.AdfsDir)
-        {
-            AssemblyFullName = "DoesNotExist, Version=0,0,0,0, Culture=neutral, PublicKeyToken=0123456789abcdef",
-            AssemblyVersion = AssemblyNullVersion,
-            ProductVersion = AssemblyNullVersion,
-            FileVersion = AssemblyNullVersion
-        };
-
     }
 }

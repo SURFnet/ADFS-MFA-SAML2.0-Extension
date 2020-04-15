@@ -26,7 +26,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
         {
             new AssemblySpec(SetupConstants.SustainsysFilename)
             {
-                AssemblyFullName = "Sustainsys.Saml2, Version=2.3.0.0, Culture=neutral, PublicKeyToken=5a7c03a5ab19fec3",
+                AssemblyFullName = "Sustainsys.Saml2, Version=2.3.0.0, Culture=neutral, PublicKeyToken="+CurrentPublicTokenKey.PublicTokenKey,
                 AssemblyVersion = new Version("2.3.0.0"),
                 ProductVersion = new Version("2.3.0.0"),
                 FileVersion = new Version("2.3.0.0")

@@ -10,11 +10,11 @@ using SURFnet.Authentication.Adfs.Plugin.Setup.Services;
 
 namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
 {
-    public class V2_1Adapter : StepupComponent
+    public class V2_1AdapterImp : AdapterComponent
     {
-        public V2_1Adapter() : base ("Adapter V2.1.*")
+        public V2_1AdapterImp() : base ("Adapter V2.1.*", V2Assemblies.Adapter_2_1_Spec)
         {
-            Assemblies = V2Assemblies.Adapter_2_1_Spec;
+            //Assemblies = V2Assemblies.Adapter_2_1_Spec;
             ConfigFilename = SetupConstants.AdapterCfgFilename;
             ConfigParameters = new string[]
             {

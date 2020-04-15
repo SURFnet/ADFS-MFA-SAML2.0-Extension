@@ -82,6 +82,7 @@ namespace SURFnet.Authentication.Adfs.PSObjTest
                 }
                 Console.WriteLine();
 
+                WaitForEnter("Before Policy");
                 var policy = AdfsAuthnCmds.GetGlobAuthnPol();
                 if ( policy != null )
                 {
@@ -113,7 +114,7 @@ namespace SURFnet.Authentication.Adfs.PSObjTest
 
                 if (myprovider != null && (myprovider.Count == 1))
                 {
-                    Console.WriteLine("Do Export");
+                    WaitForEnter("Do Export");
                     AdfsAuthnCmds.ExportCfgData(MyName, MyFilePath);
 
                     Console.WriteLine("Starting DE-registration");
@@ -121,10 +122,10 @@ namespace SURFnet.Authentication.Adfs.PSObjTest
                     if (policy.AdditionalAuthenticationProviders.Contains(MyName))
                     {
                         policy.AdditionalAuthenticationProviders.Remove(MyName);
-                        Console.WriteLine("Remove provider from policy.");
+                        WaitForEnter("Remove provider from policy.");
                         AdfsAuthnCmds.SetGlobAuthnPol(policy);
                     }
-                    Console.WriteLine("UN-Register");
+                    WaitForEnter("UN-Register");
                     AdfsAuthnCmds.UnregisterAuthnProvider(MyName);
                 }
                 else
@@ -134,20 +135,22 @@ namespace SURFnet.Authentication.Adfs.PSObjTest
                     Console.WriteLine($"      MyName: {MyName}");
                     Console.WriteLine($"  MyTypeName: {MyTypeName}");
                     Console.WriteLine($"  MyFilePath: {MyFilePath}");
+
+                    WaitForEnter("Before Registration");
                     //AdfsAuthnCmds.RegisterAuthnProvider(MyName, MyTypeName, MyFilePath);
                     AdfsAuthnCmds.RegisterAuthnProvider(MyName, MyTypeName, null);
                     if (!policy.AdditionalAuthenticationProviders.Contains(MyName))
                     {
                         policy.AdditionalAuthenticationProviders.Add(MyName);
-                        Console.WriteLine("Add provider to ");
+                        WaitForEnter("Add provider to ");
                         AdfsAuthnCmds.SetGlobAuthnPol(policy);
                     }
 
-                    Console.WriteLine("Start Import");
+                    WaitForEnter("Start Import");
                     AdfsAuthnCmds.ImportCfgData(MyName, MyFilePath);
                 }
 
-                Console.WriteLine("Before AdfsProperties");
+                WaitForEnter("Before AdfsProperties");
                 var adfsProps = AdfsPropertiesCmds.GetAdfsProps();
 
                 Console.WriteLine("No  CATCH()");
@@ -159,6 +162,11 @@ namespace SURFnet.Authentication.Adfs.PSObjTest
                 Console.WriteLine();
                 Console.WriteLine(ex.ToString());
             }
+        }
+        static void WaitForEnter(string text = "Hit 'Enter' to exit.")
+        {
+            Console.Write(text);
+            Console.ReadLine();
         }
     }
 }

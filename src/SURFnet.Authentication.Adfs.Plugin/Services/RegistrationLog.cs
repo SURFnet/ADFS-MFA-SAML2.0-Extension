@@ -63,7 +63,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
         {
             var utcnow = DateTime.UtcNow;
             // TODO: Decide on a proper location!
-            var logName = Path.Combine(Adapter.AdfsDir, "StepUp.RegistrationLog.txt");
+            var logName = Path.Combine(Adapter.AdapterDir, "StepUp.RegistrationLog.txt");
 
             var x = new FileStream(logName, FileMode.Create, FileAccess.Write, FileShare.Read);
             fs = new StreamWriter(x);

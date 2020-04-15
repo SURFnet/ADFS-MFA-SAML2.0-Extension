@@ -23,7 +23,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
     using System.Security.Cryptography.X509Certificates;
     using System.Text;
     using System.Xml.Linq;
-
+    using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
 
     using SURFnet.Authentication.Adfs.Plugin.Setup.Common;
@@ -104,7 +104,10 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
             // TODO: Path manipulation should go to FileService,
             //       but this is an unique case! For time being it is here.
 
-            var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Config", "SURFnet.Authentication.ADFS.MFA.Plugin.Environments.json");
+            var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Config", SetupConstants.IdPEnvironmentsFilename);
+            if (!File.Exists(path))
+                return null;
+
             var fileContents = File.ReadAllText(path);
             var array = JArray.Parse(fileContents);
             var result = new List<Dictionary<string, string>>();
@@ -152,11 +155,52 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
             return result;
         }
 
+        public static Dictionary<string,string> LoadUsedSettings()
+        {
+            Dictionary<string, string> dict = null;
+
+            var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Config", SetupConstants.UsedSettingsFilename);
+            if ( File.Exists(path) )
+            {
+                var fileContents = File.ReadAllText(path);
+                dict = JsonConvert.DeserializeObject<Dictionary<string, string>>(fileContents);
+            }
+
+            return dict;
+        }
+
+        public static int WriteUsedSettings(List<Setting> settings)
+        {
+            int rc = 0;
+            Dictionary<string, string> dict = new Dictionary<string, string>();
+
+            foreach (var setting in settings )
+            {
+                dict.Add(setting.InternalName, setting.Value);
+            }
+
+            string json = JsonConvert.SerializeObject(dict, Formatting.Indented);
+
+            var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Config", SetupConstants.UsedSettingsFilename);
+            try
+            {
+                File.WriteAllText(path, json);
+            }
+            catch (Exception ex)
+            {
+                LogService.Log.Warn($"Failed to write setings to: {path}. {ex.ToString()}");
+                rc = -1;
+            }
+
+            return rc;
+        }
+
+
         /// <summary>
         /// Saves the configuration data.
         /// </summary>
         /// <param name="metadata">The metadata.</param>
-        public void SaveRegistrationData(MfaExtensionMetadata metadata)
+        public static void SaveRegistrationData(MfaExtensionMetadata metadata)
         {
             // TODO: use const!!
 
@@ -180,7 +224,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
         /// Writes the minimal loa in the registery.
         /// </summary>
         /// <param name="setting">The setting.</param>
-        public void WriteMinimalLoaInRegistery(Setting setting)
+        public static void WriteMinimalLoaInRegistery(Setting setting)
         {
             RegistryConfiguration.SetMinimalLoa(new Uri(setting.Value));
         }
