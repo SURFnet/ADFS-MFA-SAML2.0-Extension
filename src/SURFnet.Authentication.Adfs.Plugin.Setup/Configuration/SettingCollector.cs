@@ -58,10 +58,18 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
             return rc;
         }
 
+        /// <summary>
+        /// Quick just doit. Asks if the settings as found on disk are OK to continue.
+        /// </summary>
+        /// <param name="foundSettings"></param>
+        /// <returns>0 if they should be used.</returns>
         int AskCurrentOK(List<Setting> foundSettings)
         {
             int rc = -1;
 
+            // Check if all required settings are there.
+            // Make a list of mandatory (as specified by target version.
+            // But skip the ones with a parent, because the will come from somehere else.
             List<Setting> minimalSubset = new List<Setting>();
             foreach ( Setting setting in foundSettings )
             {
@@ -70,14 +78,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
                     minimalSubset.Add(setting);
                 }
             }
-            //{
-            //    ConfigSettings.IdPEntityID,
-            //    ConfigSettings.SPEntityID,
-            //    ConfigSettings.SchacHomeSetting,
-            //    ConfigSettings.ADAttributeSetting,
-            //    ConfigSettings.SPPrimarySigningThumbprint
-            //};
 
+            // then iff they are all there: Ask confirmation
             if ( AllMandatoryHaveValue(minimalSubset) )
             {
 
@@ -100,6 +102,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
                         LogService.WriteFatal("Bug check! SettingCollector.AskConfirmation() returned an incorrect char!");
                         break;
                 }
+
+                QuestionIO.WriteLine();
             }
 
             return rc;

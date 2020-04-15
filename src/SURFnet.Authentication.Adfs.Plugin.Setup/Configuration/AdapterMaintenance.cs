@@ -46,7 +46,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
             // UN install
             else
             {
-                // TODO, create better test reall released its files.
+                // TODO, create better test if ADFS service really released its files.
                 // Start looking with: https://stackoverflow.com/questions/3790770/how-can-i-free-up-a-dll-that-is-referred-to-by-an-exe-that-isnt-running
                 //
                 Console.Write("Sleeping....");
@@ -94,10 +94,11 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
                 LogService.WriteFatal("Starting ADFS server FAILED.");
                 LogService.WriteFatal("   Take a look at the ADFS server EventLog *and* the MFA extension EventLog.");
             }
-            else if ( false == AdfsPSService.RegisterAdapter(desc.Adapter.Assemblies[0]) )
+            else if ( false == AdfsPSService.RegisterAdapter(desc.Adapter) )
             {
                 LogService.WriteFatal("Adapter registration in ADFS failed. Check with Powershell what happened.");
                 LogService.WriteFatal("Use Get-AdfsAuthenticationProvider and related commands.");
+                rc = 8;
             }
             else
             {

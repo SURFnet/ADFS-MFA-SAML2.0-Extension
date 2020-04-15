@@ -9,9 +9,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
 {
     public static class V2_1Components
     {
-        public static readonly StepupComponent Adapter = new V2_1Adapter()
-        {
-        };
+        public static readonly AdapterComponent Adapter = new V2_1AdapterImp();
 
         public static readonly StepupComponent[] Components = new StepupComponent[]
         {

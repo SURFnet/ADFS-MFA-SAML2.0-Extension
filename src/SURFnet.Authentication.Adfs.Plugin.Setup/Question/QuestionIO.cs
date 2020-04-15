@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace SURFnet.Authentication.Adfs.Plugin.Setup.Question
@@ -91,6 +92,24 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Question
         public static string ReadLine()
         {
             return Console.ReadLine();
+        }
+
+        /// <summary>
+        /// Forbidden method!!! Just for test!
+        /// </summary>
+        /// <param name="seconds"></param>
+        /// <param name="msg"></param>
+        public static void MySleep(int seconds, string msg)
+        {
+            Console.Write(msg);
+            while (seconds > 0 )
+            {
+                Thread.Sleep(1000);
+                Console.Write(".");
+                seconds--;
+            }
+
+            Console.WriteLine("\r                                                                     ");
         }
     }
 }

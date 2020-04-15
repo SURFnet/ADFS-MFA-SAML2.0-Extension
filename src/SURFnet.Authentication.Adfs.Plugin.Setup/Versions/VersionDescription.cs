@@ -12,23 +12,26 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
 {
     /// <summary>
     /// Base class for specific version descriptions.
-    /// If there are for instance specific things like 'pre' or 'post' install
+    /// If there are (for instance) specific things like 'pre' or 'post' install
     /// actions, then override the Install() and/or UnInstall() methods.
     /// </summary>
     public class VersionDescription : ISetupHandler
     {
-        // TODO: better with Constructor(x,y,z) and/or private setters?
+        /// TODO: better with Constructor(x,y,z) and private setters?
+        ///   Yes, for DistributionVersion consistency too.
 
-        //
-        // The real description
-        //
+        public VersionDescription(AdapterComponent adapter)
+        {
+            DistributionVersion = adapter.AdapterSpec.FileVersion; // mmm, better to let property take it from adapter?
+            Adapter = adapter;
+        }
 
-        public Version DistributionVersion { get; set; }   // The FileVersion of the Adapter.
-        public StepupComponent Adapter { get; set; }
+        public Version DistributionVersion { get; private set; }   // The FileVersion of the Adapter.
+        public AdapterComponent Adapter { get; private set; }
         public StepupComponent[] Components { get; set; }  // Dependencies for Adapter
 
         // This is somewhat dubious:
-        // A single list of assemblies is OK fo now.
+        // A single list of extra assemblies is OK for now.
         // But better to give each assembly a guid and list dependencies per component.
         // But that is more work now and less work later....
         public AssemblySpec[] ExtraAssemblies { get; set; } // Dependencies of dependencies
@@ -108,7 +111,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
             else
             {
                 // Stop on first error
-                LogService.Log.Fatal($"  Reading Adapter ({Adapter.ComponentName}) configuration failed FileVersion: {Adapter.Assemblies[0].FileVersion}");
+                LogService.Log.Fatal($"  Reading Adapter ({Adapter.ComponentName}) configuration failed FileVersion: {Adapter.AdapterSpec.FileVersion}");
                 allSettings = null;
             }
 

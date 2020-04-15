@@ -23,6 +23,9 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
     /// </summary>
     public static class SetupConstants
     {
+        public const string IdPEnvironmentsFilename = "SURFnet.Authentication.ADFS.MFA.Plugin.Environments.json";
+        public const string UsedSettingsFilename = "UsedSettings.json";
+
         public const string AdfsFilename = "Microsoft.IdentityServer.Servicehost.exe";
         public const string AdfsCfgFilename = AdfsFilename+".config";
 

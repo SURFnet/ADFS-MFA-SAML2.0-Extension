@@ -44,24 +44,26 @@ namespace SURFnet.Authentication.Adfs.Plugin
     public class Adapter : IAuthenticationAdapter
     {
         /// <summary>
-        /// The adfs dir.
+        /// If running under ADFS, then the real ADFS directory.
+        /// At registration time: wherever the adpater is.
+        /// This determines where the Registration log will be!
         /// </summary>
-        internal static readonly string AdfsDir;
+        internal static readonly string AdapterDir;  // if running under ADFS, then
 
         /// <summary>
         /// Lock for initializing the sustain system.
         /// </summary>
-        private static readonly object SustainSysLock = new object();
+        private static readonly object SustainsysLock = new object();
 
         /// <summary>
-        /// Indicates whether the sustain sys is initialized.
+        /// Indicates whether the sustainsys is initialized.
         /// </summary>
         private static bool sustainSysConfigured;
 
         /// <summary>
         /// The cryptographic service.
         /// </summary>
-        private readonly CryptographicService cryptographicService;
+        private CryptographicService cryptographicService;
 
         //private UserForStepup _user4Stepup; /* See: IsAvailableForuser() */
 
@@ -70,14 +72,10 @@ namespace SURFnet.Authentication.Adfs.Plugin
         /// </summary>
         static Adapter()
         {
-#if DEBUG
             // While testing and debugging, assume that everything is in the same directory as the adapter.
             // Which is also true in the ADFS AppDomain, in our current deployment.
             var myassemblyname = Assembly.GetExecutingAssembly().Location;
-            AdfsDir = Path.GetDirectoryName(myassemblyname);
-#else
-            AdfsDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), "ADFS");
-#endif
+            AdapterDir = Path.GetDirectoryName(myassemblyname);
 
             if (RegistrationLog.IsRegistration)
             {
@@ -85,7 +83,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
                 try
                 {
                     // we do want to read our own configuration before the Registration CmdLet reads our metadata
-                    RegistrationLog.WriteLine(AdfsDir);
+                    RegistrationLog.WriteLine(AdapterDir);
                     var minimalLoa = RegistryConfiguration.GetMinimalLoa();
                     StepUpConfig.PreSet(minimalLoa);
                 }
@@ -111,14 +109,24 @@ namespace SURFnet.Authentication.Adfs.Plugin
         {
             if (false==RegistrationLog.IsRegistration)
             {
-                // TODO: investigate if we can use the cert without going through thumbprint
-                // and creating our own.
-                // Probably depends on the CSP being thread safe/re-entrant. No final answer.
+                // Initialize cert for this adapter fro Sustainsys.Saml2,
+                // BUT NO REFERENCE to that assembly here, because it will produce
+                // loading errors! JIT will only JIT the constructor, not
+                // dependencies if it doen't call them.
 
-                // Existance was verified in Sustainsys.Saml2 (in static constructor)
-                var spThumbprint = Sustainsys.Saml2.Configuration.Options.FromConfiguration.SPOptions.SigningServiceCertificate.Thumbprint;
-                this.cryptographicService = CryptographicService.Create(spThumbprint);
+                DelayPickupOfCertFromSustainsys();
             }
+        }
+
+        private void DelayPickupOfCertFromSustainsys()
+        {
+            // TODO: investigate if we can use the cert without going through thumbprint
+            // and creating our own.
+            // Probably depends on the CSP being thread safe/re-entrant. No final answer.
+
+            // Existance was verified in Sustainsys.Saml2 (in static constructor)
+            var spThumbprint = Sustainsys.Saml2.Configuration.Options.FromConfiguration.SPOptions.SigningServiceCertificate.Thumbprint;
+            this.cryptographicService = CryptographicService.Create(spThumbprint);
         }
 
         /// <summary>
@@ -212,7 +220,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
                     // Ouch user is not configured for StepUp in AD
                     if ( null!= tmpuser.ErrorMsg)
                     {
-                        LogService.Log.Info(tmpuser.ErrorMsg);  // low level error!
+                        LogService.Log.Warn(tmpuser.ErrorMsg);  // low level error!
                     }
                     return new AuthFailedForm(false, "ERROR_0003", context.ContextId, context.ActivityId);
                 }
@@ -335,7 +343,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
         {
             LogService.InitializeLogger();
 #if DEBUG
-            LogService.Log.Info("Logging initialized");
+            LogService.Log.Debug("Logging initialized");
 #endif
 
             try
@@ -367,7 +375,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
         {
             if (sustainSysConfigured == false)
             {
-                lock (SustainSysLock)
+                lock (SustainsysLock)
                 {
                     if (sustainSysConfigured == false)
                     {
@@ -385,20 +393,20 @@ namespace SURFnet.Authentication.Adfs.Plugin
         {
             try
             {
-                var exePathSustainsys = Path.Combine(AdfsDir, "Sustainsys.Saml2.dll");
+                var exePathSustainsys = Path.Combine(AdapterDir, "Sustainsys.Saml2.dll");
                 var configuration = ConfigurationManager.OpenExeConfiguration(exePathSustainsys);
                 Sustainsys.Saml2.Configuration.SustainsysSaml2Section.Configuration = configuration;
 
-                // Call now to localize/isolate parsing errors.
-                var unused = Sustainsys.Saml2.Configuration.Options.FromConfiguration;
+                // Call now to provoke/localize/isolate parsing errors.
+                var defaultIdP = Sustainsys.Saml2.Configuration.Options.FromConfiguration.IdentityProviders.Default;
 
-                // Just some experimental typework for the certs....
-                //var idpDict = unused.IdentityProviders;
-                //if ( idpDict.TryGetValue(new Sustainsys.Saml2.Metadata.EntityId(), out Sustainsys.Saml2.IdentityProvider idp) )
-                //{
-                //    var y = idp.SigningKeys;
-                //    y.AddConfiguredKey(new X509Certificate2(""));
-                //}
+                defaultIdP.SigningKeys.AddConfiguredKey(TempSigners.TestOldCert);
+                int keycnt = 0;
+                foreach ( var x in defaultIdP.SigningKeys )
+                {
+                    keycnt++;
+                }
+                LogService.Log.Debug($"{keycnt} signing keys for {defaultIdP.EntityId}");
             }
             catch (Exception ex)
             {

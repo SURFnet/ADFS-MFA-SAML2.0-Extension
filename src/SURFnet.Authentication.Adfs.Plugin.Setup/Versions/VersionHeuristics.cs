@@ -11,48 +11,66 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
 {
     public class VersionHeuristics
     {
-        public VersionDescription Description { get; private set; } = null;
+        public VersionHeuristics(Version setupVersion)
+        {
+            SetupVersion = setupVersion;
+        }
+
+        public Version SetupVersion { get; private set; }
 
         /// <summary>
-        /// Looks for adapters and returns an out VersionDescripton.
-        /// Not finding a versio is not an error. Then a clean install would be best
-        /// and "out found" will be null.
+        /// Will only have a value if there was a known Adapter.
         /// </summary>
+        public VersionDescription Description { get; private set; } = null;
+
+        public bool VerifyIsOK { get; private set; } = false;
+
+
+        /// <summary>
+        /// Looks for adapters and returns an out Version
+        /// Looks in ADFS directory, nor in GAC.
+        /// Not finding a version is not an error. Then a clean install would be best
+        /// and "out found" will be null 0.0.0.0.
+        /// </summary>
+        /// <param name="found">will always hold a valid instance.</param>
         /// <returns>false on fatal errors</returns>
-        public bool Probe(out Version found, Version thisVersion)
+        public bool Probe(out Version found)
         {
-            bool ok = true;
-            VersionDescription tmpDesc = null;
+            bool ok = true;       // Only lower level fatal failures will change it to false.
+            Description = null;
+            VerifyIsOK = false;
 
             if ( TryFindAdapter(out found) )
             {
                 //if (found == AllDescriptions.)
                 if (found == AllDescriptions.V1_0_1_0.DistributionVersion )
                 {
-                    tmpDesc = AllDescriptions.V1_0_1_0;
+                    Description = AllDescriptions.V1_0_1_0;
                 }
                 else if (found == AllDescriptions.V2_1_17_9.DistributionVersion )
                 {
-                    tmpDesc = AllDescriptions.V2_1_17_9;
+                    Description = AllDescriptions.V2_1_17_9;
                 }
 
                 if (found.Major != 0)
                 {
-                    if ( found > thisVersion )
+                    // Did find some Adapter
+                    if ( found > SetupVersion)
                     {
-                        LogService.WriteFatal($"Installed version v{found} appears newer then this setup version v{thisVersion}.");
+                        LogService.WriteFatal($"Installed version v{found} appears newer then this setup version v{SetupVersion}.");
                         LogService.WriteFatal(" Use the newest setup.");
-                        ok = false;
+                        // leave ok == true; Caller must deal with the rest
                     }
                     else
                     {
-                        Description = tmpDesc; // store it for the List<Setting> reader..... 
-
-                        LogService.Log.Info($"On disk version: {tmpDesc.DistributionVersion}, start Verify()");
-                        if (0 != tmpDesc.Verify())
+                        LogService.Log.Info($"On disk version: {Description.DistributionVersion}, start Verify()");
+                        if (0 != Description.Verify())
                         {
-                            LogService.Log.Fatal($"   Verify() failed on {tmpDesc.DistributionVersion}");
-                            ok = false;
+                            LogService.Log.Fatal($"   Verify() failed on {Description.DistributionVersion}");
+                        }
+                        else
+                        {
+                            VerifyIsOK = true;
                         }
                     }
                 }
@@ -75,11 +93,11 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
         bool TryFindAdapter(out Version versionfound)
         {
             bool rc = true;
-            List<AssemblySpec> adapters = new List<AssemblySpec>(1);  // assume there is only one....
+            List<AssemblySpec> adapters = new List<AssemblySpec>(1);  // assume there is only one.
+            versionfound = V0Assemblies.AssemblyNullVersion;          // Assume: not found.
 
             LogService.Log.Info("VersionHeuristics: Try find adapters in GAC and ADFS directory.");
 
-            versionfound = V0Assemblies.AssemblyNullVersion;
             if ( TryGetAdapterAssembly(FileService.AdfsDir, SetupConstants.AdapterFilename, out AssemblySpec tmpSpec) )
             {
                 // Found one in ADFS directory

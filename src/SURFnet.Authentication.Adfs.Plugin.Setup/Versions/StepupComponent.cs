@@ -122,7 +122,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
                 throw new NotImplementedException($"Whoops! Stepup component ({ComponentName}) with a configuration filename, but no writer!");
             }
 
-            LogService.Log.Info("StepupComponent base.WriteConfiguration()");
+            LogService.Log.Info("StepupComponent base.WriteConfiguration() not doing anything.");
 
             return 0;
         }
@@ -162,6 +162,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
                 string dest = FileService.OurDirCombine(ConfigFileDirectory, ConfigFilename);
                 try
                 {
+                    LogService.Log.Info("Copy configuration file to destination: "+ ConfigFilename);
                     File.Copy(src, dest, true); // force overwrite
                 }
                 catch (Exception ex)

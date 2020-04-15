@@ -30,7 +30,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Common
         /// <summary>
         /// The file version.
         /// </summary>
-        public const string FileVersion = "2.1.17.9";
+        public const string FileVersion = "2.1.18.0";
 
         /// <summary>
         /// The product version.
