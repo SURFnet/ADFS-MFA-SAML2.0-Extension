@@ -26,6 +26,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
 
             if ( TryFindAdapter(out found) )
             {
+                //if (found == AllDescriptions.)
                 if (found == AllDescriptions.V1_0_1_0.DistributionVersion )
                 {
                     tmpDesc = AllDescriptions.V1_0_1_0;
