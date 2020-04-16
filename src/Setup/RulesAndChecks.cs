@@ -64,7 +64,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
         {
             bool doit = false;
 
-            if ('y' == AskYesNo.Ask($"Do you want to install version: {setupstate.DetectedVersion}"))
+            if ('y' == AskYesNo.Ask($"Do you want to install version: {setupstate.TargetVersionDescription}"))
             {
                 doit = true;
             }

@@ -42,14 +42,17 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
 
             if ( TryFindAdapter(out found) )
             {
-                //if (found == AllDescriptions.)
-                if (found == AllDescriptions.V1_0_1_0.DistributionVersion )
+                if (found == AllDescriptions.ThisVersion.DistributionVersion)
                 {
-                    Description = AllDescriptions.V1_0_1_0;
+                    Description = AllDescriptions.ThisVersion; // V2_1_18
                 }
                 else if (found == AllDescriptions.V2_1_17_9.DistributionVersion )
                 {
                     Description = AllDescriptions.V2_1_17_9;
+                }
+                else if (found == AllDescriptions.V1_0_1_0.DistributionVersion)
+                {
+                    Description = AllDescriptions.V1_0_1_0;
                 }
 
                 if (found.Major != 0)

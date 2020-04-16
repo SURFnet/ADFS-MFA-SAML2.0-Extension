@@ -124,18 +124,21 @@
     <Compile Include="Versions\Kentorv0_21_Component.cs" />
     <Compile Include="Versions\Log4netV2_0_8GAC.cs" />
     <Compile Include="Versions\Log4netV2_0_8Component.cs" />
-    <Compile Include="Versions\Sustainsys_2_3_Component.cs" />
+    <Compile Include="Versions\Sustainsys2_3MdComponent.cs" />
+    <Compile Include="Versions\Sustainsys2_xComponent.cs" />
+    <Compile Include="Versions\Sustainsys2_3_Component.cs" />
     <Compile Include="Versions\V0Assemblies.cs" />
     <Compile Include="Versions\V1AdapterImp.cs" />
     <Compile Include="Versions\V1Components.cs" />
     <Compile Include="Versions\ISetupHandler.cs" />
-    <Compile Include="Versions\V2-1AdapterImp.cs" />
+    <Compile Include="Versions\V2_1_17AdapterImp.cs" />
     <Compile Include="Versions\AllDescriptions.cs" />
     <Compile Include="Versions\V2_1Components.cs" />
     <Compile Include="Versions\V1DescriptionImp.cs" />
     <Compile Include="Versions\StepupComponent.cs" />
     <Compile Include="Versions\V1Assemblies.cs" />
     <Compile Include="Versions\V2Assemblies.cs" />
+    <Compile Include="Versions\V2_1_18AdapterImp.cs" />
     <Compile Include="Versions\VersionDescription.cs" />
     <Compile Include="Versions\VersionHeuristics.cs" />
   </ItemGroup>

@@ -20,7 +20,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
     {
         public Log4netV2_0_8Component(string componentname) : base(componentname)
         {
-            Assemblies = ComponentAssemblies.Log4Net2_0_8Spec;
+            Assemblies = ComponentAssemblies.Log4Net2_0_8AssemblySpec;
             ConfigFilename = Values.Log4netCfgFilename;
         }
 

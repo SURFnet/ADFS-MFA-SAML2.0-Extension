@@ -4,18 +4,17 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using SURFnet.Authentication.Adfs.Plugin.Setup.Assemblies;
 using SURFnet.Authentication.Adfs.Plugin.Setup.Configuration;
 using SURFnet.Authentication.Adfs.Plugin.Setup.Models;
 using SURFnet.Authentication.Adfs.Plugin.Setup.Services;
 
 namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
 {
-    public class V2_1AdapterImp : AdapterComponent
+    public class V2_1_17AdapterImp : AdapterComponent
     {
-        public V2_1AdapterImp() : base ("Adapter V2.1.*", V2Assemblies.Adapter_2_1_Spec)
+        public V2_1_17AdapterImp() : base (V2Assemblies.Adapter_2_1_17Spec)
         {
-            //Assemblies = V2Assemblies.Adapter_2_1_Spec;
-            ConfigFilename = SetupConstants.AdapterCfgFilename;
             ConfigParameters = new string[]
             {
                 ConfigSettings.SchacHomeOrganization,

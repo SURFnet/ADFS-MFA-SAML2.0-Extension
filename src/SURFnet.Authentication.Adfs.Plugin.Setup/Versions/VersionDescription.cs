@@ -103,10 +103,15 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
             LogService.Log.Info($"VersionDescription.ReadConfiguration() for version: {DistributionVersion}");
 
             moreSettings = Adapter.ReadConfiguration();
-            if (moreSettings != null)
+            if (moreSettings != null )
             {
-                LogService.Log.Info($"  Reading {Adapter.ComponentName} returned {moreSettings.Count} settings");
-                allSettings.AddRange(moreSettings);
+                LogService.Log.Info($"  Reading '{Adapter.ComponentName}' returned '{moreSettings.Count}' settings");
+                foreach ( var setting in moreSettings )
+                {
+                    if ( ! allSettings.Contains(setting) )
+                        allSettings.Add(setting);
+                }
+                
             }
             else
             {
@@ -115,7 +120,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
                 allSettings = null;
             }
 
-            if (allSettings != null && Components != null && Components.Length > 0)
+            if (allSettings != null && Components != null && Components.Length>0)
             {
                 LogService.Log.Info($"Start reading Components settings.");
                 foreach (var component in Components)
@@ -123,17 +128,26 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
                     moreSettings = component.ReadConfiguration();
                     if (moreSettings != null)
                     {
-                        LogService.Log.Info($"  Reading {component.ComponentName} returned {moreSettings.Count} settings");
-                        allSettings.AddRange(moreSettings);
+                        LogService.Log.Info($"  Reading '{component.ComponentName}' returned '{moreSettings.Count}' settings");
+                        foreach (var setting in moreSettings)
+                        {
+                            if (!allSettings.Contains(setting))
+                                allSettings.Add(setting);
+                        }
                     }
                     else
                     {
                         // Stop on first error
-                        LogService.Log.Fatal($"  Reading configuration failed for {component.ComponentName}");
+                        LogService.Log.Fatal($"  Reading configuration failed for '{component.ComponentName}'");
                         allSettings = null;
                         break;
                     }
                 }
+            }
+
+            if ( allSettings != null && allSettings.Count > 0 )
+            {
+                LogService.Log.Info($"In total found {allSettings.Count} different settings.");
             }
 
             return allSettings;
@@ -144,14 +158,17 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
             int rc = 0;
 
             LogService.Log.Info($"VersionDescription.SpecifyRequiredSettings() for version: {DistributionVersion}");
+            LogService.Log.Debug($"# of Settings on entry: {settings.Count}");
 
             Adapter.SpecifyRequiredSettings(settings);
+            LogService.Log.Debug($"# of Settings after {Adapter.ComponentName}: {settings.Count}");
 
             if ( Components!=null && Components.Length>0 )
             {
                 foreach (var component in Components )
                 {
                     component.SpecifyRequiredSettings(settings);
+                    LogService.Log.Debug($"# of Settings after {component.ComponentName}: {settings.Count}");
                 }
             }
 

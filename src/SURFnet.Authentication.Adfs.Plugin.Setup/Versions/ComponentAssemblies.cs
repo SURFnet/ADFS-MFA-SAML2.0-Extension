@@ -11,18 +11,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
     public static class ComponentAssemblies
     {
 
-        static public readonly AssemblySpec[] NullAssembly = new AssemblySpec[]
-        {
-            new AssemblySpec("NullAdapter")
-            {
-                AssemblyFullName = "Nothing.Com, Version=0.0.0.0, Culture=neutral, PublicKeyToken=0123456789abcdef",
-                AssemblyVersion = V0Assemblies.AssemblyNullVersion,
-                ProductVersion = V0Assemblies.AssemblyNullVersion,
-                FileVersion = V0Assemblies.AssemblyNullVersion
-            }
-        };
-
-        static public readonly AssemblySpec[] Sustain2_3Spec = new AssemblySpec[]
+        static public readonly AssemblySpec[] Sustain2_3AssemblySpec = new AssemblySpec[]
         {
             new AssemblySpec(SetupConstants.SustainsysFilename)
             {
@@ -33,7 +22,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
             }
         };
 
-        static public readonly AssemblySpec[] Log4Net2_0_8Spec = new AssemblySpec[]
+        static public readonly AssemblySpec[] Log4Net2_0_8AssemblySpec = new AssemblySpec[]
         {
             new AssemblySpec(SetupConstants.Log4netFilename)
             {
@@ -44,7 +33,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
             }
         };
 
-        static public readonly AssemblySpec[] Newtonsoft12_0_3Spec = new AssemblySpec[]
+        static public readonly AssemblySpec[] Newtonsoft12_0_3AssemblySpec = new AssemblySpec[]
         {
             new AssemblySpec("Newtonsoft.Json.dll")
             {

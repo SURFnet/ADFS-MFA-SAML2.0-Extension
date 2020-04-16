@@ -44,23 +44,15 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
         public const string IdPProdTypeValue = "Production";
 
 
-        // TODO: Merge these names with Adapter and StepupIdP Setting names in JSON file!
-        //       They refer to excatly the same!!!! Or remove!!
+        // TODO: Look if we can do something common for all adapter? 
         public static class XmlElementName
         {
             public const string AdapterCfgSection = "SURFnet.Authentication.Adfs.StepUp"; // TODO: is actually shared with plugin assembly
-
-           // This may remain here, it is the same for all Sustainsys.Saml2 sections.
-            public const string SustainsysSaml2Section = "sustainsys.saml2";
-            public const string SustainIdentityProviders = "identityProviders";
-            public const string SustainIdPSigningCert = "signingCertificate";
         }
 
-        // Will almost certainly move some part to V2_1ConfigHandler, the only one using it.
+        // Will almost certainly move some part to V2_1 adapter ConfigHandler, the only one using it.
         public static class XmlAttribName
         {
-            public const string EntityId = "entityId";
-            public const string CertFindValue = "findValue";
 
             public const string AdapterSchacHomeOrganization = "schacHomeOrganization";
             public const string AdapterADAttribute = "activeDirectoryUserIdAttribute";

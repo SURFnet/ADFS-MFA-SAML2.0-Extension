@@ -9,9 +9,9 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
 {
     public class V1AdapterImp : AdapterComponent
     {
-        public V1AdapterImp() : base("StepupAdapter v1.0.1.0", V1Assemblies.AdapterV1010Spec)
+        public V1AdapterImp() : base(V1Assemblies.AdapterV1010Spec)
         {
-            // ConfigFilename = null   // Config reader/writer at Description level. Data is in ADFS config file.
+            // Config reader/writer at Description level. Data is in ADFS config file.
         }
     }
 }

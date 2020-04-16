@@ -32,7 +32,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
         public const string SPSignThumb1 = "SPSigningThumprint";
         public const string SPSignThumb2 = "SPSigningThumprint2";
 
-        public readonly static Setting SchacHomeSetting = new Setting(ConfigSettings.SchacHomeOrganization)
+        public readonly static Setting SchacHomeSetting = new Setting(SchacHomeOrganization)
         {
             Introduction = "Every organization has a unique identifier '{0}'. Together with userid it is unique in SFO",
             DisplayName = "schacHomeOrganization",
@@ -44,7 +44,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
             }
         };
 
-        public readonly static Setting ADAttributeSetting = new Setting(ConfigSettings.ActiveDirectoryUserIdAttribute)
+        public readonly static Setting ADAttributeSetting = new Setting(ActiveDirectoryUserIdAttribute)
         {
             Introduction = "The name of the Active Directory attribute is required that contains the userID in the Stepup Only gateway",
             DisplayName = "Active Directory SFO userid Attribute",
@@ -56,7 +56,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
             }
         };
 
-        public readonly static Setting SPPrimarySigningThumbprint = new Setting(ConfigSettings.SPSignThumb1)
+        public readonly static Setting SPPrimarySigningThumbprint = new Setting(SPSignThumb1)
         {
             Introduction = "The MFA extension signs the SAML2 requests to the SFO server. The thumbprint identifies the certificate.",
             DisplayName = "MFA Extension (SP) signing thumbprint",
@@ -67,7 +67,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
             }
         };
 
-        public readonly static Setting SPEntityID = new Setting(ConfigSettings.SPEntityId)
+        public readonly static Setting SPEntityID = new Setting(SPEntityId)
         {
             Introduction = "The MFA extension needs a worldwide unique URI as an identifier in SAML2 requests",
             //DefaultValue = "http://hostname/stepup-mfa",
@@ -94,7 +94,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
         public const string IdPMdFilename = "IdPMdFilename";
         public const string IdPMdLocation = "IdPMdLocation";
 
-        public readonly static Setting IdPEntityID = new Setting(ConfigSettings.IdPEntityId)
+        public readonly static Setting IdPEntityID = new Setting(IdPEntityId)
         {
             Introduction = "Specify which SFO server (IdP) to use (equivalentt of entityID of IdP)",
             DisplayName = "SFO server (IdP) entityID",
@@ -104,22 +104,22 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
             }
         };
 
-        public readonly static Setting IdPSSOLocationSetting = new Setting(ConfigSettings.IdPSSOLocation, ConfigSettings.IdPEntityId)
+        public readonly static Setting IdPSSOLocationSetting = new Setting(IdPSSOLocation, IdPEntityId)
         {
             DisplayName = "IdPSSOLocation",
         };
 
-        public readonly static Setting IdPSigningThumbPrint_1_Setting = new Setting(ConfigSettings.IdPSignThumb1, ConfigSettings.IdPEntityId)
+        public readonly static Setting IdPSigningThumbPrint_1_Setting = new Setting(IdPSignThumb1, IdPEntityId)
         {
             DisplayName = "SHA1 hash (thumbprint) of IdP signer",
         };
 
-        public readonly static Setting IdPSigningThumbPrint_2_Setting = new Setting(ConfigSettings.IdPSignThumb2, ConfigSettings.IdPEntityId)
+        public readonly static Setting IdPSigningThumbPrint_2_Setting = new Setting(IdPSignThumb2, IdPEntityId)
         {
             DisplayName = "SHA1 hash (thumbprint) of second IdP signer",
         };
 
-        public readonly static Setting MinimaLoaSetting = new Setting(ConfigSettings.MinimalLoa, ConfigSettings.IdPEntityId)
+        public readonly static Setting MinimaLoaSetting = new Setting(MinimalLoa, IdPEntityId)
         {
             Introduction = "Each SFO server has its own authentication level URIs",
             DisplayName = "MinimalLoa",
@@ -131,6 +131,11 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
                 "selected as part of the environment.",
                 "Example: http://example.com/assurance/sfo-level2"
             }
+        };
+
+        public readonly static Setting IdPMetadataFilename = new Setting(IdPMdFilename, IdPEntityId)
+        {
+            DisplayName = "Local filename IdP metadata"
         };
 
     }

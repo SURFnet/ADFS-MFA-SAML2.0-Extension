@@ -150,20 +150,22 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                 /**** RECONFIGURE ****/
                 else if (0 != (setupstate.mode & SetupFlags.Reconfigure))
                 {
-                    setupstate.TargetVersionDescription = setupstate.InstalledVersionDescription;
-                    if (0 != SettingsChecker.VerifySettingsComplete(setupstate))
+                    //setupstate.TargetVersionDescription = setupstate.InstalledVersionDescription;
+                    setupstate.TargetVersionDescription = setupstate.InstalledVersionDescription ?? AllDescriptions.ThisVersion;
+                    if (setupstate.DetectedVersion.Major == 0)
+                    {
+                        LogService.WriteFatal("No (correct) installed version. Cannot \"Reconfigure\"!");
+                        rc = 4;
+                    }
+                    else if (0 != SettingsChecker.VerifySettingsComplete(setupstate))
                     {
                         // SETTING PROBLEM
                         rc = 8;
                     }
-                    else if (setupstate.DetectedVersion.Major == 0)
-                    {
-                        LogService.WriteFatal("No installed version. Cannot \"Reconfigure\"!");
-                        rc = 4;
-                    }
                     else if ( setupstate.DetectedVersion != setupstate.SetupProgramVersion )
                     {
-                        LogService.WriteFatal("Can only reconfigure this version.");
+                        LogService.WriteFatal("Can only reconfigure version equal to this setup program version.");
+                        LogService.WriteFatal("Cannot (yet....) write old configuration files.");
                         rc = 4;
                     }
                     else

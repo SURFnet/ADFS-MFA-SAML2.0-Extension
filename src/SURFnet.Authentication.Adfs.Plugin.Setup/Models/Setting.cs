@@ -71,7 +71,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Models
             }
             catch (Exception ex)
             {
-                LogService.WriteFatalException($"Indexing in {internalname} threw up", ex);
+                LogService.WriteFatalException($"Indexing for {internalname} threw up", ex);
                 throw; // logic bug!! Probably internal name mismatch in Component.ConfigParameters!
             }
 

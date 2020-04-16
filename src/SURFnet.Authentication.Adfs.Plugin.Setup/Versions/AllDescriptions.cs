@@ -14,12 +14,18 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
             ExtraAssemblies = null
         };
 
-        static public readonly VersionDescription V2_1_17_9 = new VersionDescription(V2_1Components.Adapter)
+        static public readonly VersionDescription V2_1_17_9 = new VersionDescription(V2_1Components.V2_1_17Adapter)
         {
-            Components = V2_1Components.Components,
+            Components = V2_1Components.V2_1_17Components,
             ExtraAssemblies = V2Assemblies.V2_1_Extras
         };
 
-        public static VersionDescription ThisVersion = V2_1_17_9;   // Do not forget to update this :-)
+        static public readonly VersionDescription V2_1_18_0 = new VersionDescription(V2_1Components.V2_1_18Adapter)
+        {
+            Components = V2_1Components.V2_1_18Components,
+            ExtraAssemblies = V2Assemblies.V2_1_Extras
+        };
+
+        public static VersionDescription ThisVersion = V2_1_18_0;   // Do not forget to update this :-)
     }
 }
