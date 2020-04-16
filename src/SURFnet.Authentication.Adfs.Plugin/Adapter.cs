@@ -112,7 +112,9 @@ namespace SURFnet.Authentication.Adfs.Plugin
                 // Initialize cert for this adapter fro Sustainsys.Saml2,
                 // BUT NO REFERENCE to that assembly here, because it will produce
                 // loading errors! JIT will only JIT the constructor, not
-                // dependencies if it doen't call them.
+                // dependencies if the constructor does not call them.
+                //
+                // TODO: make it something Lazy closer to Sustain??
 
                 DelayPickupOfCertFromSustainsys();
             }
@@ -120,11 +122,11 @@ namespace SURFnet.Authentication.Adfs.Plugin
 
         private void DelayPickupOfCertFromSustainsys()
         {
-            // TODO: investigate if we can use the cert without going through thumbprint
-            // and creating our own.
-            // Probably depends on the CSP being thread safe/re-entrant. No final answer.
+            // TODONOW: 1. investigate if we can use the cert without going through thumbprint
+            // Do not forget configuration dump on startup.
+            // Doit when the adapter ConfigurationSection changes
 
-            // Existance was verified in Sustainsys.Saml2 (in static constructor)
+            // Existance and key was verified in Sustainsys.Saml2 (in static constructor)
             var spThumbprint = Sustainsys.Saml2.Configuration.Options.FromConfiguration.SPOptions.SigningServiceCertificate.Thumbprint;
             this.cryptographicService = CryptographicService.Create(spThumbprint);
         }
@@ -399,14 +401,6 @@ namespace SURFnet.Authentication.Adfs.Plugin
 
                 // Call now to provoke/localize/isolate parsing errors.
                 var defaultIdP = Sustainsys.Saml2.Configuration.Options.FromConfiguration.IdentityProviders.Default;
-
-                defaultIdP.SigningKeys.AddConfiguredKey(TempSigners.TestOldCert);
-                int keycnt = 0;
-                foreach ( var x in defaultIdP.SigningKeys )
-                {
-                    keycnt++;
-                }
-                LogService.Log.Debug($"{keycnt} signing keys for {defaultIdP.EntityId}");
             }
             catch (Exception ex)
             {
