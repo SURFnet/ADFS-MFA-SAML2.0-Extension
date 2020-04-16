@@ -1,4 +1,5 @@
 ﻿using SURFnet.Authentication.Adfs.Plugin.Setup.Assemblies;
+using SURFnet.Authentication.Adfs.Plugin.Setup.Configuration;
 using SURFnet.Authentication.Adfs.Plugin.Setup.Models;
 using SURFnet.Authentication.Adfs.Plugin.Setup.Services;
 using System;
@@ -50,7 +51,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
             tmprc = Adapter.Verify();
             if (tmprc != 0)
             {
-                LogService.Log.Fatal($"  Verify() on {Adapter.ComponentName} failed!");
+                LogService.Log.Fatal($"  Verify() on '{Adapter.ComponentName}' failed!");
                 rc = tmprc;
             }
 
@@ -63,7 +64,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
                     tmprc = cspec.Verify();
                     if (tmprc != 0 )
                     {
-                        LogService.Log.Fatal($"  Verify() on {cspec.ComponentName} failed!");
+                        LogService.Log.Fatal($"  Verify() on '{cspec.ComponentName}' failed!");
                         if (rc == 0)
                             rc = tmprc;
                     }
@@ -108,8 +109,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
                 LogService.Log.Info($"  Reading '{Adapter.ComponentName}' returned '{moreSettings.Count}' settings");
                 foreach ( var setting in moreSettings )
                 {
-                    if ( ! allSettings.Contains(setting) )
-                        allSettings.Add(setting);
+                    allSettings.AddCfgSetting(setting);
                 }
                 
             }
@@ -131,8 +131,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
                         LogService.Log.Info($"  Reading '{component.ComponentName}' returned '{moreSettings.Count}' settings");
                         foreach (var setting in moreSettings)
                         {
-                            if (!allSettings.Contains(setting))
-                                allSettings.Add(setting);
+                            allSettings.AddCfgSetting(setting);
                         }
                     }
                     else
@@ -166,14 +165,14 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
             LogService.Log.Debug($"# of Settings on entry: {settings.Count}");
 
             Adapter.SpecifyRequiredSettings(settings);
-            LogService.Log.Debug($"# of Settings after {Adapter.ComponentName}: {settings.Count}");
+            LogService.Log.Debug($"# of Settings after '{Adapter.ComponentName}': {settings.Count}");
 
             if ( Components!=null && Components.Length>0 )
             {
                 foreach (var component in Components )
                 {
                     component.SpecifyRequiredSettings(settings);
-                    LogService.Log.Debug($"# of Settings after {component.ComponentName}: {settings.Count}");
+                    LogService.Log.Debug($"Total # of Settings after '{component.ComponentName}': {settings.Count}");
                 }
             }
 
@@ -197,17 +196,17 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
                 LogService.Log.Info($"Start writinging Components settings.");
                 foreach (var component in Components)
                 {
-                    LogService.Log.Info($"  Writing settings for {component.ComponentName}");
+                    LogService.Log.Info($"  Writing settings for '{component.ComponentName}'");
                     if (0 != component.WriteConfiguration(settings))
                     {
                         // Stop on first error
-                        LogService.Log.Info($"  Writing settings for {component.ComponentName} failed.");
+                        LogService.Log.Info($"  Writing settings for '{component.ComponentName}' failed.");
                         rc = -1;
                         break;
                     }
                     else
                     {
-                        LogService.Log.Info($"  Writing settings for {component.ComponentName} OK.");
+                        LogService.Log.Info($"  Writing settings for '{component.ComponentName}' OK.");
                     }
                 }
             }

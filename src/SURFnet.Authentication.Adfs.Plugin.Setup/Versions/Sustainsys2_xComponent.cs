@@ -32,7 +32,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
         {
             if (ConfigParameters == null) throw new ApplicationException("ConfigParameters cannot be null");
 
-            LogService.Log.Info($"Reading Settings from {ConfigFilename} for {ComponentName}.");
+            LogService.Log.Info($"Reading Settings from {ConfigFilename} for '{ComponentName}'.");
 
             var settings = ExctractSustainsysConfig();
             if (settings == null)
@@ -48,11 +48,11 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
             int rc = 0;
             if (ConfigParameters == null) throw new ApplicationException("ConfigParameters cannot be null");
 
-            LogService.Log.Info($"  Writing settings of {ComponentName} configuration to {ConfigFilename}");
+            LogService.Log.Info($"  Writing settings of '{ComponentName}' configuration to {ConfigFilename}");
 
             if (false == ConfigurationFileService.ReplaceInXmlCfgFile(ConfigFilename, ConfigParameters, allsettings))
             {
-                LogService.WriteFatal($"Content problem(s) in {ConfigFilename} for component: {ComponentName}");
+                LogService.WriteFatal($"Content problem(s) in {ConfigFilename} for component: '{ComponentName}'");
                 rc = -1;
             }
 

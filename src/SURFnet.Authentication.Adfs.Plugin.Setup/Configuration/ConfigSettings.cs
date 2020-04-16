@@ -9,28 +9,39 @@ using System.Threading.Tasks;
 
 namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
 {
+    /// <summary>
+    /// Static class with static Configuration setting instances.
+    /// This is Global memory for the Program!!
+    /// Although there are lists with subsets of the instances here, all
+    /// work on the same single instance of the setting!
+    /// </summary>
     public static class ConfigSettings
     {
 
         static ConfigSettings()
         {
-
             // First initializers of this class, which adds them.
             // Then this static constructor which links them.
             Setting.LinkChildren();
         }
 
-
+        public static void AddCfgSetting(this List<Setting> settings, Setting setting)
+        {
+            if (! settings.Contains(setting) )
+            {
+                settings.Add(setting);
+            }
+        }
 
         //
-        // Local Adapter Settings:
+        // Local Adapter related Settings:
         // Active directory settings and SP settings.
         //
         public const string SchacHomeOrganization = "schacHomeOrganization";
         public const string ActiveDirectoryUserIdAttribute = "ADUidAttribute";
         public const string SPEntityId = "SPEntityId";
         public const string SPSignThumb1 = "SPSigningThumprint";
-        public const string SPSignThumb2 = "SPSigningThumprint2";
+        public const string SPSignThumb2 = "SPSigningThumprint2";  // not used at this moment.
 
         public readonly static Setting SchacHomeSetting = new Setting(SchacHomeOrganization)
         {

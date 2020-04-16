@@ -40,7 +40,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
         {
             int rc = 0; // assume OK
 
-            LogService.Log.Debug($"Verifying: {ComponentName}.");
+            LogService.Log.Debug($"Verifying: '{ComponentName}'.");
             foreach ( var spec in Assemblies )
             {
                 int tmprc;
@@ -57,12 +57,12 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
             if ( null!=ConfigFilename )
             {
                 string tmp = FileService.OurDirCombine(ConfigFileDirectory, ConfigFilename);
-                LogService.Log.Debug($"Checking Configuration of: {ComponentName}, File: {tmp}");
+                LogService.Log.Debug($"Checking Configuration of: '{ComponentName}', File: {tmp}");
                 if (!File.Exists(tmp))
                 {
                     // ugh, no configuration file!
                     if (rc==0) rc = -1;
-                    LogService.WriteFatal($"Configurationfile '{tmp}' missing in component: {ComponentName}.");
+                    LogService.WriteFatal($"Configurationfile '{tmp}' missing in component: '{ComponentName}'.");
                 }
             }
 
@@ -96,18 +96,18 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
 
             if ( ConfigParameters!=null && ConfigParameters.Length>0 )
             {
+                LogService.Log.Info($"Reporting Required Settings for '{ComponentName}'");
                 foreach ( string name in ConfigParameters )
                 {
                     Setting setting = Setting.GetSettingByName(name);
+                    setting.IsMandatory = true;
                     if ( settings.Contains(setting) )
                     {
-                        LogService.Log.Info($"SpecifyRequiredSettings: {name} was already there.");
-                        setting.IsMandatory = true;
+                        LogService.Log.Info($"   {name} was already there.");
                     }
                     else
                     {
-                        LogService.Log.Info($"SpecifyRequiredSettings: adding {name}.");
-                        setting.IsMandatory = true;
+                        LogService.Log.Info($"   adding {name}.");
                         settings.Add(setting);
                     }
                 }
@@ -167,7 +167,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
                 }
                 catch (Exception ex)
                 {
-                    string error = $"Failed to copy configuration of {ComponentName} ConfigurationFile: {ConfigFilename} to target {dest}.";
+                    string error = $"Failed to copy configuration of '{ComponentName}' ConfigurationFile: {ConfigFilename} to target {dest}.";
                     LogService.WriteFatalException(error, ex);
                     rc = -1;
                 }

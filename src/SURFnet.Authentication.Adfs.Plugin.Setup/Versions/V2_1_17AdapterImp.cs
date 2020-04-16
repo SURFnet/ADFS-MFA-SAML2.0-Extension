@@ -28,7 +28,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
 
         public override List<Setting> ReadConfiguration()
         {
-            LogService.Log.Info($"Reading Settings from {ConfigFilename} for {ComponentName}.");
+            LogService.Log.Info($"Reading Settings from {ConfigFilename} for '{ComponentName}'.");
 
             var settings = ExctractAdapterConfig();
             if (settings == null)
@@ -43,7 +43,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
         {
             int rc = 0;
 
-            LogService.Log.Info($"  Writing settings of {ComponentName} configuration to {ConfigFilename}");
+            LogService.Log.Info($"  Writing settings of '{ComponentName}' configuration to {ConfigFilename}");
 
             if (false == ConfigurationFileService.ReplaceInXmlCfgFile(ConfigFilename, ConfigParameters, allsettings))
             {

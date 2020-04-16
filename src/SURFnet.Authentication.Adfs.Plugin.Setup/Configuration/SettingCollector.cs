@@ -46,6 +46,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
         {
             int rc = 0;
 
+
             List<Setting> fullist = FoundSettings;
             UpdateWithUsedSettings(fullist);
             
@@ -367,23 +368,19 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
             {
                 string value = kvp.Value;
                 Setting setting = Setting.GetSettingByName(kvp.Key);
-                if (string.IsNullOrWhiteSpace(value))
+                if ( setting == null )
                 {
-                    LogService.Log.Info($"Skipping blank value for {setting.InternalName}");
+                    LogService.Log.Error($"    Setting with name: '{kvp.Key}' does not exist!!");
+                }
+                else if (string.IsNullOrWhiteSpace(value))
+                {
+                    LogService.Log.Info($"    Skipping blank value for {setting.InternalName}");
                 }
                 else
                 {
-                    if (settings.Contains(setting))
-                    {
-                        // overwrite
-                        setting.NewValue = kvp.Value;
-                        LogService.Log.Info($"Used {setting.InternalName} gets NewValue: {kvp.Value}");
-                    }
-                    else
-                    {
-                        LogService.Log.Info($"Adding {setting.InternalName} with NewValue: {kvp.Value}");
-                        settings.Add(setting);
-                    }
+                    settings.AddCfgSetting(setting);
+                    setting.NewValue = kvp.Value;
+                    LogService.Log.Info($"    Setting {setting.InternalName} gets NewValue: {kvp.Value}");
                 }
             }
         }
