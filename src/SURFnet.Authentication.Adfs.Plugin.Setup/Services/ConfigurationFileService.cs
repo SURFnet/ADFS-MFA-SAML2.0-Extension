@@ -169,15 +169,9 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
             return dict;
         }
 
-        public static int WriteUsedSettings(List<Setting> settings)
+        public static int WriteUsedSettings(Dictionary<string,string> dict)
         {
             int rc = 0;
-            Dictionary<string, string> dict = new Dictionary<string, string>();
-
-            foreach (var setting in settings )
-            {
-                dict.Add(setting.InternalName, setting.Value);
-            }
 
             string json = JsonConvert.SerializeObject(dict, Formatting.Indented);
 

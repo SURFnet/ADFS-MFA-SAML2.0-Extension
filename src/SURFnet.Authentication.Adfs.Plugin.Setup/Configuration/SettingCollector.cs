@@ -15,6 +15,19 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
         private readonly List<Setting> FoundSettings;
         private readonly List<Dictionary<string, string>> IdPEnvironments;
 
+        // Must enable the Admin to change anything of the SP.
+        // The IdP comes from Metadata. Environment (IdP) is Admin choice.
+        // The rest of the IdP is not!
+        public static readonly List<Setting> AdminChoicesList = new List<Setting>
+        {
+            ConfigSettings.IdPEntityID,
+            ConfigSettings.SchacHomeSetting,
+            ConfigSettings.ADAttributeSetting,
+            ConfigSettings.SPEntityID,
+            ConfigSettings.SPPrimarySigningThumbprint
+        };
+
+
         public SettingCollector(List<Setting> found, List<Dictionary<string, string>> idpEnvironments)
         {
             FoundSettings = found;
@@ -25,6 +38,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
         /// Polls the components in the target version to create a list of required settings.
         /// They will have the mandatory flag set. Also updates/overwrites potentially old
         /// values for the IdP (which come from the JSON IdP configuration file).
+        /// Then asks for missing values and confirmations.
         /// </summary>
         /// <param name="targetVersion"></param>
         /// <returns>0 if OK</returns>
@@ -32,8 +46,11 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
         {
             int rc = 0;
 
+            List<Setting> fullist = FoundSettings;
+            UpdateWithUsedSettings(fullist);
+            
             // ask target what it needs
-            if ( 0!=targetVersion.SpecifyRequiredSettings(FoundSettings) )
+            if ( 0!=targetVersion.SpecifyRequiredSettings(fullist) )
             {
                 // almost unthinkable, but something went wrong while just adding things to a list...
                 LogService.WriteFatal($"Fatal failure while fetching required parameters for {targetVersion.DistributionVersion}.");
@@ -45,7 +62,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
                 // and it failed.....
                 rc = -2;
             }
-            else if ( 0==AskCurrentOK(FoundSettings) )
+            else if ( 0==AskCurrentOK(fullist) )
             {
                 rc = 0;
             }
@@ -55,11 +72,18 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
                 QuestionIO.WriteError("The configuration settings were not properly specified.");
             }
 
+            if ( rc == 0 )
+            {
+                // Write this AdminChoiceList to used settings
+                SaveUsedSettings(AdminChoicesList);
+            }
+
             return rc;
         }
 
         /// <summary>
-        /// Quick just doit. Asks if the settings as found on disk are OK to continue.
+        /// Quick just doit Question.
+        /// Asks if the settings as found on disk are OK to continue.
         /// </summary>
         /// <param name="foundSettings"></param>
         /// <returns>0 if they should be used.</returns>
@@ -69,7 +93,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
 
             // Check if all required settings are there.
             // Make a list of mandatory (as specified by target version.
-            // But skip the ones with a parent, because the will come from somehere else.
+            // But skip the ones with a parent, because the will come from somewhere else.
             List<Setting> minimalSubset = new List<Setting>();
             foreach ( Setting setting in foundSettings )
             {
@@ -132,7 +156,9 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
         {
             int rc = -1;
 
-            var uiSettings = CreatSettingList();
+            var uiSettings = AdminChoicesList;
+            ClearConfirmedSettings(uiSettings);
+
             // loop over all settings
             bool more = true;
             bool okSofar = true;
@@ -168,7 +194,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
 
                             case 'n':
                                 more = true;
-                                ClearConfirmedProperties(uiSettings);
+                                ClearConfirmedSettings(AdminChoicesList);
                                 break;
 
                             case 'x':
@@ -307,35 +333,87 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
             return more;
         }
 
-        List<Setting> CreatSettingList()
-        {
-            List<Setting> list = new List<Setting>
-            {
-                ConfigSettings.IdPEntityID,
-                ConfigSettings.SchacHomeSetting,
-                ConfigSettings.ADAttributeSetting,
-                ConfigSettings.SPEntityID,
-                ConfigSettings.SPPrimarySigningThumbprint
-            };
-
-            ClearConfirmedProperties(list);
-
-            return list;
-        }
-
         /// <summary>
         /// Call this to (re)start the UI questions.
         /// </summary>
         /// <param name="settings"></param>
-        void ClearConfirmedProperties(List<Setting> settings)
+        void ClearConfirmedSettings(List<Setting> settings)
         {
             foreach (Setting setting in settings)
                 setting.IsConfirmed = false;
         }
 
-        /*
-         *  IdP environment selection things
-         */
+
+        /// - - - - - - - - - - - - - - - - - - - - -
+        ///
+        ///  Settings as last Confirmed or inserted by Admin
+        ///
+        /// - - - - - - - - - - - - - - - - - - - - -
+
+
+        /// <summary>
+        /// Udpates the settings with values from UsedSettings JSON file.
+        /// </summary>
+        /// <param name="settings"></param>
+        void UpdateWithUsedSettings(List<Setting> settings)
+        {
+            var dict = ConfigurationFileService.LoadUsedSettings();
+            if (dict == null || dict.Count <= 0)
+                return;  // nothing there
+
+            LogService.Log.Info($"Updating with UsedSettings");
+
+            foreach (KeyValuePair<string,string> kvp in dict)
+            {
+                string value = kvp.Value;
+                Setting setting = Setting.GetSettingByName(kvp.Key);
+                if (string.IsNullOrWhiteSpace(value))
+                {
+                    LogService.Log.Info($"Skipping blank value for {setting.InternalName}");
+                }
+                else
+                {
+                    if (settings.Contains(setting))
+                    {
+                        // overwrite
+                        setting.NewValue = kvp.Value;
+                        LogService.Log.Info($"Used {setting.InternalName} gets NewValue: {kvp.Value}");
+                    }
+                    else
+                    {
+                        LogService.Log.Info($"Adding {setting.InternalName} with NewValue: {kvp.Value}");
+                        settings.Add(setting);
+                    }
+                }
+            }
+        }
+
+        void SaveUsedSettings(List<Setting> settings)
+        {
+            Dictionary<string, string> dict = new Dictionary<string, string>();
+
+            foreach (var setting in settings)
+            {
+                string value = setting.Value;
+                if (!string.IsNullOrWhiteSpace(value))
+                    dict.Add(setting.InternalName, value); // only non-null
+            }
+
+            if (dict.Count == 0)
+            {
+                // Ugh must be bug!
+                LogService.Log.Info($"Nothing written to '{SetupConstants.UsedSettingsFilename}'");
+                // do not ever clear it...
+            }
+            else
+            {
+                ConfigurationFileService.WriteUsedSettings(dict);
+            }
+        }
+
+        // - - - - - - - - - - - - - - - - - - - - -
+        //  IdP environment selection things
+        // - - - - - - - - - - - - - - - - - - - - -
 
 
         /// <summary>

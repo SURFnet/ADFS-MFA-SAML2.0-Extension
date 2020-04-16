@@ -1,6 +1,7 @@
 ﻿using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using SURFnet.Authentication.Adfs.Plugin.Setup;
 using SURFnet.Authentication.Adfs.Plugin.Setup.Common;
 
 // General Information about an assembly is controlled through the following
@@ -33,6 +34,6 @@ using SURFnet.Authentication.Adfs.Plugin.Setup.Common;
 // You can specify all the values or you can default the Build and Revision Numbers
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion(Values.FileVersion)]
-[assembly: AssemblyInformationalVersion(Values.ProductVersion)]
-[assembly: AssemblyFileVersion(Values.FileVersion)]
+[assembly: AssemblyVersion(SetupConstants.SetupFileVersion)]
+[assembly: AssemblyInformationalVersion(SetupConstants.SetupProductVersion)]
+[assembly: AssemblyFileVersion(SetupConstants.SetupFileVersion)]

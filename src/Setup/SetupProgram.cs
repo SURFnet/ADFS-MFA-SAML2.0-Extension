@@ -43,7 +43,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
         public static int Main(string[] args)
         {
             SetupState setupstate = new SetupState();
-            //setupstate.TargetVersionDescription = AllDescriptions.ThisVersion;
+
             int rc = PrepareForSetup(args, setupstate);
             if (rc != 0)
             {

@@ -153,6 +153,11 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
             return allSettings;
         }
 
+        /// <summary>
+        /// Add required settings to the List of Setting if they are not already in there.
+        /// </summary>
+        /// <param name="settings">Initial list, longer on return</param>
+        /// <returns>0 if OK, otherwise fatal</returns>
         public virtual int SpecifyRequiredSettings(List<Setting> settings)
         {
             int rc = 0;
