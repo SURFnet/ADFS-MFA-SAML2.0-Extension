@@ -253,7 +253,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
             {
                 foreach ( var assembly in ExtraAssemblies )
                 {
-                    string srcpath = Path.Combine(FileService.DistFolder, assembly.InternalName);
+                    string srcpath = FileService.OurDirCombine(FileDirectory.Dist, assembly.InternalName);
                     int tmprc = assembly.CopyToTarget(srcpath);
                     if (0 != tmprc)
                     {

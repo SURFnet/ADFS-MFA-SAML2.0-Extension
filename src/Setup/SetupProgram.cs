@@ -26,7 +26,6 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
     using SURFnet.Authentication.Adfs.Plugin.Setup.Question;
     using SURFnet.Authentication.Adfs.Plugin.Setup.Question.SettingsQuestions;
     using SURFnet.Authentication.Adfs.Plugin.Setup.Services;
-    using SURFnet.Authentication.Adfs.Plugin.Setup.Upgrades;
     using SURFnet.Authentication.Adfs.Plugin.Setup.Util;
     using SURFnet.Authentication.Adfs.Plugin.Setup.Versions;
 

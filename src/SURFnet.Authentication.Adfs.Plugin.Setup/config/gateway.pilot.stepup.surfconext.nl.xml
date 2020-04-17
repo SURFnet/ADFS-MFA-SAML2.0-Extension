@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<md:EntityDescriptor xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata" entityID="https://gateway.pilot.stepup.surfconext.nl/second-factor-only/metadata" ID="pfx6a5e3461-a5eb-db67-76af-f9fedf34d43e">
+    <md:IDPSSODescriptor protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
+        <md:KeyDescriptor xmlns:ds="http://www.w3.org/2000/09/xmldsig#" use="signing">
+            <ds:KeyInfo>
+                <ds:X509Data>
+                    <ds:X509Certificate>MIICwjCCAaoCCQDs1IDIiytYMTANBgkqhkiG9w0BAQUFADAjMSEwHwYDVQQDDBhTdGVwdXAgUGlsb3QgR2F0ZXdheSBJZFAwHhcNMTUwMjI3MTA0MTU5WhcNMjUwMjI0MTA0MTU5WjAjMSEwHwYDVQQDDBhTdGVwdXAgUGlsb3QgR2F0ZXdheSBJZFAwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQDzlSzxPhG+B+o0ulUcR499NoMhaP4oX0+zpzi2vfY+Q1qw8x6b0eeUrIk99IpMrWN74twvuQ/eIecLZXIYhG94AYGB620OX7KMM8oCfdjc2I0lk8d+/rsxUqH0U4DDVBryrMcLjLGwe2CMncdSBuc2LCg15TveClC/QW/NJ6rvDiR1GoLouqx+CLBd+z2gwC+Od7YTUVY+22XrVzatzOZuz8Wdvja4VxHzv9Qyi6ta78ah345HWLeZsIh6pRF80qX0lpPRgwQSVXNpT8IxvoL28ViVVGkLU5SmdS3fbfLzlL5i3jHpWFcvRGPj5z8zmVZuDAka6P80WiKDVRg7gouXAgMBAAEwDQYJKoZIhvcNAQEFBQADggEBANlnKHackl7MfHi+0lxb/ERuMkRpIGej29RSWL0aFojNpRjN2ihnuIjp4PPk98xQCKbVeN+PWXNqrrschbUfC5ikcYP5hoU7WJrHAWvEwmMNy1/UzcKtSgNby8loLFRzi68R92ZTumgFEBFYow9HzgC3HvDeBpRw/qFLZjsYqAjezTeRtafx8NIaBtKabRr5hedwUpnzldFbPqLxR1o0B/tqcUIqJOjdpEFIYus7VcBI6N6T1TKB4DyfqjbgzxhS5zrE1jFeKaamRWCqKUcEUfngoxQWlKd9LSBWRXjw0aM+P22WHdxxX/1rIneV5jVgOIlRgDO0Dpxn0qie4XnIqzo=</ds:X509Certificate>
+                </ds:X509Data>
+            </ds:KeyInfo>
+        </md:KeyDescriptor>
+        <md:SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="https://gateway.pilot.stepup.surfconext.nl/second-factor-only/single-sign-on"/>
+    </md:IDPSSODescriptor>
+</md:EntityDescriptor>

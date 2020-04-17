@@ -104,7 +104,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
             // TODO: Path manipulation should go to FileService,
             //       but this is an unique case! For time being it is here.
 
-            var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Config", SetupConstants.IdPEnvironmentsFilename);
+            var path = FileService.OurDirCombine(FileDirectory.Config, SetupConstants.IdPEnvironmentsFilename);
             if (!File.Exists(path))
                 return null;
 
@@ -120,37 +120,37 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
 
             // For each IdP dictionary exctract the thumbprint from the
             // signing certificate and add as pair to the same dictionary.
-            foreach ( var dict in result )
-            {
-                if ( dict.TryGetValue(ConfigSettings.IdPSignCert1, out string base64cert) )
-                {
-                    if ( ! string.IsNullOrEmpty(base64cert) )
-                    {
-                        byte[] raw = Convert.FromBase64String(base64cert);
-                        X509Certificate2 cert = new X509Certificate2(raw);
-                        dict.Add(ConfigSettings.IdPSignThumb1, cert.Thumbprint);
-                    }
-                }
-                else
-                {
-                    LogService.WriteFatal($"Missing {ConfigSettings.IdPSignCert1} in {dict[SetupConstants.IdPEnvironmentType]}");
-                }
+            //foreach ( var dict in result )
+            //{
+            //    if ( dict.TryGetValue(ConfigSettings.IdPSignCert1, out string base64cert) )
+            //    {
+            //        if ( ! string.IsNullOrEmpty(base64cert) )
+            //        {
+            //            byte[] raw = Convert.FromBase64String(base64cert);
+            //            X509Certificate2 cert = new X509Certificate2(raw);
+            //            dict.Add(ConfigSettings.IdPSignThumb1, cert.Thumbprint);
+            //        }
+            //    }
+            //    else
+            //    {
+            //        LogService.WriteFatal($"Missing {ConfigSettings.IdPSignCert1} in {dict[SetupConstants.IdPEnvironmentType]}");
+            //    }
 
-                if (dict.TryGetValue(ConfigSettings.IdPSignCert2, out base64cert))
-                {
-                    if (!string.IsNullOrEmpty(base64cert))
-                    {
-                        byte[] raw = Convert.FromBase64String(base64cert);
-                        X509Certificate2 cert = new X509Certificate2(raw);
-                        dict.Add(ConfigSettings.IdPSignThumb2, cert.Thumbprint);
-                    }
-                }
-                else
-                {
-                    LogService.WriteFatal($"Missing {ConfigSettings.IdPSignCert2} in {dict[SetupConstants.IdPEnvironmentType]}");
-                }
+            //    if (dict.TryGetValue(ConfigSettings.IdPSignCert2, out base64cert))
+            //    {
+            //        if (!string.IsNullOrEmpty(base64cert))
+            //        {
+            //            byte[] raw = Convert.FromBase64String(base64cert);
+            //            X509Certificate2 cert = new X509Certificate2(raw);
+            //            dict.Add(ConfigSettings.IdPSignThumb2, cert.Thumbprint);
+            //        }
+            //    }
+            //    else
+            //    {
+            //        LogService.WriteFatal($"Missing {ConfigSettings.IdPSignCert2} in {dict[SetupConstants.IdPEnvironmentType]}");
+            //    }
 
-            }
+            //}
 
             return result;
         }
@@ -159,7 +159,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
         {
             Dictionary<string, string> dict = null;
 
-            var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Config", SetupConstants.UsedSettingsFilename);
+            var path = FileService.OurDirCombine(FileDirectory.Config, SetupConstants.UsedSettingsFilename);
             if ( File.Exists(path) )
             {
                 var fileContents = File.ReadAllText(path);
@@ -175,7 +175,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
 
             string json = JsonConvert.SerializeObject(dict, Formatting.Indented);
 
-            var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Config", SetupConstants.UsedSettingsFilename);
+            var path = FileService.OurDirCombine(FileDirectory.Config, SetupConstants.UsedSettingsFilename);
             try
             {
                 File.WriteAllText(path, json);

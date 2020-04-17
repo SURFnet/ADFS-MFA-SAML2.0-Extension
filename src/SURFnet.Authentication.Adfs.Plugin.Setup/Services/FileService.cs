@@ -48,33 +48,35 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
         /// <summary>
         /// The path of the ADFS directory. (set by static constructor)
         /// </summary>
-        public static string AdfsDir { get; private set; }
+        private static string AdfsDir { get; }
 
         /// <summary>
         /// The V4 GAC directory directory. Which is where the V1.0.1.0 files are.
         /// (set by static constructor)
         /// </summary>
-        public static string GACDir { get; private set; }
+        private static string GACDir { get; }
 
         /// <summary>
         /// The output folder. (set by static constructor)
         /// A directory where new files are prepared befor we start the installation.
         /// The will be copied from there during installation.
         /// </summary>
-        public static string OutputFolder { get; private set; }
+        private static string OutputFolder { get; }
 
         /// <summary>
         /// The distribution folder.
         /// The sources (new files) as they come from the ZIP.
         /// </summary>
-        public static string DistFolder { get; private set; }
+        private static string DistFolder { get; }
+
+        private static string ConfigFolder { get; }
 
         /// <summary>
         /// The backup folder for a removale or reconfiguration.
         /// It is backupyyMMddHHmmss (set by static constructor)
         /// Physically created on disk when first written through this class.
         /// </summary>
-        public static string BackupFolder { get; private set; }
+        private static string BackupFolder { get; }
         private static bool backupInitialized = false;
 
         /// <summary>
@@ -87,21 +89,26 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
         static FileService()
         {
             AdfsDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), "ADFS");
-            directoryMap[(int)FileDirectory.AdfsDir] = AdfsDir;
-            GACDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows),
-                        @"Microsoft.NET\assembly");
-            directoryMap[(int)FileDirectory.GAC] = GACDir;
-
+            GACDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), @"Microsoft.NET\assembly");
             OutputFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "output");
             DistFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "dist");
+            ConfigFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Config");
             BackupFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $"backup{DateTime.Now.ToString("yyyy-MM-ddTHHmmss")}");
+
+            directoryMap[(int)FileDirectory.AdfsDir] = AdfsDir;
+            directoryMap[(int)FileDirectory.GAC] = GACDir;
+            directoryMap[(int)FileDirectory.Output] = OutputFolder;
+            directoryMap[(int)FileDirectory.Dist] = DistFolder;
+            directoryMap[(int)FileDirectory.Config] = ConfigFolder;
+            directoryMap[(int)FileDirectory.Backup] = BackupFolder;
+
             RegistrationDataFolder = Path.Combine(OutputFolder, "configuration");
         }
 
         /// <summary>
         /// Initializes the <see cref="FileService"/> class.
-        /// Must call to verify everything is there.
-        /// Explicit call to allow for throwing at convenient place :-).
+        /// Explicit call to allow for throwing at a convenient place :-).
+        /// At that point they will know what to do next after this fatal error.
         /// </summary>
         public static void InitFileService()
         {
@@ -112,6 +119,9 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
 
         public static string Enum2Directory(FileDirectory value)
         {
+            if (value == FileDirectory.Backup)
+                EnsureBackupFolder(); // Create on first hit
+
             return directoryMap[(int)value];
         }
 
@@ -131,6 +141,42 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
             return Path.Combine(OutputFolder, filename);
         }
 
+        /// <summary>
+        /// File copier (overwrite). Checks source existentenc catches Copy and writes errors to Log.
+        /// </summary>
+        /// <param name="src"></param>
+        /// <param name="dest"></param>
+        /// <param name="filename"></param>
+        /// <returns></returns>
+        public static int FileCopy(FileDirectory src, FileDirectory dest, string filename)
+        {
+            if (string.IsNullOrWhiteSpace(filename)) ThrowOnNullFilename($"FileService.FileCopy({filename})");
+
+            int rc = 0;
+            string srcpath = OurDirCombine(src, filename);
+            string destpath = OurDirCombine(dest, filename);
+
+            FileInfo fiSrc = new FileInfo(srcpath);
+            if ( fiSrc.Exists )
+            {
+                try
+                {
+                    fiSrc.CopyTo(destpath, true);
+                }
+                catch (Exception ex)
+                {
+                    LogService.WriteFatalException($"Copy to {dest} failed for file: {filename}", ex);
+                    rc = -1;
+                }
+            }
+            else
+            {
+                LogService.WriteFatal($"Failed File.Copy(), no source file: {srcpath}");
+                rc = -1;
+            }
+
+            return rc;
+        }
 
         /// <summary>
         /// Loads the specified file from the DIST directory as a string.

@@ -43,7 +43,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
         public const string Log4netFilename = "log4net.dll";
 
         // extra property names in JSON file. Not really a setting. The rest is in: .
-        public const string IdPEnvironmentType = "Type";
+        public const string IdPEnvironmentType = "Name";
         public const string IdPProdTypeValue = "Production";
 
 

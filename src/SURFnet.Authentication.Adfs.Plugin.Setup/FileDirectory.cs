@@ -11,8 +11,12 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
         Illegal = -1, // Throw on bug!
 
         // MUST be consecutive!! For Array in FileService!!
-        AdfsDir = 0,
-        GAC,
+        AdfsDir = 0, // the ADFS directory, typically C:\Windows\ADFS
+        GAC,       // not a real directory, generic indication for GAC
+        Output,    // pregenerated configuration files.
+        Dist,      // distribution directory with source files
+        Config,    // config directory with gateway environments and metadata
+        Backup,
         // maybe add other setup directories?
         Sentinel  // Must be last for arraysize in FileService.cs
     }

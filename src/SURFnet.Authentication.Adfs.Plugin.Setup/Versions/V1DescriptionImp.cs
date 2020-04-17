@@ -152,7 +152,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
             // TODO: not urgent. We are leaving a probaly empty <applicationSettings /> behind. If empty, should remove.
             // And its <sectionGroup> too.
 
-            var path = Path.Combine(FileService.OutputFolder, SetupConstants.AdfsCfgFilename);
+            var path = FileService.OurDirCombine(FileDirectory.Output, SetupConstants.AdfsCfgFilename);
             adfsConfig.Save(path);
         }
 

@@ -101,14 +101,14 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
 
             LogService.Log.Info("VersionHeuristics: Try find adapters in GAC and ADFS directory.");
 
-            if ( TryGetAdapterAssembly(FileService.AdfsDir, SetupConstants.AdapterFilename, out AssemblySpec tmpSpec) )
+            if ( TryGetAdapterAssembly(FileDirectory.AdfsDir, SetupConstants.AdapterFilename, out AssemblySpec tmpSpec) )
             {
                 // Found one in ADFS directory
                 adapters.Add(tmpSpec);
                 LogService.Log.Info($"Found in ADFS directory: {tmpSpec.FileVersion}");
             }
 
-            if (TryGetAdapterAssembly(FileService.GACDir, SetupConstants.AdapterFilename, out tmpSpec))
+            if (TryGetAdapterAssembly(FileDirectory.GAC, SetupConstants.AdapterFilename, out tmpSpec))
             {
                 adapters.Add(tmpSpec);
                 LogService.Log.Info($"Found in GAC: {tmpSpec.FileVersion}");
@@ -132,11 +132,12 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
             return rc;
         }
 
-        bool TryGetAdapterAssembly(string directory, string filename, out AssemblySpec spec)
+        bool TryGetAdapterAssembly(FileDirectory direnum, string filename, out AssemblySpec spec)
         {
             bool rc = false;
 
             spec = null;
+            string directory = FileService.Enum2Directory(direnum);
             string[] found = AssemblyList.GetAssemblies(directory, filename);
             if ( found != null )
             {

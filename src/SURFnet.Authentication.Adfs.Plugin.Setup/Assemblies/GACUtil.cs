@@ -171,7 +171,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Assemblies
                 if (0 == FileService.CopyToBackupFolder(pathInGAC, assemblyspec.InternalName))
                 {
                     // It is in the backup directory. Use that one to remove.
-                    string pathInGac = Path.Combine(FileService.BackupFolder, assemblyspec.InternalName);
+                    string pathInGac = FileService.OurDirCombine(FileDirectory.Backup, assemblyspec.InternalName);
                     rc = RemoveFromGAC(pathInGAC); // Errors were already logged.
                 }
                 // else: Darn!!! But already logged.

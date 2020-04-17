@@ -115,7 +115,6 @@
     <Compile Include="Services\LogService.cs" />
     <Compile Include="SetupFlags.cs" />
     <Compile Include="Configuration\ConfigSettings.cs" />
-    <Compile Include="Upgrades\UpgradeToV2.cs" />
     <Compile Include="Util\UAC.cs" />
     <Compile Include="VersionDetector.cs" />
     <Compile Include="Versions\AdapterComponent.cs" />
@@ -149,6 +148,10 @@
     </None>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Content Include="config\gateway.pilot.stepup.surfconext.nl.xml" />
+    <Content Include="config\sa-gw.surfconext.nl.xml" />
+    <Content Include="config\sa-gw.test.surfconext.nl.xml" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

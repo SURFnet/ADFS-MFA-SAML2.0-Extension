@@ -10,6 +10,9 @@ using System.Xml.Linq;
 
 namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
 {
+    /// <summary>
+    /// As regular, IdP Metadata in ADFS directory. Copies it on Install().
+    /// </summary>
     public class Sustainsys2_3MdComponent : Sustainsys2_xComponent
     {
         public Sustainsys2_3MdComponent() : base("Sustainsys.Saml2 v2.3 from Metadata")
@@ -22,6 +25,21 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
                 ConfigSettings.SPSignThumb1
             };
         }
+
+        public override int Install()
+        {
+            int rc = base.Install(); // first regular install
+
+            if ( rc == 0 )
+            {
+                // now metadata from "config" to ADFS directory
+                string filename = ConfigSettings.IdPMetadataFilename.Value;
+                rc = FileService.FileCopy(FileDirectory.Config, FileDirectory.AdfsDir, filename);
+            }
+
+            return rc;
+        }
+
         protected override List<Setting> ExctractSustainsysConfig()
         {
             List<Setting> settings = new List<Setting>();
@@ -52,10 +70,6 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
             // metadataLocation attribute
             ConfigSettings.IdPMetadataFilename.FoundCfgValue = identityProvider?.Attribute(XName.Get(MdLocationAttribute))?.Value;
             settings.Add(ConfigSettings.IdPMetadataFilename);
-
-            //var certificate = identityProvider?.Descendants(XName.Get(SetupConstants.XmlElementName.SustainIdPSigningCert)).FirstOrDefault();
-            //ConfigSettings.IdPSigningThumbPrint_1_Setting.FoundCfgValue = certificate?.Attribute(XName.Get(SetupConstants.XmlAttribName.CertFindValue))?.Value;
-            //settings.Add(ConfigSettings.IdPSigningThumbPrint_1_Setting);
 
             return settings;
         }

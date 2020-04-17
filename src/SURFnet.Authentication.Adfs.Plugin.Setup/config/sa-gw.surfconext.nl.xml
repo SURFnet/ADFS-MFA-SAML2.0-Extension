@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<md:EntityDescriptor xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata" entityID="https://sa-gw.surfconext.nl/second-factor-only/metadata" ID="pfx60edd2c4-0ed5-4488-cbd0-65fa7e4b8642">
+    <md:IDPSSODescriptor protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
+        <md:KeyDescriptor xmlns:ds="http://www.w3.org/2000/09/xmldsig#" use="signing">
+            <ds:KeyInfo>
+                <ds:X509Data>
+                    <ds:X509Certificate>MIICsjCCAZoCCQDHN3+HzElEDDANBgkqhkiG9w0BAQUFADAbMRkwFwYDVQQDFBBnYXRld2F5X3NhbWxfaWRwMB4XDTE1MDcyMzEyMTUxOVoXDTIwMDcyMTEyMTUxOVowGzEZMBcGA1UEAxQQZ2F0ZXdheV9zYW1sX2lkcDCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBALK/JwHWd5JftXYKO9qcTQ4dfKEnl35oJj6PlEyR6gpikdpgm2OY/zy4e7vcXfBChedVF3OUI4rRDWCz4yXT2sldzjuIyONJfA86xva5lxDARqT/+gRBuZ2pyMTb0okvl1G9ZlAjPumVH14591rp6OGT5TJIkILQ/pKp1INdiBqpiR53Z5YvsXEUJ8PHHZyILO00HnBldq0d77lmATr6QamXpbY+CZ9pIw65t32fhFcUfRC68C81/P2crCn3v5GMyrQcM/tB/xdVf/haEZiqgI/bjcreBpQobnAhwEsve+uvbSLFN1Rsc7o0W/7Pn6EGBX1h9rjKjDgqssHuWkVuU4sCAwEAATANBgkqhkiG9w0BAQUFAAOCAQEAmlqfTvEfGDeqqqvuAMDG5IKDo6h21wwByywNbRhimfOvL6FqIgAgx+D3gxW1lO41PcqQQKYIVUEAuYv+tW8COLdHcFRh/UV9ei4iquMwBCkO/XOoMC9FsRBo3yPaQClRK8OYj1IXer4JXNuFHeLblzf+GLYFoqMWWwT2dnBLAePoEgANKUm2aasxyiJmnroNa+O5zTP9ExT3qHphCCG1gh3iHrQu9iSEJxY12zAQYtPomIs8Vk/GBfj+ucUiBEEqaMpCH+t6f0VOIoP1SNHgNAaeBLVuOpS0VlLnwZFJkNPVOQpFgRuoFsH3/9i53Fs3eQreb9wzq2VkjDhhlc5eyA==</ds:X509Certificate>
+                </ds:X509Data>
+            </ds:KeyInfo>
+        </md:KeyDescriptor>
+        <md:SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="https://sa-gw.surfconext.nl/second-factor-only/single-sign-on"/>
+    </md:IDPSSODescriptor>
+</md:EntityDescriptor>

@@ -141,7 +141,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
                     // Only if configuration was succesfully copied.
                     foreach (var spec in Assemblies)
                     {
-                        string src = Path.Combine(FileService.DistFolder, spec.InternalName);
+                        string src = FileService.OurDirCombine(FileDirectory.Dist, spec.InternalName);
                         if (spec.CopyToTarget(src) != 0)
                             rc = -1;
                     }
@@ -158,7 +158,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
             // Copy configuration form output directory to ADFS directory
             if (ConfigFilename != null)
             {
-                string src = Path.Combine(FileService.OutputFolder, ConfigFilename);
+                string src = FileService.OurDirCombine(FileDirectory.Output, ConfigFilename);
                 string dest = FileService.OurDirCombine(ConfigFileDirectory, ConfigFilename);
                 try
                 {
