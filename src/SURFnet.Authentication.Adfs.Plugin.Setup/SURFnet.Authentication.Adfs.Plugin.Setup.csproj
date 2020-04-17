@@ -149,9 +149,15 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="config\gateway.pilot.stepup.surfconext.nl.xml" />
-    <Content Include="config\sa-gw.surfconext.nl.xml" />
-    <Content Include="config\sa-gw.test.surfconext.nl.xml" />
+    <Content Include="config\gateway.pilot.stepup.surfconext.nl.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="config\sa-gw.surfconext.nl.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="config\sa-gw.test.surfconext.nl.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
