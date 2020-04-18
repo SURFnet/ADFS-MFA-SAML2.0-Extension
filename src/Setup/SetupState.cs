@@ -17,19 +17,26 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
     /// </summary>
     public class SetupState
     {
+        public SetupState()
+        {
+            SetupProgramVersion = new Version(Values.FileVersion);
+            AdfsConfig = new AdfsConfiguration();
+            FoundSettings = new List<Setting>();
+        }
         public SetupFlags mode = SetupFlags.Check;
 
-        public readonly Version SetupProgramVersion = new Version(Values.FileVersion);
-        public Version RegisteredVersionInAdfs = V0Assemblies.AssemblyNullVersion; // set in main.Init....
+        public readonly Version SetupProgramVersion;
+
+        public Version RegisteredVersionInAdfs => AdfsConfig.RegisteredAdapterVersion;
         public Version DetectedVersion = V0Assemblies.AssemblyNullVersion;         // Set in DetectAndReadCfg
 
         public List<Dictionary<string, string>> IdPEnvironments;
-        public AdfsConfiguration AdfsConfig;
+        public readonly AdfsConfiguration AdfsConfig;
 
 
         public VersionDescription InstalledVersionDescription;
         public VersionDescription TargetVersionDescription;
 
-        public List<Setting> FoundSettings;
+        public readonly  List<Setting> FoundSettings;
     }
 }

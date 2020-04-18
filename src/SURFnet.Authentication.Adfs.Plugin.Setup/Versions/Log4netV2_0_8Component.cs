@@ -28,12 +28,12 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
         /// No parameter for Setting. But copies to "output", independent of uninstall to backup.
         /// </summary>
         /// <returns></returns>
-        public override List<Setting> ReadConfiguration()
+        public override int ReadConfiguration(List<Setting> settings)
         {
             // log4net does have a file, but will not read it!
             // Uninstall() of the previous adapter will have copied it to backup.
             // Otherwise it wil get one from the distfolder folder.
-            return new List<Setting>(0);
+            return 0;
         }
 
         public override int WriteConfiguration(List<Setting> settings)

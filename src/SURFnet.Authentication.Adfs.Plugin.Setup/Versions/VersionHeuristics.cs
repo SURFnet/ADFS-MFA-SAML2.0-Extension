@@ -3,6 +3,7 @@ using SURFnet.Authentication.Adfs.Plugin.Setup.Configuration;
 using SURFnet.Authentication.Adfs.Plugin.Setup.Services;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -80,7 +81,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
             }
             else
             {
-                LogService.Log.Fatal("VersionHeuristic.TryFindAdapterFailed");
+                LogService.Log.Fatal("VersionHeuristic.TryFindAdapterFailed() fatally.");
                 ok = false;
             }
 
@@ -122,7 +123,16 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
             {
                 // found multiple versions, that is fatal!!
                 rc = false;
-                LogService.Log.Error("VersionHeuristics: Found multiple adapters!");
+                LogService.WriteFatal("VersionHeuristics: Found multiple adapters!");
+                foreach ( var adapter in adapters )
+                {
+                    LogService.WriteFatal($"    {adapter.FilePath}");
+                }
+                LogService.WriteFatal("This is a fatal problem. Please report this (with the Setup log file).");
+                LogService.WriteFatal("  Probaly renaming the one in the ADFS directory and then");
+                LogService.WriteFatal("  running 'setup -x' will properly remove the one in the GAC.");
+                LogService.WriteFatal("  Then rename back and run 'setup -x' for the other");
+                LogService.WriteFatal("  adapter will produce a clean system.");
             }
             else
             {
@@ -135,21 +145,28 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
         bool TryGetAdapterAssembly(FileDirectory direnum, string filename, out AssemblySpec spec)
         {
             bool rc = false;
+            SearchOption searchoption;
 
             spec = null;
             string directory = FileService.Enum2Directory(direnum);
-            string[] found = AssemblyList.GetAssemblies(directory, filename);
+            if (direnum == FileDirectory.GAC)
+                searchoption = SearchOption.AllDirectories;
+            else
+                searchoption = SearchOption.TopDirectoryOnly;
+
+            LogService.Log.Info($"  Look for '{filename}' in {directory}");
+            string[] found = AssemblyList.GetAssemblies(directory, filename, searchoption);
             if ( found != null )
             {
                 // seems there is something
                 if ( found.Length == 0 )
                 {
                     // actually nothing there
-                    LogService.Log.Debug("TryGetAdapterAssembly: found.Length==0");
+                    LogService.Log.Debug("  TryGetAdapterAssembly: found.Length==0");
                 }
                 else if ( found.Length == 1 )
                 {
-                    LogService.Log.Debug($"TryGetAdapterAssembly: Found={found[0]}");
+                    LogService.Log.Debug($"  TryGetAdapterAssembly: Found={found[0]}");
                     var tmp = AssemblySpec.GetAssemblySpec(found[0]);
                     if ( tmp != null )
                     {
@@ -157,17 +174,30 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
                     }
                     else
                     {
-                        LogService.Log.Debug($"TryGetAdapterAssembly: AssemblySpec.GetAssemblySpec failed");
+                        LogService.Log.Debug($"  TryGetAdapterAssembly: AssemblySpec.GetAssemblySpec failed");
                     }
                     rc = true;
                 }
                 else
                 {
-                    // really wrong! Multiple files!
-                    LogService.Log.Error($"Found multiple files in {directory}");
+                    // Really wrong! Multiple files!
+                    LogService.WriteFatal($"  Found multiple files in {directory}");
                     foreach ( var name in found )
                     {
-                        LogService.Log.Error("     "+name);
+                        LogService.WriteFatal("       "+name);
+                    }
+
+                    if ( direnum == FileDirectory.GAC )
+                    {
+                        LogService.WriteFatal("********************************************");
+                        LogService.WriteFatal("*****   Attention, this is in the GAC   ****");
+                        LogService.WriteFatal("     This is a fatal problem. Please report");
+                        LogService.WriteFatal("     this (with the Setup log file).");
+                        LogService.WriteFatal("*    Carefully removing an adapter (and maybe its");
+                        LogService.WriteFatal("*    dependencies) with 'GACUTIL' is probably best.");
+                        LogService.WriteFatal("*    You should leave one adapter in there to give");
+                        LogService.WriteFatal("*    'setup -x' the chance to cleanup the rest.");
+                        LogService.WriteFatal("********************************************");
                     }
                 }
             }

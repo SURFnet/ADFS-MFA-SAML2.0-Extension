@@ -47,7 +47,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
             int rc = -1;
 
             // Verify presence in GAC.
-
+            LogService.Log.Info($"Verifying {Adapter.ComponentName} in GAC");
             // Adapter
             if ( V1Assemblies.AdapterV1010Spec.IsInGAC(out string path2GACAssemby))
             {
@@ -76,15 +76,15 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
         /// not per component.
         /// </summary>
         /// <returns></returns>
-        public override List<Setting> ReadConfiguration()
+        public override int ReadConfiguration(List<Setting> settings)
         {
             // TODO: error handling
             XDocument adfsConfig;
+            string foundvalue;
 
+            LogService.Log.Info($"Start Reading ADFS config file for V1 adapter.");
             string adfsCfgPath = FileService.OurDirCombine(FileDirectory.AdfsDir, SetupConstants.AdfsCfgFilename);
             adfsConfig = XDocument.Load(adfsCfgPath);
-
-            var settings = new List<Setting>();
 
             var adapterSettings = adfsConfig.Descendants(XName.Get(V1SettingsSectionName));
             var xmlSettings = adapterSettings.Descendants(XName.Get("setting")).ToList();
@@ -95,26 +95,26 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
 
             var nameAttribute = XName.Get("name");
 
-            ConfigSettings.SchacHomeSetting.FoundCfgValue = xmlSettings.FirstOrDefault(s => s.Attribute(nameAttribute)?.Value.Equals(V1Name_schacHomeOrganization) ?? false)?.Value;
-            settings.Add(ConfigSettings.SchacHomeSetting);
+            foundvalue = xmlSettings.FirstOrDefault(s => s.Attribute(nameAttribute)?.Value.Equals(V1Name_schacHomeOrganization) ?? false)?.Value;
+            settings.SetFoundSetting(ConfigSettings.SchacHomeSetting, foundvalue);
 
-            ConfigSettings.ADAttributeSetting.FoundCfgValue = xmlSettings.FirstOrDefault(s => s.Attribute(nameAttribute)?.Value.Equals(V1Name_ActiveDirectoryUserIdAttribute) ?? false)?.Value;
-            settings.Add(ConfigSettings.ADAttributeSetting);
+            foundvalue = xmlSettings.FirstOrDefault(s => s.Attribute(nameAttribute)?.Value.Equals(V1Name_ActiveDirectoryUserIdAttribute) ?? false)?.Value;
+            settings.SetFoundSetting(ConfigSettings.ADAttributeSetting, foundvalue);
 
-            ConfigSettings.SPEntityID.FoundCfgValue = kentorConfigSection?.Attribute(XName.Get(V1Attrib_EntityId))?.Value;
-            settings.Add(ConfigSettings.SPEntityID);
+            foundvalue = kentorConfigSection?.Attribute(XName.Get(V1Attrib_EntityId))?.Value;
+            settings.SetFoundSetting(ConfigSettings.SPEntityID, foundvalue);
 
-            ConfigSettings.SPPrimarySigningThumbprint.FoundCfgValue = xmlSettings.FirstOrDefault(s => s.Attribute(nameAttribute)?.Value.Equals(V1Name_SpSigningCertificate) ?? false)?.Value;
-            settings.Add(ConfigSettings.SPPrimarySigningThumbprint);
+            foundvalue = xmlSettings.FirstOrDefault(s => s.Attribute(nameAttribute)?.Value.Equals(V1Name_SpSigningCertificate) ?? false)?.Value;
+            settings.SetFoundSetting(ConfigSettings.SPPrimarySigningThumbprint, foundvalue);
 
             // Now IdP / SFO gateway
             // No need to fetch anything but entityID.
-            ConfigSettings.IdPEntityID.FoundCfgValue = identityProvider?.Attribute(XName.Get(V1Attrib_EntityId))?.Value;
-            settings.Add(ConfigSettings.IdPEntityID);
+            foundvalue = identityProvider?.Attribute(XName.Get(V1Attrib_EntityId))?.Value;
+            settings.SetFoundSetting(ConfigSettings.IdPEntityID, foundvalue);
 
             WriteCleanAdFsConfig(adfsConfig);
 
-            return settings;
+            return 0;
         }
 
         public override int WriteConfiguration(List<Setting> settings)
@@ -131,6 +131,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
 
         public void WriteCleanAdFsConfig(XDocument adfsConfig)
         {
+            LogService.Log.Info($"WriteCleanAdfsConfig start XML cleanup of V1 adapter.");
+
             var sectionDeclarations = adfsConfig.Descendants(XName.Get("section")).ToList();
             var nameAttribute = XName.Get("name");
 
@@ -152,6 +154,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
             // TODO: not urgent. We are leaving a probaly empty <applicationSettings /> behind. If empty, should remove.
             // And its <sectionGroup> too.
 
+            LogService.Log.Info($"WriteCleanAdfsConfig save 'cleaned' ADFS config file to disk.");
             var path = FileService.OurDirCombine(FileDirectory.Output, SetupConstants.AdfsCfgFilename);
             adfsConfig.Save(path);
         }

@@ -21,40 +21,30 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
         /// <returns></returns>
         public static bool CanUNinstall(SetupState setupstate, bool askConfirmation = true)
         {
-            bool doit = true;
+            bool doit;
 
             if (setupstate.DetectedVersion == V0Assemblies.AssemblyNullVersion)
             {
                 LogService.WriteFatal($"Cannot uninstall when this program did not detect a version.");
                 doit = false;
             }
-            else if ( setupstate.AdfsConfig.RegisteredAdapterVersion != V0Assemblies.AssemblyNullVersion)
+            // Everything else was OK now last confirmation question (if actually needed)
+            else if (askConfirmation)
             {
-                LogService.WriteWarning("   There is a registration in the ADFS configuration of an SFO MFA extension.");
-                LogService.WriteWarning("   In general, it is not a good idea to remove this extension.");
-                LogService.WriteWarning("   This ADFS server will then produce loading errors in the ADFS eventlog.");
-                LogService.WriteWarning("   ");
-                LogService.WriteWarning("   However, IFF you want to immediately (re)install a version of the SFO MFA extension.");
-                LogService.WriteWarning("   Then it could be OK (as cleanup first).");
-                Console.WriteLine();
-                if ( 'y' == AskYesNo.Ask($"Do you really want to UNINSTALL version: {setupstate.DetectedVersion}") )
+                if ('y' == AskYesNo.Ask($"Do you really want to UNINSTALL version: {setupstate.DetectedVersion}"))
                 {
                     doit = true;
+                    Console.WriteLine();
                 }
                 else
                 {
-                    LogService.WriteFatal("Will not Uninstall.");
+                    LogService.WriteFatal("OK. Will not Uninstall.");
                     doit = false;
                 }
-                Console.WriteLine();
             }
-            // Everything else was OK now last confirmation question (if actually needed)
-            else if ( askConfirmation &&
-                        ('y' == AskYesNo.Ask($"Do you really want to UNINSTALL version: {setupstate.DetectedVersion}"))
-                    )
+            else
             {
                 doit = true;
-                Console.WriteLine();
             }
 
             return doit;
@@ -62,15 +52,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
 
         public static bool CanInstall(SetupState setupstate)
         {
-            bool doit = false;
 
-            if ('y' == AskYesNo.Ask($"Do you want to install version: {setupstate.TargetVersionDescription}"))
-            {
-                doit = true;
-            }
-            // else: doit remains false
-
-            return doit;
+            return Messages.DoYouWantTO($"Do you want to install version: {setupstate.TargetVersionDescription}");
         }
 
         public static int ExtraChecks(SetupState setupstate)

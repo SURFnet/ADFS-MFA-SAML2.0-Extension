@@ -12,7 +12,50 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
 {
     public static class AdapterMaintenance
     {
-        public static int Uninstall(VersionDescription desc)
+        /// <summary>
+        /// Removes old registration if there, then registers the current version (if not yet there).
+        /// </summary>
+        /// <param name="registeredVerion">The version frm the ADFS configuration</param>
+        /// <returns>non zero if failed</returns>
+        public static int UpdateRegistration(Version registeredVerion)
+        {
+            int rc = 0;
+
+            // Update ADFS registration if required.
+            LogService.Log.Info($"UpdateRegistration from {registeredVerion} to {AllDescriptions.ThisVersion.DistributionVersion}");
+            if (registeredVerion != AllDescriptions.ThisVersion.DistributionVersion)
+            {
+                // need to register
+                if (registeredVerion.Major != 0)
+                {
+                    // first unregister old
+                    if (false == AdfsPSService.UnregisterAdapter())
+                    {
+                        rc = 8;
+                        Console.WriteLine();
+                        Console.WriteLine("Cannot register new adapter without Unregistering the previous.");
+                    }
+                }
+
+                if (rc == 0)
+                {
+                    if (false == AdfsPSService.RegisterAdapter(AllDescriptions.ThisVersion.Adapter))
+                    {
+                        rc = 8;
+                    }
+                    else
+                    {
+                        LogService.Log.Info("Registration of new adapter successfull.");
+                        Console.WriteLine();
+                        Console.WriteLine("Registration of new adapter successfull.");
+                    }
+                }
+            }
+
+            return rc;
+        }
+
+        public static int OldUninstall(VersionDescription desc)
         {
             int rc;
 
@@ -34,36 +77,15 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
         {
             int rc = -1;
 
-            if ( false==AdfsPSService.UnregisterAdapter() )
+            if (0 != (rc = desc.UnInstall()))
             {
-                LogService.WriteFatal("Removal from ADFS configuration database failed.");
+                LogService.WriteFatal("Uninstall FAILED.");
             }
-            // Stop ADFS if running.
-            else if ( 0 != (rc=AdfsServer.StopAdfsIfRunning()) )
-            {
-                LogService.WriteFatal("Stopping ADFS server failed. Uninstall not started.");
-            }
-            // UN install
             else
             {
-                // TODO, create better test if ADFS service really released its files.
-                // Start looking with: https://stackoverflow.com/questions/3790770/how-can-i-free-up-a-dll-that-is-referred-to-by-an-exe-that-isnt-running
-                //
-                Console.Write("Sleeping....");
-                Thread.Sleep(3000);
-                Console.WriteLine("\r                 \r");
-
-                if (0 != (rc = desc.UnInstall()))
-                {
-                    LogService.WriteFatal("Uninstall FAILED.");
-                }
-                else
-                {
-                    // Yes, OK.
-                    LogService.WriteWarning("Uninstall succesfull.");
-                    rc = 0;
-                }
-
+                // Yes, OK.
+                LogService.WriteWarning("Uninstall succesfull.");
+                rc = 0;
             }
 
             return rc;
@@ -73,36 +95,25 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
         {
             int rc = -1;
 
+            LogService.Log.Info($"start installation of '{desc.Adapter.ComponentName}'");
+
             if ( 0 != (rc = desc.WriteConfiguration(settings)) )
             {
                 LogService.WriteFatal("Writing Settings FAILED.");
                 LogService.WriteFatal("Installation ABORTED. Installation not started.");
             }
-            // check if ADFS stopped, otherwise stop it.
-            else if (0 != AdfsServer.StopAdfsIfRunning())
-            {
-                LogService.WriteFatal("Installation not started.");
-            }
+
             // Install
-            else if ( 0 != (rc=desc.Install()) )
+            if ( rc == 0 )
             {
-                LogService.WriteFatal("Installation FAILED. Must Start the ADFS server manually and/or do other manual recovery.");
-            }
-            // Start ADFS.
-            else if (0 != (rc = AdfsServer.StartAdFsService()))
-            {
-                LogService.WriteFatal("Starting ADFS server FAILED.");
-                LogService.WriteFatal("   Take a look at the ADFS server EventLog *and* the MFA extension EventLog.");
-            }
-            else if ( false == AdfsPSService.RegisterAdapter(desc.Adapter) )
-            {
-                LogService.WriteFatal("Adapter registration in ADFS failed. Check with Powershell what happened.");
-                LogService.WriteFatal("Use Get-AdfsAuthenticationProvider and related commands.");
-                rc = 8;
-            }
-            else
-            {
-                LogService.WriteWarning("Installation succesfull.");
+                if (0 != (rc = desc.Install()))
+                {
+                    LogService.WriteFatal("Installation FAILED. Must Start the ADFS server manually and/or do other manual recovery.");
+                }
+                else
+                {
+                    LogService.WriteWarning("Installation succesfull.");
+                }
             }
 
             return rc;

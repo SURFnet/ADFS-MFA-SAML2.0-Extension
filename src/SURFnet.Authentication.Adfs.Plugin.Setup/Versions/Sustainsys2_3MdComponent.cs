@@ -40,9 +40,10 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
             return rc;
         }
 
-        protected override List<Setting> ExctractSustainsysConfig()
+        protected override int ExctractSustainsysConfig(List<Setting> settings)
         {
-            List<Setting> settings = new List<Setting>();
+            int rc = 0;
+            string foundvalue;
 
             string sustainsysCfgPath = FileService.OurDirCombine(FileDirectory.AdfsDir, SetupConstants.SustainCfgFilename);
             var sustainsysConfig = XDocument.Load(sustainsysCfgPath);
@@ -50,28 +51,28 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
             var sustainsysSection = sustainsysConfig.Descendants(XName.Get(SustainsysSaml2Section)).FirstOrDefault();
 
             // SP entityID
-            ConfigSettings.SPEntityID.FoundCfgValue = sustainsysSection?.Attribute(XName.Get(EntityId))?.Value;
-            settings.Add(ConfigSettings.SPEntityID);
+            foundvalue = sustainsysSection?.Attribute(XName.Get(EntityId))?.Value;
+            settings.SetFoundSetting(ConfigSettings.SPEntityID, foundvalue);
 
             // First "serviceCertificates" element, then first the "add" certificate element and its "findValue" attribute
             var spcerts = sustainsysSection?.Descendants(SPCerts).FirstOrDefault();
             var firstcert = spcerts?.Descendants(XName.Get("add")).FirstOrDefault();
-            ConfigSettings.SPPrimarySigningThumbprint.FoundCfgValue = firstcert?.Attribute(XName.Get(CertFindValue))?.Value;
-            settings.Add(ConfigSettings.SPPrimarySigningThumbprint);
+            foundvalue = firstcert?.Attribute(XName.Get(CertFindValue))?.Value;
+            settings.SetFoundSetting(ConfigSettings.SPPrimarySigningThumbprint, foundvalue);
 
             // get the first IdP from the list
             var identityProviders = sustainsysSection?.Descendants(SustainIdentityProviders).FirstOrDefault();
             var identityProvider = identityProviders?.Descendants(XName.Get("add")).FirstOrDefault();
 
             // IdP entityID attribute
-            ConfigSettings.IdPEntityID.FoundCfgValue = identityProvider?.Attribute(XName.Get(EntityId))?.Value;
-            settings.Add(ConfigSettings.IdPEntityID);
+            foundvalue = identityProvider?.Attribute(XName.Get(EntityId))?.Value;
+            settings.SetFoundSetting(ConfigSettings.IdPEntityID, foundvalue);
 
             // metadataLocation attribute
-            ConfigSettings.IdPMetadataFilename.FoundCfgValue = identityProvider?.Attribute(XName.Get(MdLocationAttribute))?.Value;
-            settings.Add(ConfigSettings.IdPMetadataFilename);
+            foundvalue = identityProvider?.Attribute(XName.Get(MdLocationAttribute))?.Value;
+            settings.SetFoundSetting(ConfigSettings.IdPMetadataFilename, foundvalue);
 
-            return settings;
+            return rc;
         }
     }
 }

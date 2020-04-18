@@ -30,8 +30,6 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
             }
             else
             {
-                setupstate.FoundSettings = new List<Setting>(0); // nothing found yet.
-
                 if ( setupstate.DetectedVersion.Major == 0 )
                 {
                     // nothing detected! just return.
@@ -60,7 +58,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
 
                     VersionDescription versionDescriptor = setupstate.InstalledVersionDescription = heuristic.Description;
 
-                    if (null == (setupstate.FoundSettings = versionDescriptor.ReadConfiguration()))
+                    if ( 0!=versionDescriptor.ReadConfiguration(setupstate.FoundSettings) )
                     {
                         LogService.Log.Fatal("Fatal in ReadConfiguration().");
                         ok = false;

@@ -17,8 +17,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
     ///      must implement this interface.
     /// 
     /// Existing version:
-    /// - ISetupHandler.Verify() is called for detection verification.
-    /// - ISetupHandler.ReadConfiguration() (of old version).
+    /// - ISetupHandler.Verify() is called for installed version detection verification.
+    /// - ISetupHandler.ReadConfiguration() (of installed version).
     /// 
     /// If needed (missing or 'green field'):
     /// - read extra (new) configuration
@@ -40,14 +40,14 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
         int Verify();
 
         /// <summary>
-        /// Reads all source configuration parameters from the current active configuration file(s) and returns
-        /// file(s) and returns them as a list. Which higher layers can add to the global list.
+        /// Reads all source configuration parameters from the current active configuration file(s) and
+        /// and adds them to the list.
         /// The higher layer must stop and fail when any of the subordinates fails.
         /// It must read all the configuration data. It cannot assume that older or
         /// newer versions know how to decide on missing or additional parameters.
         /// </summary>
-        /// <returns>null on error, otherwise (possibly empty) list.</returns>
-        List<Setting> ReadConfiguration();
+        /// <returns>nonzero on error</returns>
+        int ReadConfiguration(List<Setting> settings);
 
         /// <summary>
         /// It should signal missing values for the new installation or update by adding

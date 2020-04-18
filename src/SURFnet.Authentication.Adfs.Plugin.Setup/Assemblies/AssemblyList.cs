@@ -8,7 +8,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Assemblies
 {
     public static class AssemblyList
     {
-        static public string[] GetAssemblies(string path, string filespec = null)
+        static public string[] GetAssemblies(string path, string filespec = null, SearchOption searchoption = SearchOption.TopDirectoryOnly)
         {
             string[] rc = null;
 
@@ -17,7 +17,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Assemblies
 
             try
             {
-                rc = Directory.GetFiles(path, filespec);
+                rc = Directory.GetFiles(path, filespec, searchoption);
             }
             catch (Exception ex)
             {

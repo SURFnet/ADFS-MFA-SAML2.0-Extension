@@ -18,6 +18,14 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
             FileVersion = new Version("1.0.1.0")
         };
 
+        static public readonly AssemblySpec AdapterV1000Spec = new AssemblySpec(SetupConstants.AdapterFilename, FileDirectory.GAC)
+        {
+            AssemblyFullName = "SURFnet.Authentication.Adfs.Plugin, Version=1.0.0.0, Culture=nl-NL, PublicKeyToken=5a7c03a5ab19fec3",
+            AssemblyVersion = new Version("1.0.0.0"),
+            ProductVersion = new Version("1.0.0.0"),
+            FileVersion = new Version("1.0.0.0")
+        };
+
         //
         // Below are here because they are in the GAC!! Which is not done in later versions.
         //

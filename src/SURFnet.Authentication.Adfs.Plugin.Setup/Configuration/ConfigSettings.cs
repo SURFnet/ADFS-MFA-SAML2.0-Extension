@@ -25,6 +25,28 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
             Setting.LinkChildren();
         }
 
+        public static void SetFoundSetting(this List<Setting> settings, Setting setting, string value)
+        {
+            if ( string.IsNullOrWhiteSpace( value ))
+            {
+                /// Central location to catch missing values in config file readers.
+                /// In general not a fatal error, the UI should ask for the value.
+                /// However, it is probably a bug!
+                LogService.Log.Warn($"    Trying to set '{setting.InternalName}' to IsNullOrWhiteSpace!!!");
+            }
+            else
+            {
+                string was = setting.FoundCfgValue;
+                if (string.IsNullOrWhiteSpace(was))
+                    LogService.Log.Info($"    Found '{setting.InternalName}' with Value: {value}");
+                else
+                    LogService.Log.Info($"    Resetting '{setting.InternalName}' with Value: {value}");
+
+                setting.FoundCfgValue = value;
+                settings.AddCfgSetting(setting);
+            }
+        }
+
         public static void AddCfgSetting(this List<Setting> settings, Setting setting)
         {
             if (! settings.Contains(setting) )

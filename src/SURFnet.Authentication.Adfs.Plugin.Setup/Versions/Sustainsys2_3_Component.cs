@@ -26,29 +26,30 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
         }
 
 
-        protected override List<Setting> ExctractSustainsysConfig()
+        protected override int ExctractSustainsysConfig(List<Setting> settings)
         {
-            List<Setting> settings = new List<Setting>();
+            int rc = 0;
+            string foundvalue;
 
             string sustainsysCfgPath = FileService.OurDirCombine(FileDirectory.AdfsDir, SetupConstants.SustainCfgFilename);
             var sustainsysConfig = XDocument.Load(sustainsysCfgPath);
 
             var sustainsysSection = sustainsysConfig.Descendants(XName.Get(SustainsysSaml2Section)).FirstOrDefault();
 
-            ConfigSettings.SPEntityID.FoundCfgValue = sustainsysSection?.Attribute(XName.Get(EntityId))?.Value;
-            settings.Add(ConfigSettings.SPEntityID);
+            foundvalue = sustainsysSection?.Attribute(XName.Get(EntityId))?.Value;
+            settings.SetFoundSetting(ConfigSettings.SPEntityID, foundvalue);
 
             var identityProviders = sustainsysSection?.Descendants(SustainIdentityProviders).FirstOrDefault();
 
             var identityProvider = identityProviders?.Descendants(XName.Get("add")).FirstOrDefault();
-            ConfigSettings.IdPEntityID.FoundCfgValue = identityProvider?.Attribute(XName.Get(EntityId))?.Value;
-            settings.Add(ConfigSettings.IdPEntityID);
+            foundvalue = identityProvider?.Attribute(XName.Get(EntityId))?.Value;
+            settings.SetFoundSetting(ConfigSettings.IdPEntityID, foundvalue);
 
             var certificate = identityProvider?.Descendants(XName.Get(SustainIdPSigningCert)).FirstOrDefault();
-            ConfigSettings.IdPSigningThumbPrint_1_Setting.FoundCfgValue = certificate?.Attribute(XName.Get(CertFindValue))?.Value;
-            settings.Add(ConfigSettings.IdPSigningThumbPrint_1_Setting);
+            foundvalue = certificate?.Attribute(XName.Get(CertFindValue))?.Value;
+            settings.SetFoundSetting(ConfigSettings.IdPSigningThumbPrint_1_Setting, foundvalue);
 
-            return settings;
+            return rc;
         }
     }
 }

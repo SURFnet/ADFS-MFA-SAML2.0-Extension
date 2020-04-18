@@ -96,60 +96,34 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
         /// Stops on first failure.
         /// </summary>
         /// <returns>Null on failure. Otherwise: All settings for all components.</returns>
-        public virtual List<Setting> ReadConfiguration()
+        public virtual int ReadConfiguration(List<Setting> settings)
         {
-            List<Setting> allSettings = new List<Setting>();
-            List<Setting> moreSettings;
+            int rc = 0;
 
             LogService.Log.Info($"VersionDescription.ReadConfiguration() for version: {DistributionVersion}");
 
-            moreSettings = Adapter.ReadConfiguration();
-            if (moreSettings != null )
+            LogService.Log.Info($"  Read Adapter configuration of '{Adapter.ComponentName}'");
+            if (0 != Adapter.ReadConfiguration(settings))
             {
-                LogService.Log.Info($"  Reading '{Adapter.ComponentName}' returned '{moreSettings.Count}' settings");
-                foreach ( var setting in moreSettings )
-                {
-                    allSettings.AddCfgSetting(setting);
-                }
-                
-            }
-            else
-            {
-                // Stop on first error
                 LogService.Log.Fatal($"  Reading Adapter ({Adapter.ComponentName}) configuration failed FileVersion: {Adapter.AdapterSpec.FileVersion}");
-                allSettings = null;
+                rc = -1;
             }
 
-            if (allSettings != null && Components != null && Components.Length>0)
+            if (Components != null && Components.Length > 0)
             {
-                LogService.Log.Info($"Start reading Components settings.");
                 foreach (var component in Components)
                 {
-                    moreSettings = component.ReadConfiguration();
-                    if (moreSettings != null)
+                    LogService.Log.Info($"  Read configuration of '{component.ComponentName}'");
+                    int tmprc = component.ReadConfiguration(settings);
+                    if (tmprc != 0)
                     {
-                        LogService.Log.Info($"  Reading '{component.ComponentName}' returned '{moreSettings.Count}' settings");
-                        foreach (var setting in moreSettings)
-                        {
-                            allSettings.AddCfgSetting(setting);
-                        }
-                    }
-                    else
-                    {
-                        // Stop on first error
                         LogService.Log.Fatal($"  Reading configuration failed for '{component.ComponentName}'");
-                        allSettings = null;
-                        break;
+                        rc = tmprc;
                     }
                 }
             }
 
-            if ( allSettings != null && allSettings.Count > 0 )
-            {
-                LogService.Log.Info($"In total found {allSettings.Count} different settings.");
-            }
-
-            return allSettings;
+            return rc;
         }
 
         /// <summary>

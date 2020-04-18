@@ -8,7 +8,13 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
 {
     public static class AllDescriptions
     {
-        static public readonly VersionDescription V1_0_1_0 = new V1DescriptionImp(V1Components.Adapter)
+        static public readonly VersionDescription V1_0_1_0 = new V1DescriptionImp(V1Components.V1_0_1_0Adapter)
+        {
+            Components = V1Components.Components,
+            ExtraAssemblies = null
+        };
+
+        static public readonly VersionDescription V1_0_0_0 = new V1DescriptionImp(V1Components.V1_0_0_0Adapter)
         {
             Components = V1Components.Components,
             ExtraAssemblies = null

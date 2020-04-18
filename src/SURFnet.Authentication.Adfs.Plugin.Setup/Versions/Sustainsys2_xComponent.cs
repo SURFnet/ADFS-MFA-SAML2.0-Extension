@@ -28,19 +28,20 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
             ConfigFilename = SetupConstants.SustainCfgFilename;
         }
 
-        public override List<Setting> ReadConfiguration()
+        public override int ReadConfiguration(List<Setting> settings)
         {
+            int rc;
             if (ConfigParameters == null) throw new ApplicationException("ConfigParameters cannot be null");
 
             LogService.Log.Info($"Reading Settings from {ConfigFilename} for '{ComponentName}'.");
 
-            var settings = ExctractSustainsysConfig();
-            if (settings == null)
+            rc = ExctractSustainsysConfig(settings);
+            if (rc != 0)
             {
                 LogService.WriteFatal($"  Reading settings from {ConfigFilename} for '{ComponentName}' failed.");
             }
 
-            return settings;
+            return rc;
         }
 
         public override int WriteConfiguration(List<Setting> allsettings)
@@ -59,6 +60,6 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
             return rc;
         }
 
-        protected abstract List<Setting> ExctractSustainsysConfig();
+        protected abstract int ExctractSustainsysConfig(List<Setting> settings);
     }
 }

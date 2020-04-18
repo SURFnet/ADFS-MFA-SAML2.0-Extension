@@ -246,6 +246,9 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
             if (string.IsNullOrWhiteSpace(filename)) ThrowOnNullFilename($"CopyToBackupFolder(..., {nameof(filename)})");
             if (string.IsNullOrWhiteSpace(fullSrcFilepath)) ThrowOnNullFilename($"CopyToBackupFolder({nameof(fullSrcFilepath)}, ...)");
 
+            LogService.Log.Info($" backup folder state: {backupInitialized}");
+            EnsureBackupFolder();
+
             int rc = -1;
 
             try

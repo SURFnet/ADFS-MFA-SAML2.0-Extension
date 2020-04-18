@@ -146,6 +146,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Assemblies
 
             try
             {
+                LogService.Log.Info($"RemoveFromGAC({Path.GetFileName(fullPathInBackup)})");
                 var publisher = new Publish();
                 publisher.GacRemove(fullPathInBackup);
                 rc = 0;
@@ -168,7 +169,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Assemblies
             if ( assemblyspec.IsInGAC(out string pathInGAC) )
             {
                 // Copy to backup.
-                if (0 == FileService.CopyToBackupFolder(pathInGAC, assemblyspec.InternalName))
+                if (0 == (rc=FileService.CopyToBackupFolder(pathInGAC, assemblyspec.InternalName)) )
                 {
                     // It is in the backup directory. Use that one to remove.
                     string pathInGac = FileService.OurDirCombine(FileDirectory.Backup, assemblyspec.InternalName);

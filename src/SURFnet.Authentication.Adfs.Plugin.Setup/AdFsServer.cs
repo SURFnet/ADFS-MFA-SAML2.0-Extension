@@ -256,6 +256,13 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
             Console.WriteLine();
             if ( rc == 0 )
             {
+                // TODO, create better test if ADFS service really released its files.
+                // Start looking with: https://stackoverflow.com/questions/3790770/how-can-i-free-up-a-dll-that-is-referred-to-by-an-exe-that-isnt-running
+                //
+                Console.Write("Sleeping....");
+                Thread.Sleep(3000);
+                Console.WriteLine("\r                 \r");
+
                 Console.WriteLine("Stopped ADFS service");
             }
             else
@@ -327,6 +334,17 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                 rc = 1; // timeout
             }
 
+            return rc;
+        }
+
+        public static int RestartAdFsService()
+        {
+            LogService.Log.Info("Restarting ADFS");
+            int rc = StartAdFsService();
+            if ( rc == 0 )
+            {
+                rc = StopAdFsService();
+            }
             return rc;
         }
 

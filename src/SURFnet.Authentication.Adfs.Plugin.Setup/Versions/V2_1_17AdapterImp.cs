@@ -26,17 +26,17 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
         }
 
 
-        public override List<Setting> ReadConfiguration()
+        public override int ReadConfiguration(List<Setting> settings)
         {
             LogService.Log.Info($"Reading Settings from {ConfigFilename} for '{ComponentName}'.");
 
-            var settings = ExctractAdapterConfig();
-            if (settings == null)
+            int rc = ExctractAdapterConfig(settings);
+            if (rc!=0)
             {
                 LogService.WriteFatal($"  Reading settings from {ConfigFilename} for '{ComponentName}' failed.");
             }
 
-            return settings;
+            return rc;
         }
 
         public override int WriteConfiguration(List<Setting> allsettings)
@@ -62,40 +62,39 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
         private const string AdapterCfgStepupIdP = "stepUpIdP";
 
 
-        private List<Setting> ExctractAdapterConfig()
+        private int ExctractAdapterConfig(List<Setting> settings)
         {
-            List<Setting> settings = new List<Setting>();
+            int rc = 0;
+            string foundvalue;
 
             string adapterCfgPath = FileService.OurDirCombine(FileDirectory.AdfsDir, SetupConstants.AdapterCfgFilename);
             var adapterConfig = XDocument.Load(adapterCfgPath);
-
+            var nameAttribute = XName.Get("name");
 
             var adapterSection = adapterConfig.Descendants(XName.Get(SetupConstants.XmlElementName.AdapterCfgSection));
 
-            var nameAttribute = XName.Get("name");
-
             // institution
             var institutionEl = adapterSection.Descendants(XName.Get(AdapterCfgInstitution)).FirstOrDefault();
-            ConfigSettings.SchacHomeSetting.FoundCfgValue = institutionEl?.Attribute(XName.Get(SetupConstants.XmlAttribName.AdapterSchacHomeOrganization))?.Value;
-            settings.Add(ConfigSettings.SchacHomeSetting);
+            foundvalue = institutionEl?.Attribute(XName.Get(SetupConstants.XmlAttribName.AdapterSchacHomeOrganization))?.Value;
+            settings.SetFoundSetting(ConfigSettings.SchacHomeSetting, foundvalue);
 
-            ConfigSettings.ADAttributeSetting.FoundCfgValue = institutionEl?.Attribute(XName.Get(SetupConstants.XmlAttribName.AdapterADAttribute))?.Value;
-            settings.Add(ConfigSettings.ADAttributeSetting);
+            foundvalue = institutionEl?.Attribute(XName.Get(SetupConstants.XmlAttribName.AdapterADAttribute))?.Value;
+            settings.SetFoundSetting(ConfigSettings.ADAttributeSetting, foundvalue);
 
             // localSP
             var localSPEl = adapterSection.Descendants(XName.Get(AdapterCfgLocalSP)).FirstOrDefault();
-            ConfigSettings.SPPrimarySigningThumbprint.FoundCfgValue = localSPEl?.Attribute(XName.Get(SetupConstants.XmlAttribName.AdapterSPSigner1))?.Value;
-            settings.Add(ConfigSettings.SPPrimarySigningThumbprint);
+            foundvalue = localSPEl?.Attribute(XName.Get(SetupConstants.XmlAttribName.AdapterSPSigner1))?.Value;
+            settings.SetFoundSetting(ConfigSettings.SPPrimarySigningThumbprint, foundvalue);
 
-            ConfigSettings.MinimaLoaSetting.FoundCfgValue = localSPEl?.Attribute(XName.Get(SetupConstants.XmlAttribName.AdapterMinimalLoa))?.Value;
-            settings.Add(ConfigSettings.MinimaLoaSetting);
+            foundvalue = localSPEl?.Attribute(XName.Get(SetupConstants.XmlAttribName.AdapterMinimalLoa))?.Value;
+            settings.SetFoundSetting(ConfigSettings.MinimaLoaSetting, foundvalue);
 
             // stepUpIdP
             var stepUpIdP = adapterSection.Descendants(XName.Get(AdapterCfgStepupIdP)).FirstOrDefault();
-            ConfigSettings.IdPSSOLocationSetting.FoundCfgValue = stepUpIdP?.Attribute(XName.Get(SetupConstants.XmlAttribName.AdapterSFOEndpoint))?.Value;
-            settings.Add(ConfigSettings.IdPSSOLocationSetting);
+            foundvalue = stepUpIdP?.Attribute(XName.Get(SetupConstants.XmlAttribName.AdapterSFOEndpoint))?.Value;
+            settings.SetFoundSetting(ConfigSettings.IdPSSOLocationSetting, foundvalue);
 
-            return settings;
+            return rc;
         }
 
     }

@@ -1,4 +1,5 @@
 ﻿using SURFnet.Authentication.Adfs.Plugin.Setup.Assemblies;
+using SURFnet.Authentication.Adfs.Plugin.Setup.Configuration;
 using SURFnet.Authentication.Adfs.Plugin.Setup.Models;
 using SURFnet.Authentication.Adfs.Plugin.Setup.Services;
 using System;
@@ -74,16 +75,14 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
         /// Or throws if there is a configurationfile, but no handler in derived class.
         /// </summary>
         /// <returns>an empty list</returns>
-        public virtual List<Setting> ReadConfiguration()
+        public virtual int ReadConfiguration(List<Setting> settings)
         {
-            List<Setting> rc = null;
+            int rc = 0; ;
 
-            if ( ConfigFilename == null )
+            if ( ConfigFilename != null )
             {
-                rc = new List<Setting>(0);  // nothing to add.
-            }
-            else
-            {
+                rc = -1;
+                LogService.Log.Fatal($"BUG! Stepup component ({ComponentName}) with a configuration filename, but no reader!");
                 throw new NotImplementedException($"Whoops! Stepup component ({ComponentName}) with a configuration filename, but no reader!");
             }
 
@@ -99,19 +98,13 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
                 LogService.Log.Info($"Reporting Required Settings for '{ComponentName}'");
                 foreach ( string name in ConfigParameters )
                 {
+                    LogService.Log.Info($"   requires: {name}.");
                     Setting setting = Setting.GetSettingByName(name);
                     setting.IsMandatory = true;
-                    if ( settings.Contains(setting) )
-                    {
-                        LogService.Log.Info($"   {name} was already there.");
-                    }
-                    else
-                    {
-                        LogService.Log.Info($"   adding {name}.");
-                        settings.Add(setting);
-                    }
+                    settings.AddCfgSetting(setting);
                 }
             }
+
             return rc;
         }
 
@@ -192,7 +185,9 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
             // Delete Configuration file
             if ( null != ConfigFilename )
             {
-                rc = FileService.Copy2BackupAndDelete(ConfigFilename, ConfigFileDirectory);
+                int tmprc = FileService.Copy2BackupAndDelete(ConfigFilename, ConfigFileDirectory);
+                if (tmprc != 0)
+                    rc = tmprc;
             }
 
             return rc;
