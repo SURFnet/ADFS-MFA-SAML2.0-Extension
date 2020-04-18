@@ -1,4 +1,5 @@
-﻿using SURFnet.Authentication.Adfs.Plugin.Setup.Models;
+﻿using SURFnet.Authentication.Adfs.Plugin.Setup.Configuration;
+using SURFnet.Authentication.Adfs.Plugin.Setup.Models;
 using SURFnet.Authentication.Adfs.Plugin.Setup.Question;
 using SURFnet.Authentication.Adfs.Plugin.Setup.Services;
 using SURFnet.Authentication.Adfs.Plugin.Setup.Versions;
@@ -19,32 +20,56 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
         /// </summary>
         /// <param name="setupstate"></param>
         /// <returns></returns>
-        public static bool CanUNinstall(SetupState setupstate, bool askConfirmation = true)
+        public static bool CanUNinstall(SetupState setupstate)
         {
-            bool doit;
+            bool doit = false;
 
-            if (setupstate.DetectedVersion == V0Assemblies.AssemblyNullVersion)
-            {
-                LogService.WriteFatal($"Cannot uninstall when this program did not detect a version.");
-                doit = false;
-            }
             // Everything else was OK now last confirmation question (if actually needed)
-            else if (askConfirmation)
+            if ( setupstate.RegisteredVersionInAdfs.Major == 0)
             {
-                if ('y' == AskYesNo.Ask($"Do you really want to UNINSTALL version: {setupstate.DetectedVersion}"))
+                if (Messages.DoYouWantTO($"Do you really want to UNINSTALL version: {setupstate.DetectedVersion}?"))
                 {
                     doit = true;
-                    Console.WriteLine();
-                }
-                else
-                {
-                    LogService.WriteFatal("OK. Will not Uninstall.");
-                    doit = false;
                 }
             }
             else
             {
-                doit = true;
+                // Some registration in ADFS configuration.
+                if ( setupstate.AdfsConfig.SyncProps.IsPrimary )
+                {
+                    // primary
+                    Console.WriteLine("Primary computer in the farm with an MFA registration the ADFS configuration.");
+                    Console.WriteLine("Not removing MFA the registration in ADFS will produce messages in the evenlog.");
+                    if ( Messages.DoYouWantTO("Unregister the SFO MFA extension configuration for all servers in the farm?") )
+                    {
+                        doit = true;
+                        if ( AdfsPSService.UnregisterAdapter() )
+                        {
+                            setupstate.AdfsConfig.RegisteredAdapterVersion = V0Assemblies.AssemblyNullVersion;
+                            if ( ! Messages.DoYouWantTO("Continue with Uninstall?") )
+                            {
+                                // abandon as the admin said
+                                doit = false;
+                            }
+                        }
+                        else
+                        {
+                            // Unregistration failed.
+                            doit = false;
+                        }
+                    }
+                }
+                else
+                {
+                    // secondary, cannot Unregister
+
+                    Console.WriteLine("Secondary computer in the farm with MFA registration the ADFS configuration.");
+                    Console.WriteLine("Uninstalling the MFA extension will produce errors in the evenlog.");
+                    if (Messages.DoYouWantTO($"Do you really want to UNINSTALL version: {setupstate.DetectedVersion}?"))
+                    {
+                        doit = true;
+                    }
+                }
             }
 
             return doit;

@@ -55,25 +55,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
             return rc;
         }
 
-        public static int OldUninstall(VersionDescription desc)
-        {
-            int rc;
-
-            rc = CommonUninstall(desc);
-            if ( rc == 0 )
-            {
-                // Start ADFS.
-                if (0 != (rc = AdfsServer.StartAdFsService()))
-                {
-                    LogService.WriteFatal("Starting ADFS server FAILED.");
-                    LogService.WriteFatal("   Take a look at the ADFS server EventLog.");
-                }
-            }
-
-            return rc;
-        }
-
-        private static int CommonUninstall(VersionDescription desc)
+        public static int Uninstall(VersionDescription desc)
         {
             int rc = -1;
 
@@ -124,7 +106,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
             int rc = -1;
 
             // UN install
-            if (0 != CommonUninstall(oldDesc))
+            if (0 != Uninstall(oldDesc))
             {
                 LogService.WriteFatal("Uninstall FAILED. Installation not started.");
                 LogService.WriteFatal("Must Start the ADFS server manually and/or do other manual recovery.");

@@ -86,23 +86,31 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                 /**** UN-INSTALL ****/
                 else if ( 0 != (setupstate.mode & SetupFlags.Uninstall) )
                 {
-                    // TODONOW: implemnt new!
-                    if ( setupstate.DetectedVersion.Major == 0 )
+                    if (setupstate.DetectedVersion.Major == 0)
                     {
                         LogService.WriteFatal("No installed version. Cannot \"Uninstall\"!");
                         rc = 4;
                     }
+                    else if (false == RulesAndChecks.CanUNinstall(setupstate))
+                    {
+                        rc = 4;
+                    }
+                    else if (0!=AdfsServer.StopAdFsService())
+                    {
+                        rc = 8;
+                        Console.WriteLine("Cannot uninstall without stopping ADFS.");
+                    }
+                    else if ( 0!=(rc= AdapterMaintenance.Uninstall(setupstate.InstalledVersionDescription)) )
+                    {
+                        rc = 8;
+                    }
+                    else if ( 0!=(rc=AdfsServer.StartAdFsService()) )
+                    {
+                        Console.WriteLine("Eventlog?????");
+                    }
                     else
                     {
-                        if ( RulesAndChecks.CanUNinstall(setupstate) )
-                        {
-                            //setupstate.InstalledVersionDescription.UnInstall();
-                            AdapterMaintenance.OldUninstall(setupstate.InstalledVersionDescription);
-                        }
-                        else
-                        {
-                            rc = 4;
-                        }
+                        Messages.SayAllSeemsOK();
                     }
                 }
                 /**** INSTALL ****/
