@@ -23,20 +23,40 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
             AdfsConfig = new AdfsConfiguration();
             FoundSettings = new List<Setting>();
         }
+
         public SetupFlags mode = SetupFlags.Check;
 
         public readonly Version SetupProgramVersion;
 
-        public Version RegisteredVersionInAdfs => AdfsConfig.RegisteredAdapterVersion;
-        public Version DetectedVersion = V0Assemblies.AssemblyNullVersion;         // Set in DetectAndReadCfg
-
         public List<Dictionary<string, string>> IdPEnvironments;
+
+
+        public VersionDescription InstalledVersionDescription { get; private set; }
+        public Version DetectedVersion
+        {
+            get
+            {
+                if (null == InstalledVersionDescription)
+                    return V0Assemblies.AssemblyNullVersion;
+                else
+                    return InstalledVersionDescription.DistributionVersion;
+            }
+        }
+
+        public readonly List<Setting> FoundSettings;
+
         public readonly AdfsConfiguration AdfsConfig;
+        public Version RegisteredVersionInAdfs => AdfsConfig.RegisteredAdapterVersion;
 
+        // removed for the time being. Cannot (yet) write old configurations
+        //public readonly VersionDescription TargetVersionDescription;
 
-        public VersionDescription InstalledVersionDescription;
-        public VersionDescription TargetVersionDescription;
-
-        public readonly  List<Setting> FoundSettings;
+        public void SetDetectedVersionDescription(VersionDescription versionDesc)
+        {
+            if ( versionDesc!=null )
+            {
+                InstalledVersionDescription = versionDesc;
+            }
+        }
     }
 }

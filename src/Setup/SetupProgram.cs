@@ -52,18 +52,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
 
             try
             {
-                if (false == AdfsServer.IsAdfsRunning())
-                {
-                    Console.WriteLine("Please start the ADFS service!");  // second check for debug build
-                    rc = 8;
-                }
-                else if (false == DetectAndRead.TryDetectAndReadCfg(setupstate))
-                {
-                    rc = 8;
-                    Console.WriteLine("Stopping after attempted Version detection.");
-                }
                 /**** CHECKING ONLY ****/
-                else if (setupstate.mode == SetupFlags.Check)
+                if (setupstate.mode == SetupFlags.Check)
                 {
                     rc = RulesAndChecks.ExtraChecks(setupstate);
                 }
@@ -118,10 +108,11 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                 /**** INSTALL ****/
                 else if (0 != (setupstate.mode & SetupFlags.Install) )
                 {
+                    //setupstate.TargetVersionDescription = AllDescriptions.ThisVersion;
+
                     // only this version, because the configuration writers are absent for older versions
                     LogService.Log.Info("Start an installation.");
-                    setupstate.TargetVersionDescription = AllDescriptions.ThisVersion;
-                    if (0 != SettingsChecker.VerifySettingsComplete(setupstate))
+                    if (0 != SettingsChecker.VerifySettingsComplete(setupstate, AllDescriptions.ThisVersion))
                     {
                         // SETTING PROBLEM
                         rc = 8;
@@ -241,14 +232,15 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                 /**** RECONFIGURE ****/
                 else if (0 != (setupstate.mode & SetupFlags.Reconfigure))
                 {
-                    //setupstate.TargetVersionDescription = setupstate.InstalledVersionDescription;
-                    setupstate.TargetVersionDescription = setupstate.InstalledVersionDescription ?? AllDescriptions.ThisVersion;
+                    // temp gone
+                    //setupstate.TargetVersionDescription = setupstate.InstalledVersionDescription ?? AllDescriptions.ThisVersion;
+
                     if (setupstate.DetectedVersion.Major == 0)
                     {
                         LogService.WriteFatal("No (correct) installed version. Cannot \"Reconfigure\"!");
                         rc = 4;
                     }
-                    else if (0 != SettingsChecker.VerifySettingsComplete(setupstate))
+                    else if (0 != SettingsChecker.VerifySettingsComplete(setupstate, AllDescriptions.ThisVersion))
                     {
                         // SETTING PROBLEM
                         rc = 8;
@@ -261,9 +253,11 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                     }
                     else
                     {
-                        setupstate.TargetVersionDescription = setupstate.InstalledVersionDescription;
+                        // temp removal
+                        //setupstate.TargetVersionDescription = setupstate.InstalledVersionDescription;
+
                         Console.WriteLine("Reconfiguriguration started.");
-                        rc = AdapterMaintenance.ReConfigure(setupstate.TargetVersionDescription,
+                        rc = AdapterMaintenance.ReConfigure(AllDescriptions.ThisVersion,
                                             setupstate.FoundSettings);
                         if ( rc == 0 )
                         {
@@ -327,8 +321,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
             }
 
             LogService.Log.Info("Setup program version: " + setupstate.SetupProgramVersion);
-            LogService.Log.Info("Environment.OSVersion.VersionString: " + Environment.OSVersion.VersionString);
-            LogService.Log.Info("Environment.OSVersion.Version: " + Environment.OSVersion.Version);
+            // TODO: get version of fundamental file.
 
             try
             {
@@ -340,40 +333,14 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                     // Darn, no error check at low level?
                     throw new ApplicationException("Some error in the SFO server (IdP) environment descriptions.");
                 }
-
-                ServiceController svcController = AdfsServer.CheckAdFsService(out setupstate.AdfsConfig.AdfsProductVersion);
-                if (svcController == null)
+                else if (false == DetectAndRead.TryDetectAndReadCfg(setupstate))
                 {
-                    // ai, no ADFS service on this machine.
-#if DEBUG
-                    setupstate.AdfsConfig.AdfsProps = new AdfsProperties()
-                    {
-                        HostName = "server7.com",
-                        HttpsPort = 443,
-                        // FederationPassiveAddress = ""
-                    };
-                    setupstate.AdfsConfig.SyncProps = new AdfsSyncProperties()
-                    {
-                        Role = "PrimaryComputer"
-                    };
-                    setupstate.AdfsConfig.RegisteredAdapterVersion = new Version(1, 0, 1, 0);
-#else
-                    // TODO: must log Error !
-                    //       And remove test in main!!
                     rc = 8;
-#endif
+                    Console.WriteLine("Stopping after attempted Version detection.");
                 }
-                else if (false == AdfsPSService.GetAdfsConfiguration(setupstate.AdfsConfig))
+                else if ( 0!=DetectAndRead.TryAndDetectAdfs(setupstate) )
                 {
-                    rc = 8; // Some ADFS access failure.
-                }
-                else if (setupstate.AdfsConfig.RegisteredAdapterVersion > setupstate.SetupProgramVersion)
-                {
-                    Console.WriteLine("ADFS restered version v{0} is higher than this program v{1}.",
-                                setupstate.AdfsConfig.RegisteredAdapterVersion,
-                                setupstate.SetupProgramVersion);
-                    Console.WriteLine("Use a newer Setup program.");
-                    rc = 4;
+                    rc = 8;
                 }
                 else
                 {

@@ -42,7 +42,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
         {
             SvcController = null;
 
-            adfsProductVersion = GetAdfsFileVersion();
+            adfsProductVersion = GetAdfsProductVersion();
             if ( adfsProductVersion.Major == 0 )
             {
                 // No need to check the rest...
@@ -64,7 +64,6 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                 {
                     SvcController = tmpController;
                 }
-
             }
             catch (InvalidOperationException ex1)
             {
@@ -83,7 +82,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
             return SvcController;
         }
 
-        private static Version GetAdfsFileVersion()
+        private static Version GetAdfsProductVersion()
         {
             // This is some dereadfull mess. The Windows file explorer displays a different FileVersion
             // then my AssemblySpec!! Looking at the exact values it is some ADFS madness??

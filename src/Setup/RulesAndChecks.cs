@@ -50,10 +50,10 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
             return doit;
         }
 
-        public static bool CanInstall(SetupState setupstate)
+        public static bool CanInstall(Version version)
         {
 
-            return Messages.DoYouWantTO($"Do you want to install version: {setupstate.TargetVersionDescription}");
+            return Messages.DoYouWantTO($"Do you want to install version: {version}");
         }
 
         public static int ExtraChecks(SetupState setupstate)

@@ -48,7 +48,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
             // TODO: Maybe move to Setup assembly
             string rc;
 
-            string s = text.PadLeft(25);
+            string s = text.PadLeft(30);
 
             if (version.Major == 0)
             {
