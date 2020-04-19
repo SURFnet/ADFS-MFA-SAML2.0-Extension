@@ -339,10 +339,10 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
         public static int RestartAdFsService()
         {
             LogService.Log.Info("Restarting ADFS");
-            int rc = StartAdFsService();
+            int rc = StopAdFsService();
             if ( rc == 0 )
             {
-                rc = StopAdFsService();
+                rc = StartAdFsService();
             }
             return rc;
         }

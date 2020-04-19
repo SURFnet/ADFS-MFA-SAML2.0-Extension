@@ -14,9 +14,15 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
 
         public static readonly AdapterComponent V1_0_0_0Adapter = new V1AdapterImp(V1Assemblies.AdapterV1000Spec);
 
-        public static readonly StepupComponent[] Components = new StepupComponent[]
+        public static readonly StepupComponent[] V1010Components = new StepupComponent[]
         {
-            new Kentorv0_21_Component(),
+            new Kentorv0_21_Component(V1Assemblies.Kentor0_21_2Spec),
+
+            new Log4netV2_0_8GAC()
+        };
+        public static readonly StepupComponent[] V1000Components = new StepupComponent[]
+        {
+            new Kentorv0_21_Component(V1Assemblies.Kentor0_21_2_V1000Spec),
 
             new Log4netV2_0_8GAC()
         };

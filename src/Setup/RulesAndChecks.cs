@@ -38,14 +38,18 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                 if ( setupstate.AdfsConfig.SyncProps.IsPrimary )
                 {
                     // primary
-                    Console.WriteLine("Primary computer in the farm with an MFA registration the ADFS configuration.");
-                    Console.WriteLine("Not removing MFA the registration in ADFS will produce messages in the evenlog.");
+                    Console.WriteLine("*******");
+                    Console.WriteLine("  Primary computer in the farm with an MFA registration the ADFS configuration.");
+                    Console.WriteLine("  Not removing this MFA registration from ADFS will produce messages in the evenlog.");
+                    Console.WriteLine();
                     if ( Messages.DoYouWantTO("Unregister the SFO MFA extension configuration for all servers in the farm?") )
                     {
                         doit = true;
                         if ( AdfsPSService.UnregisterAdapter() )
                         {
                             setupstate.AdfsConfig.RegisteredAdapterVersion = V0Assemblies.AssemblyNullVersion;
+                            Console.WriteLine("\"Unregister\" successful, the ADFS eventlog should no longer show loading this adapter.");
+                            Console.WriteLine();
                             if ( ! Messages.DoYouWantTO("Continue with Uninstall?") )
                             {
                                 // abandon as the admin said
@@ -113,7 +117,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
             }
 
             Console.WriteLine();
-            Console.WriteLine("Checked the installation: did not find any errors.");
+            Console.WriteLine("Checked the installation: did not find any blocking errors.");
 
             return rc;
         }

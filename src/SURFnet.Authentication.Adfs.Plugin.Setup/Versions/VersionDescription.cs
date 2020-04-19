@@ -60,7 +60,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
                 LogService.Log.Info($"Checking Components:");
                 foreach (var cspec in Components)
                 {
-                    LogService.Log.Info($"Checking: {cspec.ComponentName}");
+                    LogService.Log.Info($"Checking: '{cspec.ComponentName}'");
                     tmprc = cspec.Verify();
                     if (tmprc != 0 )
                     {
@@ -76,11 +76,11 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
                 LogService.Log.Info($"Checking ExtraAssemblies");
                 foreach (var aspec in ExtraAssemblies)
                 {
-                    LogService.Log.Info($"Checking: {aspec.InternalName}, version: {aspec.FileVersion}");
+                    LogService.Log.Info($"Checking: '{aspec.InternalName}', version: {aspec.FileVersion}");
                     tmprc = aspec.Verify(aspec.FilePath);
                     if (tmprc != 0)
                     {
-                        LogService.Log.Fatal($"  Verify() on {aspec.InternalName} failed!");
+                        LogService.Log.Fatal($"  Verify() on '{aspec.InternalName}' failed!");
                         if (rc == 0)
                             rc = tmprc;
                     }
@@ -105,7 +105,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
             LogService.Log.Info($"  Read Adapter configuration of '{Adapter.ComponentName}'");
             if (0 != Adapter.ReadConfiguration(settings))
             {
-                LogService.Log.Fatal($"  Reading Adapter ({Adapter.ComponentName}) configuration failed FileVersion: {Adapter.AdapterSpec.FileVersion}");
+                LogService.Log.Fatal($"  Reading Adapter '{Adapter.ComponentName}' configuration failed FileVersion: {Adapter.AdapterSpec.FileVersion}");
                 rc = -1;
             }
 

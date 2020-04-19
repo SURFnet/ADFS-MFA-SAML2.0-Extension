@@ -55,6 +55,10 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
                 {
                     Description = AllDescriptions.V1_0_1_0;
                 }
+                else if (found == AllDescriptions.V1_0_0_0.DistributionVersion)
+                {
+                    Description = AllDescriptions.V1_0_0_0;
+                }
 
                 if (found.Major != 0)
                 {

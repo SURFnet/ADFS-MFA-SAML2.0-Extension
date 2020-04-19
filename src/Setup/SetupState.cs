@@ -32,12 +32,19 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
 
 
         public VersionDescription InstalledVersionDescription { get; private set; }
+        private Version AdapterOnly { get; set; }
         public Version DetectedVersion
         {
             get
             {
+                // :-) InstalledVersionDescription.?DistributionVersion ?? AdapterOnly ?? V0Assemblies.AssemblyNullVersion;
                 if (null == InstalledVersionDescription)
-                    return V0Assemblies.AssemblyNullVersion;
+                {
+                    if (null == AdapterOnly)
+                        return V0Assemblies.AssemblyNullVersion;
+                    else
+                        return AdapterOnly;
+                }
                 else
                     return InstalledVersionDescription.DistributionVersion;
             }
@@ -48,6 +55,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
         public readonly AdfsConfiguration AdfsConfig;
         public Version RegisteredVersionInAdfs => AdfsConfig.RegisteredAdapterVersion;
 
+        public bool IsPrimaryComputer => AdfsConfig.SyncProps.IsPrimary;
+
         // removed for the time being. Cannot (yet) write old configurations
         //public readonly VersionDescription TargetVersionDescription;
 
@@ -55,7 +64,18 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
         {
             if ( versionDesc!=null )
             {
+                AdapterOnly = null;
                 InstalledVersionDescription = versionDesc;
+            }
+        }
+
+        public void SetAdapterVersionOnly(Version version)
+        {
+            if (InstalledVersionDescription == null)
+                AdapterOnly = version;
+            else
+            {
+                throw new ApplicationException("BUG! Should not set AdapterVersionOnly if there is a complete version description.");
             }
         }
     }

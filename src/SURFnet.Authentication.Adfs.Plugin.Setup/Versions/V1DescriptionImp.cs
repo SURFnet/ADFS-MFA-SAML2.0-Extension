@@ -44,24 +44,40 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
 
         public override int Verify()
         {
-            int rc = -1;
+            int rc = 0;
 
             // Verify presence in GAC.
             LogService.Log.Info($"Verifying {Adapter.ComponentName} in GAC");
             // Adapter
-            if ( V1Assemblies.AdapterV1010Spec.IsInGAC(out string path2GACAssemby))
+            if ( ! Adapter.AdapterSpec.IsInGAC(out string path2GACAssemby))
             {
-                LogService.Log.Info($"Found {V1Assemblies.AdapterV1010Spec.InternalName} in GAC path: {path2GACAssemby}");
+                rc = -1;
+            }
+            else
+            {
+                LogService.Log.Info($"  Found '{Adapter.ComponentName}' in GAC path: {path2GACAssemby}");
+            }
 
-                // Kentor
-                if ( V1Assemblies.Kentor0_21_2Spec.IsInGAC(out path2GACAssemby) )
+
+            if ((Components != null) && (Components.Length > 0))
+            {
+                foreach (var component in Components)
                 {
-                    LogService.Log.Info($"Found {V1Assemblies.Kentor0_21_2Spec.InternalName} in GAC path: {path2GACAssemby}");
-
-                    if (V1Assemblies.Log4Net2_0_8_GACSpec.IsInGAC(out path2GACAssemby))
+                    LogService.Log.Info($"Checking '{component.ComponentName}' in GAC.");
+                    if ((component.Assemblies != null) && (component.Assemblies.Length > 0))
                     {
-                        LogService.Log.Info($"Found {V1Assemblies.Log4Net2_0_8_GACSpec.InternalName} in GAC path: {path2GACAssemby}");
-                        rc = 0;
+                        foreach (var spec in component.Assemblies)
+                        {
+                            LogService.Log.Info($"  Checking '{spec.InternalName}' in GAC.");
+                            if ( spec.IsInGAC(out path2GACAssemby) )
+                            {
+                                LogService.Log.Info($"    Found '{spec.InternalName}' in GAC path: {path2GACAssemby}");
+                            }
+                            else
+                            {
+                                rc = -1;
+                            }
+                        }
                     }
                 }
             }
@@ -159,5 +175,25 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
             adfsConfig.Save(path);
         }
 
+        public override int UnInstall()
+        {
+            int rc = 0;
+
+            LogService.Log.Info($"Uninstalling v1.0.*");
+
+            // Copy clean configuration to ADFS directory
+            rc = FileService.FileCopy(FileDirectory.Output, FileDirectory.AdfsDir, SetupConstants.AdfsCfgFilename);
+            if (rc==0)
+            {
+                LogService.Log.Info($"Copied clean ADFS file to ADFS directory.");
+                rc = base.UnInstall();
+            }
+            else
+            {
+                LogService.WriteFatal("Failed to copy the ADFS confiraution file to the ADFS directory after cleanup");
+            }
+
+            return rc;
+        }
     }
 }

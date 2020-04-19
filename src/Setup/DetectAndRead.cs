@@ -32,17 +32,21 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
             {
                 if ( tempVersion.Major == 0 )
                 {
-                    Console.WriteLine(tempVersion.VersionToString("Installed version"));
                     // nothing detected! just return.
+                    Console.WriteLine(tempVersion.VersionToString("Installed version"));
                 }
                 else if ( tempVersion > setupstate.SetupProgramVersion )
                 {
+                    // Detected too new
                     Console.WriteLine(tempVersion.VersionToString("Installed version"));
                     ok = false;  // error was already reported in heuristic.Probe()
                 }
                 else if ( heuristic.VerifyIsOK == false )
                 {
+                    // Adapter found but something is missing or wrong
+                    setupstate.SetAdapterVersionOnly(tempVersion);
                     Console.WriteLine(setupstate.DetectedVersion.VersionToString("Found Adapter")+"   However, VERIFY FAILED");
+                    ok = false;
                 }
                 else
                 {
@@ -76,7 +80,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                 cfg.SyncProps.Role = "PrimaryComputer";
                 // do not set a version for the rest, will produce maximal UI.
 
-                Console.WriteLine(setupstate.AdfsConfig.RegisteredAdapterVersion.VersionToString(FoundInAdfsText));
+                Console.WriteLine(setupstate.AdfsConfig.RegisteredAdapterVersion.VersionToString(FoundInAdfsText, true));
                 SetupIO.WriteAdfsInfo(setupstate.AdfsConfig);
 #else
                 if (setupstate.AdfsConfig.AdfsProductVersion.Major == 0)
@@ -97,7 +101,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                 {
                     setupstate.AdfsConfig.AdfsProductVersion = adfsProductVersion;
 
-                    Console.WriteLine(setupstate.AdfsConfig.RegisteredAdapterVersion.VersionToString(FoundInAdfsText));
+                    Console.WriteLine(setupstate.AdfsConfig.RegisteredAdapterVersion.VersionToString(FoundInAdfsText, true));
                     SetupIO.WriteAdfsInfo(setupstate.AdfsConfig);
 
                     if (setupstate.AdfsConfig.RegisteredAdapterVersion > setupstate.SetupProgramVersion)

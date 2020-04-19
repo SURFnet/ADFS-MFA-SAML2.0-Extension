@@ -38,25 +38,27 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Assemblies
                 foreach ( string filepath in result )
                 {
                     AssemblySpec found = AssemblySpec.GetAssemblySpec(filepath);
-                    string warning = $"Looking for: {assembly.AssemblyFullName}\r\nFound: {found.AssemblyFullName}";
+                    string warning1 = $"Looking for: {assembly.AssemblyFullName}";
+                    string warning2 = $"Found: {found.AssemblyFullName}";
                     if ( listall )
                     {
-                        LogService.WriteWarning(warning);
+                        LogService.WriteWarning(warning1);
+                        LogService.WriteWarning(warning2);
                     }
 
                     if ( 0!=assembly.Verify(found) )
                     {
                         if ( ! listall )
                         {
-                            // only one and it was a mismatch.
-                            LogService.WriteWarning(warning);
+                            LogService.WriteWarning(warning1);
+                            LogService.WriteWarning(warning2);
                         }
                     }
                     else
                     {
                         // Match on versions
                         // Now lookup on FullName
-                        bool isReallyGAC = IsAssemblyInGAC(assembly.AssemblyFullName);
+                        bool isReallyGAC = IsGACAssemblyLoadable(assembly.AssemblyFullName);
                         if ( isReallyGAC )
                         {
                             gacpath = filepath;
@@ -64,11 +66,14 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Assemblies
                         }
                         else
                         {
-                            // no idea what is happening! Must stop.
+                            // There was an assembly, But could not load it for reflection.
+                            // Most probably a signature or Culture problem...
+                            // Must stop.
                             if (!listall)
                             {
                                 // only one and althoug version match, it is not loadable. Cannot be for us!
-                                LogService.WriteWarning(warning);
+                                LogService.WriteWarning(warning1);
+                                LogService.WriteWarning(warning2);
                             }
                             LogService.WriteFatal("Version match. However, not loadable!!");
                         }
@@ -80,7 +85,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Assemblies
             return rc;
         }
 
-        public static bool IsAssemblyInGAC(string assemblyFullName)
+        public static bool IsGACAssemblyLoadable(string assemblyFullName)
         {
             // See:   https://stackoverflow.com/questions/19456547/how-to-programmatically-determine-if-net-assembly-is-installed-in-gac
             // PL: I would like the other method from the link above, but I had no time to verify and we do have the strong name....

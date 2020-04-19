@@ -47,7 +47,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
 
             if (false == ConfigurationFileService.ReplaceInXmlCfgFile(ConfigFilename, ConfigParameters, allsettings))
             {
-                LogService.WriteFatal($"Content problem(s) in {ConfigFilename} for component: {ComponentName}");
+                LogService.WriteFatal($"Content problem(s) in {ConfigFilename} for component: '{ComponentName}'");
                 rc = -1;
             }
 

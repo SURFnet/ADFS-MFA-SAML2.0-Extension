@@ -20,7 +20,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
 
         static public readonly AssemblySpec AdapterV1000Spec = new AssemblySpec(SetupConstants.AdapterFilename, FileDirectory.GAC)
         {
-            AssemblyFullName = "SURFnet.Authentication.Adfs.Plugin, Version=1.0.0.0, Culture=nl-NL, PublicKeyToken=5a7c03a5ab19fec3",
+            AssemblyFullName = "SURFnet.Authentication.Adfs.Plugin, Version=1.0.0.0, Culture=nl-NL, PublicKeyToken=40c669b8f0ea2c14",
             AssemblyVersion = new Version("1.0.0.0"),
             ProductVersion = new Version("1.0.0.0"),
             FileVersion = new Version("1.0.0.0")
@@ -32,6 +32,14 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
         static public readonly AssemblySpec Kentor0_21_2Spec = new AssemblySpec("Kentor.AuthServices.dll", FileDirectory.GAC)
         {
             AssemblyFullName = "Kentor.AuthServices, Version=0.21.2.0, Culture=neutral, PublicKeyToken=5a7c03a5ab19fec3",
+            AssemblyVersion = new Version("0.21.2.0"),
+            ProductVersion = new Version("0.21.2.0"),
+            FileVersion = new Version("0.21.2.0")
+        };
+
+        static public readonly AssemblySpec Kentor0_21_2_V1000Spec = new AssemblySpec("Kentor.AuthServices.dll", FileDirectory.GAC)
+        {
+            AssemblyFullName = "Kentor.AuthServices, Version=0.21.2.0, Culture=neutral, PublicKeyToken=40c669b8f0ea2c14",
             AssemblyVersion = new Version("0.21.2.0"),
             ProductVersion = new Version("0.21.2.0"),
             FileVersion = new Version("0.21.2.0")

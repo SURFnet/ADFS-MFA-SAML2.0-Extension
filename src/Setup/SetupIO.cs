@@ -43,7 +43,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
             return rc;
         }
 
-        public static string VersionToString(this Version version, string text)
+        public static string VersionToString(this Version version, string text, bool adfsRegistration = false)
         {
             // TODO: Maybe move to Setup assembly
             string rc;
@@ -53,6 +53,10 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
             if (version.Major == 0)
             {
                 rc = s + ": No version detected";
+            }
+            else if (adfsRegistration && (version.Major==1))
+            {
+                rc = string.Format("{0}: 1.0.*", s);
             }
             else
             {

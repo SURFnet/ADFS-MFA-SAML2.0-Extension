@@ -166,6 +166,10 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Models
         /// <summary>
         /// Some settings (like IDP settings) depend on another setting.
         /// This property contains the InternalName of that "parent" Setting.
+        /// 
+        /// TODO: The design with a private setter is not OK. It is way more complicated.
+        ///       The Evironment file should contain all settings, also from past components.
+        ///       Per version the child/parent relation can be different!
         /// </summary>
         public string Parent { get; private set; }
 

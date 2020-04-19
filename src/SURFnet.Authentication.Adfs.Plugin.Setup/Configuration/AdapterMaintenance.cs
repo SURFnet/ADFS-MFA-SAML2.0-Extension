@@ -94,7 +94,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
                 }
                 else
                 {
-                    LogService.WriteWarning("Installation succesfull.");
+                    LogService.WriteWarning(" Installation on local disk succesfull.");
                 }
             }
 

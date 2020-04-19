@@ -63,7 +63,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
                 {
                     // ugh, no configuration file!
                     if (rc==0) rc = -1;
-                    LogService.WriteFatal($"Configurationfile '{tmp}' missing in component: '{ComponentName}'.");
+                    LogService.Log.Fatal($"Configurationfile '{tmp}' missing in component: '{ComponentName}'.");
                 }
             }
 
@@ -82,8 +82,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
             if ( ConfigFilename != null )
             {
                 rc = -1;
-                LogService.Log.Fatal($"BUG! Stepup component ({ComponentName}) with a configuration filename, but no reader!");
-                throw new NotImplementedException($"Whoops! Stepup component ({ComponentName}) with a configuration filename, but no reader!");
+                LogService.Log.Fatal($"BUG! Stepup component '{ComponentName}' with a configuration filename, but no reader!");
+                throw new NotImplementedException($"Whoops! Stepup component '{ComponentName}' with a configuration filename, but no reader!");
             }
 
             return rc;
@@ -112,7 +112,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
         {
             if (ConfigFilename != null)
             {
-                throw new NotImplementedException($"Whoops! Stepup component ({ComponentName}) with a configuration filename, but no writer!");
+                throw new NotImplementedException($"Whoops! Stepup component '{ComponentName}' with a configuration filename, but no writer!");
             }
 
             LogService.Log.Info("StepupComponent base.WriteConfiguration() not doing anything.");
@@ -124,7 +124,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
         {
             int rc = 0;  // assume ok
 
-            LogService.Log.Debug("Install: " + ComponentName);
+            LogService.Log.Debug($"Install: '{ComponentName}'");
 
             if ( 0 == (rc=InstallCfgOnly()) )
             {
@@ -173,7 +173,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
         {
             int rc = 0; // assume OK
 
-            LogService.Log.Debug("UnInstall: "+ComponentName);
+            LogService.Log.Debug($"UnInstall: '{ComponentName}'");
 
             // Delete assemblies
             foreach (var spec in Assemblies)
