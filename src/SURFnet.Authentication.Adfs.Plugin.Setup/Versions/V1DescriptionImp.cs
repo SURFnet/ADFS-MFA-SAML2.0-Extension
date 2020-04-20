@@ -34,6 +34,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
 
         private const string V1SettingsSectionName = "SURFnet.Authentication.Adfs.Plugin.Properties.Settings";
         private const string V1KentorSectionName = "kentor.authServices";
+        private const string V1AllApplicationSettings = "applicationSettings";
 
         private const string V1Attrib_EntityId = "entityId";
 
@@ -88,8 +89,12 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
         }
 
         /// <summary>
-        /// Hardcoded verifier, because it all comes from the ADFS configuration,
-        /// not per component.
+        /// Pretty awkward things here. First the Linq XML Stuff.
+        /// That grew historically. However. The writer was not OK.
+        /// I do have a XmlDocument base implementation for cleanup.
+        /// 
+        /// Never the less, decided to stich with the stuf for the settings reader.
+        /// Can always replace it if we run into more trouble.
         /// </summary>
         /// <returns></returns>
         public override int ReadConfiguration(List<Setting> settings)
@@ -149,9 +154,9 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
         {
             LogService.Log.Info($"WriteCleanAdfsConfig start XML cleanup of V1 adapter.");
 
-            var sectionDeclarations = adfsConfig.Descendants(XName.Get("section")).ToList();
             var nameAttribute = XName.Get("name");
 
+            var sectionDeclarations = adfsConfig.Descendants(XName.Get("section")).ToList();
 
             var kentorSection = sectionDeclarations.FirstOrDefault(section => section.Attribute(nameAttribute)?.Value.Equals(V1KentorSectionName) ?? false);
             kentorSection?.Remove();
@@ -161,6 +166,17 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
 
             var identitySection = sectionDeclarations.FirstOrDefault(section => section.Attribute(nameAttribute)?.Value.Equals("system.identityModel") ?? false);
             identitySection?.Remove();
+
+            var sectionGroups = adfsConfig.Descendants(XName.Get("sectionGroup")).ToList();
+            var appSettingsGrp = sectionGroups.FirstOrDefault(section => section.Attribute(nameAttribute)?.Value.Equals(V1AllApplicationSettings) ?? false);
+            if ( (appSettingsGrp!=null) && (! appSettingsGrp.HasElements) )
+            {
+                LogService.Log.Info("The XML element 'applicationSettings' is now empty.");
+                // now it is empty!
+                appSettingsGrp.Remove();
+                var allAppSettings = adfsConfig.Descendants(XName.Get(V1AllApplicationSettings)).FirstOrDefault();
+                allAppSettings?.Remove();
+            }
 
             var kentorConfig = adfsConfig.Descendants(XName.Get(V1KentorSectionName)).FirstOrDefault();
             kentorConfig?.Remove();
