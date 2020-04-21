@@ -55,6 +55,7 @@
     <Compile Include="SetupProgram.cs" />
     <Compile Include="RulesAndChecks.cs" />
     <Compile Include="SetupState.cs" />
+    <Compile Include="V1CheckAndFix.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config">

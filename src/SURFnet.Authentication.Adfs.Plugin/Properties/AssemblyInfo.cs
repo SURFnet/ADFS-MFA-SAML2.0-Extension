@@ -54,6 +54,3 @@ using SURFnet.Authentication.Adfs.Plugin.Setup.Common;
 [assembly: AssemblyInformationalVersion(Values.ProductVersion)]
 // Shows as "File version" in the File Explorer
 [assembly: AssemblyFileVersion(Values.FileVersion)]
-
-// 
-//[assembly: log4net.Config.XmlConfigurator(ConfigFile = "SURFnet.Authentication.ADFS.MFA.Plugin.log4net", Watch = true)]

@@ -31,7 +31,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Models
         private static readonly Dictionary<string, Setting> SettingDict = new Dictionary<string, Setting>();
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Setting" /> class.
+        /// InternalName is used as Key in dictionary and as reference to instances, set Parent if
+        /// the value of this setting comes from elsewhere based on Parent value.
         /// </summary>
         public Setting(string internalname, string parent = null)
         {
@@ -50,6 +51,9 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Models
             SettingDict.Add(internalname, this);
         }
 
+        /// <summary>
+        /// Call this when everything is in the dictionary and properly initialized.
+        /// </summary>
         public static void LinkChildren()
         {
             foreach (var kvp in SettingDict )
@@ -62,6 +66,11 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Models
             }
         }
 
+        /// <summary>
+        /// Fetches it from the dictionary.
+        /// </summary>
+        /// <param name="internalname"></param>
+        /// <returns></returns>
         public static Setting GetSettingByName(string internalname)
         {
             Setting rc = null;
@@ -78,6 +87,9 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Models
             return rc;
         }
 
+        /// <summary>
+        /// After 'Linking' the parent has a list of children. To walk through settings that it can fill/update.
+        /// </summary>
         public readonly List<string> ChildrenNames = new List<string>();
 
         /// <summary>
@@ -107,7 +119,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Models
         public string InternalName { get; private set; }
 
         /// <summary>
-        /// Some settings will get a proposed defaul value.
+        /// Some settings will get a proposed default value.
         /// Set it here.
         /// </summary>
         public string DefaultValue { get; set; }
@@ -126,7 +138,6 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Models
 
         /// <summary>
         /// Gets the actual value to save in the new config file.
-        /// TODO: (PL) we do use it in IdP JSON updater, but is the Question and its updates OK too. CFG writer too?
         /// </summary>
         /// <value>The value.</value>
         public string Value => this.NewValue ?? this.FoundCfgValue ?? this.DefaultValue;
@@ -190,51 +201,15 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Models
             return $"{name} : {this.Value}";
         }
 
-        ///// <summary>
-        ///// Processes the certificate.
-        ///// </summary>
-        //private void ProcessCertificate()
-        //{
-        //    Console.WriteLine("How do you want to set the certificate?");
-        //    Console.WriteLine("1. Use my own");
-        //    Console.WriteLine("2. Generate new certificate");
-        //    Console.Write($"Enter the number of the option you want to select: ");
-        //    var input = ConsoleExtensions.ReadUserInputAsInt(1, 2);
-        //    if (input == 1)
-        //    {
-        //        string thumbprint;
-        //        do
-        //        {
-        //            Console.Write("Please enter thumbprint: ");
-        //            thumbprint = Console.ReadLine();
-        //        }
-        //        while (!this.certificationService.IsValidThumbPrint(thumbprint) ||
-        //               !this.certificationService.CertificateExists(thumbprint));
-
-        //        this.NewValue = thumbprint;
-        //    } 
-        //    else if (input == 2)
-        //    {
-        //        this.certificationService.GenerateCertificate();
-        //    }
-        //}
-
-        ///// <summary>
-        ///// Processes the normal setting.
-        ///// </summary>
-        //private void ProcessNormalSetting()
-        //{
-        //    string newValue;
-        //    do
-        //    {
-        //        Console.Write($"Enter new value: ");
-        //        newValue = Console.ReadLine();
-        //        if (string.IsNullOrWhiteSpace(newValue) && this.IsMandatory)
-        //        {
-        //            Console.WriteLine($"Property {this.DisplayName} is required. Please enter a value.");
-        //        }
-        //    }
-        //    while (string.IsNullOrWhiteSpace(newValue) && this.IsMandatory);
-        //}
+        /// <summary>
+        /// Not implemented or used yet.
+        /// Intention is to put a number of simple validators here. Advanced validation
+        /// can override. Originally certainly meant for certificates. :-)
+        /// </summary>
+        /// <returns></returns>
+        public virtual bool Validate()
+        {
+            return true;
+        }
     }
 }

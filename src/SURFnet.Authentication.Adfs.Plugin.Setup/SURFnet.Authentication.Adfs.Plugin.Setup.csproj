@@ -71,6 +71,7 @@
     <Compile Include="Configuration\IdPChoiceController.cs" />
     <Compile Include="Configuration\IdPChoiceUtil.cs" />
     <Compile Include="Configuration\SettingCollector.cs" />
+    <Compile Include="Configuration\SPCertController.cs" />
     <Compile Include="FileDirectory.cs" />
     <Compile Include="Models\AdfsConfiguration.cs" />
     <Compile Include="Models\MfaExtensionMetadata.cs" />

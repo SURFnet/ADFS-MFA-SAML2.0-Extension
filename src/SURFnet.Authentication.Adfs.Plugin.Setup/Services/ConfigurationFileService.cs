@@ -118,43 +118,17 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
                 result.Add(dict);
             }
 
-            // For each IdP dictionary exctract the thumbprint from the
-            // signing certificate and add as pair to the same dictionary.
-            //foreach ( var dict in result )
-            //{
-            //    if ( dict.TryGetValue(ConfigSettings.IdPSignCert1, out string base64cert) )
-            //    {
-            //        if ( ! string.IsNullOrEmpty(base64cert) )
-            //        {
-            //            byte[] raw = Convert.FromBase64String(base64cert);
-            //            X509Certificate2 cert = new X509Certificate2(raw);
-            //            dict.Add(ConfigSettings.IdPSignThumb1, cert.Thumbprint);
-            //        }
-            //    }
-            //    else
-            //    {
-            //        LogService.WriteFatal($"Missing {ConfigSettings.IdPSignCert1} in {dict[SetupConstants.IdPEnvironmentType]}");
-            //    }
-
-            //    if (dict.TryGetValue(ConfigSettings.IdPSignCert2, out base64cert))
-            //    {
-            //        if (!string.IsNullOrEmpty(base64cert))
-            //        {
-            //            byte[] raw = Convert.FromBase64String(base64cert);
-            //            X509Certificate2 cert = new X509Certificate2(raw);
-            //            dict.Add(ConfigSettings.IdPSignThumb2, cert.Thumbprint);
-            //        }
-            //    }
-            //    else
-            //    {
-            //        LogService.WriteFatal($"Missing {ConfigSettings.IdPSignCert2} in {dict[SetupConstants.IdPEnvironmentType]}");
-            //    }
-
-            //}
+            /// this is where Base64 to thumbprint used to be before we went to metadata.
 
             return result;
         }
 
+        /// <summary>
+        /// There may be a file in the output directory with settings from past config readers.
+        /// To help with copying settings from earlier runs with present and previous configuration
+        /// file versions of the adapter.
+        /// </summary>
+        /// <returns></returns>
         public static Dictionary<string,string> LoadUsedSettings()
         {
             Dictionary<string, string> dict = null;
@@ -169,6 +143,11 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
             return dict;
         }
 
+        /// <summary>
+        /// To write Dictionary<InternalName,Value> to disk.
+        /// </summary>
+        /// <param name="dict"></param>
+        /// <returns></returns>
         public static int WriteUsedSettings(Dictionary<string,string> dict)
         {
             int rc = 0;

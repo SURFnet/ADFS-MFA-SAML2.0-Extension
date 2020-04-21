@@ -17,7 +17,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
     {
         public Setting Setting { get; private set; }
 
-        private string TempResult { get; set; }
+        private string TempValue { get; set; }
 
         private bool triedCfg = false;      // TODO: kludgy flag
         private bool triedDefault = false;  // TODO: kludgy flag
@@ -35,10 +35,10 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
         {
             bool hasValue = false;
 
-            if ( false == string.IsNullOrWhiteSpace(TempResult) )
+            if ( false == string.IsNullOrWhiteSpace(TempValue) )
             {
                 QuestionIO.WriteLine();
-                QuestionIO.WriteValue($"Value for '{Setting.DisplayName}' now '{TempResult}'");
+                QuestionIO.WriteValue($"Value for '{Setting.DisplayName}' now '{TempValue}'");
                 hasValue = true;
                 return true;
             }
@@ -51,64 +51,64 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
                 {
                     // there was something in configuration
                     triedCfg = true;  // one shot
-                    TempResult = Setting.FoundCfgValue;
-                    QuestionIO.WriteValue($"Configured value for '{Setting.DisplayName}': {TempResult}");
+                    TempValue = Setting.FoundCfgValue;
+                    QuestionIO.WriteValue($"Configured value for '{Setting.DisplayName}': {TempValue}");
                 }
                 else if (false==triedDefault  &&  false==string.IsNullOrWhiteSpace(Setting.DefaultValue))
                 {
                     // Yes a default!
                     triedDefault = true;    // one shot
-                    TempResult = Setting.DefaultValue;
-                    QuestionIO.WriteValue($"The default value for '{Setting.DisplayName}' is: '{TempResult}'");
+                    TempValue = Setting.DefaultValue;
+                    QuestionIO.WriteValue($"The default value for '{Setting.DisplayName}' is: '{TempValue}'");
                 }
                 else
                 {
                     // Really nothing
                     QuestionIO.WriteValue($"There is no value for '{Setting.DisplayName}'");
-                    TempResult = null;
+                    TempValue = null;
                 }
             }
             else
             {
                 // There was a newValue from previous rounds.
-                TempResult = Setting.NewValue;
-                QuestionIO.WriteValue($"Value for '{Setting.DisplayName}' now '{TempResult}'");
+                TempValue = Setting.NewValue;
+                QuestionIO.WriteValue($"Value for '{Setting.DisplayName}' now '{TempValue}'");
                 hasValue = true;
             }
 
             return hasValue;
         }
 
-        public bool WantToContinueWith(out bool wantToContinue)
+        public bool WhatAboutCurrent(out bool acceptCurrent, string question)
         {
             bool ok = false;
 
-            ShowAndGetYesNo question = new ShowAndGetYesNo($"Do you want to continue with {TempResult}?", 'y');
-            wantToContinue = false;
+            ShowAndGetYesNo yesorno = new ShowAndGetYesNo(question, 'y');
+            acceptCurrent = true;
 
             bool more = true;
             while (more)
             {
-                if (question.Ask())
+                if (yesorno.Ask())
                 {
                     // valid Y/N answer
-                    if (question.Value == 'n')
-                        wantToContinue = false;
+                    if (yesorno.Value == 'n')
+                        acceptCurrent = false;
                     else
-                        wantToContinue = true;
+                        acceptCurrent = true;
                     more = false;
                     ok = true;
                 }
                 else
                 {
                     // Not a Y/N answer
-                    if (question.IsAbort)
+                    if (yesorno.IsAbort)
                     {
                         more = false;
                     }
-                    else if (question.WantsDescription)
+                    else if (yesorno.WantsDescription)
                     {
-                        string[] help = { "Type 'y'(Yes) to change, 'n'(No) to use existing, '?' for this help, x(eXit) to return unchanged." };
+                        string[] help = { "Type 'y'(Yes) to accept current, 'n'(No) to edit, '?' for this help, x(eXit) to abort." };
                         QuestionIO.WriteDescription(help);
                     }
                 }
@@ -118,10 +118,22 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
         }
 
 
+        bool IsThisCorrect(out bool acceptCurrent)
+        {
+            return WhatAboutCurrent(out acceptCurrent, "     Is this correct?");
+        }
+
+
+        bool WantToContinueWith(out bool acceptCurrent)
+        {
+            return WhatAboutCurrent(out acceptCurrent, $"Do you want to continue with {TempValue}?");
+        }
+
+
         public virtual bool EditSetting()
         {
             bool ok = false;
-            TempResult = null;
+            TempValue = null;
 
             var editQuestion = new ShowAndGetString($"Provide a value for '{Setting.DisplayName}'");
             bool more = true;
@@ -130,7 +142,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
                 if (editQuestion.Ask())
                 {
                     // valid answer
-                    TempResult = editQuestion.Value;
+                    TempValue = editQuestion.Value;
                     more = false;
                     ok = true;
                 }
@@ -152,7 +164,142 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
             return ok;
         }
 
+
+        void FirstDisplay()
+        {
+            string textWithValue;
+
+            QuestionIO.WriteIntro(Setting.Introduction);
+
+            if (false == string.IsNullOrWhiteSpace(Setting.DefaultValue))
+            {
+                TempValue = Setting.DefaultValue;
+                textWithValue = $"Default value for '{Setting.DisplayName}': {TempValue}";
+            }
+            else if (false == string.IsNullOrWhiteSpace(Setting.FoundCfgValue) )
+            {
+                TempValue = Setting.FoundCfgValue;
+                textWithValue = $"Found a value for '{Setting.DisplayName}': {TempValue}";
+            }
+            else if (false == string.IsNullOrWhiteSpace(Setting.NewValue))
+            {
+                TempValue = Setting.NewValue;
+                textWithValue = $"Current value for '{Setting.DisplayName}': {TempValue}";
+            }
+            else
+            {
+                TempValue = null;
+                textWithValue = $"'{Setting.DisplayName}' has no value";
+            }
+
+            QuestionIO.WriteValue(textWithValue);
+            return;
+        }
+
+        void DisplayAgain()
+        {
+            QuestionIO.WriteValue($"Current value for '{Setting.DisplayName}': {TempValue}");
+            TempValue = null;
+
+            return;
+        }
+
+        bool AskNewValue()
+        {
+            bool ok = false;
+
+            var editQuestion = new ShowAndGetString($"Provide a value for '{Setting.DisplayName}'");
+            bool more = true;
+            while (more)
+            {
+                if (editQuestion.Ask())
+                {
+                    // valid answer
+                    TempValue = editQuestion.Value;
+                    more = false;
+                    ok = true;
+                }
+                else
+                {
+                    if (editQuestion.IsAbort)
+                    {
+                        QuestionIO.WriteError("OK, stopping.");
+                        more = false;
+                    }
+                    else if (editQuestion.WantsDescription)
+                    {
+                        QuestionIO.WriteDescription(Setting.HelpLines);
+                    }
+                }
+            }
+
+            return ok;
+        }
+
         public virtual bool Ask()
+        {
+            bool ok = false;
+            bool asking = true;
+
+            FirstDisplay();
+
+            while ( asking )
+            {
+                if ( TempValue == null )
+                {
+                    if ( false == AskNewValue() )
+                    {
+                        // abort!
+                        asking = false;
+                    }
+                }
+                else
+                {
+                    // There is a value
+                    if ( false == WantToContinueWith(out bool currentIsOK) )
+                    {
+                        // abort on Want to continue
+                        asking = false;
+                    }
+                    else
+                    {
+                        // Value seems OK; Are you sure?
+                        if ( currentIsOK )
+                        {
+                            if ( false == IsThisCorrect(out currentIsOK) )
+                            {
+                                // abort on Is This Correct.
+                                asking = false;
+                            }
+                            else
+                            {
+                                if ( currentIsOK )
+                                {
+                                    // Done
+                                    Setting.NewValue = TempValue;
+                                    ok = true;
+                                    asking = false;
+                                }
+                                else
+                                {
+                                    // Apparent is not correct!
+                                    DisplayAgain();
+                                }
+                            }
+                        }
+                        else
+                        {
+                            // not continuing with
+                            DisplayAgain();
+                        }
+                    } // end there is a value
+                }
+            } // end while asking
+
+            return ok;
+        }
+
+        public virtual bool OldAsk()
         {
             bool ok = false;
 
@@ -175,7 +322,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
             {
                 DisplayValue();
 
-                if ( string.IsNullOrWhiteSpace(TempResult) )
+                if ( string.IsNullOrWhiteSpace(TempValue) )
                 {
                     // nothing yet => ask for for value: Edit
                     if ( false == EditSetting() )
@@ -193,12 +340,12 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
                         {
                             ok = true;
                             keepasking = false;
-                            Setting.NewValue = TempResult; // return approved value
+                            Setting.NewValue = TempValue; // return approved value
                         }
                         else
                         {
                             //wants to change!
-                            TempResult = null;
+                            TempValue = null;
                         }
                     }
                     else

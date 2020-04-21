@@ -89,12 +89,15 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
         {
             int rc = 0;
 
+            if (setupstate.DetectedVersion.Major == 1)
+            {
+                V1CheckAndFix.FixLog4netCfg();
+            }
 
-            // TODO: Report on relation between Server role and settings in ADFS.
             if ( setupstate.DetectedVersion.Major == 0 )
             {
                 // Nothing on disk
-                // TODONOW: give advice
+                WarnPrimaryFirst(setupstate);
             }
             else
             {
@@ -113,13 +116,24 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                     Console.WriteLine("     None");
                 }
 
-                // TODONOW: give advice
+                WarnPrimaryFirst(setupstate);
             }
 
             Console.WriteLine();
             Console.WriteLine("Checked the installation: did not find any blocking errors.");
 
             return rc;
+        }
+
+        public static void WarnPrimaryFirst(SetupState setupstate)
+        {
+            if (setupstate.RegisteredVersionInAdfs < setupstate.SetupProgramVersion)
+            {
+                if (!setupstate.IsPrimaryComputer)
+                {
+                    Console.WriteLine("You should first upgrade/install on a primary computer of the ADFS farm.");
+                }
+            }
         }
 
     }
