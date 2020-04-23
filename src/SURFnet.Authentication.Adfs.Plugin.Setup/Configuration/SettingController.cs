@@ -17,160 +17,45 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
     {
         public Setting Setting { get; private set; }
 
-        private string TempValue { get; set; }
-
-        private bool triedCfg = false;      // TODO: kludgy flag
-        private bool triedDefault = false;  // TODO: kludgy flag
-
         public SettingController(Setting setting)
         {
             Setting = setting;
         }
 
         /// <summary>
-        /// Writes the "NewValue", "FoundCfgValue", "DefaultValue" or "no value yet".
+        /// Local value for editing and confirmation.
+        /// Only copied to Setting.NewValue on "Correct" confirmation.
         /// </summary>
-        /// <returns>true iff NewValue was already filled.</returns>
-        public virtual bool DisplayValue()
-        {
-            bool hasValue = false;
-
-            if ( false == string.IsNullOrWhiteSpace(TempValue) )
-            {
-                QuestionIO.WriteLine();
-                QuestionIO.WriteValue($"Value for '{Setting.DisplayName}' now '{TempValue}'");
-                hasValue = true;
-                return true;
-            }
-
-            if (string.IsNullOrWhiteSpace(Setting.NewValue))
-            {
-                // no value decision from past; go check configuration and default.
-
-                if (false==triedCfg  &&  false==string.IsNullOrWhiteSpace(Setting.FoundCfgValue))
-                {
-                    // there was something in configuration
-                    triedCfg = true;  // one shot
-                    TempValue = Setting.FoundCfgValue;
-                    QuestionIO.WriteValue($"Configured value for '{Setting.DisplayName}': {TempValue}");
-                }
-                else if (false==triedDefault  &&  false==string.IsNullOrWhiteSpace(Setting.DefaultValue))
-                {
-                    // Yes a default!
-                    triedDefault = true;    // one shot
-                    TempValue = Setting.DefaultValue;
-                    QuestionIO.WriteValue($"The default value for '{Setting.DisplayName}' is: '{TempValue}'");
-                }
-                else
-                {
-                    // Really nothing
-                    QuestionIO.WriteValue($"There is no value for '{Setting.DisplayName}'");
-                    TempValue = null;
-                }
-            }
-            else
-            {
-                // There was a newValue from previous rounds.
-                TempValue = Setting.NewValue;
-                QuestionIO.WriteValue($"Value for '{Setting.DisplayName}' now '{TempValue}'");
-                hasValue = true;
-            }
-
-            return hasValue;
-        }
-
-        public bool WhatAboutCurrent(out bool acceptCurrent, string question)
-        {
-            bool ok = false;
-
-            ShowAndGetYesNo yesorno = new ShowAndGetYesNo(question, 'y');
-            acceptCurrent = true;
-
-            bool more = true;
-            while (more)
-            {
-                if (yesorno.Ask())
-                {
-                    // valid Y/N answer
-                    if (yesorno.Value == 'n')
-                        acceptCurrent = false;
-                    else
-                        acceptCurrent = true;
-                    more = false;
-                    ok = true;
-                }
-                else
-                {
-                    // Not a Y/N answer
-                    if (yesorno.IsAbort)
-                    {
-                        more = false;
-                    }
-                    else if (yesorno.WantsDescription)
-                    {
-                        string[] help = { "Type 'y'(Yes) to accept current, 'n'(No) to edit, '?' for this help, x(eXit) to abort." };
-                        QuestionIO.WriteDescription(help);
-                    }
-                }
-            } // end ask loop
-
-            return ok;
-        }
+        private string TempValue { get; set; }
 
 
         bool IsThisCorrect(out bool acceptCurrent)
         {
-            return WhatAboutCurrent(out acceptCurrent, "     Is this correct?");
+            QuestionIO.WriteLine();
+            string value = $"{Setting.DisplayName}: {TempValue}".PadLeft(35);
+            QuestionIO.WriteValue(value);
+            return AnyControllerUtils.WhatAboutCurrent(out acceptCurrent, "                  Is this correct?");
         }
-
 
         bool WantToContinueWith(out bool acceptCurrent)
         {
-            return WhatAboutCurrent(out acceptCurrent, $"Do you want to continue with {TempValue}?");
+            return AnyControllerUtils.WhatAboutCurrent(out acceptCurrent, $"Do you want to continue with '{TempValue}'?");
         }
 
-
-        public virtual bool EditSetting()
-        {
-            bool ok = false;
-            TempValue = null;
-
-            var editQuestion = new ShowAndGetString($"Provide a value for '{Setting.DisplayName}'");
-            bool more = true;
-            while (more)
-            {
-                if (editQuestion.Ask())
-                {
-                    // valid answer
-                    TempValue = editQuestion.Value;
-                    more = false;
-                    ok = true;
-                }
-                else
-                {
-                    if (editQuestion.IsAbort)
-                    {
-                        QuestionIO.WriteError("OK, stopping.");
-                        more = false;
-                    }
-                    else if (editQuestion.WantsDescription)
-                    {
-                        QuestionIO.WriteDescription(Setting.HelpLines);
-                    }
-                }
-
-            }
-
-            return ok;
-        }
-
-
+        /// <summary>
+        /// On first entry, pick TempValue from: NewValue, FoundCfgValue or DefaultValue. And display that.
+        /// </summary>
         void FirstDisplay()
         {
+            // Could be in a base class!
+            string intro;
+            if (Setting.Introduction.Contains("{0}"))
+                intro = string.Format(Setting.Introduction, Setting.DisplayName);
+            else
+                intro = Setting.Introduction;
+            QuestionIO.WriteIntro(intro);
+
             string textWithValue;
-
-            QuestionIO.WriteIntro(Setting.Introduction);
-
             if (false == string.IsNullOrWhiteSpace(Setting.DefaultValue))
             {
                 TempValue = Setting.DefaultValue;
@@ -196,6 +81,9 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
             return;
         }
 
+        /// <summary>
+        /// There is already a value: displays it, then clears it.
+        /// </summary>
         void DisplayAgain()
         {
             QuestionIO.WriteValue($"Current value for '{Setting.DisplayName}': {TempValue}");
@@ -204,6 +92,10 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
             return;
         }
 
+        /// <summary>
+        /// Assumes the current (or missing) Value is printed. Prompts for new value into TempValue
+        /// </summary>
+        /// <returns></returns>
         bool AskNewValue()
         {
             bool ok = false;
@@ -239,125 +131,66 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
         public virtual bool Ask()
         {
             bool ok = false;
-            bool asking = true;
+            bool keepasking = true;
+            bool currentIsOK;
 
             FirstDisplay();
 
-            while ( asking )
+            if (TempValue != null)
             {
-                if ( TempValue == null )
+                // There is already a value, initiate possible quick fall through
+                if (false == WantToContinueWith(out currentIsOK))
                 {
-                    if ( false == AskNewValue() )
-                    {
-                        // abort!
-                        asking = false;
-                    }
+                    // abort on Want to continue
+                    keepasking = false;
                 }
                 else
                 {
-                    // There is a value
-                    if ( false == WantToContinueWith(out bool currentIsOK) )
+                    if ( false == currentIsOK )
                     {
-                        // abort on Want to continue
-                        asking = false;
+                        TempValue = null; // no quick fall through
                     }
-                    else
-                    {
-                        // Value seems OK; Are you sure?
-                        if ( currentIsOK )
-                        {
-                            if ( false == IsThisCorrect(out currentIsOK) )
-                            {
-                                // abort on Is This Correct.
-                                asking = false;
-                            }
-                            else
-                            {
-                                if ( currentIsOK )
-                                {
-                                    // Done
-                                    Setting.NewValue = TempValue;
-                                    ok = true;
-                                    asking = false;
-                                }
-                                else
-                                {
-                                    // Apparent is not correct!
-                                    DisplayAgain();
-                                }
-                            }
-                        }
-                        else
-                        {
-                            // not continuing with
-                            DisplayAgain();
-                        }
-                    } // end there is a value
                 }
-            } // end while asking
 
-            return ok;
-        }
-
-        public virtual bool OldAsk()
-        {
-            bool ok = false;
-
-            if (string.IsNullOrWhiteSpace(Setting.Introduction))
-                QuestionIO.WriteIntro("TODO: Here should be an introduction to the question........");
-            else
-            {
-                string intro;
-                if (Setting.Introduction.Contains("{0}"))
-                {
-                    intro = string.Format(Setting.Introduction, Setting.DisplayName);
-                }
-                else
-                    intro = Setting.Introduction;
-                QuestionIO.WriteIntro(intro);
             }
 
-            bool keepasking = true;
             while ( keepasking )
             {
-                DisplayValue();
-
-                if ( string.IsNullOrWhiteSpace(TempValue) )
+                if (TempValue == null)
                 {
-                    // nothing yet => ask for for value: Edit
-                    if ( false == EditSetting() )
+                    // there is nothing, must ask
+                    if (false == AskNewValue())
                     {
-                        // abort!!
-                        keepasking = false;  // break out of loop.
+                        // abort!
+                        break; // break from keepasking.
                     }
+                }
+
+                if (false == IsThisCorrect(out currentIsOK))
+                {
+                    // abort on IsThisCorrect.
+                    break;
                 }
                 else
                 {
-                    // something there, ask Y/N
-                    if (WantToContinueWith(out bool valueOK))
+                    if (currentIsOK) // after IsThisCorrect.
                     {
-                        if (valueOK)
-                        {
-                            ok = true;
-                            keepasking = false;
-                            Setting.NewValue = TempValue; // return approved value
-                        }
-                        else
-                        {
-                            //wants to change!
-                            TempValue = null;
-                        }
+                        // Done, confirmed
+                        Setting.NewValue = TempValue;
+                        ok = true;
+                        keepasking = false;
                     }
                     else
                     {
-                        // an abort
-                        keepasking = false;
+                        // Apparently is not yet correct!
+                        DisplayAgain();
                     }
                 }
-            }
+            } // end: while (keepasking)
 
             QuestionIO.WriteEndSeparator();
+
             return ok;
-        }
+        } // end: ask()
     }
 }

@@ -30,10 +30,16 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Question
             Console.WriteLine(intro);
             Console.WriteLine();
         }
+
+        /// <summary>
+        /// For single Setting Questions. Prints extra line.
+        /// </summary>
+        /// <param name="currentValue"></param>
         public static void WriteValue(string currentValue)
         {
             Console.Write(ValueIndent);
             Console.WriteLine(currentValue);
+            Console.WriteLine();   // This is only for the questions, not for the Lists
         }
 
         public static void WriteOptions(string[] options)
@@ -50,13 +56,6 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Question
         {
             Console.Write(question);
         }
-
-        public static void WriteDefaultEcho(char c)
-        {
-            // TODO: remove this temp fix for new Keyreader!
-            Console.WriteLine(c);  // old situation ENTER not echoed
-        }
-
 
         public static void WriteDescription(string[] description)
         {
@@ -79,14 +78,35 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Question
             Console.WriteLine();
         }
 
-        public static void WriteLine()
+        public static void WriteLine(string s = null)
         {
-            Console.WriteLine();
+            if (s == null)
+                Console.WriteLine();
+            else
+                Console.WriteLine(s);
         }
 
-        public static ConsoleKeyInfo ReadKey()
+        public static char ReadKey()
         {
-            return Console.ReadKey();
+            char rc;
+
+            string line = Console.ReadLine();
+
+            line = line.Trim();
+            if (line.Length == 0)
+            {
+                rc = '\r';
+            }
+            else if (line.Length == 1)
+            {
+                rc = line[0];
+            }
+            else
+            {
+                rc = '\0';
+            }
+
+            return rc;
         }
         
         public static string ReadLine()
@@ -109,7 +129,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Question
                 seconds--;
             }
 
-            Console.WriteLine("\r                                                                     ");
+            Console.Write("\r                                                                     \r");
         }
     }
 }

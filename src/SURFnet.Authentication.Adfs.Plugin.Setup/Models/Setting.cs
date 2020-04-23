@@ -20,7 +20,6 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Models
     using System.Collections.Generic;
     using System.Text;
     using SURFnet.Authentication.Adfs.Plugin.Setup.Common.Services;
-    using SURFnet.Authentication.Adfs.Plugin.Setup.Question.SettingsQuestions;
     using SURFnet.Authentication.Adfs.Plugin.Setup.Services;
 
     /// <summary>

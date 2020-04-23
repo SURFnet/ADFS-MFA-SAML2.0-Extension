@@ -16,22 +16,29 @@ namespace Ui4Cfg
         static List<Setting> testCfg = new List<Setting>();
         static List<Dictionary<string, string>> IdPEnvironments;
 
-        static readonly bool IsDemo = true;    // true to disable result printing.
+        static readonly bool IsDemo = false;    // true to disable result printing.
 
+        // This one tests cert and OpenFileDialog. Go for STA model.
+        [STAThread]
         static void Main(string[] args)
         {
             IdPEnvironments = ConfigurationFileService.LoadIdPDefaults();
             bool ok;
 
+            ConfigSettings.SPPrimarySigningThumbprint.FoundCfgValue = "6d962ac67093d7ed6bcee8a35b0cd1068c473f5d";
+            var ctrl = new SPCertController(ConfigSettings.SPPrimarySigningThumbprint);
+            ctrl.Ask();
+
+
             // Demo for IdP environment choice
-            ShowListGetDigit listQuestion = CreateEnvSelectionDialogue();
-            ok = listQuestion.Ask();
+            IdPChoiceController idpchoice = new IdPChoiceController(IdPEnvironments, 0);
+            ok = idpchoice.Ask();
             if (ok)
             {
-                int index = Digit2Index(listQuestion.Value);
-                var env = IdPEnvironments[index];
-                string result = string.Format("OK, will do {0}. {1}   ({2})",
-                        listQuestion.Value,
+                //int index = Digit2Index(listQuestion.Value);
+                var env = IdPEnvironments[idpchoice.ChoosenIndex]; 
+                string result = string.Format("OK, will do index={0}. {1}   ({2})",
+                        idpchoice.ChoosenIndex,
                         env[SetupConstants.IdPEnvironmentType],
                         env[ConfigSettings.IdPEntityId]);
                 WriteTestResult(result);
@@ -41,7 +48,7 @@ namespace Ui4Cfg
                 WriteTestResult("Beng! Aborted");
             }
 
-            // Demo for Setting list
+            // Demo for Setting * EMPTY * list
             var adapterSettings = CreateAdapterSettingList();
             foreach ( var tmpsetting in adapterSettings )
             {
@@ -57,8 +64,23 @@ namespace Ui4Cfg
                 }
             }
 
-            Console.WriteLine("Detection found a valid configuration");
-
+            // Demo list with values found
+            Console.WriteLine("Attention!! All Settings controller!!!");
+            testCfg.Clear();
+            Add2012R2();
+            foreach (var tmpsetting in testCfg)
+            {
+                var controller = new SettingController(tmpsetting);
+                ok = controller.Ask();
+                if (ok)
+                {
+                    WriteTestResult(tmpsetting.ToString());
+                }
+                else
+                {
+                    WriteTestResult("Main Beng! Aborted");
+                }
+            }
 
             Console.WriteLine("Test output: return to exit");
             Console.ReadLine();
@@ -71,9 +93,10 @@ namespace Ui4Cfg
                 return;
             }
 
-            Console.Write("         Test OUTPUT: ");
+            Console.Write("****     Test OUTPUT: ");
             Console.WriteLine(msg);
             Console.WriteLine();
+            QuestionIO.WriteEndSeparator();
         }
 
         private static int Digit2Index(char digit)

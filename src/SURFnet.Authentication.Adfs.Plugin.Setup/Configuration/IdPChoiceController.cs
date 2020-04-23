@@ -10,14 +10,51 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
 {
     public class IdPChoiceController : ShowListGetDigit
     {
-        public int ChoosenIndex
+        /// <summary>
+        /// Shows the list of IdPs and asks to choose and confirm.
+        /// </summary>
+        /// <param name="idpEnvironments">IDP environments Dictionary</param>
+        /// <param name="defaultIndex">index for default choice</param>
+        public IdPChoiceController(List<Dictionary<string, string>> idpEnvironments, int defaultIndex) :
+                    base(CreateOptionList(idpEnvironments), defaultIndex+1)  // ShowListGetDigit() is 1 based, index 0 based
         {
-            get { return IdPChoiceUtil.Digit2Index(Value); }
         }
 
-        public IdPChoiceController(List<Dictionary<string, string>> idpEnvironments, int defaultIndex) :
-                    base(CreateOptionList(idpEnvironments), defaultIndex+1)  // list is 1 based, index 0 based
+        public override bool Ask()
         {
+            bool ok = false;
+
+            bool keepasking = true;
+            while ( keepasking )
+            {
+                if ( false == base.Ask() )
+                {
+                    // abort
+                    break;
+                }
+                else
+                {
+                    // some valid choice
+                    QuestionIO.WriteLine();
+                    QuestionIO.WriteValue(OptionList.Options[ChoosenIndex]);
+                    if ( ! AnyControllerUtils.WhatAboutCurrent(out bool acceptCurrent, "                  Is this correct?") )
+                    {
+                        // abort
+                        break;
+                    }
+                    else
+                    {
+                        if ( acceptCurrent )
+                        {
+                            ok = true;
+                            keepasking = false;
+                        }
+                    }
+                }
+            }
+
+            QuestionIO.WriteEndSeparator();
+            return ok;
         }
 
         /*
@@ -45,7 +82,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
 
         private static string IdPIndexToEnvString(Dictionary<string, string> dict, int index)
         {
-            return $"  {IdPChoiceUtil.Index2Digit(index)}. {dict[SetupConstants.IdPEnvironmentType]}  ({dict[ConfigSettings.IdPEntityId]})";
+            return $"  {Index2Digit(index)}. {dict[SetupConstants.IdPEnvironmentType]}  ({dict[ConfigSettings.IdPEntityId]})";
         }
     }
 }

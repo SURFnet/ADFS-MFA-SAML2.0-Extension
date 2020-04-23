@@ -24,7 +24,6 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
     using SURFnet.Authentication.Adfs.Plugin.Setup.Models;
     using SURFnet.Authentication.Adfs.Plugin.Setup.PS;
     using SURFnet.Authentication.Adfs.Plugin.Setup.Question;
-    using SURFnet.Authentication.Adfs.Plugin.Setup.Question.SettingsQuestions;
     using SURFnet.Authentication.Adfs.Plugin.Setup.Services;
     using SURFnet.Authentication.Adfs.Plugin.Setup.Util;
     using SURFnet.Authentication.Adfs.Plugin.Setup.Versions;
@@ -39,6 +38,10 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
         /// Defines the entry point of the application.
         /// </summary>
         /// <param name="args">The arguments.</param>
+        /// 
+        /// The [STAThread] is really important. Many GUI things need STA model for COM.
+        /// Default is MTA. We do use Certificate and Folder dialogues!
+        [STAThread]
         public static int Main(string[] args)
         {
             SetupState setupstate = new SetupState();

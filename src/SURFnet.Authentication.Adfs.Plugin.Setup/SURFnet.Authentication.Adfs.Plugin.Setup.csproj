@@ -22,6 +22,7 @@
     <DefineConstants>TRACE;DEBUG;LOCAL</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -57,7 +58,9 @@
       <HintPath>C:\Windows\Microsoft.NET\assembly\GAC_MSIL\System.Management.Automation\v4.0_3.0.0.0__31bf3856ad364e35\System.Management.Automation.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="System.Security" />
     <Reference Include="System.ServiceProcess" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -68,8 +71,13 @@
   <ItemGroup>
     <Compile Include="AdfsServer.cs" />
     <Compile Include="Configuration\AdapterMaintenance.cs" />
+    <Compile Include="Configuration\AnyControllerUtils.cs" />
+    <Compile Include="Configuration\CertCreate.cs" />
+    <Compile Include="Configuration\CertImportPfx.cs" />
+    <Compile Include="Configuration\CertMethodController.cs" />
     <Compile Include="Configuration\IdPChoiceController.cs" />
-    <Compile Include="Configuration\IdPChoiceUtil.cs" />
+    <Compile Include="Configuration\IdpChoiceHandler.cs" />
+    <Compile Include="Configuration\CertFromStore.cs" />
     <Compile Include="Configuration\SettingCollector.cs" />
     <Compile Include="Configuration\SPCertController.cs" />
     <Compile Include="FileDirectory.cs" />
@@ -80,7 +88,6 @@
     <Compile Include="Models\Setting.cs" />
     <Compile Include="Models\SustainSysConfiguration.cs" />
     <Compile Include="Question\AskYesNo.cs" />
-    <Compile Include="Question\CertificateGUI.cs" />
     <Compile Include="Question\IsThisCorrect.cs" />
     <Compile Include="Question\OptionList.cs" />
     <Compile Include="Question\QuestionIO.cs" />
@@ -92,6 +99,7 @@
     <Compile Include="Question\ShowAndGetYesNo.cs" />
     <Compile Include="Question\ShowListGetDigit.cs" />
     <Compile Include="Question\ShowListGetYesNo.cs" />
+    <Compile Include="Services\SetupCertService.cs" />
     <Compile Include="SetupConstants.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Assemblies\AssemblyList.cs" />
@@ -109,7 +117,6 @@
     <Compile Include="PS\AdfsSyncProperties.cs" />
     <Compile Include="PS\AdfsSyncPropertiesCmds.cs" />
     <Compile Include="PS\PSUtil.cs" />
-    <Compile Include="Question\SettingsQuestions\CertificateAnswer.cs" />
     <Compile Include="Services\AdfsPSService.cs" />
     <Compile Include="Services\ConfigurationFileService.cs" />
     <Compile Include="Services\FileService.cs" />

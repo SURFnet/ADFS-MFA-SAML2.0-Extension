@@ -102,7 +102,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
             directoryMap[(int)FileDirectory.Config] = ConfigFolder;
             directoryMap[(int)FileDirectory.Backup] = BackupFolder;
 
-            RegistrationDataFolder = Path.Combine(OutputFolder, "configuration");
+            RegistrationDataFolder = ConfigFolder;
         }
 
         /// <summary>
