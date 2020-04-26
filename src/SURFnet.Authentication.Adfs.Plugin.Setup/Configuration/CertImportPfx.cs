@@ -15,9 +15,15 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
     {
         public X509Certificate2 ResultCertificate { get; private set; }
 
+        public void Cleanup()
+        {
+            if ( ResultCertificate != null )
+                ResultCertificate = SetupCertService.CertDispose(ResultCertificate);
+        }
+
         public int Doit()
         {
-            int rc = 0;
+            int rc = -1;
             string pfxpath = null;
             string pwd = null;
 
@@ -36,6 +42,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
             {
                 pfxpath = dialog.FileName;  // is a fullpath
 
+                // First temporary load to display the cert! It will not be in a proper provider!
                 bool tryPwd = true;
                 while (tryPwd)
                 {
@@ -48,51 +55,66 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
                     }
                     else
                     {
+                        LogService.Log.Info("Try importing Cert");
                         rc = Import(pfxpath, pwd); //temp load.
                         if ( rc == 0 )
                         {
+                            // Yes Ephemeral loaded
                             tryPwd = false; // Apparently the pwd works
                             
                             // like it?
                             if (0 != SPCertController.DisplayAndAskOK(ResultCertificate, out bool accepted) )
                             {
                                 // abort
+                                LogService.Log.Warn("  Abort on first imported cert");
                                 rc = -2;
                                 break; // from tryPwd loop
                             }
                             else
                             {
+                                LogService.Log.Info("  Temp imported.");
                                 if (accepted)
+                                {
                                     rc = 0; // likes it; goto real import.
+                                }
                                 else
+                                {
+                                    LogService.Log.Warn("  However, not satifacory for admin.....");
                                     rc = 1; // stop with this one.
+                                }
                             }
-                            ResultCertificate.Dispose();
+
+                            // Clear memory of Ephemeral!
+                            ResultCertificate = SetupCertService.CertDispose(ResultCertificate);
                         }
                         // else: import failed. rc!=0; and will retry.
                     }
                 } // tryPwd 
 
+                // If it was ok sofar load permanent and add to store.
                 if ( rc==0 )
                 {
                     // Cert was OK, add to store.
                     rc = Import(pfxpath, pwd, true);
                     if ( rc == 0 )
                     {
+                        // Now it is in the real provider. And we can "Validate" it.
+                        LogService.Log.Info("  Loaded for store.");
                         if ( SetupCertService.IsValidSPCert(ResultCertificate) )
                         {
                             X509Store store = new X509Store("MY", StoreLocation.LocalMachine);
                             store.Open(OpenFlags.ReadWrite);
                             store.Add(ResultCertificate);
                             store.Close();
-                            ResultCertificate.Dispose();
+                            LogService.Log.Info("  Added to store.");
                         }
                         else
                         {
+                            LogService.Log.Info("  Cert validation failed, should delete from disk.");
                             // mmm, key is on disk
                             // TODONOW:  Must delete the key!!
                             DeleteKey(ResultCertificate);
-                            try { ResultCertificate.Dispose(); } catch (Exception) { };
+                            ResultCertificate = SetupCertService.CertDispose(ResultCertificate);
                         }
                     }
                 }
@@ -142,8 +164,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
                 LogService.WriteFatalException("Import certificate failed", ex);
                 if (cert != null)
                 {
-                    try { cert.Dispose(); } catch (Exception) { };
-                    cert = null;
+                    cert = SetupCertService.CertDispose(cert);
+
                 }
             }
 

@@ -73,6 +73,7 @@
     <Compile Include="Configuration\AdapterMaintenance.cs" />
     <Compile Include="Configuration\AnyControllerUtils.cs" />
     <Compile Include="Configuration\CertCreate.cs" />
+    <Compile Include="Configuration\CertExport.cs" />
     <Compile Include="Configuration\CertImportPfx.cs" />
     <Compile Include="Configuration\CertMethodController.cs" />
     <Compile Include="Configuration\IdPChoiceController.cs" />
@@ -82,7 +83,7 @@
     <Compile Include="Configuration\SPCertController.cs" />
     <Compile Include="FileDirectory.cs" />
     <Compile Include="Models\AdfsConfiguration.cs" />
-    <Compile Include="Models\MfaExtensionMetadata.cs" />
+    <Compile Include="Models\RegistrationData.cs" />
     <Compile Include="Models\IdentityProvider.cs" />
     <Compile Include="Models\PluginConfiguration.cs" />
     <Compile Include="Models\Setting.cs" />

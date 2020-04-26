@@ -70,21 +70,11 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
 
             if ( TempValue != null )
             {
-                if ( SetupCertService.TryGetSPCertificate(TempValue, out tempCert) )
+                if ( false == SetupCertService.SPCertChecker(TempValue, out tempCert))
                 {
-                    if ( false == SetupCertService.IsValidSPCert(tempCert))
-                    {
-                        TempValue = null;
-                        try { tempCert.Dispose(); } catch (Exception) { };
-                        tempCert = null;
-                    }
-                }
-                else
-                {
-                    QuestionIO.WriteError("But no certificate in the Store");
+                    QuestionIO.WriteError("The supplied thumbprint is not of a valid certificate in the Store");
                     TempValue = null;
                 }
-
             }
         }
 
@@ -115,10 +105,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
                 {
                     case 0:
                         // From store
-                        var certSelector = new CertFromStore();
-                        if ( 0 == certSelector.Doit() )
+                        if ( 0 == CertFromStore.Doit(out tempCert) )
                         {
-                            tempCert = certSelector.ResultCertificate;
                             TempValue = tempCert.Thumbprint;
                             ok = true;
                         }
@@ -137,11 +125,26 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
                             TempValue = tempCert.Thumbprint;
                             ok = true;
                         }
+                        else
+                        {
+                            ClearValue();
+                        }
                         break;
 
                     case 2:
                         // Create
-                        /// TODONOW: !!!
+                        tempCert = CertCreate.Create(AdfsPSService.GetAdfsHostname);
+                        if ( tempCert != null )
+                        {
+                            TempValue = tempCert.Thumbprint;
+                            ok = true;
+
+                            CertExport.DoYouWantToExport(tempCert);
+                        }
+                        else
+                        {
+                            ClearValue();
+                        }
                         break;
 
                     default:
@@ -193,7 +196,10 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
                                 ok = true;
                                 needVerifiedCert = false;
 
-                                // update ACL!
+                                // TODONOW:  update ACL!
+
+                                // Add cert to registration data.
+                                RegistrationData.SetCert(tempCert);
 
                                 // finally release cert
                                 ClearValue();
@@ -223,8 +229,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
             TempValue = null;
             if (tempCert != null)
             {
-                try { tempCert.Dispose(); } catch (Exception) { };
-                tempCert = null;
+                tempCert = SetupCertService.CertDispose(tempCert);
             }
         }
 
@@ -266,7 +271,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
         static void DisplayCert(X509Certificate2 cert)
         {
             QuestionIO.WriteLine(PropertyToString("Subject", cert.Subject));
-            QuestionIO.WriteLine(PropertyToString("Valid until", cert.NotAfter.ToShortDateString()));
+            QuestionIO.WriteLine(PropertyToString("Issuer", cert.Issuer));
+            QuestionIO.WriteLine(PropertyToString("Valid until", cert.NotAfter.ToString("yyyy-MM-dd")));
             QuestionIO.WriteLine(PropertyToString("Thumbprint", cert.Thumbprint));
             QuestionIO.WriteLine();
         }

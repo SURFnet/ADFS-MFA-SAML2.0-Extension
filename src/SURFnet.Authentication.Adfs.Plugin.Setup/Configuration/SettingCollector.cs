@@ -5,6 +5,7 @@ using SURFnet.Authentication.Adfs.Plugin.Setup.Versions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -36,7 +37,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
 
         /// <summary>
         /// Polls the components in the target version to create a list of required settings.
-        /// They will have the mandatory flag set. Also updates/overwrites potentially old
+        /// They will set the mandatory flag. Also updates/overwrites potentially old
         /// values for the IdP (which come from the JSON IdP configuration file).
         /// Then asks for missing values and confirmations.
         /// </summary>
@@ -75,9 +76,16 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
 
             if ( rc == 0 )
             {
-                // Write this AdminChoiceList to used settings
+                // Write this AdminChoiceList to used settings file
                 SaveUsedSettings(AdminChoicesList);
             }
+
+            return rc;
+        }
+
+        int VerifyLocalPresence()
+        {
+            int rc = -1;
 
             return rc;
         }
@@ -142,13 +150,41 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
             {
                 if (setting.IsMandatory)
                 {
+                    // *must* break on first error!
                     if ( string.IsNullOrWhiteSpace(setting.Value))
                     {
                         allthere = false;
                         break;
                     }
-                }
-            }
+                    else
+                    {
+                        /// Mandatory and string has value
+                        /// EXTRA processing for the SPECIAL ones!!! 
+                        /// 
+
+                        if ( setting == ConfigSettings.SPPrimarySigningThumbprint )
+                        {
+                            /// **** SP Signing certificate  ****
+                            ///      if not in store, offer to import.
+                            string thumbprint = ConfigSettings.SPPrimarySigningThumbprint.Value;
+                            if ( SetupCertService.SPCertChecker(thumbprint, out X509Certificate2 cert))
+                            {
+                                RegistrationData.SetCert(cert);
+                                SetupCertService.CertDispose(cert);
+                            }
+                            else
+                            {
+                                // There was no cert and the error was already reported, offer import
+                                allthere = TryImportIfWanted();
+                                if (!allthere)
+                                    break;
+                            }
+                        }
+
+
+                    } // end: mandatory has value
+                } // end: mandatory setting
+            } // e: foreach setting
 
             return allthere;
         }
@@ -252,6 +288,43 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
             return ok;
         }
 
+        bool TryImportIfWanted()
+        {
+            bool ok = false;
+
+            char resp = AskYesNo.Ask("Do you want to import a certificate");
+            if ('y' == resp)
+            {
+                var pfxSelector = new CertImportPfx();
+                if (0 == pfxSelector.Doit())
+                {
+                    // OK, new valid cert
+                    ConfigSettings.SPPrimarySigningThumbprint.NewValue = pfxSelector.ResultCertificate.Thumbprint;
+
+                    // TODONOW:  update ACL!
+
+                    // stick it in the Registrationdata
+                    RegistrationData.SetCert(pfxSelector.ResultCertificate);
+
+                    pfxSelector.Cleanup();
+                    ok = true;
+                }
+                else
+                {
+                    // failed
+                    QuestionIO.WriteError("  No certificate imported");
+                }
+            }
+            else
+            {
+                QuestionIO.WriteLine();
+                QuestionIO.WriteError("OK. You will need a cirtificate before real installation starts.");
+                QuestionIO.WriteLine();
+            }
+
+            return ok;
+        }
+
         bool ContinueWithOtherSettings()
         {
             bool yes = true;
@@ -341,7 +414,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
 
         /// - - - - - - - - - - - - - - - - - - - - -
         ///
-        ///  Settings as last Confirmed or inserted by Admin
+        ///  Settings as last Confirmed or inserted by Admin in the JSON file
         ///
         /// - - - - - - - - - - - - - - - - - - - - -
 

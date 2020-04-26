@@ -173,24 +173,25 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
         /// Saves the configuration data.
         /// </summary>
         /// <param name="metadata">The metadata.</param>
-        public static void SaveRegistrationData(MfaExtensionMetadata metadata)
+        public static void SaveRegistrationData(RegistrationData metadata)
         {
-            // TODO: use const!!
-
-            var sb = new StringBuilder();
-            sb.AppendLine($"Issuer: {metadata.SfoMfaExtensionEntityId}");
-            sb.AppendLine();
-            sb.AppendLine(metadata.SfoMfaExtensionCert);
-            sb.AppendLine($"ACS: {metadata.ACS}");
-
-            var filePath = FileService.CombineToCfgOutputPath("MfaExtensionConfiguration.txt");
-            if (File.Exists(filePath))
+            try
             {
-                Console.WriteLine($"Removing old config"); // TODO: mmmm Is now fixed with backup directory!
-            }
+                var sb = new StringBuilder();
+                sb.AppendLine($"Issuer: {metadata.SPentityID}");
+                sb.AppendLine();
+                sb.AppendLine(metadata.SPSigningCert);
+                sb.AppendLine($"ACS: {metadata.ACS}");
 
-            File.WriteAllText(filePath, sb.ToString());
-            Console.WriteLine($"Written new MfaExtensionConfiguration. Please send this file to SurfNet");
+                var filePath = FileService.CombineToCfgOutputPath(SetupConstants.RegistrationDataFilename);
+
+                File.WriteAllText(filePath, sb.ToString());
+                LogService.Log.Info($"Written new MfaExtensionConfiguration.");
+            }
+            catch (Exception ex)
+            {
+                LogService.WriteWarning("Writing Registration data failed: "+ex.Message);
+            }
         }
 
         /// <summary>

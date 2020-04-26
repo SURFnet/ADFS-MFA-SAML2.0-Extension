@@ -12,6 +12,54 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
 {
     public static class SetupCertService
     {
+        /// <summary>
+        /// Returns null after disposing.
+        /// </summary>
+        /// <param name="cert"></param>
+        /// <returns>null</returns>
+        public static X509Certificate2 CertDispose(X509Certificate2 cert)
+        {
+#if DEBUG
+            if (cert == null) throw new ArgumentNullException("No cert bug!!");
+#endif
+            if ( cert != null ) // try to survive undiscovered programming errors
+            {
+                try { cert.Dispose(); } catch (Exception) { };
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// Searches machine My store and validates ProviderType.
+        /// </summary>
+        /// <param name="thumbprint">sha1 hash</param>
+        /// <param name="certificate">null or found</param>
+        /// <returns></returns>
+        public static bool SPCertChecker(string thumbprint, out X509Certificate2 certificate)
+        {
+            bool ok = false;
+
+            if (SetupCertService.TryGetSPCertificate(thumbprint, out certificate))
+            {
+                if (false == SetupCertService.IsValidSPCert(certificate))
+                {
+                    certificate = CertDispose(certificate);
+                }
+                else
+                {
+                    ok = true;
+                }
+            }
+
+            return ok;
+        }
+
+        /// <summary>
+        /// Tries to fetch the certificate. out parm is initialized to null. Assingned if really found.
+        /// </summary>
+        /// <param name="thumbprint"></param>
+        /// <param name="certificate">null or found (then must dispose!)</param>
+        /// <returns></returns>
         public static bool TryGetSPCertificate(string thumbprint, out X509Certificate2 certificate)
         {
             bool found = false;
@@ -58,7 +106,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
             // And now the real work.
             if (cert.PrivateKey == null)
                 // Not a persisted key! Programming error!
-                throw new ArgumentException("IsValidSPCert: Cannot verify if PrivateKey==null.", nameof(cert));
+                throw new ArgumentException("BUG: IsValidSPCert: Cannot verify if PrivateKey==null.", nameof(cert));
 
             bool isValid = false;
 
@@ -84,7 +132,6 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
 
             return isValid;
         }
-
 
 
         /// <summary>
@@ -113,23 +160,6 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
             }
 
             return isValid;
-        }
-
-        /// <summary>
-        /// Exports in PEM format.
-        /// </summary>
-        /// <param name="certificate">The certificate.</param>
-        /// <returns>The certificate in PEM format.</returns>
-        public static string ExportAsPem(X509Certificate2 certificate)
-        {
-            var builder = new StringBuilder();
-
-            builder.AppendLine("-----BEGIN CERTIFICATE-----");
-            builder.AppendLine(Convert.ToBase64String(certificate.Export(X509ContentType.Cert), Base64FormattingOptions.InsertLineBreaks));
-            builder.AppendLine("-----END CERTIFICATE-----");
-
-            var result = builder.ToString();
-            return result;
         }
     }
 }

@@ -114,7 +114,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
         {
             EnsureCleanOutputFolder();
             ValidateDistFolder();
-            EnsureConfigFolder();
+            ValidateConfigFolder();
         }
 
         public static string Enum2Directory(FileDirectory value)
@@ -347,16 +347,14 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
         }
 
         /// <summary>
-        /// Ensures that the configuration folder will be there.
+        /// Ensures that the configuration/registration folder will be there.
         /// </summary>
-        private static void EnsureConfigFolder()
+        private static void ValidateConfigFolder()
         {
-            if (Directory.Exists(RegistrationDataFolder))
+            if (! Directory.Exists(RegistrationDataFolder))
             {
-                Directory.Delete(RegistrationDataFolder);
+                LogService.WriteFatal($"Missing Registration folder");
             }
-
-            Directory.CreateDirectory(RegistrationDataFolder);
         }
 
         /// <summary>

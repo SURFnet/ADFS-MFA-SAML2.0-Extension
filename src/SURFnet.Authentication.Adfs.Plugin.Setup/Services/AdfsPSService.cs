@@ -21,9 +21,105 @@
     public static class AdfsPSService
     {
         private static readonly string adapterName = Values.AdapterRegistrationName;
-        private static readonly Version Version1010 = new Version(1, 0, 1, 0);
+        private static readonly Version Version1000 = new Version(1, 0, 0, 0);
 
-        private static AdfsConfiguration localAdfsConfiguration;  // For later (De)Registration
+        /// Some awful global state.....
+        /// For some global requirements. Atempted to isolate them here with static properties
+        /// Also some local requirements like later (De)Registration on secondaries.
+        private static AdfsConfiguration localAdfsConfiguration
+#if DEBUG
+             = new AdfsConfiguration()
+                // Initialization just for testing without an ADFS server!!!!!
+                { SyncProps = new AdfsSyncProperties() { Role = AdfsSyncProperties.PrimaryRole } }
+#endif
+        ;
+
+
+
+        public static string GetAdfsHostname
+        {
+            get
+            {
+                if (localAdfsConfiguration.SyncProps.IsPrimary)
+                    return localAdfsConfiguration.AdfsProps.HostName;
+                else
+                    throw new ApplicationException("Program BUG!! No hostname on secondary!!");
+            }
+        }
+
+
+        /// <summary>
+        /// Called very early during setup.
+        /// This Method queries the ADFS configuration for required parameters.
+        /// Some PowerShell Cmdlets do not work on seondary ADFS servers, only on the primary
+        /// server with the Master WID database. Or all other servers that use a
+        /// Microsoft SQL Server (against best-practice).
+        /// </summary>
+        /// <param name="adfsConfig"></param>
+        /// <returns>True, no unexpected issues, out parameter may still be half empty. False on fatal error.</returns>
+        public static bool GetAdfsConfiguration(AdfsConfiguration adfsConfig)
+        {
+            bool rc = false;
+            localAdfsConfiguration = adfsConfig; // remember in a local copy.
+            adfsConfig.RegisteredAdapterVersion = new Version(0, 0, 0, 0);
+
+            DateTime start;
+            DateTime afterFirst = DateTime.MinValue;
+            DateTime stop;
+
+            Console.Write("Contacting ADFS server.....");
+            start = DateTime.UtcNow;
+
+            var syncProps = AdfsSyncPropertiesCmds.GetSyncProperties();
+            if (syncProps != null)
+            {
+                afterFirst = DateTime.UtcNow;
+
+                // As expected: should work on secondaries too.
+                LogService.Log.Info($"ServerRole: {syncProps.Role}");
+                adfsConfig.SyncProps = syncProps;
+                // else: Errors were already reported.
+
+                Console.Write("...");
+                rc = CheckRegisteredAdapterVersion(ref adfsConfig.RegisteredAdapterVersion);
+                if (rc == true)
+                {
+                    LogService.Log.Info($"ADFS configured version: {adfsConfig.RegisteredAdapterVersion}");
+                }
+                // else: errors were already logged
+
+                if (syncProps.IsPrimary)
+                {
+                    Console.Write("...");
+                    var adfsProps = AdfsPropertiesCmds.GetAdfsProps();
+                    if (adfsProps != null)
+                    {
+                        LogService.Log.Info($"ADFS hostname: {adfsProps.HostName}");
+                        adfsConfig.AdfsProps = adfsProps;
+                    }
+                    else
+                    {
+                        // errors were logged, but this is fatal, report it.
+                        rc = false;
+                    }
+                }
+                else
+                {
+                    // no need for the PS0033 exception....
+                    LogService.Log.Info("GetAdfsConfiguration() skips Get-AdfsProperties on non-PrimaryComputer.");
+                }
+
+            }
+            // else: Errors were already reported. And rc == false.
+
+            stop = DateTime.UtcNow;
+            Console.Write("\r                                                    \r");
+
+            ReportTimes(start, afterFirst, stop);
+
+            return rc;
+        }
+
 
         /// <summary>
         /// Registers the ADFS MFA extension and adds it to the
@@ -157,78 +253,6 @@
             return ok;
         }
 
-        /// <summary>
-        /// This Method queries the ADFS configuration for required parameters.
-        /// Some PowerShell Cmdlets do not work on seondary ADFS servers, only on the primary
-        /// server with the Master WID database. Or all servers that use a Microsoft SQL
-        /// Server (against best-practice).
-        /// </summary>
-        /// <param name="adfsConfig"></param>
-        /// <returns>True, no unexpected issues, out parameter may still be half empty. False on fatal error.</returns>
-        public static bool GetAdfsConfiguration(AdfsConfiguration adfsConfig)
-        {
-            bool rc = false;
-            localAdfsConfiguration = adfsConfig; // remember in a local copy.
-            adfsConfig.RegisteredAdapterVersion = new Version(0, 0, 0, 0);
-
-            DateTime start;
-            DateTime afterFirst = DateTime.MinValue;
-            DateTime stop;
-
-            Console.Write("Contacting ADFS server.....");
-            start = DateTime.UtcNow;
-
-            var syncProps = AdfsSyncPropertiesCmds.GetSyncProperties();
-            if (syncProps != null)
-            {
-                afterFirst = DateTime.UtcNow;
-
-                // As expected: should work on secondaries too.
-                LogService.Log.Info($"ServerRole: {syncProps.Role}");
-                adfsConfig.SyncProps = syncProps;
-                // else: Errors were already reported.
-
-                Console.Write("...");
-                rc = CheckRegisteredAdapterVersion(ref adfsConfig.RegisteredAdapterVersion);
-                if (rc == true)
-                {
-                    LogService.Log.Info($"ADFS configured version: {adfsConfig.RegisteredAdapterVersion}");
-                }
-                // else: errors were already logged
-
-
-                // TODONOW: Should use the IsPrimary Property!! Now two hardcoded strings.
-                if ( syncProps.Role.Equals("PrimaryComputer", StringComparison.OrdinalIgnoreCase) )
-                {
-                    Console.Write("...");
-                    var adfsProps = AdfsPropertiesCmds.GetAdfsProps();
-                    if (adfsProps != null)
-                    {
-                        LogService.Log.Info($"ADFS hostname: {adfsProps.HostName}");
-                        adfsConfig.AdfsProps = adfsProps;
-                    }
-                    else
-                    {
-                        // errors were logged, but this is fatal, report it.
-                        rc = false;
-                    }
-                }
-                else
-                {
-                    // no need for the PS0033 exception....
-                    LogService.Log.Info("GetAdfsConfiguration() skips Get-AdfsProperties on non-PrimaryComputer.");
-                }
-
-            }
-            // else: Errors were already reported. And rc == false.
-
-            stop = DateTime.UtcNow;
-            Console.Write("\r                                                    \r");
-
-            ReportTimes(start, afterFirst, stop);
-
-            return rc;
-        }
 
 
 
@@ -295,8 +319,10 @@
                 }
                 if ( index == adminName.Length )
                 {
-                    // no version, ie 1.0.1.0
-                    rc = Version1010;
+                    // no version,
+                    // We cannot see the difference between 1.0.1.0 and 1.0.0.0
+                    // 
+                    rc = Version1000;
                 }
                 else
                 {

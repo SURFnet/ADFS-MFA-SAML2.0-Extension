@@ -1,4 +1,5 @@
 ﻿using Microsoft.Win32.SafeHandles;
+using SURFnet.Authentication.Adfs.Plugin.Setup.Services;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -11,9 +12,13 @@ using System.Threading.Tasks;
 
 namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
 {
+    /// <summary>
+    /// Needs cleanup. At the moment all stuff is in this file. Several classes in this
+    /// single file. Against convention. Quick and dirty.
+    /// </summary>
     public class CertCreate
     {
-        public static void Create()
+        public static X509Certificate2 Create(string hostname)
         {
             X509Certificate2 cert = null;
             X509Store store = new X509Store("MY", StoreLocation.LocalMachine);
@@ -23,28 +28,23 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
 
             try
             {
-                string hostname = "NoWhere.com";
                 string subject = $"CN=SFO MFA extension {hostname}";
                 cert = CreateSelfSignedCertificate(subject, fiveYears, null);
 
                 store.Add(cert);
-
-                cert.Reset();
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.ToString());
-            }
-            finally
-            {
-                if (cert != null)
-                    cert.Reset();
+                LogService.WriteFatalException("Fatal exception while creating a SelfSigned certificate", ex);
+                cert = null;
             }
 
             store.Close();
+
+            return cert;
         }
 
-        public static unsafe X509Certificate2 CreateSelfSignedCertificate(string subjectName, int durationInMinutes, OidCollection ekuExtensions)
+        private static unsafe X509Certificate2 CreateSelfSignedCertificate(string subjectName, int durationInMinutes, OidCollection ekuExtensions)
         {
             int keySize = 3 * 1024;
 

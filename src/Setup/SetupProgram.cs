@@ -119,8 +119,6 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                 /**** INSTALL ****/
                 else if (0 != (setupstate.mode & SetupFlags.Install) )
                 {
-                    //setupstate.TargetVersionDescription = AllDescriptions.ThisVersion;
-
                     // only this version, because the configuration writers are absent for older versions
                     LogService.Log.Info("Start an installation.");
                     if (0 != SettingsChecker.VerifySettingsComplete(setupstate, AllDescriptions.ThisVersion))
@@ -130,7 +128,9 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                     }
                     else if ( setupstate.DetectedVersion.Major == 0 )
                     {
+                        //
                         // GREEN FIELD
+                        //
                         LogService.Log.Info("Green field installation");
                         if ( (setupstate.RegisteredVersionInAdfs.Major == 0) && (! setupstate.IsPrimaryComputer ) )
                         {
@@ -142,7 +142,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                         }
                         else
                         {
-                            // Install
+                            // real green filed install
                             LogService.Log.Info("Calling AdapterMaintenance.Install()");
                             if ( 0 != AdapterMaintenance.Install(AllDescriptions.ThisVersion, setupstate.FoundSettings) )
                             {
@@ -156,6 +156,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                             {
                                 if (setupstate.IsPrimaryComputer)
                                 {
+                                    RegistrationData.PrepareAndWrite();
+
                                     rc = AdapterMaintenance.UpdateRegistration(setupstate.AdfsConfig.RegisteredAdapterVersion);
                                     if ( rc == 0 )
                                     {
@@ -183,7 +185,9 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                     } // end green field
                     else if ( setupstate.DetectedVersion < AllDescriptions.ThisVersion.DistributionVersion )
                     {
+                        //
                         // UPGRADE to this version
+                        //
                         LogService.Log.Info("Upgrade");
                         if ( (false == setupstate.IsPrimaryComputer) && (setupstate.RegisteredVersionInAdfs.Major==0) )
                         {
@@ -206,6 +210,9 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                             }
                             else
                             {
+                                if ( setupstate.IsPrimaryComputer )
+                                    RegistrationData.PrepareAndWrite();
+
                                 // now:  stop; upgrade; install; start
                                 if (0 != AdfsServer.StopAdFsService())
                                 {
@@ -239,7 +246,9 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                 }
                 else if (setupstate.AdfsConfig.RegisteredAdapterVersion == setupstate.SetupProgramVersion)
                 {
+                    //
                     // Version on disk is this version
+                    //
                     if ( ! setupstate.IsPrimaryComputer )
                     {
                         Console.WriteLine();
@@ -260,7 +269,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                         }
                         else if (0 != (AdfsServer.RestartAdFsService()))
                         {
-                            // TODONOW: (re)StartError
+                            // TODONOW: (re)StartError message/advice
                             rc = 8;
                         }
                         else
