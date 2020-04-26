@@ -126,181 +126,44 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                         // SETTING PROBLEM
                         rc = 8;
                     }
-                    else if ( setupstate.DetectedVersion.Major == 0 )
+                    else if (setupstate.DetectedVersion.Major == 0)
                     {
-                        //
                         // GREEN FIELD
-                        //
-                        LogService.Log.Info("Green field installation");
-                        EnsureEventLog.Create();
-                        if ( (setupstate.RegisteredVersionInAdfs.Major == 0) && (! setupstate.IsPrimaryComputer ) )
-                        {
-                            rc = Messages.EndWarning("First installation *must* be on a primary server of the ADFS farm.");
-                        }
-                        else if (false == Messages.DoYouWantTO($"Install version {AllDescriptions.ThisVersion.DistributionVersion}"))
-                        {
-                            rc = 4;
-                        }
-                        else
-                        {
-                            // real green filed install
-                            LogService.Log.Info("Calling AdapterMaintenance.Install()");
-                            if ( 0 != AdapterMaintenance.Install(AllDescriptions.ThisVersion, setupstate.FoundSettings) )
-                            {
-                                Console.WriteLine();
-                                Console.WriteLine("Installation failed.");
-                                Console.WriteLine("");
-                                rc = 8;
-                            }
-
-                            if (rc == 0)
-                            {
-                                if (setupstate.IsPrimaryComputer)
-                                {
-                                    RegistrationData.PrepareAndWrite();
-
-                                    rc = AdapterMaintenance.UpdateRegistration(setupstate.AdfsConfig.RegisteredAdapterVersion);
-                                    if ( rc == 0 )
-                                    {
-                                        Console.WriteLine("Registration Successfull");
-                                        Console.WriteLine();
-                                    }
-                                }
-                                
-                                if (rc == 0)
-                                {
-                                    if (0!=(rc=AdfsServer.RestartAdFsService()))
-                                    {
-                                        Console.WriteLine();
-                                        Console.WriteLine("Everything was OK. However, Restarting ADFS Failed.");
-                                        Console.WriteLine("Take a look at the ADFS EventLog and also MFA extension EventLog 'AD FS plugin'");
-                                        rc = 8;
-                                    }
-                                    else
-                                    {
-                                        Messages.SayAllSeemsOK();
-                                    }
-                                }
-                            }
-                        }
-                    } // end green field
-                    else if ( setupstate.DetectedVersion < AllDescriptions.ThisVersion.DistributionVersion )
+                        rc = GrenFieldInstallation(setupstate);
+                    }
+                    else if (setupstate.DetectedVersion < AllDescriptions.ThisVersion.DistributionVersion)
                     {
-                        //
                         // UPGRADE to this version
-                        //
-                        LogService.Log.Info("Upgrade");
-                        EnsureEventLog.Create();
-                        if ( (false == setupstate.IsPrimaryComputer) && (setupstate.RegisteredVersionInAdfs.Major==0) )
-                        {
-                            // On Secondary, nothing in ADFS and old version.....
-                            // Nope, too weird
-                            Console.WriteLine();
-                            Console.WriteLine("On Secondary computer with an old version on disk.");
-                            Console.WriteLine("Nothing registered in the ADFS configuration database.");
-                            Console.WriteLine("Will not upgrade. First uninstall or register in ADFS.");
-                            Console.WriteLine();
-                            rc = 4;
-                        }
-                        if (Messages.DoYouWantTO($"Upgrade from {setupstate.DetectedVersion} version {AllDescriptions.ThisVersion.DistributionVersion}"))
-                        {
-                            Console.WriteLine($"Starting Upgrade to {setupstate.SetupProgramVersion}");
-                            if (0 != (rc = AdapterMaintenance.UpdateRegistration(setupstate.AdfsConfig.RegisteredAdapterVersion)))
-                            {
-                                // No cigar by the rules, no further message.
-                                rc = 8;
-                            }
-                            else
-                            {
-                                if ( setupstate.IsPrimaryComputer )
-                                    RegistrationData.PrepareAndWrite();
-
-                                // now:  stop; upgrade; install; start
-                                if (0 != AdfsServer.StopAdFsService())
-                                {
-                                    rc = 8;
-                                }
-                                else if (0 != AdapterMaintenance.Upgrade(setupstate.InstalledVersionDescription,
-                                            AllDescriptions.ThisVersion, setupstate.FoundSettings))
-                                {
-                                    Console.WriteLine();
-                                    LogService.WriteFatal("Upgrade to new adapter failed!");
-                                    rc = 8;
-                                }
-                                else if (0 != AdfsServer.StartAdFsService())
-                                {
-                                    rc = 8;
-                                    Console.WriteLine();
-                                    Console.WriteLine("Everything was OK. However, Starting ADFS Failed.");
-                                    Console.WriteLine("Take a look at the ADFS EventLog and also MFA extension EventLog 'AD FS plugin'");
-                                }
-                                else
-                                {
-                                    Messages.SayAllSeemsOK();
-                                }
-                            }
-                        }
-                        else
-                        {
-                            rc = 4;
-                        }
+                        rc = UpgradeToThisVersion(setupstate);
                     }
-                }
-                else if (setupstate.AdfsConfig.RegisteredAdapterVersion == setupstate.SetupProgramVersion)
-                {
-                    //
-                    // Version on disk is this version
-                    //
-                    EnsureEventLog.Create();
-                    if ( ! setupstate.IsPrimaryComputer )
+                    else if (setupstate.AdfsConfig.RegisteredAdapterVersion == setupstate.SetupProgramVersion)
                     {
-                        Console.WriteLine();
-                        Console.WriteLine($"On a Secondary computer with {setupstate.SetupProgramVersion} already installed.");
-                        Console.WriteLine("There is nothing to do/install.");
-                        Console.WriteLine();
-                        rc = 4;
+                        // Version on disk is this version
+                        rc = InstallOnInstalled(setupstate);
                     }
-                    else if ( setupstate.AdfsConfig.RegisteredAdapterVersion != AllDescriptions.ThisVersion.DistributionVersion)
-                    {
-                        if (false == Messages.DoYouWantTO($"Upgrade registration from {setupstate.DetectedVersion} to version {AllDescriptions.ThisVersion.DistributionVersion}"))
-                        {
-                            rc = 4;
-                        }
-                        else if ( 0!=AdapterMaintenance.UpdateRegistration(setupstate.AdfsConfig.RegisteredAdapterVersion))
-                        {
-                            rc = 8;
-                        }
-                        else if (0 != (AdfsServer.RestartAdFsService()))
-                        {
-                            // TODONOW: (re)StartError message/advice
-                            rc = 8;
-                        }
-                        else
-                            Messages.SayAllSeemsOK();
-                    }
-
                 }
                 /**** RECONFIGURE ****/
                 else if (0 != (setupstate.mode & SetupFlags.Reconfigure))
                 {
                     // temp gone
                     //setupstate.TargetVersionDescription = setupstate.InstalledVersionDescription ?? AllDescriptions.ThisVersion;
-
+                    LogService.Log.Info("Reconfigure.");
                     if (setupstate.DetectedVersion.Major == 0)
                     {
                         LogService.WriteFatal("No (correct) installed version. Cannot \"Reconfigure\"!");
                         rc = 4;
                     }
-                    else if (0 != SettingsChecker.VerifySettingsComplete(setupstate, AllDescriptions.ThisVersion))
-                    {
-                        // SETTING PROBLEM
-                        rc = 8;
-                    }
-                    else if ( setupstate.DetectedVersion != setupstate.SetupProgramVersion )
+                    else if (setupstate.DetectedVersion != setupstate.SetupProgramVersion)
                     {
                         LogService.WriteFatal("Can only reconfigure version equal to this setup program version.");
                         LogService.WriteFatal("Cannot (yet....) write old configuration files.");
                         rc = 4;
+                    }
+                    else if (0 != SettingsChecker.VerifySettingsComplete(setupstate, AllDescriptions.ThisVersion))
+                    {
+                        // SETTING PROBLEM
+                        LogService.Log.Info("Setting problem!!");
+                        rc = 8;
                     }
                     else
                     {
@@ -338,6 +201,169 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
             Console.ReadLine();
         }
 
+        static int GrenFieldInstallation(SetupState setupstate)
+        {
+            int rc = 0;
+
+            LogService.Log.Info("Green field installation");
+            EnsureEventLog.Create();
+            if ((setupstate.RegisteredVersionInAdfs.Major == 0) && (!setupstate.IsPrimaryComputer))
+            {
+                rc = Messages.EndWarning("First installation *must* be on a primary server of the ADFS farm.");
+            }
+            else if (false == Messages.DoYouWantTO($"Install version {AllDescriptions.ThisVersion.DistributionVersion}"))
+            {
+                rc = 4;
+            }
+            else
+            {
+                // real green filed install
+                LogService.Log.Info("Calling AdapterMaintenance.Install()");
+                if (0 != AdapterMaintenance.Install(AllDescriptions.ThisVersion, setupstate.FoundSettings))
+                {
+                    Console.WriteLine();
+                    Console.WriteLine("Installation failed.");
+                    Console.WriteLine("");
+                    rc = 8;
+                }
+
+                if (rc == 0)
+                {
+                    if (setupstate.IsPrimaryComputer)
+                    {
+                        RegistrationData.PrepareAndWrite();
+
+                        rc = AdapterMaintenance.UpdateRegistration(setupstate.AdfsConfig.RegisteredAdapterVersion);
+                        if (rc == 0)
+                        {
+                            Console.WriteLine("Registration Successfull");
+                            Console.WriteLine();
+                        }
+                    }
+
+                    if (rc == 0)
+                    {
+                        if (0 != (rc = AdfsServer.RestartAdFsService()))
+                        {
+                            Console.WriteLine();
+                            Console.WriteLine("Everything was OK. However, Restarting ADFS Failed.");
+                            Console.WriteLine("Take a look at the ADFS EventLog and also MFA extension EventLog 'AD FS plugin'");
+                            rc = 8;
+                        }
+                        else
+                        {
+                            Messages.SayAllSeemsOK();
+                        }
+                    }
+                }
+            }
+
+            return rc;
+        }
+
+        static int UpgradeToThisVersion(SetupState setupstate)
+        {
+            int rc = 0;
+
+            //
+            // UPGRADE to this version
+            //
+            LogService.Log.Info("Upgrade installation");
+            EnsureEventLog.Create();
+            if ((false == setupstate.IsPrimaryComputer) && (setupstate.RegisteredVersionInAdfs.Major == 0))
+            {
+                // On Secondary, nothing in ADFS and old version.....
+                // Nope, too weird
+                Console.WriteLine();
+                Console.WriteLine("On Secondary computer with an old version on disk.");
+                Console.WriteLine("Nothing registered in the ADFS configuration database.");
+                Console.WriteLine("Will not upgrade. First uninstall or register in ADFS.");
+                Console.WriteLine();
+                rc = 4;
+            }
+            if (Messages.DoYouWantTO($"Upgrade from {setupstate.DetectedVersion} version {AllDescriptions.ThisVersion.DistributionVersion}"))
+            {
+                Console.WriteLine($"Starting Upgrade to {setupstate.SetupProgramVersion}");
+                if (0 != (rc = AdapterMaintenance.UpdateRegistration(setupstate.AdfsConfig.RegisteredAdapterVersion)))
+                {
+                    // No cigar by the rules, no further message.
+                    rc = 8;
+                }
+                else
+                {
+                    if (setupstate.IsPrimaryComputer)
+                        RegistrationData.PrepareAndWrite();
+
+                    // now:  stop; upgrade; install; start
+                    if (0 != AdfsServer.StopAdFsService())
+                    {
+                        rc = 8;
+                    }
+                    else if (0 != AdapterMaintenance.Upgrade(setupstate.InstalledVersionDescription,
+                                AllDescriptions.ThisVersion, setupstate.FoundSettings))
+                    {
+                        Console.WriteLine();
+                        LogService.WriteFatal("Upgrade to new adapter failed!");
+                        rc = 8;
+                    }
+                    else if (0 != AdfsServer.StartAdFsService())
+                    {
+                        rc = 8;
+                        Console.WriteLine();
+                        Console.WriteLine("Everything was OK. However, Starting ADFS Failed.");
+                        Console.WriteLine("Take a look at the ADFS EventLog and also MFA extension EventLog 'AD FS plugin'");
+                    }
+                    else
+                    {
+                        Messages.SayAllSeemsOK();
+                    }
+                }
+            }
+            else
+            {
+                rc = 4;
+            }
+
+            return rc;
+        }
+
+        static int InstallOnInstalled(SetupState setupstate)
+        {
+            int rc = 0;
+
+            LogService.Log.Info("Already this version on disk.");
+            EnsureEventLog.Create();
+            if (!setupstate.IsPrimaryComputer)
+            {
+                Console.WriteLine();
+                Console.WriteLine($"On a Secondary computer with {setupstate.SetupProgramVersion} already installed.");
+                Console.WriteLine("There is nothing to do/install.");
+                Console.WriteLine();
+                rc = 4;
+            }
+            else if (setupstate.AdfsConfig.RegisteredAdapterVersion != AllDescriptions.ThisVersion.DistributionVersion)
+            {
+                if (false == Messages.DoYouWantTO($"Upgrade registration from {setupstate.DetectedVersion} to version {AllDescriptions.ThisVersion.DistributionVersion}"))
+                {
+                    rc = 4;
+                }
+                else if (0 != AdapterMaintenance.UpdateRegistration(setupstate.AdfsConfig.RegisteredAdapterVersion))
+                {
+                    rc = 8;
+                }
+                else if (0 != (AdfsServer.RestartAdFsService()))
+                {
+                    // TODONOW: (re)StartError message/advice
+                    rc = 8;
+                }
+                else
+                    Messages.SayAllSeemsOK();
+            }
+
+            return rc;
+        }
+
+
         /// <summary>
         /// Initializes the setup program reads environment files, checks if ADFS is
         /// installed on the machine, if the adapetr is registered in the farm etc.
@@ -369,7 +395,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
             }
 
             LogService.Log.Info("Setup program version: " + setupstate.SetupProgramVersion);
-            // TODO: get version of fundamental file.
+            // TODO: get version of fundamental OS file. line "CMD.EXE" as OS version detection.
 
             try
             {
@@ -389,6 +415,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                 }
                 else if ( 0!=DetectAndRead.TryAndDetectAdfs(setupstate) )
                 {
+                    LogService.Log.Warn("Something failed in ADFS detection");
                     rc = 8;
                 }
                 else
@@ -404,6 +431,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                     {
                         ConfigSettings.SPEntityID.DefaultValue = null; // always trigger!
                     }
+
+                    LogService.Log.Info("Successfull end of PrepareforSetup()");
                 }
             }
             catch (Exception ex)
@@ -447,7 +476,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                                 break;
 
                             case 'f':
-                                // Install
+                                // Fix
                                 if (SetupModeOK(setupstate.mode))
                                 {
                                     LogService.Log.Info("Fix flag");
@@ -461,7 +490,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                                 // Install
                                 if (SetupModeOK(setupstate.mode))
                                 {
-                                    LogService.Log.Info("");
+                                    LogService.Log.Info("Install flag");
                                     setupstate.mode |= SetupFlags.Install;
                                 }
                                 else
@@ -472,7 +501,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                                 // (Re)configure
                                 if (SetupModeOK(setupstate.mode))
                                 {
-                                    LogService.Log.Info("");
+                                    LogService.Log.Info("Reconfigure flag");
                                     setupstate.mode |= SetupFlags.Reconfigure;
                                 }
                                 else
@@ -483,7 +512,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                                 // Uninstall
                                 if (SetupModeOK(setupstate.mode))
                                 {
-                                    LogService.Log.Info("");
+                                    LogService.Log.Info("Uninstall flag");
                                     setupstate.mode |= SetupFlags.Uninstall;
                                 }
                                 else

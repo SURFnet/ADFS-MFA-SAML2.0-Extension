@@ -196,7 +196,9 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
                                 ok = true;
                                 needVerifiedCert = false;
 
-                                // TODONOW:  update ACL!
+                                // update ACL!
+                                string ObjectName = AdfsServer.AdfsAccount;
+                                SetupCertService.AddAllowAcl(tempCert, ObjectName);
 
                                 // Add cert to registration data.
                                 RegistrationData.SetCert(tempCert);

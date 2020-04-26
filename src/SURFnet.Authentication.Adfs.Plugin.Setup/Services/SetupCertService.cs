@@ -2,7 +2,9 @@
 using SURFnet.Authentication.Adfs.Plugin.Setup.Question;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Security.AccessControl;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
@@ -131,6 +133,60 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
             }
 
             return isValid;
+        }
+
+        /// <summary>
+        /// Add "Read"/"Allow" ACE to PrivateKey ACL of this cert for username. Does not add duplicates.
+        /// </summary>
+        /// <param name="cert">Cert with PrivateKey</param>
+        /// <param name="username">Domain\sAMAccountName</param>
+        /// <returns></returns>
+        public static int AddAllowAcl(X509Certificate2 cert, string username)
+        {
+            int rc = 0;
+            try
+            {
+                string filePath = CreatePath(cert);
+                if (filePath != null)
+                {
+                    var acl = File.GetAccessControl(filePath);
+                    var ace = new FileSystemAccessRule(username, FileSystemRights.Read, AccessControlType.Allow);
+                    acl.AddAccessRule(ace);
+                    File.SetAccessControl(filePath, acl);
+                }
+            }
+            catch (Exception ex)
+            {
+                LogService.WriteFatalException("Setting ACL on certificate failed.", ex);
+                rc = -1;
+            }
+
+            return rc;
+        }
+
+        /// <summary>
+        /// Hardcoded Create path to CNG cert.
+        /// PL: I do not know how to do that with CspParameters in .NET 4.6.1.
+        /// It was like that in the original PowerShell code of 1.0.*
+        /// </summary>
+        /// <param name="cert"></param>
+        /// <returns></returns>
+        private static string CreatePath(X509Certificate2 cert)
+        {
+            string UniqueContainerName = null;
+
+            if ((cert.HasPrivateKey) && (null != cert.PrivateKey))
+            {
+                if (cert.PrivateKey is RSACryptoServiceProvider alg)
+                {
+                    UniqueContainerName = alg.CspKeyContainerInfo.UniqueKeyContainerName;
+                }
+            }
+
+            if (UniqueContainerName != null)
+                return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), @"Microsoft\Crypto\RSA\MachineKeys", UniqueContainerName);
+            else
+                return null;
         }
 
 

@@ -17,8 +17,10 @@
 namespace SURFnet.Authentication.Adfs.Plugin.Setup
 {
     using System;
+    using System.Management;
     using System.ServiceProcess;
     using System.Threading;
+    using Microsoft.Win32;
     using SURFnet.Authentication.Adfs.Plugin.Setup.Assemblies;
     using SURFnet.Authentication.Adfs.Plugin.Setup.Services;
     using SURFnet.Authentication.Adfs.Plugin.Setup.Versions;
@@ -63,6 +65,11 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                 else
                 {
                     SvcController = tmpController;
+                    if ( AdfsAccount == null )
+                    {
+                        LogService.WriteFatal("Something failed when looking for the sevice account name of the ADFS server.");
+                        return null;
+                    }
                 }
             }
             catch (InvalidOperationException ex1)
@@ -143,6 +150,51 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
         /// Get Available for the service account, which must have rights for the private key.
         /// </summary>
         public static ServiceController SvcController { get; private set; } = null;
+
+        /// <summary>
+        /// This is really rediculous, getting it from the Registry seems far simpler.....
+        /// Queries, iterators within iterators just to say: "Hi mom".
+        /// </summary>
+        public static string AdfsAccount
+        {
+            get
+            {
+                // I hate "one liners". :-), LF solves it?
+                var obj = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64)
+                                    ?.OpenSubKey(@"SYSTEM\CurrentControlSet\Services\adfssrv")
+                                    ?.GetValue("ObjectName");
+                if (obj is string accountName)
+                    LogService.Log.Info("Registry says --- ADFS svc account: " + accountName as string);
+
+                string result = null;
+                string query = $"select * from Win32_Service where name like '{DefaultAdfsSvcName}'";
+
+                ManagementObjectSearcher windowsServicesSearcher = new ManagementObjectSearcher("root\\cimv2", query);
+                ManagementObjectCollection objectCollection = windowsServicesSearcher.Get();
+
+                if ( (objectCollection!=null)  && (objectCollection.Count>0) )
+                {
+                    // yes, must iterate.....
+                    foreach ( var svcobj in objectCollection )
+                    {
+                        var props = svcobj.Properties;
+                        foreach ( var prop in props )
+                        {
+                            if (prop.Name.Equals("StartName", StringComparison.OrdinalIgnoreCase))
+                            {
+                                result = prop.Value.ToString();
+                            }
+                        }
+                    }
+                }
+
+                if (result != null)
+                    LogService.Log.Info("WMI says --- ADFS svc account: " + result);
+
+                return result;
+
+            }
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AdfsServer"/> class.

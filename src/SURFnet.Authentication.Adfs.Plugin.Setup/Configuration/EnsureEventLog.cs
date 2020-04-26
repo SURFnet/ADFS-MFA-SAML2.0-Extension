@@ -35,7 +35,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
                 }
                 else
                 {
-                    LogService.Log.Info($"'{Source}' was already present.");
+                    LogService.Log.Info($"EventLog: '{Source}' was already present.");
                 }
 
                 rc = 0;

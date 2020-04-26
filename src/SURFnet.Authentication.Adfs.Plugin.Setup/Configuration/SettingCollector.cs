@@ -301,7 +301,9 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
                     // OK, new valid cert
                     ConfigSettings.SPPrimarySigningThumbprint.NewValue = pfxSelector.ResultCertificate.Thumbprint;
 
-                    // TODONOW:  update ACL!
+                    // update ACL!
+                    string ObjectName = AdfsServer.AdfsAccount;
+                    SetupCertService.AddAllowAcl(pfxSelector.ResultCertificate, ObjectName);
 
                     // stick it in the Registrationdata
                     RegistrationData.SetCert(pfxSelector.ResultCertificate);
