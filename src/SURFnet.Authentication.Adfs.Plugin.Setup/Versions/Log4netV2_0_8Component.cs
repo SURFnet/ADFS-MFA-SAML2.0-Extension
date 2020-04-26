@@ -31,8 +31,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
         public override int ReadConfiguration(List<Setting> settings)
         {
             // log4net does have a file, but will not read it!
-            // Uninstall() of the previous adapter will have copied it to backup.
-            // Otherwise it wil get one from the distfolder folder.
+            // Always fresh from dist
             return 0;
         }
 
@@ -46,12 +45,18 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
 
         public override int Install()
         {
-            if ( FileService.FileExistsInCurrentBackup(ConfigFilename) )
-            {
-                // Some Uninstall() has written it to backup.
-                // Copy from backup to configuration output directory.
-                FileService.CopyFromBackupToOutput(ConfigFilename);
-            }
+            /// Left in here as documentation of history. We wanted to leave
+            /// the configuration of log4net untouched.
+            /// However, 2.* is completely different.
+            /// Now we just default to copy old to backup and overwrite
+            /// from dist (through a copy to output).
+
+            //if ( FileService.FileExistsInCurrentBackup(ConfigFilename) )
+            //{
+            //    // Some Uninstall() has written it to backup.
+            //    // Copy from backup to configuration output directory.
+            //    FileService.CopyFromBackupToOutput(ConfigFilename);
+            //}
 
             return base.Install();
         }

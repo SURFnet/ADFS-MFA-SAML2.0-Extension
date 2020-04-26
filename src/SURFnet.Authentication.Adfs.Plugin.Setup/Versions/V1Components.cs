@@ -14,6 +14,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
 
         public static readonly AdapterComponent V1_0_0_0Adapter = new V1AdapterImp(V1Assemblies.AdapterV1000Spec);
 
+        // Two component descriptions because V1.0.* have different PublicKeyToken(s).
         public static readonly StepupComponent[] V1010Components = new StepupComponent[]
         {
             new Kentorv0_21_Component(V1Assemblies.Kentor0_21_2Spec),
