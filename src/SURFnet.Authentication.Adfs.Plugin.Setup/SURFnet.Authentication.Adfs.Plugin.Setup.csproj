@@ -76,6 +76,7 @@
     <Compile Include="Configuration\CertExport.cs" />
     <Compile Include="Configuration\CertImportPfx.cs" />
     <Compile Include="Configuration\CertMethodController.cs" />
+    <Compile Include="Configuration\EnsureEventLog.cs" />
     <Compile Include="Configuration\IdPChoiceController.cs" />
     <Compile Include="Configuration\IdpChoiceHandler.cs" />
     <Compile Include="Configuration\CertFromStore.cs" />

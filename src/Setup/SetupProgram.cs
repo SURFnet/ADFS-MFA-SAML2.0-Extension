@@ -132,6 +132,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                         // GREEN FIELD
                         //
                         LogService.Log.Info("Green field installation");
+                        EnsureEventLog.Create();
                         if ( (setupstate.RegisteredVersionInAdfs.Major == 0) && (! setupstate.IsPrimaryComputer ) )
                         {
                             rc = Messages.EndWarning("First installation *must* be on a primary server of the ADFS farm.");
@@ -189,6 +190,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                         // UPGRADE to this version
                         //
                         LogService.Log.Info("Upgrade");
+                        EnsureEventLog.Create();
                         if ( (false == setupstate.IsPrimaryComputer) && (setupstate.RegisteredVersionInAdfs.Major==0) )
                         {
                             // On Secondary, nothing in ADFS and old version.....
@@ -249,6 +251,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                     //
                     // Version on disk is this version
                     //
+                    EnsureEventLog.Create();
                     if ( ! setupstate.IsPrimaryComputer )
                     {
                         Console.WriteLine();
@@ -301,10 +304,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                     }
                     else
                     {
-                        // temp removal
-                        //setupstate.TargetVersionDescription = setupstate.InstalledVersionDescription;
-
-                        Console.WriteLine("Reconfiguriguration started.");
+                        Console.WriteLine("Reconfiguration started.");
                         rc = AdapterMaintenance.ReConfigure(AllDescriptions.ThisVersion,
                                             setupstate.FoundSettings);
                         if ( rc == 0 )
@@ -385,7 +385,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                 {
                     rc = 8;
                     Console.WriteLine("Stopping after attempted Version detection.");
-                    Console.WriteLine("Checking the logfile of the setup program for diagnostics.");
+                    Console.WriteLine("Check the logfile of the setup program for diagnostics.");
                 }
                 else if ( 0!=DetectAndRead.TryAndDetectAdfs(setupstate) )
                 {
@@ -393,7 +393,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                 }
                 else
                 {
-                    // set default SP entityID. Has essential an side effect:
+                    // set default SP entityID. Has a very essential side effect:
                     //   - It fills the setting Dictionary!
                     if (setupstate.AdfsConfig.SyncProps.IsPrimary)
                     {

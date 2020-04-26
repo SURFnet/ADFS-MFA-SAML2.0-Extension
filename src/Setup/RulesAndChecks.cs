@@ -101,6 +101,16 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
             }
             else
             {
+                if ( ! EnsureEventLog.Exists )
+                {
+                    // No EventLog for Adapter
+                    LogService.Log.Warn("ExtraChecks() detected missing EventLog.");
+                    if ( 'y' == AskYesNo.Ask("Missing EventLog, create it", 'y') )
+                    {
+                        EnsureEventLog.Create();
+                    }
+                }
+
                 // something on disk
                 Console.WriteLine();
                 Console.WriteLine("Current Settings:");
@@ -116,7 +126,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                     Console.WriteLine("     None");
                 }
 
-                WarnPrimaryFirst(setupstate);
+                    WarnPrimaryFirst(setupstate);
             }
 
             Console.WriteLine();
@@ -131,7 +141,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
             {
                 if (!setupstate.IsPrimaryComputer)
                 {
-                    Console.WriteLine("You should first upgrade/install on a primary computer of the ADFS farm.");
+                    LogService.WriteWarning("You should first upgrade/install on a primary computer of the ADFS farm.");
                 }
             }
         }
