@@ -160,10 +160,9 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Assemblies
         public string WriteNewInstance()
         {
             StringBuilder sb = new StringBuilder();
-            sb.AppendLine("            new AssemblySpec()");
+            sb.AppendLine($"            new AssemblySpec(\"{InternalName}\")");
             sb.AppendLine("            {");
-            sb.AppendFormat("                InternalName = \"{0}\",\r\n", InternalName);
-            sb.AppendFormat("                FullName = \"{0}\",\r\n", AssemblyFullName);
+            sb.AppendFormat("                AssemblyFullName = \"{0}\",\r\n", AssemblyFullName);
             sb.AppendFormat("                AssemblyVersion = new Version(\"{0}\"),\r\n", AssemblyVersion.ToString());
             sb.AppendFormat("                ProductVersion = new Version(\"{0}\"),\r\n", ProductVersion.ToString());
             sb.AppendFormat("                FileVersion = new Version(\"{0}\")\r\n", FileVersion.ToString());

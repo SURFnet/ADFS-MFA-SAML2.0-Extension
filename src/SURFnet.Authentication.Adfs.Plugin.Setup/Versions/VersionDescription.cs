@@ -23,7 +23,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
 
         public VersionDescription(AdapterComponent adapter)
         {
-            DistributionVersion = adapter.AdapterSpec.FileVersion; // mmm, better to let property take it from adapter?
+            DistributionVersion = adapter.AdapterSpec.FileVersion; // take property from adapter!
             Adapter = adapter;
         }
 

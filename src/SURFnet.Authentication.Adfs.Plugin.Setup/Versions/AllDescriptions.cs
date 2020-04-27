@@ -8,6 +8,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
 {
     public static class AllDescriptions
     {
+
         static public readonly VersionDescription V1_0_1_0 = new V1DescriptionImp(V1Components.V1_0_1_0Adapter)
         {
             Components = V1Components.V1010Components,
@@ -20,18 +21,26 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
             ExtraAssemblies = null
         };
 
-        static public readonly VersionDescription V2_1_17_9 = new VersionDescription(V2_1Components.V2_1_17Adapter)
+        static public readonly VersionDescription V2_0_0_0 = new VersionDescription(V2Components.V2_0_0Adapter)
         {
-            Components = V2_1Components.V2_1_17Components,
-            ExtraAssemblies = V2Assemblies.V2_1_Extras
+            Components = V2Components.V2_0_0Components,
+            ExtraAssemblies = Sustainsys2_7Deps.Sustainsys2_7_Extras
         };
 
-        static public readonly VersionDescription V2_1_18_0 = new VersionDescription(V2_1Components.V2_1_18Adapter)
+
+        static public readonly VersionDescription V2_1_17_9 = new VersionDescription(V2Components.V2_1_17Adapter)
         {
-            Components = V2_1Components.V2_1_18Components,
-            ExtraAssemblies = V2Assemblies.V2_1_Extras
+            Components = V2Components.V2_1_17Components,
+            ExtraAssemblies = Sustainsys2_3Deps.Sustainsys2_3_Extras
         };
 
-        public static VersionDescription ThisVersion = V2_1_18_0;   // Do not forget to update this :-)
+        static public readonly VersionDescription V2_1_18_0 = new VersionDescription(V2Components.V2_1_18Adapter)
+        {
+            Components = V2Components.V2_1_18Components,
+            ExtraAssemblies = Sustainsys2_3Deps.Sustainsys2_3_Extras
+        };
+
+                // Do not forget to update his to the newest!! :-)
+        public static VersionDescription ThisVersion = V2_0_0_0;
     }
 }

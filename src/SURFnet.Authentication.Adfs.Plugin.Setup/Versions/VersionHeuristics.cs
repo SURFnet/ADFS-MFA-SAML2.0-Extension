@@ -43,9 +43,20 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
 
             if ( TryFindAdapter(out found) )
             {
+                if ( found== null )
+                    LogService.Log.Error("found is null");
+                if (AllDescriptions.ThisVersion == null)
+                    LogService.Log.Error("AllDescriptions.ThisVersion is null");
+                else if (AllDescriptions.ThisVersion.DistributionVersion == null)
+                    LogService.Log.Error("DistributionVersion is null");
+
                 if (found == AllDescriptions.ThisVersion.DistributionVersion)
                 {
-                    Description = AllDescriptions.ThisVersion; // V2_1_18
+                    Description = AllDescriptions.ThisVersion; // V2_0_0
+                }
+                if (found == AllDescriptions.V2_1_18_0.DistributionVersion)
+                {
+                    Description = AllDescriptions.V2_1_18_0;
                 }
                 else if (found == AllDescriptions.V2_1_17_9.DistributionVersion )
                 {
@@ -122,6 +133,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
             if ( adapters.Count==1 )
             {
                 versionfound = adapters[0].FileVersion;
+                if (adapters[0].FileVersion == null)
+                    LogService.Log.Info("adapters[0].FileVersion is null");
             }
             else if (adapters.Count>1)
             {

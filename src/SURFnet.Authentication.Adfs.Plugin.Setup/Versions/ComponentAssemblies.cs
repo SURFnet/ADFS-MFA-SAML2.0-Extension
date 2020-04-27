@@ -22,6 +22,17 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
             }
         };
 
+        static public readonly AssemblySpec[] Sustain2_7AssemblySpec = new AssemblySpec[]
+        {
+            new AssemblySpec(SetupConstants.SustainsysFilename)
+            {
+                AssemblyFullName = "Sustainsys.Saml2, Version=2.7.0.0, Culture=neutral, PublicKeyToken="+CurrentPublicTokenKey.PublicTokenKey,
+                AssemblyVersion = new Version("2.7.0.0"),
+                ProductVersion = new Version("2.7.0.0"),
+                FileVersion = new Version("2.7.0.0")
+            }
+        };
+
         static public readonly AssemblySpec[] Log4Net2_0_8AssemblySpec = new AssemblySpec[]
         {
             new AssemblySpec(SetupConstants.Log4netFilename)

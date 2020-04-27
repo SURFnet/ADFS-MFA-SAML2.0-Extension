@@ -9,9 +9,9 @@ using System.Xml.Linq;
 
 namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
 {
-    public class V2_1_18AdapterImp : AdapterComponent
+    public class V2_0_0AdapterImp : AdapterComponent
     {
-        public V2_1_18AdapterImp() : base(V2Assemblies.Adapter_2_1_18Spec)
+        public V2_0_0AdapterImp() : base(V2Assemblies.Adapter_2_0_0Spec)
         {
             ConfigParameters = new string[]
             {

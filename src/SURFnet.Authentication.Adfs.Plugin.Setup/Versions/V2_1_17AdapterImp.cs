@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml.Linq;
-using SURFnet.Authentication.Adfs.Plugin.Setup.Assemblies;
 using SURFnet.Authentication.Adfs.Plugin.Setup.Configuration;
 using SURFnet.Authentication.Adfs.Plugin.Setup.Models;
 using SURFnet.Authentication.Adfs.Plugin.Setup.Services;
@@ -28,7 +24,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
 
         public override int ReadConfiguration(List<Setting> settings)
         {
-            LogService.Log.Info($"Reading Settings from {ConfigFilename} for '{ComponentName}'.");
+            LogService.Log.Info($"Reading Settings from '{ConfigFilename}' for '{ComponentName}'.");
 
             int rc = ExctractAdapterConfig(settings);
             if (rc!=0)
@@ -96,6 +92,5 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
 
             return rc;
         }
-
     }
 }

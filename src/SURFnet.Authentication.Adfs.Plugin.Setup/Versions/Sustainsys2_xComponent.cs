@@ -9,6 +9,10 @@ using System.Threading.Tasks;
 
 namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
 {
+    /// <summary>
+    /// This class in not 100% required in 2.0.0.0. But it was there whene there were
+    /// several 2.x versions. Might be very useful later if we need more 2.0 versions.
+    /// </summary>
     public abstract class Sustainsys2_xComponent : StepupComponent
     {
         // Element names
