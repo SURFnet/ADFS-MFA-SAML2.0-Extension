@@ -33,7 +33,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
                 {
                     byte[] pfxbytes = certificate.Export(X509ContentType.Pfx, pwd);
                     string filename = string.Format(SetupConstants.SPCertPfxFilename, DateTime.UtcNow.ToString("yyyyMMdd"));
-                    string filepath = FileService.OurDirCombine(FileDirectory.Config, SetupConstants.SPCertPfxFilename);
+                    string filepath = FileService.OurDirCombine(FileDirectory.Config, filename);
                     File.WriteAllBytes(filepath, pfxbytes);
 
                     QuestionIO.WriteLine();

@@ -145,8 +145,6 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                 /**** RECONFIGURE ****/
                 else if (0 != (setupstate.mode & SetupFlags.Reconfigure))
                 {
-                    // temp gone
-                    //setupstate.TargetVersionDescription = setupstate.InstalledVersionDescription ?? AllDescriptions.ThisVersion;
                     LogService.Log.Info("Reconfigure.");
                     if (setupstate.DetectedVersion.Major == 0)
                     {

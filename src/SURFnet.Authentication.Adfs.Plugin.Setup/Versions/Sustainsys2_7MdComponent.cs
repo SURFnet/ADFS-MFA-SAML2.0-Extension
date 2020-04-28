@@ -61,7 +61,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
             settings.SetFoundSetting(ConfigSettings.SPPrimarySigningThumbprint, foundvalue);
 
             // get the first IdP from the list
-            var identityProviders = sustainsysSection?.Descendants(SustainIdentityProviders).FirstOrDefault();
+            var identityProviders = sustainsysSection?.Descendants(IdentityProviders).FirstOrDefault();
             var identityProvider = identityProviders?.Descendants(XName.Get("add")).FirstOrDefault();
 
             // IdP entityID attribute

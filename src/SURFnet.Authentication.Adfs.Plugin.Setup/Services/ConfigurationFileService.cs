@@ -22,6 +22,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
     using System.Linq;
     using System.Security.Cryptography.X509Certificates;
     using System.Text;
+    using System.Xml;
     using System.Xml.Linq;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
@@ -90,10 +91,17 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
 
         public static void SaveXmlConfigurationFile(XDocument document, string filename)
         {
-            // TODO: move to config stuff.
             var path = FileService.CombineToCfgOutputPath(filename);
             document.Save(path);
         }
+
+
+        public static void SaveXmlDocumentConfiguration(XmlDocument document, string filename)
+        {
+            var path = FileService.CombineToCfgOutputPath(filename);
+            document.Save(path);
+        }
+
 
         /// <summary>
         /// Loads the default StepUp configuration.
@@ -153,7 +161,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
         {
             int rc = 0;
 
-            string json = JsonConvert.SerializeObject(dict, Formatting.Indented);
+            string json = JsonConvert.SerializeObject(dict, Newtonsoft.Json.Formatting.Indented);
 
             var path = FileService.OurDirCombine(FileDirectory.Config, SetupConstants.UsedSettingsFilename);
             try

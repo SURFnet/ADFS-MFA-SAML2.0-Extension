@@ -79,12 +79,6 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
         private static string BackupFolder { get; }
         private static bool backupInitialized = false;
 
-        /// <summary>
-        /// Contains the extension information needed to configure the SFO server.
-        /// </summary>
-        public static string RegistrationDataFolder { get; private set; }
-
-
 
         static FileService()
         {
@@ -349,7 +343,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
         /// </summary>
         private static void ValidateConfigFolder()
         {
-            if (! Directory.Exists(RegistrationDataFolder))
+            if (! Directory.Exists(ConfigFolder))
             {
                 LogService.WriteFatal($"Missing Registration folder");
             }

@@ -34,7 +34,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
                 CheckPathExists = true,
                 Filter = "PFX files (*.pfx)|*.pfx|All files (*.*)|*.*",
                 FilterIndex = 1,
-                InitialDirectory = FileService.RegistrationDataFolder,
+                InitialDirectory = FileService.Enum2Directory(FileDirectory.Config),
                 Multiselect = false
             };
 

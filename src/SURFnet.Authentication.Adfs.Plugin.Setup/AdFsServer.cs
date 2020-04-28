@@ -299,7 +299,10 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
         public static int StopAdFsService()
         {
             if (SvcController == null)
+            {
+                LogService.WriteFatal("ADFS SvcController is null.");
                 return -1;
+            }
 
             Console.Write("Stopping ADFS service");
             int rc = StopAdFsServiceInternal();

@@ -125,7 +125,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
         //public const string IdPSignCert2 = "IdPSignCert2";
         public const string MinimalLoa = "MinimalLoa";
         public const string IdPMdFilename = "IdPMdFilename";
-        public const string IdPMdLocation = "IdPMdLocation";
+        //public const string IdPMdLocation = "IdPMdLocation";  // not yet. Just on disk
 
         public readonly static Setting IdPEntityID = new Setting(IdPEntityId)
         {

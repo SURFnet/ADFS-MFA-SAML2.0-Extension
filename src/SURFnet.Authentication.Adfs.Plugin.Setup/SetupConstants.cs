@@ -53,13 +53,12 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
         // TODO: Look if we can do something common for all adapter? 
         public static class XmlElementName
         {
-            public const string AdapterCfgSection = "SURFnet.Authentication.Adfs.StepUp"; // TODO: is actually shared with plugin assembly
+            public const string AdapterCfgSection = "SURFnet.Authentication.Adfs.StepUp"; // TODO: was actually shared with plugin assembly
         }
 
-        // Will almost certainly move some part to V2_1 adapter ConfigHandler, the only one using it.
+        // Will almost certainly move some part to V2_0 adapter ConfigHandler, the only one using it.
         public static class XmlAttribName
         {
-
             public const string AdapterSchacHomeOrganization = "schacHomeOrganization";
             public const string AdapterADAttribute = "activeDirectoryUserIdAttribute";
             public const string AdapterSPSigner1 = "sPSigningCertificate";
