@@ -109,7 +109,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
         {
             if (false==RegistrationLog.IsRegistration)
             {
-                // Initialize cert for this adapter fro Sustainsys.Saml2,
+                // Initialize cert for this adapter from Sustainsys.Saml2,
                 // BUT NO REFERENCE to that assembly here, because it will produce
                 // loading errors! JIT will only JIT the constructor, not
                 // dependencies if the constructor does not call them.
@@ -122,13 +122,8 @@ namespace SURFnet.Authentication.Adfs.Plugin
 
         private void DelayPickupOfCertFromSustainsys()
         {
-            // TODONOW: 1. investigate if we can use the cert without going through thumbprint
-            // Do not forget configuration dump on startup.
-            // Doit when the adapter ConfigurationSection changes
-
-            // Existance and key was verified in Sustainsys.Saml2 (in static constructor)
-            var spThumbprint = Sustainsys.Saml2.Configuration.Options.FromConfiguration.SPOptions.SigningServiceCertificate.Thumbprint;
-            this.cryptographicService = CryptographicService.Create(spThumbprint);
+            X509Certificate2 cert = Sustainsys.Saml2.Configuration.Options.FromConfiguration.SPOptions.SigningServiceCertificate;
+            this.cryptographicService = new CryptographicService(cert);
         }
 
         /// <summary>
@@ -232,7 +227,8 @@ namespace SURFnet.Authentication.Adfs.Plugin
 
                 LogService.Log.DebugFormat("Signing AuthnRequest with id {0}", requestId);
                 var signedXml = this.cryptographicService.SignSamlRequest(authRequest);
-                return new AuthForm(StepUpConfig.Current.StepUpIdPConfig.SecondFactorEndPoint, signedXml);
+                var ssoUrl = Sustainsys.Saml2.Configuration.Options.FromConfiguration.IdentityProviders.Default.SingleSignOnServiceUrl;
+                return new AuthForm(ssoUrl, signedXml);
             }
             catch (SurfNetException ex)
             {

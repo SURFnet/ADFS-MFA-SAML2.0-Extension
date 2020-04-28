@@ -166,6 +166,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                     else
                     {
                         Console.WriteLine("Reconfiguration started.");
+
                         rc = AdapterMaintenance.ReConfigure(AllDescriptions.ThisVersion,
                                             setupstate.FoundSettings);
                         if ( rc == 0 )

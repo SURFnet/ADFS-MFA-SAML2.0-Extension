@@ -3,6 +3,7 @@ using SURFnet.Authentication.Adfs.Plugin.Setup.Models;
 using SURFnet.Authentication.Adfs.Plugin.Setup.Services;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -45,7 +46,14 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
             int rc = 0;
             string foundvalue;
 
+            LogService.Log.Info("In derived Sustain v2.7 ConfigReader");
+
             string sustainsysCfgPath = FileService.OurDirCombine(FileDirectory.AdfsDir, SetupConstants.SustainCfgFilename);
+            if ( ! File.Exists(sustainsysCfgPath) )
+            {
+                LogService.Log.Error("  ??Parsing missing file??  ");
+                return 0;
+            }
             var sustainsysConfig = XDocument.Load(sustainsysCfgPath);
 
             var sustainsysSection = sustainsysConfig.Descendants(XName.Get(SustainsysSaml2Section)).FirstOrDefault();
@@ -56,8 +64,11 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
 
             // First "serviceCertificates" element, then first the "add" certificate element and its "findValue" attribute
             var spcerts = sustainsysSection?.Descendants(SPCerts).FirstOrDefault();
+            if (spcerts==null) LogService.Log.Error("spcerts==null");
             var firstcert = spcerts?.Descendants(XName.Get("add")).FirstOrDefault();
+            if (firstcert == null) LogService.Log.Error("firstcert == null");
             foundvalue = firstcert?.Attribute(XName.Get(CertFindValue))?.Value;
+            if (foundvalue == null) LogService.Log.Error("foundvalue == null");
             settings.SetFoundSetting(ConfigSettings.SPPrimarySigningThumbprint, foundvalue);
 
             // get the first IdP from the list
@@ -69,7 +80,10 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
             settings.SetFoundSetting(ConfigSettings.IdPEntityID, foundvalue);
 
             // metadataLocation attribute
-            foundvalue = identityProvider?.Attribute(XName.Get(MdLocationAttribute))?.Value;
+            var x = identityProvider?.Attribute(XName.Get(MdLocationAttribute));
+            if (x == null) LogService.Log.Error("x == null");
+            foundvalue = x?.Value;
+            if (foundvalue.StartsWith("~/")) foundvalue = foundvalue.Substring(2);
             settings.SetFoundSetting(ConfigSettings.IdPMetadataFilename, foundvalue);
 
             return rc;

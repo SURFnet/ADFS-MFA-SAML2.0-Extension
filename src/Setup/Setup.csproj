@@ -71,7 +71,6 @@
     <None Include="Setup.log4net">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="SURFnet.Authentication.Adfs.Plugin.snk" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SURFnet.Authentication.Adfs.Plugin.Setup\SURFnet.Authentication.Adfs.Plugin.Setup.csproj">

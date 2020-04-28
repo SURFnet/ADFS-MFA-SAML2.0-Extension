@@ -102,14 +102,13 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
         public static void LogCurrentConfiguration(IAuthenticationAdapterMetadata metadata)
         {
             var sb = new StringBuilder();
-            sb.AppendLine($"File version: {Values.FileVersion}");  // PLUgh: Now it is runtime?
             sb.AppendLine($"Product version: {Values.ProductVersion}");
+            sb.AppendLine($"File version: {Values.FileVersion}");
             sb.AppendLine("Current plugin configuration");
             sb.AppendLine($"SchacHomeOrganization: {StepUpConfig.Current.InstitutionConfig.SchacHomeOrganization}");
             sb.AppendLine($"ActiveDirectoryUserIdAttribute: {StepUpConfig.Current.InstitutionConfig.ActiveDirectoryUserIdAttribute}");
-            sb.AppendLine($"SPSigningCertificate: {StepUpConfig.Current.LocalSpConfig.SPSigningCertificate}");
             sb.AppendLine($"MinimalLoa: {StepUpConfig.Current.LocalSpConfig.MinimalLoa.OriginalString}");
-            sb.AppendLine($"SecondFactorEndPoint: {StepUpConfig.Current.StepUpIdPConfig.SecondFactorEndPoint.OriginalString}");
+            //sb.AppendLine($"SecondFactorEndPoint: {StepUpConfig.Current.StepUpIdPConfig.SecondFactorEndPoint.OriginalString}");
 
             sb.AppendLine("Plugin Metadata:");
             foreach (var am in metadata.AuthenticationMethods)
@@ -127,7 +126,9 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
             {
                 var options = Sustainsys.Saml2.Configuration.Options.FromConfiguration;
                 sb.AppendLine($"ServiceProvider.EntityId: '{options.SPOptions.EntityId.Id}'");
-                sb.AppendLine($"IdentityProvider.EntityId: '{SamlService.GetIdentityProvider(options).EntityId.Id}'");
+                //sb.AppendLine($"IdentityProvider.EntityId: '{SamlService.GetIdentityProvider(options).EntityId.Id}'");
+                sb.AppendLine($"IdentityProvider.EntityId: '{options.IdentityProviders.Default.EntityId.Id}'");
+                sb.AppendLine($"SPSigningCertificate: {options.SPOptions.SigningServiceCertificate.Thumbprint}");
                 // TODO: we need more: also signing cert of Stepup gateway.
                 //sb.AppendLine($"IdentityProvider.signingCertificate: {options.IdentityProviders.???}");
             }

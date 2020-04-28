@@ -32,7 +32,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
                 /// Central location to catch missing values in config file readers.
                 /// In general not a fatal error, the UI should ask for the value.
                 /// However, it is probably a bug!
-                LogService.Log.Warn($"    Trying to set '{setting.InternalName}' to IsNullOrWhiteSpace!!!");
+                LogService.Log.Error($"    Trying to set '{setting.InternalName}' to IsNullOrWhiteSpace!!!");
             }
             else
             {

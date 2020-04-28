@@ -81,22 +81,22 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Models
         public override string ToString()
         {
             const string CfgFormat =
-                        "{\r\n" +
+                        "{{\r\n" +
                         "  \"entity_id\": \"{0}\",\r\n" +  // <==
                         "  \"public_key\": \"{1}\"\r\n" +  // <==
                         "  \"acs\": [\r\n" +
                         "    {2}\r\n" +                    // <==
                         "  ],\r\n" +
-                        "  \"loa\": {\r\n" +
-                        "    \"__default__\": \"{{ stepup_uri_loa2}}\"\r\n" +
-                        "  },\r\n" +
+                        "  \"loa\": {{\r\n" +
+                        "    \"__default__\": \"{{{{ stepup_uri_loa2}}}}\"\r\n" +
+                        "  }},\r\n" +
                         "  \"assertion_encryption_enabled\": false,\r\n" +
                         "  \"second_factor_only\": true,\r\n" +
                         "  \"second_factor_only_nameid_patterns\": [\r\n" +
                         "    \"urn:collab:person:{3}:*\"\r\n" +           // <==
                         "  ],\r\n" +
                         "  \"blacklisted_encryption_algorithms\": []\r\n" +
-                        "},\r\n";
+                        "}},\r\n";
 
             return string.Format(CfgFormat,
                     SPentityID,

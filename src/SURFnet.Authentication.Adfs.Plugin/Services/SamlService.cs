@@ -74,7 +74,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
 
             var authnRequest = new Saml2AuthenticationSecondFactorRequest
             {
-                DestinationUrl = StepUpConfig.Current.StepUpIdPConfig.SecondFactorEndPoint,
+                DestinationUrl = Sustainsys.Saml2.Configuration.Options.FromConfiguration.IdentityProviders.Default.SingleSignOnServiceUrl,
+                //DestinationUrl = StepUpConfig.Current.StepUpIdPConfig.SecondFactorEndPoint,
                 AssertionConsumerServiceUrl = ascUri,
                 Issuer = spConfiguration.EntityId,
                 RequestedAuthnContext = new Saml2RequestedAuthnContext(StepUpConfig.Current.LocalSpConfig.MinimalLoa, AuthnContextComparisonType.Minimum),

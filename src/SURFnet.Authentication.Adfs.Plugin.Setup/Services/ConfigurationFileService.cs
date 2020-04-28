@@ -40,6 +40,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
     {
 
         /// <summary>
+        /// NO LONGER used!!!
+        /// TODO: Left here for the checker. Maybe want to put it somewhere else.
         /// Replace the setting.InternalName (between '%') in a file with the Value in the
         /// Setting instance
         /// </summary>
@@ -96,10 +98,22 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
         }
 
 
-        public static void SaveXmlDocumentConfiguration(XmlDocument document, string filename)
+        public static int SaveXmlDocumentConfiguration(XmlDocument document, string filename)
         {
+            int rc = 0;
             var path = FileService.CombineToCfgOutputPath(filename);
-            document.Save(path);
+
+            try
+            {
+                document.Save(path);
+            }
+            catch (Exception ex)
+            {
+                LogService.WriteFatalException("Failed save a generated configuration file: " + path, ex);
+                rc = 1;
+            }
+
+            return rc;
         }
 
 

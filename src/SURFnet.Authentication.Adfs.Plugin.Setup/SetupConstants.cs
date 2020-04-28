@@ -56,14 +56,5 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
             public const string AdapterCfgSection = "SURFnet.Authentication.Adfs.StepUp"; // TODO: was actually shared with plugin assembly
         }
 
-        // Will almost certainly move some part to V2_0 adapter ConfigHandler, the only one using it.
-        public static class XmlAttribName
-        {
-            public const string AdapterSchacHomeOrganization = "schacHomeOrganization";
-            public const string AdapterADAttribute = "activeDirectoryUserIdAttribute";
-            public const string AdapterSPSigner1 = "sPSigningCertificate";
-            public const string AdapterMinimalLoa = "minimalLoa";
-            public const string AdapterSFOEndpoint = "secondFactorEndPoint";
-        }
     }
 }

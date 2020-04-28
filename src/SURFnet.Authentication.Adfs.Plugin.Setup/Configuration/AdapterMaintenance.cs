@@ -141,6 +141,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
             }
             else
             {
+                RegistrationData.PrepareAndWrite();
                 LogService.WriteWarning("New configuration written.");
 
                 // Start ADFS.

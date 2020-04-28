@@ -1,6 +1,7 @@
 ﻿using SURFnet.Authentication.Adfs.Plugin.Setup.Configuration;
 using SURFnet.Authentication.Adfs.Plugin.Setup.Models;
 using SURFnet.Authentication.Adfs.Plugin.Setup.Services;
+using SURFnet.Authentication.Adfs.Plugin.Setup.Util;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -48,28 +49,12 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
             int rc;
             if (ConfigParameters == null) throw new ApplicationException("ConfigParameters cannot be null");
 
-            LogService.Log.Info($"Reading Settings from {ConfigFilename} for '{ComponentName}'.");
+            LogService.Log.Info($"Reading Settings from '{ConfigFilename}' for '{ComponentName}'.");
 
             rc = ExctractSustainsysConfig(settings);
             if (rc != 0)
             {
-                LogService.WriteFatal($"  Reading settings from {ConfigFilename} for '{ComponentName}' failed.");
-            }
-
-            return rc;
-        }
-
-        public int OldWriteConfiguration(List<Setting> allsettings)
-        {
-            int rc = 0;
-            if (ConfigParameters == null) throw new ApplicationException("ConfigParameters cannot be null");
-
-            LogService.Log.Info($"  Writing settings of '{ComponentName}' configuration to {ConfigFilename}");
-
-            if (false == ConfigurationFileService.ReplaceInXmlCfgFile(ConfigFilename, ConfigParameters, allsettings))
-            {
-                LogService.WriteFatal($"Content problem(s) in {ConfigFilename} for component: '{ComponentName}'");
-                rc = -1;
+                LogService.WriteFatal($"  Reading settings from '{ConfigFilename}' for '{ComponentName}' failed.");
             }
 
             return rc;
@@ -91,15 +76,15 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
 
             // configSections/section
             var section = doc.CreateElement(SectionElement);  // <section/>
-            AddAttribute(section, typeAttribute, cfgParserName + ", " + Assemblies[0].AssemblyFullName); // type=
-            AddAttribute(section, nameAttribute, SustainsysSaml2Section);   // name=
+            XmlUtil.AddAttribute(section, typeAttribute, cfgParserName + ", " + Assemblies[0].AssemblyFullName); // type=
+            XmlUtil.AddAttribute(section, nameAttribute, SustainsysSaml2Section);   // name=
             cfgSections.AppendChild(section);
 
             // sustainsys.saml2
             var sustainElement = doc.CreateElement(SustainsysSaml2Section);
             cfgElement.AppendChild(sustainElement);
-            AddAttribute(sustainElement, EntityId, Setting.GetSettingByName(ConfigSettings.SPEntityId).Value);  // entityId=
-            AddAttribute(sustainElement, returnUrl, string.Empty);  // returnUrl=
+            XmlUtil.AddAttribute(sustainElement, EntityId, Setting.GetSettingByName(ConfigSettings.SPEntityId).Value);  // entityId=
+            XmlUtil.AddAttribute(sustainElement, returnUrl, string.Empty);  // returnUrl=
 
             // sustainsys.saml2/serviceCertitifcates
             var svcCerts = doc.CreateElement(SPCerts);
@@ -108,8 +93,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
 
             // sustainsys.saml2/nameIdPolicy
             var nameIDPol = doc.CreateElement(NaemIDPolicy);
-            AddAttribute(nameIDPol, "format", "Unspecified");
-            AddAttribute(nameIDPol, "allowCreate", "true");
+            XmlUtil.AddAttribute(nameIDPol, "format", "Unspecified");
+            XmlUtil.AddAttribute(nameIDPol, "allowCreate", "true");
             sustainElement.AppendChild(nameIDPol);
 
             // sustainsys.saml2/identityProviders
@@ -118,31 +103,24 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
                             Setting.GetSettingByName(ConfigSettings.IdPMdFilename).Value);
             sustainElement.AppendChild(idps);
 
-            ConfigurationFileService.SaveXmlDocumentConfiguration(doc, ConfigFilename);
+            rc = ConfigurationFileService.SaveXmlDocumentConfiguration(doc, ConfigFilename);
             //doc.Save("out.xml");
 
             return rc;
         }
 
-        void AddAttribute(XmlElement element, string name, string value)
-        {
-            XmlDocument doc = element.OwnerDocument;
-            XmlAttribute attr = doc.CreateAttribute(name);
-            attr.Value = value;
-            element.Attributes.Append(attr);
-        }
 
         void AddSpCert(XmlElement svcCerts, string thumbprint)
         {
             XmlDocument doc = svcCerts.OwnerDocument;
 
             var add = doc.CreateElement("add");
-            AddAttribute(add, "x509FindType", "FindByThumbprint");
-            AddAttribute(add, "storeName", "My");
-            AddAttribute(add, "storeLocation", "LocalMachine");
-            AddAttribute(add, CertFindValue, thumbprint);
-            AddAttribute(add, "status", "Current");
-            AddAttribute(add, "use", "Signing");
+            XmlUtil.AddAttribute(add, "x509FindType", "FindByThumbprint");
+            XmlUtil.AddAttribute(add, "storeName", "My");
+            XmlUtil.AddAttribute(add, "storeLocation", "LocalMachine");
+            XmlUtil.AddAttribute(add, CertFindValue, thumbprint);
+            XmlUtil.AddAttribute(add, "status", "Current");
+            XmlUtil.AddAttribute(add, "use", "Signing");
             svcCerts.AppendChild(add);
         }
 
@@ -151,10 +129,10 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
             XmlDocument doc = IdPs.OwnerDocument;
 
             var add = doc.CreateElement("add");
-            AddAttribute(add, "allowUnsolicitedAuthnResponse", "false");
-            AddAttribute(add, "binding", "HttpPost");
-            AddAttribute(add, MdLocationAttribute, "~/"+mdFilename);
-            AddAttribute(add, EntityId, idpentityID);
+            XmlUtil.AddAttribute(add, "allowUnsolicitedAuthnResponse", "false");
+            XmlUtil.AddAttribute(add, "binding", "HttpPost");
+            XmlUtil.AddAttribute(add, MdLocationAttribute, "~/"+mdFilename);
+            XmlUtil.AddAttribute(add, EntityId, idpentityID);
             IdPs.AppendChild(add);
         }
 
