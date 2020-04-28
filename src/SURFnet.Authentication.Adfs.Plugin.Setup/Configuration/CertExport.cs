@@ -32,6 +32,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
                 try
                 {
                     byte[] pfxbytes = certificate.Export(X509ContentType.Pfx, pwd);
+                    string filename = string.Format(SetupConstants.SPCertPfxFilename, DateTime.UtcNow.ToString("yyyyMMdd"));
                     string filepath = FileService.OurDirCombine(FileDirectory.Config, SetupConstants.SPCertPfxFilename);
                     File.WriteAllBytes(filepath, pfxbytes);
 
@@ -58,19 +59,10 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
         /// <returns></returns>
         public static string GetRandomPwd(uint length)
         {
-            const string valid = "abcdefghijklmnopqrstuvwxyz%$#@!ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
-            StringBuilder sb = new StringBuilder((int)length + 2);
             byte[] bytes = new byte[length];
             rg.GetBytes(bytes);
 
-            uint modulus = (uint)valid.Length;
-            for (int i=0; i<length; i++)
-            {
-                uint index = (uint)bytes[i] % modulus;
-                sb.Append(valid[(int)index]);
-            }
-
-            return sb.ToString();
+            return Convert.ToBase64String(bytes);
         }
     }
 }

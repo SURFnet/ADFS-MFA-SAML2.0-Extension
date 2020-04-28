@@ -32,35 +32,40 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
                 LogService.Log.Info("Select from Store with UI");
 
                 collection = TrimCollection(collection); // remove the absolutely wrong ones
-
-                X509Certificate2Collection scollection = X509Certificate2UI.SelectFromCollection(
-                        collection,
-                        "SP singning certificate",
-                        "Select a certificate from the following list for signin by the SFO MFA extension",
-                        X509SelectionFlag.SingleSelection);
-
-                LogService.Log.Info($"   # of certs in collection: {scollection.Count}");
-
-                if ( scollection.Count == 0 )
+                if ( collection.Count <= 0 )
                 {
-                    QuestionIO.WriteError("  No certificate selected.");
-                    rc = -2;
+                    rc = -1;
                 }
-                else if (scollection.Count == 1)
+                else
                 {
-                    theCert = scollection[0];
-                    rc = 0;
-                }
-                else if (scollection.Count >= 1)
-                {
-                    theCert = scollection[0];
-                    QuestionIO.WriteError("  Too many certificates selected, taking the first");
-                    rc = 0;
-                }
+                    X509Certificate2Collection scollection = X509Certificate2UI.SelectFromCollection(
+                            collection,
+                            "SP singning certificate",
+                            "Select a certificate from the following list for signin by the SFO MFA extension",
+                            X509SelectionFlag.SingleSelection);
 
-                LogService.Log.Info($"  theCert Subject: {theCert.Subject}");
-                LogService.Log.Info($"  theCert Thumbprint: {theCert.Thumbprint}");
+                    LogService.Log.Info($"   # of certs in collection: {scollection.Count}");
 
+                    if (scollection.Count == 0)
+                    {
+                        QuestionIO.WriteError("  No certificate selected.");
+                        rc = -2;
+                    }
+                    else if (scollection.Count == 1)
+                    {
+                        theCert = scollection[0];
+                        rc = 0;
+                    }
+                    else if (scollection.Count >= 1)
+                    {
+                        theCert = scollection[0];
+                        QuestionIO.WriteError("  Too many certificates selected, taking the first");
+                        rc = 0;
+                    }
+
+                    LogService.Log.Info($"  theCert Subject: {theCert.Subject}");
+                    LogService.Log.Info($"  theCert Thumbprint: {theCert.Thumbprint}");
+                }
             }
             catch (Exception ex)
             {
@@ -109,8 +114,9 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
                 {
                     cert.Dispose();
                 }
-                else if ( cert.Subject.StartsWith("CN=*") )
+                else if ( ! cert.Issuer.Equals(cert.Subject, StringComparison.Ordinal) )
                 {
+                    // not self signed.
                     cert.Dispose();
                 }
                 else
@@ -119,6 +125,10 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
                 }
             }
 
+            if ( newcollection.Count <=0  )
+            {
+                QuestionIO.WriteError("No selfsigned certificates with a private key in the store");
+            }
             LogService.Log.Info($"      Trimmed Collection Count: {newcollection.Count} certs");
 
             return newcollection;

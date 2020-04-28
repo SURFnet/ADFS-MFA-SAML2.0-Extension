@@ -42,7 +42,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
 
         public const string Log4netFilename = "log4net.dll";
 
-        public const string SPCertPfxFilename = "SP-Signer.pfx";
+        public const string SPCertPfxFilename = "SP-SFO-Extension {0}.pfx";
         public const string RegistrationDataFilename = "MfaRegistrationData.txt";
 
         // extra property names in JSON file. Not really a setting. The rest is in: .

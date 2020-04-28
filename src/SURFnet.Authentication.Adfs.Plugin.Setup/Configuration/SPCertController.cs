@@ -132,18 +132,26 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
                         break;
 
                     case 2:
-                        // Create
-                        tempCert = CertCreate.Create(AdfsPSService.GetAdfsHostname);
-                        if ( tempCert != null )
+                        if ( string.IsNullOrWhiteSpace( ConfigSettings.SPEntityID.Value) )
                         {
-                            TempValue = tempCert.Thumbprint;
-                            ok = true;
-
-                            CertExport.DoYouWantToExport(tempCert);
+                            QuestionIO.WriteError("No SP entityID at this moment, set and confirm that first. Then return here.");
+                            ClearValue();
                         }
                         else
                         {
-                            ClearValue();
+                            tempCert = CertCreate.Create(ConfigSettings.SPEntityID.Value);
+                            if (tempCert != null)
+                            {
+                                TempValue = tempCert.Thumbprint;
+                                ok = true;
+
+                                CertExport.DoYouWantToExport(tempCert);
+                            }
+                            else
+                            {
+                                ClearValue();
+                            }
+
                         }
                         break;
 

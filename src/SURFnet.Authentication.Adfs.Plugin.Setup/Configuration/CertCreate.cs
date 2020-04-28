@@ -18,7 +18,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
     /// </summary>
     public class CertCreate
     {
-        public static X509Certificate2 Create(string hostname)
+        public static X509Certificate2 Create(string entityID)
         {
             X509Certificate2 cert = null;
             X509Store store = new X509Store("MY", StoreLocation.LocalMachine);
@@ -28,7 +28,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
 
             try
             {
-                string subject = $"CN=SFO MFA extension {hostname}";
+                string subject = $"CN=SFO MFA extension {entityID}";
                 cert = CreateSelfSignedCertificate(subject, fiveYears, null);
 
                 store.Add(cert);
