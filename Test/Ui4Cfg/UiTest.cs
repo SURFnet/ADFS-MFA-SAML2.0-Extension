@@ -25,7 +25,7 @@ namespace Ui4Cfg
             IdPEnvironments = ConfigurationFileService.LoadIdPDefaults();
             bool ok;
 
-            string s = CertExport.GetRandomPwd(20);
+            string s = CertExport.GetRandomPwd(12);
 
             ConfigSettings.SPPrimarySigningThumbprint.FoundCfgValue = "6d962ac67093d7ed6bcee8a35b0cd1068c473f5d";
             var ctrl = new SPCertController(ConfigSettings.SPPrimarySigningThumbprint);

@@ -119,10 +119,10 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
         //
         public const string IdPSSOLocation = "IdPSSOLocation";
         public const string IdPEntityId = "IdPentityId";
-        public const string IdPSignThumb1 = "IdPSignThumb1";   // TODO: Is SustainSys 2.3 config writer specific!!!
-        public const string IdPSignThumb2 = "IdPSignThumb2";   // TODO: Is SustainSys 2.3 config writer specific!!!
-        public const string IdPSignCert1 = "IdPSignCert1";
-        public const string IdPSignCert2 = "IdPSignCert2";
+        //public const string IdPSignThumb1 = "IdPSignThumb1";   // TODO: Is SustainSys 2.3 config writer specific!!!
+        //public const string IdPSignThumb2 = "IdPSignThumb2";   // TODO: Is SustainSys 2.3 config writer specific!!!
+        //public const string IdPSignCert1 = "IdPSignCert1";
+        //public const string IdPSignCert2 = "IdPSignCert2";
         public const string MinimalLoa = "MinimalLoa";
         public const string IdPMdFilename = "IdPMdFilename";
         public const string IdPMdLocation = "IdPMdLocation";
@@ -142,15 +142,15 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
             DisplayName = "IdPSSOLocation",
         };
 
-        public readonly static Setting IdPSigningThumbPrint_1_Setting = new Setting(IdPSignThumb1, IdPEntityId)
-        {
-            DisplayName = "SHA1 hash (thumbprint) of IdP signer",
-        };
+        //public readonly static Setting IdPSigningThumbPrint_1_Setting = new Setting(IdPSignThumb1, IdPEntityId)
+        //{
+        //    DisplayName = "SHA1 hash (thumbprint) of IdP signer",
+        //};
 
-        public readonly static Setting IdPSigningThumbPrint_2_Setting = new Setting(IdPSignThumb2, IdPEntityId)
-        {
-            DisplayName = "SHA1 hash (thumbprint) of second IdP signer",
-        };
+        //public readonly static Setting IdPSigningThumbPrint_2_Setting = new Setting(IdPSignThumb2, IdPEntityId)
+        //{
+        //    DisplayName = "SHA1 hash (thumbprint) of second IdP signer",
+        //};
 
         public readonly static Setting MinimaLoaSetting = new Setting(MinimalLoa, IdPEntityId)
         {

@@ -89,11 +89,6 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
         {
             int rc = 0;
 
-            if (setupstate.DetectedVersion.Major == 1)
-            {
-                V1CheckAndFix.FixLog4netCfg();
-            }
-
             if ( setupstate.DetectedVersion.Major == 0 )
             {
                 // Nothing on disk

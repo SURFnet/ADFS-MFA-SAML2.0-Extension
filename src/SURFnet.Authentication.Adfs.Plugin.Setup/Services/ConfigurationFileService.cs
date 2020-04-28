@@ -30,6 +30,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
     using SURFnet.Authentication.Adfs.Plugin.Setup.Common.Services;
     using SURFnet.Authentication.Adfs.Plugin.Setup.Configuration;
     using SURFnet.Authentication.Adfs.Plugin.Setup.Models;
+    using SURFnet.Authentication.Adfs.Plugin.Setup.Question;
 
     /// <summary>
     /// Class ConfigurationFileService.
@@ -170,23 +171,20 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
 
 
         /// <summary>
-        /// Saves the configuration data.
+        /// Saves the Registration data to config directory.
         /// </summary>
         /// <param name="metadata">The metadata.</param>
-        public static void SaveRegistrationData(RegistrationData metadata)
+        public static void SaveRegistrationData(string jsontext)
         {
             try
             {
-                var sb = new StringBuilder();
-                sb.AppendLine($"Issuer: {metadata.SPentityID}");
-                sb.AppendLine();
-                sb.AppendLine(metadata.SPSigningCert);
-                sb.AppendLine($"ACS: {metadata.ACS}");
+                var filePath = FileService.OurDirCombine(FileDirectory.Config, SetupConstants.RegistrationDataFilename);
 
-                var filePath = FileService.CombineToCfgOutputPath(SetupConstants.RegistrationDataFilename);
-
-                File.WriteAllText(filePath, sb.ToString());
-                LogService.Log.Info($"Written new MfaExtensionConfiguration.");
+                File.WriteAllText(filePath, jsontext);
+                LogService.Log.Info($"Written Registration Info in: {filePath}");
+                QuestionIO.WriteLine();
+                QuestionIO.WriteLine($"  Registration Info filepath: {filePath}");
+                QuestionIO.WriteLine();
             }
             catch (Exception ex)
             {

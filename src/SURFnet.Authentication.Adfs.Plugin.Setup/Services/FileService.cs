@@ -101,8 +101,6 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
             directoryMap[(int)FileDirectory.Dist] = DistFolder;
             directoryMap[(int)FileDirectory.Config] = ConfigFolder;
             directoryMap[(int)FileDirectory.Backup] = BackupFolder;
-
-            RegistrationDataFolder = ConfigFolder;
         }
 
         /// <summary>

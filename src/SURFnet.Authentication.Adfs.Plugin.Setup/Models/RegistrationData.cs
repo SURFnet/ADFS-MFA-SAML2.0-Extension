@@ -54,6 +54,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Models
         /// <value>The acs.</value>
         public string ACS { get; private set; }
 
+        public string SchacHomeOrganization { get; private set; }
+
         public static void SetACS(string hostname)
         {
             Instance.ACS = $"https://{hostname}:443/adfs/ls";
@@ -61,13 +63,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Models
 
         public static void SetCert(X509Certificate2 cert)
         {
-            var builder = new StringBuilder();
-
-            builder.AppendLine("-----BEGIN CERTIFICATE-----");
-            builder.AppendLine(Convert.ToBase64String(cert.Export(X509ContentType.Cert), Base64FormattingOptions.InsertLineBreaks));
-            builder.AppendLine("-----END CERTIFICATE-----");
-
-            Instance.SPSigningCert = builder.ToString();
+            Instance.SPSigningCert = Convert.ToBase64String(cert.Export(X509ContentType.Cert), Base64FormattingOptions.None);
         }
 
         public static void PrepareAndWrite()
@@ -76,9 +72,37 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Models
             if (Instance.SPSigningCert == null) throw new ApplicationException("Empty SP cert!!");
 
             Instance.SPentityID = ConfigSettings.SPEntityID.Value;
+            Instance.SchacHomeOrganization = ConfigSettings.SchacHomeSetting.Value;
             SetACS(AdfsPSService.GetAdfsHostname);
 
-            ConfigurationFileService.SaveRegistrationData(Instance);
+            ConfigurationFileService.SaveRegistrationData(Instance.ToString());
+        }
+
+        public override string ToString()
+        {
+            const string CfgFormat =
+                        "{\r\n" +
+                        "  \"entity_id\": \"{0}\",\r\n" +  // <==
+                        "  \"public_key\": \"{1}\"\r\n" +  // <==
+                        "  \"acs\": [\r\n" +
+                        "    {2}\r\n" +                    // <==
+                        "  ],\r\n" +
+                        "  \"loa\": {\r\n" +
+                        "    \"__default__\": \"{{ stepup_uri_loa2}}\"\r\n" +
+                        "  },\r\n" +
+                        "  \"assertion_encryption_enabled\": false,\r\n" +
+                        "  \"second_factor_only\": true,\r\n" +
+                        "  \"second_factor_only_nameid_patterns\": [\r\n" +
+                        "    \"urn:collab:person:{3}:*\"\r\n" +           // <==
+                        "  ],\r\n" +
+                        "  \"blacklisted_encryption_algorithms\": []\r\n" +
+                        "},\r\n";
+
+            return string.Format(CfgFormat,
+                    SPentityID,
+                    SPSigningCert,
+                    ACS,
+                    SchacHomeOrganization);
         }
     }
 }

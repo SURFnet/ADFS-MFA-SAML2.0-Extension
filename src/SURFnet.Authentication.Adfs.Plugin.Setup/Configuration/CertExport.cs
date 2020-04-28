@@ -27,7 +27,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
             if ( 'y' == AskYesNo.Ask("    Do you want to export this certificate now as a '.pfx'") )
             {
                 // generate random pwd
-                string pwd = GetRandomPwd(20);
+                string pwd = GetRandomPwd(12);
 
                 try
                 {
@@ -37,7 +37,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
                     File.WriteAllBytes(filepath, pfxbytes);
 
                     QuestionIO.WriteLine();
-                    QuestionIO.WriteLine("   The password is: "+pwd);
+                    QuestionIO.WriteLine("   The PFX filepath: "+filepath);
+                    QuestionIO.WriteLine("   The password is: " + pwd);
                     QuestionIO.WriteLine("   Save it in a safe place.");
                     QuestionIO.WriteLine();
 
