@@ -12,7 +12,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
 
         static readonly OptionList CertOptions = new OptionList()
         {
-            Introduction = "The SFO MFA extention needs a certificate to sign its SAML2 messages",
+            Introduction = "The SFO MFA extension needs a certificate to sign its SAML2 messages",
             Options = new string[]
             {
                 "  1. Select an existing certificate in the store",

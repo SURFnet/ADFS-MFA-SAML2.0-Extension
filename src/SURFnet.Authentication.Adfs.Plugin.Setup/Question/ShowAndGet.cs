@@ -43,7 +43,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Question
         /// <summary>
         /// Must read the input from the Console and do check until the input is OK
         /// and return the value on T Value property.
-        /// It can return false, the TVaule is not guaranteed. Check the flagfs:
+        /// It can return false, the TVaule is not guaranteed. Check the flags:
         ///   - WantsDescription
         ///   - IsAbort
         /// The IsDefault flag is for "ENTER" on questions with a default Value.

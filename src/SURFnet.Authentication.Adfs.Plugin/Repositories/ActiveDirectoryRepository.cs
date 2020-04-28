@@ -43,7 +43,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Repositories
                 {
                     using ( DirectoryEntry de = currentUser.GetUnderlyingObject() as DirectoryEntry )
                     {
-                        // according to documentaion this cannot happen, it should have thrown!
+                        // according to documentation this cannot happen, it should have thrown!
                         if ( de == null )
                         {
                             error = "Bug: no underlying DirectoryEntry!" + windowsaccountname;

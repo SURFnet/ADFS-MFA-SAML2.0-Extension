@@ -40,7 +40,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
         /// <param name="args">The arguments.</param>
         /// 
         /// The [STAThread] is really important. Many GUI things need STA model for COM.
-        /// Default is MTA. We do use Certificate and Folder dialogues!
+        /// Default is MTA. We do use Certificate and Folder dialogs!
         [STAThread]
         public static int Main(string[] args)
         {
@@ -63,7 +63,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                 /**** FIX ****/
                 else if (0 != (setupstate.mode & SetupFlags.Fix))
                 {
-                    // TODONOW: Real logic after decissions.
+                    // TODONOW: Real logic after decisions.
                     if ( setupstate.DetectedVersion.Major != 0 )
                     {
                         if ( setupstate.DetectedVersion == setupstate.SetupProgramVersion )
@@ -109,7 +109,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                     }
                     else if ( 0!=(rc=AdfsServer.StartAdFsService()) )
                     {
-                        Console.WriteLine("Eventlog?????");
+                        Console.WriteLine("EventLog?????");
                     }
                     else
                     {
@@ -172,7 +172,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                                             setupstate.FoundSettings);
                         if ( rc == 0 )
                         {
-                            Console.WriteLine("Reconfigure successfull.");
+                            Console.WriteLine("Reconfigure successful.");
                         }
                     }
                 }
@@ -236,7 +236,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                         rc = AdapterMaintenance.UpdateRegistration(setupstate.AdfsConfig.RegisteredAdapterVersion);
                         if (rc == 0)
                         {
-                            Console.WriteLine("Registration Successfull");
+                            Console.WriteLine("Registration Successful");
                             Console.WriteLine();
                         }
                     }
@@ -366,7 +366,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
 
         /// <summary>
         /// Initializes the setup program reads environment files, checks if ADFS is
-        /// installed on the machine, if the adapetr is registered in the farm etc.
+        /// installed on the machine, if the adapter is registered in the farm etc.
         /// Logs and Warns if anything is wrong. 
         /// </summary>
         /// <param name="args">returns 0 if OK</param>
@@ -381,7 +381,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
             {
                 Console.WriteLine("Must be a member of local Administrators and run with local");
                 Console.WriteLine("Administrative privileges.");
-                Console.WriteLine("\"Run as Administrator\" or start from an Administator command prompt");
+                Console.WriteLine("\"Run as Administrator\" or start from an Administrator command prompt");
                 return 4;
             }
 
@@ -432,7 +432,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                         ConfigSettings.SPEntityID.DefaultValue = null; // always trigger!
                     }
 
-                    LogService.Log.Info("Successfull end of PrepareforSetup()");
+                    LogService.Log.Info("Successful end of PrepareforSetup()");
                 }
             }
             catch (Exception ex)

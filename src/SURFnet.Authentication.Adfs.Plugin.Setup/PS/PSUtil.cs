@@ -26,7 +26,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.PS
         // S2016:    10.0.0.0          10.0.y.n         |     3.0.0.0
         // S2019:    10.0.0.0          10.0.z.n         |     3.0.0.0
         //
-        // Athough the AssemblyVersions are equal, it requires separate compilation because the
+        // Although the AssemblyVersions are equal, it requires separate compilation because the
         // interfaces and enums are not the same. Officially the Assembly Versions should be different then too.
 
         // Get-AdfsProperties

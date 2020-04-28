@@ -15,7 +15,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
         /// <summary>
         /// Removes old registration if there, then registers the current version (if not yet there).
         /// </summary>
-        /// <param name="registeredVerion">The version frm the ADFS configuration</param>
+        /// <param name="registeredVerion">The version from the ADFS configuration</param>
         /// <returns>non zero if failed</returns>
         public static int UpdateRegistration(Version registeredVerion)
         {
@@ -45,9 +45,9 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
                     }
                     else
                     {
-                        LogService.Log.Info("Registration of new adapter successfull.");
+                        LogService.Log.Info("Registration of new adapter successful.");
                         Console.WriteLine();
-                        Console.WriteLine("Registration of new adapter successfull.");
+                        Console.WriteLine("Registration of new adapter successful.");
                     }
                 }
             }
@@ -66,7 +66,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
             else
             {
                 // Yes, OK.
-                LogService.WriteWarning("Uninstall succesfull.");
+                LogService.WriteWarning("Uninstall successful.");
                 rc = 0;
             }
 
@@ -94,7 +94,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
                 }
                 else
                 {
-                    LogService.WriteWarning(" Installation on local disk succesfull.");
+                    LogService.WriteWarning(" Installation on local disk successful.");
                 }
             }
 

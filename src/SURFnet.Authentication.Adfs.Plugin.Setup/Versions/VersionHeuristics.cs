@@ -93,7 +93,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
         /// Looks in ADFS directory and GAC to see if there are Adapter assemblies.
         /// </summary>
         /// <param name="versionfound">will hold a valid version, 0.0.0.0 if nothing detected</param>
-        /// <returns>true normally, false: multiple adpaters found or something fatal throws.</returns>
+        /// <returns>true normally, false: multiple adapters found or something fatal throws.</returns>
         bool TryFindAdapter(out Version versionfound)
         {
             bool rc = true;
@@ -129,14 +129,14 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
                     LogService.WriteFatal($"    {adapter.FilePath}");
                 }
                 LogService.WriteFatal("This is a fatal problem. Please report this (with the Setup log file).");
-                LogService.WriteFatal("  Probaly renaming the one in the ADFS directory and then");
+                LogService.WriteFatal("  Probably renaming the one in the ADFS directory and then");
                 LogService.WriteFatal("  running 'setup -x' will properly remove the one in the GAC.");
                 LogService.WriteFatal("  Then rename back and run 'setup -x' for the other");
                 LogService.WriteFatal("  adapter will produce a clean system.");
             }
             else
             {
-                LogService.Log.Info("No Adapater found, reporting NullVersion");
+                LogService.Log.Info("No Adapter found, reporting NullVersion");
             }
 
             return rc;

@@ -40,7 +40,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                     // primary
                     Console.WriteLine("*******");
                     Console.WriteLine("  Primary computer in the farm with an MFA registration the ADFS configuration.");
-                    Console.WriteLine("  Not removing this MFA registration from ADFS will produce messages in the evenlog.");
+                    Console.WriteLine("  Not removing this MFA registration from ADFS will produce messages in the EventLog.");
                     Console.WriteLine();
                     if ( Messages.DoYouWantTO("Unregister the SFO MFA extension configuration for all servers in the farm?") )
                     {
@@ -48,7 +48,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                         if ( AdfsPSService.UnregisterAdapter() )
                         {
                             setupstate.AdfsConfig.RegisteredAdapterVersion = V0Assemblies.AssemblyNullVersion;
-                            Console.WriteLine("\"Unregister\" successful, the ADFS eventlog should no longer show loading this adapter.");
+                            Console.WriteLine("\"Unregister\" successful, the ADFS EventLog should no longer show loading this adapter.");
                             Console.WriteLine();
                             if ( ! Messages.DoYouWantTO("Continue with Uninstall?") )
                             {
@@ -68,7 +68,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                     // secondary, cannot Unregister
 
                     Console.WriteLine("Secondary computer in the farm with MFA registration the ADFS configuration.");
-                    Console.WriteLine("Uninstalling the MFA extension will produce errors in the evenlog.");
+                    Console.WriteLine("Uninstalling the MFA extension will produce errors in the EvenLog.");
                     if (Messages.DoYouWantTO($"Do you really want to UNINSTALL version: {setupstate.DetectedVersion}?"))
                     {
                         doit = true;

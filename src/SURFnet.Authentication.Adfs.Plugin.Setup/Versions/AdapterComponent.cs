@@ -17,7 +17,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
         public const string AdapterClassName = "SURFnet.Authentication.Adfs.Plugin.Adapter";
 
         /// <summary>
-        /// Specify adapterassembly and initialize the ConfigParameters for the writer.
+        /// Specify adapter assembly and initialize the ConfigParameters for the writer.
         /// </summary>
         /// <param name="assembly"></param>
         public AdapterComponent(AssemblySpec assembly) : base(BuildName(assembly))

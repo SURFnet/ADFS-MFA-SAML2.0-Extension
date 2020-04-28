@@ -63,7 +63,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Common.Services
             var isValid = true;
             if (thumbprint.Length != 40)
             {
-                error = "Thumbprint length is incorrect (must be 40 hexdigits).";
+                error = "Thumbprint length is incorrect (must be 40 hex digits).";
                 isValid = false;
             }
             else
@@ -71,7 +71,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Common.Services
                 var isHex = System.Text.RegularExpressions.Regex.IsMatch(thumbprint, @"\A\b[0-9a-fA-F]+\b\Z");
                 if (!isHex)
                 {
-                    error = "Enter a valid thumbprint  (must be 40 hexdigits).";
+                    error = "Enter a valid thumbprint  (must be 40 hex digits).";
                     isValid = false;
                 }
             }

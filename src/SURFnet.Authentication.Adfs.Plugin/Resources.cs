@@ -137,7 +137,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
             var stream = assembly.GetManifestResourceStream(resourceName);
             if (stream == null)
             {
-                // Fallback to english
+                // Fallback to English
                 lcid = new CultureInfo("en-us").LCID;
                 resourceName = $"SURFnet.Authentication.Adfs.Plugin.Resources.Labels.{lcid}.json";
                 stream = assembly.GetManifestResourceStream(resourceName);

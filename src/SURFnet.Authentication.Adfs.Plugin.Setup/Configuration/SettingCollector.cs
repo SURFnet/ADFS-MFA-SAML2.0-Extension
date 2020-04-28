@@ -58,7 +58,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
                 LogService.WriteFatal($"Fatal failure while fetching required parameters for {targetVersion.DistributionVersion}.");
                 rc = -1;
             }
-            // update orinal values (if any) with values from JSON files iff different.
+            // update original values (if any) with values from JSON files iff different.
             else if ( 0!=IdpChoiceHandler.UpdateIdPValuesFromFiles(ConfigSettings.IdPEntityID, IdPEnvironments))
             {
                 // and it failed.....
@@ -320,7 +320,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
             else
             {
                 QuestionIO.WriteLine();
-                QuestionIO.WriteError("OK. You will need a cirtificate before real installation starts.");
+                QuestionIO.WriteError("OK. You will need a certificate before real installation starts.");
                 QuestionIO.WriteLine();
             }
 
@@ -422,7 +422,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
 
 
         /// <summary>
-        /// Udpates the settings with values from UsedSettings JSON file.
+        /// Updates the settings with values from UsedSettings JSON file.
         /// </summary>
         /// <param name="settings"></param>
         void UpdateWithUsedSettings(List<Setting> settings)

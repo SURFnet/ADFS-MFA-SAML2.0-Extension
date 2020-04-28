@@ -40,8 +40,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
                 {
                     X509Certificate2Collection scollection = X509Certificate2UI.SelectFromCollection(
                             collection,
-                            "SP singning certificate",
-                            "Select a certificate from the following list for signin by the SFO MFA extension",
+                            "SP signing certificate",
+                            "Select a certificate from the following list for signing by the SFO MFA extension",
                             X509SelectionFlag.SingleSelection);
 
                     LogService.Log.Info($"   # of certs in collection: {scollection.Count}");
@@ -127,7 +127,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
 
             if ( newcollection.Count <=0  )
             {
-                QuestionIO.WriteError("No selfsigned certificates with a private key in the store");
+                QuestionIO.WriteError("No self signed certificates with a private key in the store");
             }
             LogService.Log.Info($"      Trimmed Collection Count: {newcollection.Count} certs");
 

@@ -79,7 +79,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
                                 }
                                 else
                                 {
-                                    LogService.Log.Warn("  However, not satifacory for admin.....");
+                                    LogService.Log.Warn("  However, not satisfactory for admin.....");
                                     rc = 1; // stop with this one.
                                 }
                             }
@@ -91,7 +91,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
                     }
                 } // tryPwd 
 
-                // If it was ok sofar load permanent and add to store.
+                // If it was ok so far load permanent and add to store.
                 if ( rc==0 )
                 {
                     // Cert was OK, add to store.

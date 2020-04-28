@@ -67,7 +67,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                     SvcController = tmpController;
                     if ( AdfsAccount == null )
                     {
-                        LogService.WriteFatal("Something failed when looking for the sevice account name of the ADFS server.");
+                        LogService.WriteFatal("Something failed when looking for the service account name of the ADFS server.");
                         return null;
                     }
                 }
@@ -83,7 +83,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
             }
             catch (Exception ex)
             {
-                LogService.WriteFatalException("Trying to get a ServiceController threw an unexpectedexception!", ex);
+                LogService.WriteFatalException("Trying to get a ServiceController threw an unexpected exception!", ex);
             }
 
             return SvcController;
@@ -91,7 +91,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
 
         private static Version GetAdfsProductVersion()
         {
-            // This is some dereadfull mess. The Windows file explorer displays a different FileVersion
+            // This is some dreadful mess. The Windows file explorer displays a different FileVersion
             // then my AssemblySpec!! Looking at the exact values it is some ADFS madness??
             // So we take the Product version which looks like less nonsense. Or is it my bug? (PL)
 
@@ -101,7 +101,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
             AssemblySpec adfsAssembly = AssemblySpec.GetAssemblySpec(adfsPath);
             if ( adfsAssembly!=null )
             {
-                LogService.Log.Info($"ADFS Filversion: {adfsAssembly.FileVersion.ToString()}");
+                LogService.Log.Info($"ADFS FileVersion: {adfsAssembly.FileVersion.ToString()}");
                 LogService.Log.Info($"ADFS ProductVersion: {adfsAssembly.ProductVersion.ToString()}");
                 LogService.Log.Info($"ADFS AssemblyVersion: {adfsAssembly.AssemblyVersion.ToString()}");
 
@@ -152,7 +152,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
         public static ServiceController SvcController { get; private set; } = null;
 
         /// <summary>
-        /// This is really rediculous, getting it from the Registry seems far simpler.....
+        /// This is really ridiculous, getting it from the Registry seems far simpler.....
         /// Queries, iterators within iterators just to say: "Hi mom".
         /// </summary>
         public static string AdfsAccount
@@ -234,7 +234,6 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
         /// <summary>
         /// Starts the ADFS service.
         /// </summary>
-        /// <param name="failsave">The failsave.</param>
         private static int StartAdFsServiceInternal()
         {
             int rc = -1;

@@ -12,7 +12,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
     {
         public Log4netV2_0_8GAC() : base("log4net V2.0.8.0 GAC")
         {
-            // overwrite for the old GAC installed aseemebly
+            // overwrite for the old GAC installed assembly
             Assemblies = new AssemblySpec[1] { V1Assemblies.Log4Net2_0_8_GACSpec };
         }
     }

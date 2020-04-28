@@ -22,9 +22,9 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Models
     public class PluginConfiguration
     {
         /// <summary>
-        /// Gets or sets the schac home organization.
+        /// Gets or sets the schacHomeOrganization.
         /// </summary>
-        /// <value>The schac home organization.</value>
+        /// <value>The schacHomeOrganization.</value>
         public string SchacHomeOrganization { get; set; }
 
         /// <summary>

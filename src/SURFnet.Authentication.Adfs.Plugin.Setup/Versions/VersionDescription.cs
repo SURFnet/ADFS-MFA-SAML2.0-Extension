@@ -167,7 +167,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
 
             if (Components != null && Components.Length > 0)
             {
-                LogService.Log.Info($"Start writinging Components settings.");
+                LogService.Log.Info($"Start writing Components settings.");
                 foreach (var component in Components)
                 {
                     LogService.Log.Info($"  Writing settings for '{component.ComponentName}'");

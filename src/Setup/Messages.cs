@@ -14,7 +14,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
         {
             LogService.WriteWarning("   There is a registration in the ADFS configuration of an SFO MFA extension.");
             LogService.WriteWarning("   In general, it is not a good idea to remove this registration.");
-            LogService.WriteWarning("   This ADFS server will then produce loading errors in the ADFS eventlog.");
+            LogService.WriteWarning("   This ADFS server will then produce loading errors in the ADFS EventLog.");
             LogService.WriteWarning("   ");
             LogService.WriteWarning("   However, if you want to immediately (re)install a version of the SFO MFA extension.");
             LogService.WriteWarning("   However, IFF you want to immediately (re)install a version of the SFO MFA extension.");

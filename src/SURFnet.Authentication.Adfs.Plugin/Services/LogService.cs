@@ -128,7 +128,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
                 var options = Sustainsys.Saml2.Configuration.Options.FromConfiguration;
                 sb.AppendLine($"ServiceProvider.EntityId: '{options.SPOptions.EntityId.Id}'");
                 sb.AppendLine($"IdentityProvider.EntityId: '{SamlService.GetIdentityProvider(options).EntityId.Id}'");
-                // TODO: we need moere: also signing cert of Stepup gatway.
+                // TODO: we need more: also signing cert of Stepup gateway.
                 //sb.AppendLine($"IdentityProvider.signingCertificate: {options.IdentityProviders.???}");
             }
             catch (Exception ex)

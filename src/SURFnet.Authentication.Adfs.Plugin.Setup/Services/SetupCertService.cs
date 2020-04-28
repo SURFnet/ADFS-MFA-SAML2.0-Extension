@@ -57,7 +57,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
         }
 
         /// <summary>
-        /// Tries to fetch the certificate. out parm is initialized to null. Assingned if really found.
+        /// Tries to fetch the certificate. out parm is initialized to null. Assigned if really found.
         /// </summary>
         /// <param name="thumbprint"></param>
         /// <param name="certificate">null or found (then must dispose!)</param>
@@ -78,7 +78,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
                 }
                 else if (certCollection.Count > 1)
                 {
-                    // rediculous, but who knows.....
+                    // ridiculous, but who knows.....
                     LogService.Log.Warn($"Multiple certificates with '{thumbprint}'");
                     foreach (var cert in certCollection)
                     {
@@ -202,7 +202,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
             var isValid = true;
             if (thumbprint.Length != 40)
             {
-                error = "Thumbprint length is incorrect (must be 40 hexdigits).";
+                error = "Thumbprint length is incorrect (must be 40 hex digits).";
                 isValid = false;
             }
             else
@@ -210,7 +210,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
                 var isHex = System.Text.RegularExpressions.Regex.IsMatch(thumbprint, @"\A\b[0-9a-fA-F]+\b\Z");
                 if (!isHex)
                 {
-                    error = "Enter a valid thumbprint  (must be 40 hexdigits).";
+                    error = "Enter a valid thumbprint  (must be 40 hex digits).";
                     isValid = false;
                 }
             }

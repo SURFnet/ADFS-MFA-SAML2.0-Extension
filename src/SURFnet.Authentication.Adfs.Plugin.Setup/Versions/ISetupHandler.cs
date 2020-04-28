@@ -51,7 +51,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
 
         /// <summary>
         /// It should signal missing values for the new installation or update by adding
-        /// them to the settings argument and/or setting the IsMandatory propertyof a Setting.
+        /// them to the settings argument and/or setting the IsMandatory property of a Setting.
         /// Each Target component may need some configuration parameters, this is
         /// the method to specify that.
         /// </summary>
@@ -68,7 +68,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
 
         /// <summary>
         /// Copies all files from the distribution and configuration directories
-        /// to the target directories. Sorces and configration files are present!
+        /// to the target directories. Sources and configuration files are present!
         /// Setup has checked that and did stop/abort on any failure.
         /// Configuration first then other files.
         /// </summary>

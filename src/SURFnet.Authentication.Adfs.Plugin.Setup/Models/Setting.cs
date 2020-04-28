@@ -106,7 +106,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Models
 
         /// <summary>
         /// Gets or sets the display name which is shown to the user when asking
-        /// for a value of this settin.
+        /// for a value of this setting.
         /// </summary>
         /// <value>The display name.</value>
         public string DisplayName { get; set; }
@@ -168,7 +168,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Models
         public bool IsChangedByUser { get; set; }
 
         /// <summary>
-        /// The UI use a list of reuired settings. The UI must walk the list
+        /// The UI use a list of required settings. The UI must walk the list
         /// and let the Admin confirm each setting. This one is true if confirmed.
         /// </summary>
         public bool IsConfirmed { get; set; }
@@ -178,7 +178,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Models
         /// This property contains the InternalName of that "parent" Setting.
         /// 
         /// TODO: The design with a private setter is not OK. It is way more complicated.
-        ///       The Evironment file should contain all settings, also from past components.
+        ///       The Environment file should contain all settings, also from past components.
         ///       Per version the child/parent relation can be different!
         /// </summary>
         public string Parent { get; private set; }

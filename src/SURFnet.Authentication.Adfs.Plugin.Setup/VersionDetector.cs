@@ -31,7 +31,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
         private static bool isCleanInstallBackingField;
 
         /// <summary>
-        /// Gets the plugin version thats currently installed in ADFS.
+        /// Gets the plugin version that is currently installed in ADFS.
         /// </summary>
         /// <value>The installed version.</value>
         public static Version InstalledVersion => new Version(1, 0, 1, 0);  // PLUgh: always 4 number!!!

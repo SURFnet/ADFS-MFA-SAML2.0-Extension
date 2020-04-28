@@ -29,7 +29,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
     /// It provides the methods to do the file operations. 
     /// It is aware of the directory structure:
     ///   dist:    the distribution files of this version.
-    ///   output:  temporary files generated befor the real installation (copy)
+    ///   output:  temporary files generated before the real installation (copy)
     ///   backup:  when an uninstall or partial remove happens, the file go here.
     ///   
     /// It tries to do things without throwing on errors, by using non-throwing OS methods.
@@ -40,7 +40,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
     {
         /// <summary>
         /// An array of directories that correspond with the FileDirectory enumeration.
-        /// Can obtain the directorypath with the enum as index.
+        /// Can obtain the directory path with the enum as index.
         /// Filled by static constructor.
         /// </summary>
         static readonly string[] directoryMap = new string[(int)FileDirectory.Sentinel];
@@ -58,7 +58,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
 
         /// <summary>
         /// The output folder. (set by static constructor)
-        /// A directory where new files are prepared befor we start the installation.
+        /// A directory where new files are prepared before we start the installation.
         /// The will be copied from there during installation.
         /// </summary>
         private static string OutputFolder { get; }
@@ -72,7 +72,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
         private static string ConfigFolder { get; }
 
         /// <summary>
-        /// The backup folder for a removale or reconfiguration.
+        /// The backup folder for a remove or reconfiguration.
         /// It is backupyyMMddHHmmss (set by static constructor)
         /// Physically created on disk when first written through this class.
         /// </summary>
@@ -140,7 +140,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
         }
 
         /// <summary>
-        /// File copier (overwrite). Checks source existentenc catches Copy and writes errors to Log.
+        /// File copier (overwrite). Checks source existence catches Copy and writes errors to Log.
         /// </summary>
         /// <param name="src"></param>
         /// <param name="dest"></param>
@@ -282,7 +282,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
         }
 
         /// <summary>
-        /// Specifically for log4net, or other very wellknown dependecies,
+        /// Specifically for log4net, or other very well-known dependencies,
         /// where we want to preserve any modified log4net configuration.
         /// Many administrators know how to deal with those file.
         /// </summary>
@@ -369,7 +369,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
         }
 
         /// <summary>
-        /// This is a BUG check mehod. Somthing called a method with a null filename.
+        /// This is a BUG check method. Something called a method with a null filename.
         /// 99% sure a programming bug in the component or other descriptor initialization!
         /// Typically called before each Path.Combine(), to isolate bug at test time!!
         /// The Stacktrace will probably help to find the culprit.

@@ -70,7 +70,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Models
         }
 
         /// <summary>
-        /// Serializes the message into wellformed Xml.
+        /// Serializes the message into well formed Xml.
         /// </summary>
         /// <returns>String containing the Xml data.</returns>
         public override string ToXml()

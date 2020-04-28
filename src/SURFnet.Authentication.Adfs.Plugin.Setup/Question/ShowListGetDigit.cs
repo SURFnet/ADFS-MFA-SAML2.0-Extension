@@ -37,7 +37,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Question
         }
 
         ///
-        /// Integer index and list ralated things.
+        /// Integer index and list related things.
         /// The program works with 0 based indices. The UI works with 1 based digits.
         ///
 

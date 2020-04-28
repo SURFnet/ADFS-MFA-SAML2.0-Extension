@@ -93,7 +93,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
         /// That grew historically. However. The writer was not OK.
         /// I do have a XmlDocument base implementation for cleanup.
         /// 
-        /// Never the less, decided to stich with the stuf for the settings reader.
+        /// Never the less, decided to stick with the stuff for the settings reader.
         /// Can always replace it if we run into more trouble.
         /// </summary>
         /// <returns></returns>
@@ -140,7 +140,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
 
         public override int WriteConfiguration(List<Setting> settings)
         {
-            Console.WriteLine("This setup program will not write version 1.0.1.0 configurattion files!");
+            Console.WriteLine("This setup program will not write version 1.0.1.0 configuration files!");
             return -1; // No we will never install 1.0.1.0
         }
 
@@ -183,8 +183,6 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
 
             var pluginConfig = adfsConfig.Descendants(XName.Get(V1SettingsSectionName));
             pluginConfig?.Remove();
-            // TODO: not urgent. We are leaving a probaly empty <applicationSettings /> behind. If empty, should remove.
-            // And its <sectionGroup> too.
 
             LogService.Log.Info($"WriteCleanAdfsConfig save 'cleaned' ADFS config file to disk.");
             var path = FileService.OurDirCombine(FileDirectory.Output, SetupConstants.AdfsCfgFilename);
@@ -206,7 +204,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
             }
             else
             {
-                LogService.WriteFatal("Failed to copy the ADFS confiraution file to the ADFS directory after cleanup");
+                LogService.WriteFatal("Failed to copy the ADFS configuration file to the ADFS directory after cleanup");
             }
 
             return rc;

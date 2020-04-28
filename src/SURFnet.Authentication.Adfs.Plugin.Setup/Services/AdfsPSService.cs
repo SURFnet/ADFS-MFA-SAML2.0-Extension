@@ -24,7 +24,7 @@
         private static readonly Version Version1000 = new Version(1, 0, 0, 0);
 
         /// Some awful global state.....
-        /// For some global requirements. Atempted to isolate them here with static properties
+        /// For some global requirements. Attempted to isolate them here with static properties
         /// Also some local requirements like later (De)Registration on secondaries.
         private static AdfsConfiguration localAdfsConfiguration
 #if DEBUG
@@ -51,7 +51,7 @@
         /// <summary>
         /// Called very early during setup.
         /// This Method queries the ADFS configuration for required parameters.
-        /// Some PowerShell Cmdlets do not work on seondary ADFS servers, only on the primary
+        /// Some PowerShell Cmdlets do not work on secondary ADFS servers, only on the primary
         /// server with the Master WID database. Or all other servers that use a
         /// Microsoft SQL Server (against best-practice).
         /// </summary>
@@ -304,7 +304,7 @@
 
             if ( string.IsNullOrWhiteSpace(adminName) )
             {
-                throw new ApplicationException("Registered AdminName IsNullOrWhiteSpace(). That is very weird becaus it has a 'const' AdminName");
+                throw new ApplicationException("Registered AdminName IsNullOrWhiteSpace(). That is very weird because it has a 'const' AdminName");
             }
             else if ( ! adminName.StartsWith(adapterName) )
             {

@@ -13,7 +13,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
     /// A bunch of data for the setup program.
     /// It is version and flow specific and more or less the global store of the
     /// Setup program. Easier to pass around that global variables.
-    /// All variables not properties ot enable "out" style parameter access.
+    /// All variables not properties to enable "out" style parameter access.
     /// </summary>
     public class SetupState
     {

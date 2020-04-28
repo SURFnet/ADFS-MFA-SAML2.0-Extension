@@ -62,7 +62,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
                 {
                     // ugh, no configuration file!
                     if (rc==0) rc = -1;
-                    LogService.Log.Fatal($"Configurationfile '{tmp}' missing in component: '{ComponentName}'.");
+                    LogService.Log.Fatal($"Configuration file '{tmp}' missing in component: '{ComponentName}'.");
                 }
             }
 
@@ -130,7 +130,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
                 // Copy assemblies
                 if (Assemblies != null)
                 {
-                    // Only if configuration was succesfully copied.
+                    // Only if configuration was successfully copied.
                     foreach (var spec in Assemblies)
                     {
                         string src = FileService.OurDirCombine(FileDirectory.Dist, spec.InternalName);

@@ -26,7 +26,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Repositories
         {
             bool rc = false;
             var linewidthsaver = StepUpConfig.Current.InstitutionConfig.ActiveDirectoryUserIdAttribute;
-            // Claim is windowsaccountname claim. Fixe in Metadata! No need to check.
+            // Claim is windowsaccountname claim. Fixed in Metadata! No need to check.
 
             var domainName = UserClaim.Value.Split('\\')[0];
 

@@ -129,7 +129,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
 
         public readonly static Setting IdPEntityID = new Setting(IdPEntityId)
         {
-            Introduction = "Specify which SFO server (IdP) to use (equivalentt of entityID of IdP)",
+            Introduction = "Specify which SFO server (IdP) to use (equivalent of entityID of IdP)",
             DisplayName = "SFO server (IdP) entityID",
             HelpLines = new string[] {
                 "TODO: ",
@@ -158,7 +158,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
             DisplayName = "MinimalLoa",
             HelpLines = new string[] {
                 "The LoA identifier indicating the minimal level of authentication in requests",
-                "to the SFO server. This value is dependens on the",
+                "to the SFO server. This value is depends on the",
                 "SFO server being used.",
                 "The value is not independently configurable in the installer and is",
                 "selected as part of the environment.",

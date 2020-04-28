@@ -54,7 +54,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
 
             foreach (string parameter in settings)
             {
-                // Double check, mainly for development. Setings checker has already done this.
+                // Double check, mainly for development. Settings checker has already done this.
                 Setting setting = allsettings.Find(s => s.InternalName.Equals(parameter));
                 if (setting == null)
                 {
@@ -162,7 +162,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
             }
             catch (Exception ex)
             {
-                LogService.Log.Warn($"Failed to write setings to: {path}. {ex.ToString()}");
+                LogService.Log.Warn($"Failed to write settings to: {path}. {ex.ToString()}");
                 rc = -1;
             }
 
@@ -193,7 +193,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
         }
 
         /// <summary>
-        /// Writes the minimal loa in the registery.
+        /// Writes the minimal loa in the registry.
         /// </summary>
         /// <param name="setting">The setting.</param>
         public static void WriteMinimalLoaInRegistery(Setting setting)

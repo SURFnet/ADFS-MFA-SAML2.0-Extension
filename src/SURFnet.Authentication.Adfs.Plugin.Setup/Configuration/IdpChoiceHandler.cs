@@ -13,7 +13,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
         ///
         /// MAYBE:
         /// We will make this a derived class of the Setting.
-        /// Setting would then have some virtaul method for the handler....
+        /// Setting would then have some virtual method for the handler....
         /// 
         /// It is messy! SP cert stuff is similar, need to harmonize!
 

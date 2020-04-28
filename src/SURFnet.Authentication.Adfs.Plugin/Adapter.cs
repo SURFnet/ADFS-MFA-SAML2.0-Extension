@@ -45,7 +45,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
     {
         /// <summary>
         /// If running under ADFS, then the real ADFS directory.
-        /// At registration time: wherever the adpater is.
+        /// At registration time: wherever the adapter is.
         /// This determines where the Registration log will be!
         /// </summary>
         internal static readonly string AdapterDir;  // if running under ADFS, then
@@ -157,7 +157,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
         ///       StatusCode Value="urn:oasis:tc:SAML:2.0:status:Responder".
         ///       Not so nice for user, nor for Admin.
         ///     + ADFS 2016 will display the proper form.
-        /// Therfor we deal with it in BeginAuthentication(). Once we drop 2012R2, we can enable it.
+        /// Therefor we deal with it in BeginAuthentication(). Once we drop 2012R2, we can enable it.
         /// </summary>
         /// <param name="identityClaim">The identity claim.</param>
         /// <param name="context">The context.</param>
@@ -249,7 +249,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
             }
             catch (Exception ex)
             {
-                LogService.Log.FatalFormat("Unexpexted error while initiating authentication: {0}", ex);
+                LogService.Log.FatalFormat("Unexpected error while initiating authentication: {0}", ex);
                 return new AuthFailedForm(false, Values.DefaultErrorMessageResourcerId, context.ContextId, context.ActivityId);
             }
         }
@@ -305,7 +305,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
             }
             catch (Exception ex)
             {
-                LogService.Log.FatalFormat("Error while processing the saml response. Details: {0}", ex.Message);
+                LogService.Log.FatalFormat("Error while processing the SAML response. Details: {0}", ex.Message);
                 return new AuthFailedForm(false, Values.DefaultErrorMessageResourcerId, context.ContextId, context.ActivityId);
             }
         }
@@ -330,7 +330,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
         public IAdapterPresentation OnError(HttpListenerRequest request, ExternalAuthenticationException ex)
         {
             LogService.PrepareCorrelatedLogger(ex.Context.ContextId, ex.Context.ActivityId);
-            LogService.Log.ErrorFormat("Error occured: {0}", ex);
+            LogService.Log.ErrorFormat("Error occurred: {0}", ex);
             return new AuthFailedForm(false, Values.DefaultErrorMessageResourcerId, ex.Context.ContextId, ex.Context.ActivityId);
         }
 

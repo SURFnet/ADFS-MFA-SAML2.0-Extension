@@ -42,7 +42,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
                     QuestionIO.WriteLine("   Save it in a safe place.");
                     QuestionIO.WriteLine();
 
-                    while ('y' != AskYesNo.Ask("    Did you save it somehere in a safe place")) { }
+                    while ('y' != AskYesNo.Ask("    Did you save it somewhere in a safe place")) { }
                 }
                 catch (Exception ex)
                 {

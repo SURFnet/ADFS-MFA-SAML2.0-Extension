@@ -57,7 +57,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
         /// Gets the instance.
         /// </summary>
         /// <value>The instance.</value>
-        public static AdapterMetadata Instance => instance; // property to return the Sinleton
+        public static AdapterMetadata Instance => instance; // property to return the Singleton
 
         /// <summary>
         /// Returns an array of strings containing URIs indicating the set of authentication methods implemented by the adapter
@@ -139,7 +139,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
         private static readonly Dictionary<int, string> descriptions = new Dictionary<int, string>
         {
             { new CultureInfo("en-us").LCID,
-                "SURFNet Second Factor Authentication will aks for extra credentials" /*Resources.GetLabel(1033, "Description")*/ },
+                "SURFNet Second Factor Authentication will ask for extra credentials" /*Resources.GetLabel(1033, "Description")*/ },
             { new CultureInfo("nl-nl").LCID,
                 "SURFNet Tweede Factor Authenticatie zal om extra authenticatie middelen vragen." /*Resources.GetLabel(1043, "Description")*/ }
         };

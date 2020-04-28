@@ -73,13 +73,13 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
 
         /// <summary>
         /// Creates a CryptographicService for the certificate thumbprint.
-        /// Only call this when it is abolutely there, because it was verified before!
+        /// Only call this when it is absolutely there, because it was verified before!
         /// </summary>
         /// <param name="thumbprint">The verified thumbprint for a valid certificate.</param>
         /// <returns>A service, ready to run.</returns>
         public static CryptographicService Create(string thumbprint)
         {
-            CryptographicService rc = null; // just for idiots that did not check. It will throwup on the first test!
+            CryptographicService rc = null; // just for idiots that did not check. It will throw-up on the first test!
 
             if (CertificateService.IsValidThumbPrint(thumbprint, out string error))
             {
@@ -129,7 +129,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
                 return;
             }
 
-            /// TODO: Doublecheck if indeed now default if not specified in config (Plem)
+            /// TODO: Double check if indeed now default if not specified in config (Plem)
             //Sustainsys.Saml2.Configuration.Options.GlobalEnableSha256XmlSignatures();
             isSha265Enabled = true;
         }

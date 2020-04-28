@@ -41,7 +41,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
                 intro = Setting.Introduction;
             QuestionIO.WriteIntro(intro);
 
-            /// Disply current thumbprint if there
+            /// Display current thumbprint if there
             /// 
             string textWithValue;
             if (false == string.IsNullOrWhiteSpace(Setting.DefaultValue))
