@@ -18,20 +18,16 @@ namespace SURFnet.Authentication.Adfs.Plugin.Configuration
 {
     using System;
     using System.Configuration;
+    using System.IO;
+    using System.Reflection;
     using System.Text;
+    using System.Linq;
+    using System.Xml.Linq;
+    using System.Threading;
 
     /// <summary>
     /// This class implements a singleton with the StepUp Adapter configuration.
     /// Just call the static property 'Current' and there it is.
-    /// It will do the conversion from the ConfigurationSection to the class. If anything goes wrong
-    /// then Current will return 'null'. GetErrors() will return a string with the errors.
-    /// Properties:
-    ///   - public InstitutionConfig InstitutionConfig { get; private set; }
-    ///   - public LocalSPConfig LocalSPConfig { get; private set; }
-    ///   - public StepUpIdpConfig StepUpIdPConfig { get; private set; }
-    /// It is possible to configure the source through:
-    ///     public static StepUpSection Section { get; set; }
-    /// Use some *tested* variant of OpenExeConfiguration().GetSection() as value.
     /// </summary>
     public class StepUpConfig
     {
@@ -39,7 +35,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Configuration
         /// Each time an error occurs, store it here.
         /// After Initialize() it will be available through the GetErrors() method.
         /// </summary>
-        private static StringBuilder initErrors;
+        private static StringBuilder initErrors = new StringBuilder();
 
         /// <summary>
         /// Indicate whether the StepUp config is initialized.
@@ -62,6 +58,11 @@ namespace SURFnet.Authentication.Adfs.Plugin.Configuration
         private StepUpConfig()
         {
         }
+
+        public string SchacHomeOrganization { get; private set; }
+        public string ActiveDirectoryUserIdAttribute { get; private set; }
+        public Uri MinimalLoa { get; private set; }
+
 
         /// <summary>
         /// This property is for the StepUpSection.
@@ -135,11 +136,14 @@ namespace SURFnet.Authentication.Adfs.Plugin.Configuration
         /// <param name="minimalLoa">The minimal loa.</param>
         public static void PreSet(string minimalLoa)
         {
+            Uri minUri = new Uri(minimalLoa);
+
             var regSetupCfg = new StepUpConfig
             {
-                LocalSpConfig = new LocalSPConfig
+                MinimalLoa = minUri,   // new
+                LocalSpConfig = new LocalSPConfig // old
                 {
-                    MinimalLoa = new Uri(minimalLoa)
+                    MinimalLoa = minUri
                 }
             };
 
@@ -319,6 +323,96 @@ namespace SURFnet.Authentication.Adfs.Plugin.Configuration
                     LocalSpConfig = localSpConfig,
                     StepUpIdPConfig = stepUpIdPConfig
                 };
+            }
+
+            return rc;
+        }
+
+        public static int ReadXmlConfig()
+        {
+            // TODONOW: BUG! Definitions should be shared in Values class!!
+            const string AdapterElement = "SfoMfaExtension";
+            const string AdapterSchacHomeOrganization = "schacHomeOrganization";
+            const string AdapterADAttribute = "activeDirectoryUserIdAttribute";
+            const string AdapterMinimalLoa = "minimalLoa";
+            const string TempAdapterCfgFilename = "SfoMfaExtension.config.xml";
+
+
+            var newcfg = new StepUpConfig();
+            int rc = 0;
+
+            string adapterCfgPath = GetConfigFilepath(TempAdapterCfgFilename);
+
+            var adapterConfig = XDocument.Load(adapterCfgPath);
+            var root = adapterConfig.Descendants(XName.Get(AdapterElement)).FirstOrDefault();
+            if (root == null)
+            {
+                initErrors.AppendLine($"Cannot find '{AdapterElement}' element in {adapterCfgPath}");
+                return 1;
+            }
+
+            newcfg.SchacHomeOrganization = root?.Attribute(XName.Get(AdapterSchacHomeOrganization))?.Value;
+            if (string.IsNullOrWhiteSpace(newcfg.SchacHomeOrganization))
+            {
+                initErrors.AppendLine($"Cannot find '{AdapterSchacHomeOrganization}' attribute in {adapterCfgPath}");
+                rc--;
+            }
+
+            newcfg.ActiveDirectoryUserIdAttribute = root?.Attribute(XName.Get(AdapterADAttribute))?.Value;
+            if (string.IsNullOrWhiteSpace(newcfg.ActiveDirectoryUserIdAttribute))
+            {
+                initErrors.AppendLine($"Cannot find '{AdapterADAttribute}' attribute in {adapterCfgPath}");
+                rc--;
+            }
+
+            string tmp = root?.Attribute(XName.Get(AdapterMinimalLoa))?.Value;
+            if (string.IsNullOrWhiteSpace(tmp))
+            {
+                initErrors.AppendLine($"Cannot find '{AdapterMinimalLoa}' attribute in {adapterCfgPath}");
+                rc--;
+            }
+            else
+            {
+                newcfg.MinimalLoa = new Uri(tmp);
+            }
+
+            if ( rc == 0 )
+            {
+                var old = Interlocked.Exchange(ref current, newcfg);
+                initialized = true;
+                if ( old != null )
+                {
+                    //  mmmmm, the log should work....... Would it be the Registry value????
+                }
+            }
+
+            return rc;
+        }
+
+        public static string GetConfigFilepath(string filename)
+        {
+            string rc = null;
+            string filepath = null;
+
+            var AdapterDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            filepath = Path.Combine(AdapterDir, filename);
+            if ( File.Exists(filepath) )
+            {
+                rc = filepath;
+            }
+            else
+            {
+                // TODONOW: BUG!! This is a shared directory name. Should come from Values class!
+                filepath = Path.GetFullPath(Path.Combine(AdapterDir, "..\\output", filename));
+                if (File.Exists(filepath))
+                {
+                    rc = filepath;
+                }
+            }
+
+            if ( rc == null )
+            {
+                initErrors.AppendLine($"Failed to locate: {filepath}");
             }
 
             return rc;

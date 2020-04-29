@@ -26,15 +26,14 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
             };
         }
 
-        // some day this will be a base??
+        // TODONOW: BUG! Values are independently used in adapter. Shoudld go to "Values.cs" class!
         protected const string AdapterElement = "SfoMfaExtension";
         protected const string AdapterSchacHomeOrganization = "schacHomeOrganization";
         protected const string AdapterADAttribute = "activeDirectoryUserIdAttribute";
         protected const string AdapterSPSigner1 = "sPSigningCertificate";    // TODONOW: remove!!
         protected const string AdapterMinimalLoa = "minimalLoa";
         protected const string AdapterSFOEndpoint = "secondFactorEndPoint";  // TODONOW: remove!!
-
-        public const string TempAdapterCfgFilename = "SfoMfaExtension.config.xml";
+        protected const string TempAdapterCfgFilename = "SfoMfaExtension.config.xml";
 
         public override int ReadConfiguration(List<Setting> settings)
         {
@@ -57,6 +56,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
         public override int WriteConfiguration(List<Setting> allsettings)
         {
             int rc = 0;
+
+            ConfigurationFileService.WriteMinimalLoaInRegistery(ConfigSettings.MinimaLoaSetting.Value);
 
             LogService.Log.Info($"  Writing settings of '{ComponentName}' configuration to '{ConfigFilename}'");
 
@@ -92,7 +93,6 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
 
             return rc;
         }
-
 
         private int NewExctractAdapterConfig(List<Setting> settings)
         {

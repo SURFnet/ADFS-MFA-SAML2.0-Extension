@@ -49,40 +49,47 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Common
         private static string pluginRoot = Values.RegistryRootKey;
 
         /// <summary>
-        /// Gets the minimal loa.
+        /// Gets the minimal loa. *MUST* test!
         /// </summary>
-        /// <returns>The minimal LOA.</returns>
+        /// <returns>The minimal LOA or null</returns>
         public static string GetMinimalLoa()
         {
+            /// This is common code! It cannot log!
+            /// It is used at Registration time and at Setup.exe time.
+            /// They have different LogServices
+
+            string rc = null;
             var root = new RegistryConfiguration().GetSurfNetPluginRoot();
-            if (root == null)
+            if (root != null)
             {
-                throw new InvalidConfigurationException("Missing Surfnet authentication configuration in the registery");
+                root = root.OpenSubKey("LocalSP");
+                var value = root?.GetValue("MinimalLoa");
+                rc = value as string;
             }
-
-            root = root.OpenSubKey("LocalSP");
-            var value = root?.GetValue("MinimalLoa");
-
-            var rc = (string)value ?? throw new InvalidConfigurationException("Missing setting MinimalLoa in registery in subkey LocalSP");
 
             return rc;
         }
 
         /// <summary>
-        /// Sets the minimal loa.
+        /// Sets the minimal loa. But it is not yet good enough for the future.
+        /// It writes unconditionally to the Values.AdapterRegistrationName.
         /// </summary>
         /// <param name="minimalLoa">The minimal loa.</param>
-        public static void SetMinimalLoa(Uri minimalLoa)
+        public static void SetMinimalLoa(string minimalLoa)
         {
             var pluginbase = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64);
             var subKey = pluginbase.CreateSubKey(pluginRoot);
             var pluginKey = subKey?.CreateSubKey(Values.AdapterRegistrationName);
             var spKey = pluginKey?.CreateSubKey(Values.DefaultRegisteryKey);
-            spKey?.SetValue("MinimalLoa", minimalLoa.ToString());
+            spKey?.SetValue("MinimalLoa", minimalLoa);
         }
 
         /// <summary>
-        /// Gets the surf net plugin root.
+        /// Goes to Values.RegistryRootKey. If there is a Value by the name of
+        /// RegistryConfiguration="Registration", then use its content as the next key.
+        /// If it isn't there use Values.AdapterRegistrationName="ADFS.SCSA" as next Key.
+        /// This is there to enable multiple adapters.... But not used.
+        /// Was a nice idea, but it is very hard to get to the "-Name" registration value...
         /// </summary>
         /// <returns>The RegistryKey.</returns>
         private RegistryKey GetSurfNetPluginRoot()

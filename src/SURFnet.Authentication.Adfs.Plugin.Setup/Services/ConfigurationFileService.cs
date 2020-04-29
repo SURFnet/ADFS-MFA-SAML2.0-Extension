@@ -218,9 +218,9 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
         /// Writes the minimal loa in the registry.
         /// </summary>
         /// <param name="setting">The setting.</param>
-        public static void WriteMinimalLoaInRegistery(Setting setting)
+        public static void WriteMinimalLoaInRegistery(string minimalLoa)
         {
-            RegistryConfiguration.SetMinimalLoa(new Uri(setting.Value));
+            RegistryConfiguration.SetMinimalLoa(minimalLoa);
         }
     }
 }

@@ -105,9 +105,9 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
             sb.AppendLine($"Product version: {Values.ProductVersion}");
             sb.AppendLine($"File version: {Values.FileVersion}");
             sb.AppendLine("Current plugin configuration");
-            sb.AppendLine($"SchacHomeOrganization: {StepUpConfig.Current.InstitutionConfig.SchacHomeOrganization}");
-            sb.AppendLine($"ActiveDirectoryUserIdAttribute: {StepUpConfig.Current.InstitutionConfig.ActiveDirectoryUserIdAttribute}");
-            sb.AppendLine($"MinimalLoa: {StepUpConfig.Current.LocalSpConfig.MinimalLoa.OriginalString}");
+            sb.AppendLine($"SchacHomeOrganization: {StepUpConfig.Current.SchacHomeOrganization}");
+            sb.AppendLine($"ActiveDirectoryUserIdAttribute: {StepUpConfig.Current.ActiveDirectoryUserIdAttribute}");
+            sb.AppendLine($"MinimalLoa: {StepUpConfig.Current.MinimalLoa.OriginalString}");
             //sb.AppendLine($"SecondFactorEndPoint: {StepUpConfig.Current.StepUpIdPConfig.SecondFactorEndPoint.OriginalString}");
 
             sb.AppendLine("Plugin Metadata:");

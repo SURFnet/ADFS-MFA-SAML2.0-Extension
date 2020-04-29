@@ -51,7 +51,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
             string sustainsysCfgPath = FileService.OurDirCombine(FileDirectory.AdfsDir, SetupConstants.SustainCfgFilename);
             if ( ! File.Exists(sustainsysCfgPath) )
             {
-                LogService.Log.Error("  ??Parsing missing file??  ");
+                LogService.Log.Error("  ??Parsing missing Sustainsys configurattion file??  ");
                 return 0;
             }
             var sustainsysConfig = XDocument.Load(sustainsysCfgPath);

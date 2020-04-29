@@ -61,6 +61,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                 if ( status != ServiceControllerStatus.Running )
                 {
                     LogService.WriteFatal("ADFS service not running, cannot analyze/setup. Start the service.");
+                    return null;
                 }
                 else
                 {

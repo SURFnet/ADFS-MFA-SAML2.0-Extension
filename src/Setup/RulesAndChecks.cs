@@ -1,4 +1,5 @@
-﻿using SURFnet.Authentication.Adfs.Plugin.Setup.Configuration;
+﻿using SURFnet.Authentication.Adfs.Plugin.Setup.Common;
+using SURFnet.Authentication.Adfs.Plugin.Setup.Configuration;
 using SURFnet.Authentication.Adfs.Plugin.Setup.Models;
 using SURFnet.Authentication.Adfs.Plugin.Setup.Question;
 using SURFnet.Authentication.Adfs.Plugin.Setup.Services;
@@ -13,6 +14,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
 {
     public static class RulesAndChecks
     {
+        public static object RegistryService { get; private set; }
+
         /// <summary>
         /// Decides if this setup program can and should uninstall.
         /// Writes messages and ask questions.
@@ -96,6 +99,12 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
             }
             else
             {
+                if ( null==RegistryConfiguration.GetMinimalLoa() )
+                {
+                    LogService.WriteWarning("ExtraChecks() detected missing registry value for MinimalLoa.");
+                    LogService.WriteWarning("MinimalLoa in registry is only strictly required for non production environments.");
+                }
+
                 if ( ! EnsureEventLog.Exists )
                 {
                     // No EventLog for Adapter

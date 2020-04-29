@@ -24,6 +24,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
 
     using SURFnet.Authentication.Adfs.Plugin.Setup.Common;
     using SURFnet.Authentication.Adfs.Plugin.Configuration;
+    using System;
 
     /// <summary>
     /// The adapter metadata.
@@ -46,12 +47,34 @@ namespace SURFnet.Authentication.Adfs.Plugin
         /// <summary>
         /// Initializes static members of the <see cref="AdapterMetadata"/> class.
         /// </summary>
-        static AdapterMetadata() { } // to make it lazy.
+        static AdapterMetadata()
+        {
+            Uri minimalLoa = null;
+            minimalLoa = StepUpConfig.Current?.MinimalLoa;  // new method
+            if (minimalLoa == null)
+            {
+                minimalLoa = StepUpConfig.Current?.LocalSpConfig?.MinimalLoa; // original method
+            }
+
+            if (null != minimalLoa)
+            {
+                // yep, must overwrite
+                authenticationMethods = new string[]
+                    {
+                    $"http://{minimalLoa.Host}/assurance/sfo-level2",
+                    $"http://{minimalLoa.Host}/assurance/sfo-level3"
+                    };
+
+            }
+            // else: remains at production default.
+        }
 
         /// <summary>
         /// Prevents a default instance of the <see cref="AdapterMetadata"/> class from being created.
         /// </summary>
-        private AdapterMetadata() { } // hide constructor from the world
+        private AdapterMetadata()// hide constructor from the world
+        {
+        }
 
         /// <summary>
         /// Gets the instance.
@@ -73,12 +96,13 @@ namespace SURFnet.Authentication.Adfs.Plugin
         /// </summary>
         private static readonly string[] authenticationMethods =
         {
-            //todo: set minimal loa based on entityId
-            $"http://{StepUpConfig.Current.LocalSpConfig.MinimalLoa.Host}/assurance/sfo-level2",
-            $"http://{StepUpConfig.Current.LocalSpConfig.MinimalLoa.Host}/assurance/sfo-level3"
-            // Temp to avoid null ptr at Regisration time
-            //"http://test.surfconext.nl/assurance/sfo-level2",
-            //"http://test.surfconext.nl/assurance/sfo-level3"
+            // Default to current production at Regisration time
+            "http://surfconext.nl/assurance/sfo-level2",
+            "http://surfconext.nl/assurance/sfo-level3"
+
+            // could have been set based on entityId, but that is also not in adapter cfg.
+            //$"http://{StepUpConfig.Current.LocalSpConfig.MinimalLoa.Host}/assurance/sfo-level2",
+            //$"http://{StepUpConfig.Current.LocalSpConfig.MinimalLoa.Host}/assurance/sfo-level3"
         };
 
         /// <summary>

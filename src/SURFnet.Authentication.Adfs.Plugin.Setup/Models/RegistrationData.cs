@@ -88,7 +88,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Models
                         "    {2}\r\n" +                    // <==
                         "  ],\r\n" +
                         "  \"loa\": {{\r\n" +
-                        "    \"__default__\": \"{{{{ stepup_uri_loa2}}}}\"\r\n" +
+                        "    \"__default__\": \"{{{{ stepup_uri_loa2 }}}}\"\r\n" +
                         "  }},\r\n" +
                         "  \"assertion_encryption_enabled\": false,\r\n" +
                         "  \"second_factor_only\": true,\r\n" +
@@ -96,7 +96,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Models
                         "    \"urn:collab:person:{3}:*\"\r\n" +           // <==
                         "  ],\r\n" +
                         "  \"blacklisted_encryption_algorithms\": []\r\n" +
-                        "}},\r\n";
+                        "}}\r\n";
 
             return string.Format(CfgFormat,
                     SPentityID,

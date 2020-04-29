@@ -85,7 +85,10 @@ namespace SURFnet.Authentication.Adfs.Plugin
                     // we do want to read our own configuration before the Registration CmdLet reads our metadata
                     RegistrationLog.WriteLine(AdapterDir);
                     var minimalLoa = RegistryConfiguration.GetMinimalLoa();
-                    StepUpConfig.PreSet(minimalLoa);
+                    if (!string.IsNullOrWhiteSpace(minimalLoa))
+                        StepUpConfig.PreSet(minimalLoa);
+                    else
+                        RegistrationLog.WriteLine("Minimal LOA is required if not Production.");
                 }
                 catch (Exception e)
                 {
@@ -349,10 +352,10 @@ namespace SURFnet.Authentication.Adfs.Plugin
 
                 ReadConfigurationFromSection(); // read Adapter configuration, throws on error.
                 // now check if the private key is available etc.
-                if ( false==CertificateService.CertificateExists(StepUpConfig.Current.LocalSpConfig.SPSigningCertificate, true, out string errors) )
-                {
-                    throw new Exception(errors);
-                }
+                //if ( false==CertificateService.CertificateExists(StepUpConfig.Current.LocalSpConfig.SPSigningCertificate, true, out string errors) )
+                //{
+                //    throw new Exception(errors);
+                //}
 
                 ConfigureSustainsys(); // read Sustainsys configuration
 
@@ -409,23 +412,45 @@ namespace SURFnet.Authentication.Adfs.Plugin
         /// </summary>
         private static void ReadConfigurationFromSection()
         {
-            var adapterAssembly = Assembly.GetExecutingAssembly();
-            var assemblyConfigPath = adapterAssembly.Location + ".config";
-
-            var map = new ExeConfigurationFileMap { ExeConfigFilename = assemblyConfigPath };
-            var cfg = ConfigurationManager.OpenMappedExeConfiguration(map, ConfigurationUserLevel.None);
-
-            var stepUpSection = (StepUpSection)cfg.GetSection(StepUpSection.AdapterSectionName);
-            if (stepUpSection == null)
+            if ( 0 == StepUpConfig.ReadXmlConfig() )
             {
-                throw new InvalidConfigurationException($"Missing/invalid StepUp Adapter (SP) configuration. Expected config at '{assemblyConfigPath}'");
+                // new 
+                LogService.Log.Info("Hello from new Configuration");
+                if ( StepUpConfig.Current == null )
+                    LogService.Log.Error("But Somehow Current == null");
+                else
+                {
+                    if (StepUpConfig.Current.SchacHomeOrganization == null)
+                        LogService.Log.Error("But Somehow SchacHomeOrganization == null");
+                    if (StepUpConfig.Current.ActiveDirectoryUserIdAttribute == null)
+                        LogService.Log.Error("But Somehow ActiveDirectoryUserIdAttribute == null");
+                    if (StepUpConfig.Current.MinimalLoa == null)
+                        LogService.Log.Error("But Somehow MinimalLoa URI == null");
+                }
             }
-
-            StepUpConfig.Reload(stepUpSection);
-            if (StepUpConfig.Current == null)
+            else
             {
-                LogService.Log.Fatal(StepUpConfig.GetErrors());
-                throw new InvalidConfigurationException($"Cannot load StepUp config. Details: '{StepUpConfig.GetErrors()}'");
+                // old + error
+                LogService.Log.Error(StepUpConfig.GetErrors());
+
+                var adapterAssembly = Assembly.GetExecutingAssembly();
+                var assemblyConfigPath = adapterAssembly.Location + ".config";
+
+                var map = new ExeConfigurationFileMap { ExeConfigFilename = assemblyConfigPath };
+                var cfg = ConfigurationManager.OpenMappedExeConfiguration(map, ConfigurationUserLevel.None);
+
+                var stepUpSection = (StepUpSection)cfg.GetSection(StepUpSection.AdapterSectionName);
+                if (stepUpSection == null)
+                {
+                    throw new InvalidConfigurationException($"Missing/invalid StepUp Adapter (SP) configuration. Expected config at '{assemblyConfigPath}'");
+                }
+
+                StepUpConfig.Reload(stepUpSection);
+                if (StepUpConfig.Current == null)
+                {
+                    LogService.Log.Fatal(StepUpConfig.GetErrors());
+                    throw new InvalidConfigurationException($"Cannot load StepUp config. Details: '{StepUpConfig.GetErrors()}'");
+                }
             }
         }
     }
