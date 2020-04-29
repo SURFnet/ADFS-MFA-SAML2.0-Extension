@@ -1,0 +1,177 @@
+Installation instructions for the ADFS plugin
+=============================================
+
+This INSTALL file describes how to perform a fresh installation of the ADFS Plugin version 2.0. For upgrading an
+existing installation a separate UPGRADE document is available.
+
+Version 2.0 of the ADFS Plugin was tested on Windows 2012R2, Windows 2016 and Windows 2019.
+
+Version 2.0 of the ADFS Plugin should work with Stepup-Gateway version 2.7.0 or above, but is mainly tested against the
+current version of the Stepup-Gateway (version 3.0.1)
+
+
+Summary
+=======
+
+This version of the ADFS Plugin comes with a new installation process consisting of a text based setup program. You
+start the setup program from an elevated command prompt on the AD FS server. You must run the setup program on each
+AD FS server in your farm, starting with the master server.
+
+
+Installation
+============
+
+The installation of the plugin must be performed on each AD FS Server in the farm, starting at the primary AD FS Server.
+During the installation of the AD FS server the setup program will restart the AD FS service. If you are using an AD FS
+farm, you can direct traffic away from the AD FS server being upgraded using your loadbalancer to prevent downtime.
+
+The plugin distribution includes the current SAML configurations for several SURFsecureID environments: production,
+pilot, test. The setup program lets you choose one of these configurations and automatically configures the plugin with
+the parameters from the included configuration.
+
+Edit the <TODO>.json file to configure the configuration available from the setup program.
+
+
+Notices
+-------
+
+The installation process was tested with AD FS on Windows 2012R2, 2016 and 2019 with the AD FS configuration using a
+Windows integrated database (WID). No testing ws performed with an AD FS that uses a central MSQL server.
+
+Preparation
+-----------
+
+We recommend that you create a backup of the AD FS server(s) before you start the installation process
+
+Download the zip file containing the new ADFS plugin from <TODO link>
+and unpack it on each AD FS server you want to upgrade. Check the configuration of the AD FS server. You do this by
+running the setup program in check mode. This performs a check of the current AD FS service and reports any problems
+that it finds.
+
+1. Open an elevated command prompt on the AD FS server
+2. Change to the directory where you unpacked the 2.0 version of the plugin and run "setup.exe -c".
+
+The setup program requires the following information from you
+
+Installation process
+--------------------
+
+### On the primary AD FS server
+
+1. Start the installation on the primary AD FS Server. The AD FS service must be running
+2. Open an elevated command prompt on the AD FS server
+3. Change to the directory where you unpacked the 2.0 version of the plugin and run "setup.exe -i" to install the
+   plugin. This command will:
+   - Ask you to select the configuration of Stepup-Gateway to use
+   - Ask you to enter the local configuration settings:
+     - EntityID for the Plugin
+     - The SP signing certificate of the plugin
+     - The name of the user's attribute in AD FS from which to get the user's uid for the Stepup-Gateway
+     - The value for the schacHomeOrganization attribute your organisation is using with the Stepup-Gateway
+   - Install the 2.x version of the plugin.
+   - Restart the AD FS service
+4. Verify that the AD FS service starts
+5. In the logs of the AD FS service verify the plugin is being loaded
+6. In the logs of hte AD FS plugin verify that the plugin was successfully initialised
+7. The configuration setting of the plugin to sent to the Stepup-Gateway administrator were written to "TODO".
+   Sent this file to the Stepup-Gateway administrator, this configuration must be added to the Stepup-Gateway for
+   authentication with the plugin to be possible.
+
+If you do not have secondary AD FS servers, you are done.
+
+
+### On each secondary AD FS server
+
+#### Preparation
+
+1. The setup program saved the configuration choices you made during installation of the primary AD FS server to "TODO"
+   on the primary.
+   Copy this file to each secondary AD FS server to the same directory. This saves you from having to reenter the
+   plugin configuration settings on the secondary server(s)
+2. Bring the SP signing certificate you used on the primary to the secondary servers. If you generated this certificate
+   during the installation it was exported as "TODO.pfx". Copy this file as well, and bring the encryption passphrase
+   of the pfx.
+
+
+#### Installation
+
+1. Open an elevated command prompt on the secondary AD FS server
+2. Change to the directory where you unpacked the 2.0 version of the plugin and run "setup.exe -i" to install the
+   plugin. This command will:
+   - Ask you to select the configuration of Stepup-Gateway to use
+   - Ask you to enter the local configuration settings. You can view and change the settings. They will have been be
+     read from the "TODO" file you copied from the primary so the current configuration should match the configuration
+     values you entered there.
+   - Asked for the SP signing certificate if it is not already in the Certificate Store. Choose import to import the
+     .pfx file you brought from the secondary.
+   - Register the plugin with the AD FS service
+   - Install the 2.x version of the plugin.
+   - Restart the AD FS service
+3. Verify that the AD FS service starts
+4. In the logs of the AD FS service verify the plugin is being loaded
+5. In the logs of hte AD FS plugin verify that the plugin was successfully initialised
+
+Repeat this same process on any other AD FS secondary you have.
+
+
+Changing the plugin configuration
+=================================
+
+Each plugin stores it's configuration on the AD FS server locally in the /Windows/ADFS directory. The configuration is
+only read when the plugin is loaded by the AD FS service. This means the AD FS service must be restarted after making
+changes to the plugin configuration.
+
+You typically want the configuration of the plugin to be the same on each AD FS server in the farm. So if you make a
+change to the plugin in one AD FS servers, you want to repeat the change on each other server. You can use the
+"TODO current settings" file to transport settings between AD FS servers.
+
+Change the configuration of the plugin by running the setup program in "reconfigure" mode.
+1. Open an elevated command prompt on the AD FS server where you want to change the configuration
+2. Change to the directory where you unpacked the 2.0 version of the plugin and run "setup.exe -r" to install the
+   plugin. This command:
+   - Allows you to change each of the configuration settings of the plugin
+   - Restart the AD FS service
+
+
+Uninstalling the plugin configuration
+=====================================
+
+1. Start the uninstallation process on the primary AD FS Server. The AD FS service must be running
+2. Open an elevated command prompt on the AD FS server
+3. Change to the directory where you unpacked the 2.0 version of the plugin and run "setup.exe -x" to uninstall the
+   plugin. This command will:
+   - Deregister the AD FS plugin with the AD FS service
+   - Remove the Plugin files from the \Windows\ADFS directory. Removed files are moved to the "TODO backup" directory
+   - Restart the AD FS service
+
+Repeat the command on each AD FS secondary server to remove the plugin's file from the \Windows\ADFS directory and
+restart the AD FS service.
+
+
+Diagnostics / troubleshooting
+=============================
+
+Problems during installation:
+
+- The setup program stores a log of al actions performed in "MFA-extension.SetupLog.txt" in the same directory as the
+  "setup.exe" program.
+- The setup program creates a backup of the files it removes or modifies in "TODO backup" directory
+
+You can run the setup program in check mode to diagnose installation issues. This does not make any changes:
+
+1. Open an elevated command prompt on the AD FS server
+2. Change to the directory where you unpacked the 2.0 version of the plugin and run "setup.exe -c".
+
+- You can run the setup program in repair mode to try to fix (repair) an existing 2.x installation:
+
+1. Open an elevated command prompt on the AD FS server
+2. Change to the directory where you unpacked the 2.0 version of the plugin and run "setup.exe -f".
+
+
+Problems with the plugin
+========================
+
+When the plugin was installed successfully, but there are problem using the plugin:
+
+1. Check the event log of the AD FS Service for errors.
+2. The plugin has it's own event log "ADFS Plugin". Check this log for errors.
