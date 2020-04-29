@@ -129,8 +129,12 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
                 LogService.WriteFatal("Writing Settings FAILED.");
                 LogService.WriteFatal("Reconfiguration ABORTED.");
             }
+            else if ( false == AdfsPSService.UnregisterAdapter() )
+            {
+                LogService.WriteFatal("Deregistration failed. Cannot continue with Reconfiguration");
+            }
             // check if ADFS stopped, otherwise stop it.
-            else if (0 != AdfsServer.StopAdfsIfRunning())
+            else if (0 != (rc=AdfsServer.StopAdfsIfRunning()) )
             {
                 LogService.WriteFatal("Installation not started.");
             }
@@ -149,6 +153,20 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
                 {
                     LogService.WriteFatal("Starting ADFS server FAILED.");
                     LogService.WriteFatal("   Take a look at the ADFS server EventLog *and* the MFA extension EventLog.");
+                }
+                else if ( false == AdfsPSService.RegisterAdapter(desc.Adapter) )
+                {
+                    LogService.WriteFatal("Registration FAILED. Chech the Setup log file and maybe probably manual recovery.");
+                }
+                else if ( 0 != (rc=AdfsServer.RestartAdFsService()) )
+                {
+                    LogService.WriteFatal("Restarting ADFS server FAILED.");
+                    LogService.WriteFatal("   Take a look at the ADFS server EventLog *and* the MFA extension EventLog.");
+                }
+                else
+                {
+                    LogService.Log.Info("Reconfigures and double Restarted.");
+                    rc = 0;
                 }
             }
 

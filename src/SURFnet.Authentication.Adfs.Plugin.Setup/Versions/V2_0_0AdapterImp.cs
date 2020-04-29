@@ -45,17 +45,13 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
                 LogService.WriteFatal($"  Reading settings from '{ConfigFilename}' for '{ComponentName}' failed.");
             }
 
-            //if ( rc == 0 )
-            //{
-            //    rc = NewExctractAdapterConfig(settings);
-            //}
-
             return rc;
         }
 
         public override int WriteConfiguration(List<Setting> allsettings)
         {
             int rc = 0;
+            LogService.Log.Info($"Writing Settings of '{ComponentName}' to '{ConfigFilename}'.");
 
             XmlDocument doc = new XmlDocument();
             var decl = doc.CreateXmlDeclaration("1.0", "utf-8", null);

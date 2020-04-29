@@ -100,9 +100,6 @@ namespace SURFnet.Authentication.Adfs.Plugin
             "http://surfconext.nl/assurance/sfo-level2",
             "http://surfconext.nl/assurance/sfo-level3"
 
-            // could have been set based on entityId, but that is also not in adapter cfg.
-            //$"http://{StepUpConfig.Current.LocalSpConfig.MinimalLoa.Host}/assurance/sfo-level2",
-            //$"http://{StepUpConfig.Current.LocalSpConfig.MinimalLoa.Host}/assurance/sfo-level3"
         };
 
         /// <summary>

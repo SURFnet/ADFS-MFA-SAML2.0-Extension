@@ -456,6 +456,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
 
         void SaveUsedSettings(List<Setting> settings)
         {
+            LogService.Log.Info("Writing used Settings.");
             Dictionary<string, string> dict = new Dictionary<string, string>();
 
             foreach (var setting in settings)
