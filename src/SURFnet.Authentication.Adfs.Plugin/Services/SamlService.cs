@@ -78,7 +78,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
                 //DestinationUrl = StepUpConfig.Current.StepUpIdPConfig.SecondFactorEndPoint,
                 AssertionConsumerServiceUrl = ascUri,
                 Issuer = spConfiguration.EntityId,
-                RequestedAuthnContext = new Saml2RequestedAuthnContext(StepUpConfig.Current.LocalSpConfig.MinimalLoa, AuthnContextComparisonType.Minimum),
+                RequestedAuthnContext = new Saml2RequestedAuthnContext(StepUpConfig.Current.MinimalLoa, AuthnContextComparisonType.Minimum),
                 Subject = new Saml2Subject(nameIdentifier),
             };
             authnRequest.SetId(authnRequestId);
@@ -138,7 +138,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
         /// <returns>A name identifier.</returns>
         private static string GetNameId(string userid)
         {
-            var nameid = $"urn:collab:person:{StepUpConfig.Current.InstitutionConfig.SchacHomeOrganization}:{userid}";
+            var nameid = $"urn:collab:person:{StepUpConfig.Current.SchacHomeOrganization}:{userid}";
 
             nameid = nameid.Replace('@', '_');
             return nameid;

@@ -25,7 +25,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Repositories
         public bool TryGetSfoUidValue()
         {
             bool rc = false;
-            var linewidthsaver = StepUpConfig.Current.InstitutionConfig.ActiveDirectoryUserIdAttribute;
+            var linewidthsaver = StepUpConfig.Current.ActiveDirectoryUserIdAttribute;
             // Claim is windowsaccountname claim. Fixed in Metadata! No need to check.
 
             var domainName = UserClaim.Value.Split('\\')[0];

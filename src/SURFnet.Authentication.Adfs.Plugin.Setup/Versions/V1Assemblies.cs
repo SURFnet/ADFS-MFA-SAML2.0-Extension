@@ -1,4 +1,5 @@
 ﻿using SURFnet.Authentication.Adfs.Plugin.Setup.Assemblies;
+using SURFnet.Authentication.Adfs.Plugin.Setup.Common;
 using SURFnet.Authentication.Adfs.Plugin.Setup.Configuration;
 using System;
 using System.Collections.Generic;
@@ -10,7 +11,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
 {
     public static class V1Assemblies
     {
-        static public readonly AssemblySpec AdapterV1010Spec = new AssemblySpec(SetupConstants.AdapterFilename, FileDirectory.GAC)
+        static public readonly AssemblySpec AdapterV1010Spec = new AssemblySpec(Values.AdapterFilename, FileDirectory.GAC)
         {
             AssemblyFullName = "SURFnet.Authentication.Adfs.Plugin, Version=1.0.1.0, Culture=nl-NL, PublicKeyToken=5a7c03a5ab19fec3",
             AssemblyVersion = new Version("1.0.1.0"),
@@ -18,7 +19,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
             FileVersion = new Version("1.0.1.0")
         };
 
-        static public readonly AssemblySpec AdapterV1000Spec = new AssemblySpec(SetupConstants.AdapterFilename, FileDirectory.GAC)
+        static public readonly AssemblySpec AdapterV1000Spec = new AssemblySpec(Values.AdapterFilename, FileDirectory.GAC)
         {
             AssemblyFullName = "SURFnet.Authentication.Adfs.Plugin, Version=1.0.0.0, Culture=nl-NL, PublicKeyToken=40c669b8f0ea2c14",
             AssemblyVersion = new Version("1.0.0.0"),

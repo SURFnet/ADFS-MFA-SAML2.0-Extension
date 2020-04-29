@@ -1,4 +1,5 @@
 ﻿using SURFnet.Authentication.Adfs.Plugin.Setup.Assemblies;
+using SURFnet.Authentication.Adfs.Plugin.Setup.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,7 +25,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
         {
             Assemblies = new AssemblySpec[1] { assembly };
             TypeName = $"{AdapterClassName}, {assembly.AssemblyFullName}";
-            ConfigFilename = SetupConstants.AdapterCfgFilename;
+            ConfigFilename = Values.AdapterCfgFilename;
         }
 
         static string BuildName(AssemblySpec assembly)

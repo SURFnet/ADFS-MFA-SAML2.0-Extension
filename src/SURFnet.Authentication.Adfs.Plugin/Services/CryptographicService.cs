@@ -27,7 +27,6 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
     using SURFnet.Authentication.Adfs.Plugin.Models;
 
     using Sustainsys.Saml2;
-    using SURFnet.Authentication.Adfs.Plugin.Setup.Common.Services;
 
     /// <summary>
     /// Handles the signing.
@@ -77,22 +76,22 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
         /// </summary>
         /// <param name="thumbprint">The verified thumbprint for a valid certificate.</param>
         /// <returns>A service, ready to run.</returns>
-        public static CryptographicService Create(string thumbprint)
-        {
-            CryptographicService rc = null; // just for idiots that did not check. It will throw-up on the first test!
+        //public static CryptographicService Create(string thumbprint)
+        //{
+        //    CryptographicService rc = null; // just for idiots that did not check. It will throw-up on the first test!
 
-            if (CertificateService.IsValidThumbPrint(thumbprint, out string error))
-            {
-                var certWrapper = new CertificateService(thumbprint);
-                if (certWrapper.TryGetCertificate(false)) // generic fetch, we do not care about the key.
-                {
-                    rc = new CryptographicService(certWrapper.Cert);
-                }
-                // else:  return a null and kill the caller!
-            }
+        //    if (CertificateService.IsValidThumbPrint(thumbprint, out string error))
+        //    {
+        //        var certWrapper = new CertificateService(thumbprint);
+        //        if (certWrapper.TryGetCertificate(false)) // generic fetch, we do not care about the key.
+        //        {
+        //            rc = new CryptographicService(certWrapper.Cert);
+        //        }
+        //        // else:  return a null and kill the caller!
+        //    }
 
-            return rc;
-        }
+        //    return rc;
+        //}
 
         /// <summary>
         /// Signs the SAML request.

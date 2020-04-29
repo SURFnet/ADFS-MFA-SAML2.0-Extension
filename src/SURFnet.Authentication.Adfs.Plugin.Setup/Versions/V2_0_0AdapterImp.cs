@@ -1,4 +1,5 @@
-﻿using SURFnet.Authentication.Adfs.Plugin.Setup.Configuration;
+﻿using SURFnet.Authentication.Adfs.Plugin.Setup.Common;
+using SURFnet.Authentication.Adfs.Plugin.Setup.Configuration;
 using SURFnet.Authentication.Adfs.Plugin.Setup.Models;
 using SURFnet.Authentication.Adfs.Plugin.Setup.Services;
 using SURFnet.Authentication.Adfs.Plugin.Setup.Util;
@@ -20,9 +21,9 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
             {
                 ConfigSettings.SchacHomeOrganization,
                 ConfigSettings.ActiveDirectoryUserIdAttribute,
-                ConfigSettings.SPSignThumb1,
+                //ConfigSettings.SPSignThumb1,
                 ConfigSettings.MinimalLoa,
-                ConfigSettings.IdPSSOLocation
+                //ConfigSettings.IdPSSOLocation
             };
         }
 
@@ -33,7 +34,6 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
         protected const string AdapterSPSigner1 = "sPSigningCertificate";    // TODONOW: remove!!
         protected const string AdapterMinimalLoa = "minimalLoa";
         protected const string AdapterSFOEndpoint = "secondFactorEndPoint";  // TODONOW: remove!!
-        protected const string TempAdapterCfgFilename = "SfoMfaExtension.config.xml";
 
         public override int ReadConfiguration(List<Setting> settings)
         {
@@ -45,35 +45,15 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
                 LogService.WriteFatal($"  Reading settings from '{ConfigFilename}' for '{ComponentName}' failed.");
             }
 
-            if ( rc == 0 )
-            {
-                rc = NewExctractAdapterConfig(settings);
-            }
+            //if ( rc == 0 )
+            //{
+            //    rc = NewExctractAdapterConfig(settings);
+            //}
 
             return rc;
         }
 
         public override int WriteConfiguration(List<Setting> allsettings)
-        {
-            int rc = 0;
-
-            ConfigurationFileService.WriteMinimalLoaInRegistery(ConfigSettings.MinimaLoaSetting.Value);
-
-            LogService.Log.Info($"  Writing settings of '{ComponentName}' configuration to '{ConfigFilename}'");
-
-            if (false == ConfigurationFileService.ReplaceInXmlCfgFile(ConfigFilename, ConfigParameters, allsettings))
-            {
-                LogService.WriteFatal($"Content problem(s) in '{ConfigFilename}' for component: '{ComponentName}'");
-                rc = -1;
-            }
-
-            if (rc == 0)
-                rc = NewWriteConfiguration(allsettings);
-
-            return rc;
-        }
-
-        public int NewWriteConfiguration(List<Setting> allsettings)
         {
             int rc = 0;
 
@@ -89,17 +69,17 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
                         Setting.GetSettingByName(ConfigSettings.MinimalLoa).Value);
             doc.AppendChild(cfgElement);
 
-            rc = ConfigurationFileService.SaveXmlDocumentConfiguration(doc, TempAdapterCfgFilename);
+            rc = ConfigurationFileService.SaveXmlDocumentConfiguration(doc, Values.AdapterCfgFilename);
 
             return rc;
         }
 
-        private int NewExctractAdapterConfig(List<Setting> settings)
+        private int ExctractAdapterConfig(List<Setting> settings)
         {
             int rc = 0;
             string foundvalue;
 
-            string adapterCfgPath = FileService.OurDirCombine(FileDirectory.AdfsDir, TempAdapterCfgFilename);
+            string adapterCfgPath = FileService.OurDirCombine(FileDirectory.AdfsDir, Values.AdapterCfgFilename);
             if ( ! File.Exists(adapterCfgPath) )
             {
                 LogService.Log.Error("  ??Parsing missing Adaptercfg??  ");
@@ -117,47 +97,6 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
 
             foundvalue = root?.Attribute(XName.Get(AdapterMinimalLoa))?.Value;
             settings.SetFoundSetting(ConfigSettings.MinimaLoaSetting, foundvalue);
-
-            return rc;
-        }
-
-        // TODONOW: remove!
-        private const string AdapterCfgInstitution = "institution";
-        private const string AdapterCfgLocalSP = "localSP";
-        private const string AdapterCfgStepupIdP = "stepUpIdP";
-
-
-        private int ExctractAdapterConfig(List<Setting> settings)
-        {
-            int rc = 0;
-            string foundvalue;
-
-            string adapterCfgPath = FileService.OurDirCombine(FileDirectory.AdfsDir, SetupConstants.AdapterCfgFilename);
-            var adapterConfig = XDocument.Load(adapterCfgPath);
-            var nameAttribute = XName.Get("name");
-
-            var adapterSection = adapterConfig.Descendants(XName.Get(SetupConstants.XmlElementName.AdapterCfgSection));
-
-            // institution
-            var institutionEl = adapterSection.Descendants(XName.Get(AdapterCfgInstitution)).FirstOrDefault();
-            foundvalue = institutionEl?.Attribute(XName.Get(AdapterSchacHomeOrganization))?.Value;
-            settings.SetFoundSetting(ConfigSettings.SchacHomeSetting, foundvalue);
-
-            foundvalue = institutionEl?.Attribute(XName.Get(AdapterADAttribute))?.Value;
-            settings.SetFoundSetting(ConfigSettings.ADAttributeSetting, foundvalue);
-
-            // localSP
-            var localSPEl = adapterSection.Descendants(XName.Get(AdapterCfgLocalSP)).FirstOrDefault();
-            foundvalue = localSPEl?.Attribute(XName.Get(AdapterSPSigner1))?.Value;
-            settings.SetFoundSetting(ConfigSettings.SPPrimarySigningThumbprint, foundvalue);
-
-            foundvalue = localSPEl?.Attribute(XName.Get(AdapterMinimalLoa))?.Value;
-            settings.SetFoundSetting(ConfigSettings.MinimaLoaSetting, foundvalue);
-
-            // stepUpIdP
-            var stepUpIdP = adapterSection.Descendants(XName.Get(AdapterCfgStepupIdP)).FirstOrDefault();
-            foundvalue = stepUpIdP?.Attribute(XName.Get(AdapterSFOEndpoint))?.Value;
-            settings.SetFoundSetting(ConfigSettings.IdPSSOLocationSetting, foundvalue);
 
             return rc;
         }

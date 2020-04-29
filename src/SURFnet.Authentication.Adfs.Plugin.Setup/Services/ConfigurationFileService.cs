@@ -28,7 +28,6 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
     using Newtonsoft.Json.Linq;
 
     using SURFnet.Authentication.Adfs.Plugin.Setup.Common;
-    using SURFnet.Authentication.Adfs.Plugin.Setup.Common.Services;
     using SURFnet.Authentication.Adfs.Plugin.Setup.Configuration;
     using SURFnet.Authentication.Adfs.Plugin.Setup.Models;
     using SURFnet.Authentication.Adfs.Plugin.Setup.Question;
@@ -212,15 +211,6 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
             {
                 LogService.WriteWarning("Writing Registration data failed: "+ex.Message);
             }
-        }
-
-        /// <summary>
-        /// Writes the minimal loa in the registry.
-        /// </summary>
-        /// <param name="setting">The setting.</param>
-        public static void WriteMinimalLoaInRegistery(string minimalLoa)
-        {
-            RegistryConfiguration.SetMinimalLoa(minimalLoa);
         }
     }
 }

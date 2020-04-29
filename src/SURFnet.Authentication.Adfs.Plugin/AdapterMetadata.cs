@@ -53,7 +53,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
             minimalLoa = StepUpConfig.Current?.MinimalLoa;  // new method
             if (minimalLoa == null)
             {
-                minimalLoa = StepUpConfig.Current?.LocalSpConfig?.MinimalLoa; // original method
+                minimalLoa = StepUpConfig.Current?.MinimalLoa; // original method
             }
 
             if (null != minimalLoa)

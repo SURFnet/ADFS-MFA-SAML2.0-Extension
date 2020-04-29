@@ -99,12 +99,6 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
             }
             else
             {
-                if ( null==RegistryConfiguration.GetMinimalLoa() )
-                {
-                    LogService.WriteWarning("ExtraChecks() detected missing registry value for MinimalLoa.");
-                    LogService.WriteWarning("MinimalLoa in registry is only strictly required for non production environments.");
-                }
-
                 if ( ! EnsureEventLog.Exists )
                 {
                     // No EventLog for Adapter

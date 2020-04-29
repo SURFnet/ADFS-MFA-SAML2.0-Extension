@@ -16,24 +16,15 @@
 
 namespace SURFnet.Authentication.Adfs.Plugin.Setup.Common
 {
-    /// <summary>
-    /// Class Values.
-    /// </summary>
     public class Values
     {
         /// <summary>
-        /// Contains the file and productversion of the plugin.
-        /// Assembly version should always stay 1.0.1 to avoid deployment issues
-        /// in a AD FS server farm.
-        /// </summary>
-        
-        /// <summary>
-        /// The file version.
+        /// The file version for all.
         /// </summary>
         public const string FileVersion = "2.0.0.0";
 
         /// <summary>
-        /// The product version.
+        /// The product version for all.
         /// </summary>
         public const string ProductVersion = "2.0.0.0";
 
@@ -41,6 +32,11 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Common
         /// Used as -Name parameter in registration. First part of AdminName. Also in Registry at Registration time.
         /// </summary>
         public const string AdapterRegistrationName = "ADFS.SCSA";
+
+        public const string AdapterName = "SURFnet.Authentication.ADFS.Plugin";
+        public const string AdapterFilename = AdapterName + ".dll";
+        public const string AdapterCfgFilename = AdapterName + ".config.xml";
+
 
         public const string Log4netCfgFilename = "SURFnet.Authentication.ADFS.MFA.Plugin.log4net";
 

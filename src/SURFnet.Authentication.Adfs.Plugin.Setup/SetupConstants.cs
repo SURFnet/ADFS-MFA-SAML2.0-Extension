@@ -32,10 +32,6 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
         public const string AdfsFilename = "Microsoft.IdentityServer.Servicehost.exe";
         public const string AdfsCfgFilename = AdfsFilename+".config";
 
-        public const string AdapterName = "SURFnet.Authentication.ADFS.Plugin";
-        public const string AdapterFilename = AdapterName + ".dll";
-        public const string AdapterCfgFilename = AdapterFilename + ".config";
-
         public const string SustainsysName = "Sustainsys.Saml2";
         public const string SustainsysFilename = SustainsysName + ".dll";
         public const string SustainCfgFilename = SustainsysFilename + ".config";

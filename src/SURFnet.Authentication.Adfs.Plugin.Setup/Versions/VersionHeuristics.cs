@@ -1,4 +1,5 @@
 ﻿using SURFnet.Authentication.Adfs.Plugin.Setup.Assemblies;
+using SURFnet.Authentication.Adfs.Plugin.Setup.Common;
 using SURFnet.Authentication.Adfs.Plugin.Setup.Configuration;
 using SURFnet.Authentication.Adfs.Plugin.Setup.Services;
 using System;
@@ -102,14 +103,14 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
 
             LogService.Log.Info("VersionHeuristics: Try find adapters in GAC and ADFS directory.");
 
-            if ( TryGetAdapterAssembly(FileDirectory.AdfsDir, SetupConstants.AdapterFilename, out AssemblySpec tmpSpec) )
+            if ( TryGetAdapterAssembly(FileDirectory.AdfsDir, Values.AdapterFilename, out AssemblySpec tmpSpec) )
             {
                 // Found one in ADFS directory
                 adapters.Add(tmpSpec);
                 LogService.Log.Info($"Found in ADFS directory: {tmpSpec.FileVersion}");
             }
 
-            if (TryGetAdapterAssembly(FileDirectory.GAC, SetupConstants.AdapterFilename, out tmpSpec))
+            if (TryGetAdapterAssembly(FileDirectory.GAC, Values.AdapterFilename, out tmpSpec))
             {
                 adapters.Add(tmpSpec);
                 LogService.Log.Info($"Found in GAC: {tmpSpec.FileVersion}");

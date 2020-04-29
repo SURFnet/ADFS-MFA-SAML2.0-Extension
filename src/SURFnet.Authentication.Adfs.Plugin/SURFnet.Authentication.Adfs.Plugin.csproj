@@ -140,8 +140,6 @@
     <Compile Include="Setup\Common\Exceptions\InvalidConfigurationException.cs" />
     <Compile Include="Setup\Common\Exceptions\StepUpExceptions.cs" />
     <Compile Include="Setup\Common\Exceptions\SurfNetException.cs" />
-    <Compile Include="Setup\Common\RegistryConfiguration.cs" />
-    <Compile Include="Setup\Common\Services\CertificateService.cs" />
     <Compile Include="Setup\Common\Values.cs" />
   </ItemGroup>
   <ItemGroup>

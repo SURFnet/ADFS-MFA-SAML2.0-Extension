@@ -27,7 +27,6 @@ namespace SURFnet.Authentication.Adfs.Plugin
     using Microsoft.IdentityServer.Web.Authentication.External;
     using SURFnet.Authentication.Adfs.Plugin.Setup.Common;
     using SURFnet.Authentication.Adfs.Plugin.Setup.Common.Exceptions;
-    using SURFnet.Authentication.Adfs.Plugin.Setup.Common.Services;
     using SURFnet.Authentication.Adfs.Plugin.Configuration;
     using SURFnet.Authentication.Adfs.Plugin.Extensions;
     using SURFnet.Authentication.Adfs.Plugin.Models;
@@ -77,6 +76,8 @@ namespace SURFnet.Authentication.Adfs.Plugin
             var myassemblyname = Assembly.GetExecutingAssembly().Location;
             AdapterDir = Path.GetDirectoryName(myassemblyname);
 
+
+
             if (RegistrationLog.IsRegistration)
             {
                 // Not running under ADFS. I.e. test or registration context.....
@@ -84,11 +85,22 @@ namespace SURFnet.Authentication.Adfs.Plugin
                 {
                     // we do want to read our own configuration before the Registration CmdLet reads our metadata
                     RegistrationLog.WriteLine(AdapterDir);
-                    var minimalLoa = RegistryConfiguration.GetMinimalLoa();
-                    if (!string.IsNullOrWhiteSpace(minimalLoa))
-                        StepUpConfig.PreSet(minimalLoa);
+
+                    if ( 0==StepUpConfig.ReadXmlConfig() )
+                    {
+                        RegistrationLog.WriteLine("Adater parms loaded from small XML.");
+                    }
                     else
-                        RegistrationLog.WriteLine("Minimal LOA is required if not Production.");
+                    {
+                        RegistrationLog.WriteLine(StepUpConfig.GetErrors());
+
+                        //var minimalLoa = RegistryConfiguration.GetMinimalLoa();
+                        //if (!string.IsNullOrWhiteSpace(minimalLoa))
+                        //    StepUpConfig.PreSet(minimalLoa);
+                        //else
+                        //    RegistrationLog.WriteLine("Minimal LOA is required if not Production.");
+                    }
+
                 }
                 catch (Exception e)
                 {
@@ -350,12 +362,12 @@ namespace SURFnet.Authentication.Adfs.Plugin
             try
             {
 
-                ReadConfigurationFromSection(); // read Adapter configuration, throws on error.
-                // now check if the private key is available etc.
-                //if ( false==CertificateService.CertificateExists(StepUpConfig.Current.LocalSpConfig.SPSigningCertificate, true, out string errors) )
-                //{
-                //    throw new Exception(errors);
-                //}
+                if (0 != StepUpConfig.ReadXmlConfig())
+                {
+                    LogService.Log.Error(StepUpConfig.GetErrors());
+                }
+
+                //ReadConfigurationFromSection(); // OLD: read Adapter configuration, throws on error.
 
                 ConfigureSustainsys(); // read Sustainsys configuration
 
@@ -410,48 +422,48 @@ namespace SURFnet.Authentication.Adfs.Plugin
         /// <summary>
         /// Reads the configuration from section.
         /// </summary>
-        private static void ReadConfigurationFromSection()
-        {
-            if ( 0 == StepUpConfig.ReadXmlConfig() )
-            {
-                // new 
-                LogService.Log.Info("Hello from new Configuration");
-                if ( StepUpConfig.Current == null )
-                    LogService.Log.Error("But Somehow Current == null");
-                else
-                {
-                    if (StepUpConfig.Current.SchacHomeOrganization == null)
-                        LogService.Log.Error("But Somehow SchacHomeOrganization == null");
-                    if (StepUpConfig.Current.ActiveDirectoryUserIdAttribute == null)
-                        LogService.Log.Error("But Somehow ActiveDirectoryUserIdAttribute == null");
-                    if (StepUpConfig.Current.MinimalLoa == null)
-                        LogService.Log.Error("But Somehow MinimalLoa URI == null");
-                }
-            }
-            else
-            {
-                // old + error
-                LogService.Log.Error(StepUpConfig.GetErrors());
+        //private static void ReadConfigurationFromSection()
+        //{
+        //    if ( 0 == StepUpConfig.ReadXmlConfig() )
+        //    {
+        //        // new 
+        //        LogService.Log.Info("Hello from new Configuration");
+        //        if ( StepUpConfig.Current == null )
+        //            LogService.Log.Error("But Somehow Current == null");
+        //        else
+        //        {
+        //            if (StepUpConfig.Current.SchacHomeOrganization == null)
+        //                LogService.Log.Error("But Somehow SchacHomeOrganization == null");
+        //            if (StepUpConfig.Current.ActiveDirectoryUserIdAttribute == null)
+        //                LogService.Log.Error("But Somehow ActiveDirectoryUserIdAttribute == null");
+        //            if (StepUpConfig.Current.MinimalLoa == null)
+        //                LogService.Log.Error("But Somehow MinimalLoa URI == null");
+        //        }
+        //    }
+        //    else
+        //    {
+        //        // old + error
+        //        LogService.Log.Error(StepUpConfig.GetErrors());
 
-                var adapterAssembly = Assembly.GetExecutingAssembly();
-                var assemblyConfigPath = adapterAssembly.Location + ".config";
+        //        var adapterAssembly = Assembly.GetExecutingAssembly();
+        //        var assemblyConfigPath = adapterAssembly.Location + ".config";
 
-                var map = new ExeConfigurationFileMap { ExeConfigFilename = assemblyConfigPath };
-                var cfg = ConfigurationManager.OpenMappedExeConfiguration(map, ConfigurationUserLevel.None);
+        //        var map = new ExeConfigurationFileMap { ExeConfigFilename = assemblyConfigPath };
+        //        var cfg = ConfigurationManager.OpenMappedExeConfiguration(map, ConfigurationUserLevel.None);
 
-                var stepUpSection = (StepUpSection)cfg.GetSection(StepUpSection.AdapterSectionName);
-                if (stepUpSection == null)
-                {
-                    throw new InvalidConfigurationException($"Missing/invalid StepUp Adapter (SP) configuration. Expected config at '{assemblyConfigPath}'");
-                }
+        //        var stepUpSection = (StepUpSection)cfg.GetSection(StepUpSection.AdapterSectionName);
+        //        if (stepUpSection == null)
+        //        {
+        //            throw new InvalidConfigurationException($"Missing/invalid StepUp Adapter (SP) configuration. Expected config at '{assemblyConfigPath}'");
+        //        }
 
-                StepUpConfig.Reload(stepUpSection);
-                if (StepUpConfig.Current == null)
-                {
-                    LogService.Log.Fatal(StepUpConfig.GetErrors());
-                    throw new InvalidConfigurationException($"Cannot load StepUp config. Details: '{StepUpConfig.GetErrors()}'");
-                }
-            }
-        }
+        //        StepUpConfig.Reload(stepUpSection);
+        //        if (StepUpConfig.Current == null)
+        //        {
+        //            LogService.Log.Fatal(StepUpConfig.GetErrors());
+        //            throw new InvalidConfigurationException($"Cannot load StepUp config. Details: '{StepUpConfig.GetErrors()}'");
+        //        }
+        //    }
+        //}
     }
 }
