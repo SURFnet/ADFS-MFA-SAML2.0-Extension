@@ -9,6 +9,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SURFnet.Authentication.Adfs
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionItems", "{9D4482C6-E4FA-48DD-A9C3-473B7FF90551}"
 	ProjectSection(SolutionItems) = preProject
+		SolutionItems\MakeRelease.cmd = SolutionItems\MakeRelease.cmd
 		SolutionItems\SignSustainsys.cmd = SolutionItems\SignSustainsys.cmd
 	EndProjectSection
 EndProject
