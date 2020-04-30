@@ -1,5 +1,7 @@
+SET version=2.0.0
 mkdir ..\release
-SET release=..\release\SetupPackage-2.0.0
+SET release=..\release\SetupPackage-%version%
+
 mkdir %release%
 mkdir %release%\dist
 mkdir %release%\config
@@ -35,3 +37,13 @@ copy ..\src\SURFnet.Authentication.Adfs.Plugin\bin\Release\System.Security.Crypt
 copy ..\src\SURFnet.Authentication.Adfs.Plugin\bin\Release\System.Security.Permissions.dll %release%\dist
 copy ..\src\SURFnet.Authentication.Adfs.Plugin\bin\Release\System.Security.Principal.Windows.dll %release%\dist
 copy ..\src\SURFnet.Authentication.Adfs.Plugin\bin\Release\System.ValueTuple.dll %release%\dist
+
+echo Signing Setup.exe
+signtool sign %release%\Setup.exe
+
+echo Making Self extracting archive
+del %release%.exe
+"C:\Program Files\7-Zip\7z.exe" a -bb3 -sfx7z.sfx -r %release%.exe %release%
+
+echo Signing SetupPackage self extracting archive
+signtool sign %release%.exe
