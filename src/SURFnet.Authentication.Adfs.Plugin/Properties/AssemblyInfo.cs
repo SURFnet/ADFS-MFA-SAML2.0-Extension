@@ -27,7 +27,7 @@ using SURFnet.Authentication.Adfs.Plugin.Setup.Common;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("SURFnet bv")]
 [assembly: AssemblyProduct("SURFnet.Authentication.Adfs.Plugin")]
-[assembly: AssemblyCopyright("Copyright ©  2017-2020")]
+[assembly: AssemblyCopyright("Copyright © SURFnet bv 2017-2020")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("neutral")]
 
