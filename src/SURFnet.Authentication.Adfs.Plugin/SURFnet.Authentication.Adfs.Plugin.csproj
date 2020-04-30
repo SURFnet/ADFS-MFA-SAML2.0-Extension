@@ -152,9 +152,6 @@
     <Content Include="SURFnet.Authentication.ADFS.MFA.Plugin.log4net">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <None Include="Sustainsys.Saml2.dll.config">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <!-- TMP to avoid tw references. When the zip reference goes away, enable here.
     <None Include="Setup\Install.ps1" />
     <None Include="Setup\Uninstall.ps1" />
@@ -189,10 +186,6 @@
     <GetAssemblyIdentity AssemblyFiles="$(ProjectDir)bin\$(Configuration)\SURFnet.Authentication.Adfs.Plugin.dll">
       <Output TaskParameter="Assemblies" ItemName="PluginAssemblyInfo" />
     </GetAssemblyIdentity>
-    <XmlUpdate XmlFileName="$(ProjectDir)bin\$(Configuration)\Sustainsys.Saml2.dll.config" XPath="/configuration/configSections/section[@name='sustainsys.saml2']/@type" Value="Sustainsys.Saml2.Configuration.SustainsysSaml2Section, Sustainsys.Saml2, Version=%(SustainsysAssemblyInfo.Version), Culture=neutral, PublicKeyToken=%(SustainsysAssemblyInfo.PublicKeyToken)" />
-    <XmlUpdate XmlFileName="$(ProjectDir)bin\$(Configuration)\SURFnet.Authentication.Adfs.Plugin.dll.config" XPath="/configuration/configSections/section[@name='SURFnet.Authentication.Adfs.StepUp']/@type" Value="SURFnet.Authentication.Adfs.Plugin.Configuration.StepUpSection, SURFnet.Authentication.Adfs.Plugin, Version=%(PluginAssemblyInfo.Version), Culture=neutral, PublicKeyToken=%(PluginAssemblyInfo.PublicKeyToken)" />
-    <Message Importance="High" Text="Updating $(ProjectDir)bin\$(Configuration)\Sustainsys.Saml2.dll.config with assembly identity of $(ProjectDir)bin\$(Configuration)\Sustainsys.Saml2.dll: Version=%(SustainsysAssemblyInfo.Version), PublicKeyToken=%(SustainsysAssemblyInfo.PublicKeyToken)" />
-    <Message Importance="High" Text="Updating $(ProjectDir)bin\$(Configuration)\SURFnet.Authentication.Adfs.Plugin.dll.config with assembly identity of $(ProjectDir)bin\$(Configuration)\SURFnet.Authentication.Adfs.Plugin.dll: Version=%(PluginAssemblyInfo.Version), PublicKeyToken=%(PluginAssemblyInfo.PublicKeyToken)" />
     <Zip Condition=" '$(Configuration)' == 'Release' " Files="@(Binaries);@(SetupFiles)" WorkingDirectory="$(TargetDir)" ZipFileName="$(TargetDir)SetupPackage-%(PluginAssemblyInfo.Version).zip" />
     <Message Importance="High" Text="Created $(TargetDir)SetupPackage-%(PluginAssemblyInfo.Version).zip" />
   </Target>

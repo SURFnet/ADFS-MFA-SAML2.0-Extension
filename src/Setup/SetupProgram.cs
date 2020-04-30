@@ -60,63 +60,17 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                 {
                     rc = RulesAndChecks.ExtraChecks(setupstate);
                 }
-                /**** FIX ****/
-                else if (0 != (setupstate.mode & SetupFlags.Fix))
-                {
-                    // TODONOW: Real logic after decisions.
-                    if ( setupstate.DetectedVersion.Major != 0 )
-                    {
-                        if ( setupstate.DetectedVersion == setupstate.SetupProgramVersion )
-                        {
-                            if (setupstate.AdfsConfig.RegisteredAdapterVersion.Major == 0)
-                            {
-                                // nothing in Adfs
-                                if ( setupstate.AdfsConfig.SyncProps.IsPrimary )
-                                {
-                                    Console.WriteLine("Tempting fixing registration.");
-                                    bool x = AdfsPSService.RegisterAdapter(setupstate.InstalledVersionDescription.Adapter);
-                                    if (false == x)
-                                        rc = 8;
-                                }
-                            }
-                        }
-                    }
-                    else
-                    {
-                        Console.WriteLine("Did not try to fix......");
-                    }
-                }
+                ///**** FIX ****/
+                //else if (0 != (setupstate.mode & SetupFlags.Fix))
+                //{
+                //    rc = Fix(setupstate);
+                //}
                 /**** UN-INSTALL ****/
                 else if ( 0 != (setupstate.mode & SetupFlags.Uninstall) )
                 {
-                    if (setupstate.DetectedVersion.Major == 0)
-                    {
-                        LogService.WriteFatal("No installed version. Cannot \"Uninstall\"!");
-                        rc = 4;
-                    }
-                    else if (false == RulesAndChecks.CanUNinstall(setupstate))
-                    {
-                        rc = 4;
-                    }
-                    else if (0!=AdfsServer.StopAdFsService())
-                    {
-                        rc = 8;
-                        Console.WriteLine("Cannot uninstall without stopping ADFS.");
-                    }
-                    else if ( 0!=(rc= AdapterMaintenance.Uninstall(setupstate.InstalledVersionDescription)) )
-                    {
-                        rc = 8;
-                    }
-                    else if ( 0!=(rc=AdfsServer.StartAdFsService()) )
-                    {
-                        Console.WriteLine("EventLog?????");
-                    }
-                    else
-                    {
-                        Messages.SayAllSeemsOK();
-                    }
+                    rc = Uninstall(setupstate);
                 }
-                /**** INSTALL ****/
+                /**** INSTALL,  several different install scenarios  ****/
                 else if (0 != (setupstate.mode & SetupFlags.Install) )
                 {
                     // only this version, because the configuration writers are absent for older versions
@@ -128,52 +82,24 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                     }
                     else if (setupstate.DetectedVersion.Major == 0)
                     {
-                        // GREEN FIELD
+                        // GREEN FIELD scenario
                         rc = GrenFieldInstallation(setupstate);
                     }
                     else if (setupstate.DetectedVersion < AllDescriptions.ThisVersion.DistributionVersion)
                     {
-                        // UPGRADE to this version
+                        // UPGRADE to this version scenario
                         rc = UpgradeToThisVersion(setupstate);
                     }
                     else if (setupstate.AdfsConfig.RegisteredAdapterVersion == setupstate.SetupProgramVersion)
                     {
-                        // Version on disk is this version
+                        // Version on disk is already this version scenario.
                         rc = InstallOnInstalled(setupstate);
                     }
                 }
                 /**** RECONFIGURE ****/
                 else if (0 != (setupstate.mode & SetupFlags.Reconfigure))
                 {
-                    LogService.Log.Info("Reconfigure.");
-                    if (setupstate.DetectedVersion.Major == 0)
-                    {
-                        LogService.WriteFatal("No (correct) installed version. Cannot \"Reconfigure\"!");
-                        rc = 4;
-                    }
-                    else if (setupstate.DetectedVersion != setupstate.SetupProgramVersion)
-                    {
-                        LogService.WriteFatal("Can only reconfigure version equal to this setup program version.");
-                        LogService.WriteFatal("Cannot (yet....) write old configuration files.");
-                        rc = 4;
-                    }
-                    else if (0 != SettingsChecker.VerifySettingsComplete(setupstate, AllDescriptions.ThisVersion))
-                    {
-                        // SETTING PROBLEM
-                        LogService.Log.Info("Setting problem!!");
-                        rc = 8;
-                    }
-                    else
-                    {
-                        Console.WriteLine("Reconfiguration started.");
-
-                        rc = AdapterMaintenance.ReConfigure(AllDescriptions.ThisVersion,
-                                            setupstate.FoundSettings);
-                        if ( rc == 0 )
-                        {
-                            Console.WriteLine("Reconfigure successful.");
-                        }
-                    }
+                    rc = Reconfigure(setupstate);
                 }
                 else
                 {
@@ -193,6 +119,113 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
 
             return rc;
         }  // Main()
+
+        private static int Uninstall(SetupState setupstate)
+        {
+            int rc = 0;
+
+            if (setupstate.DetectedVersion.Major == 0)
+            {
+                LogService.WriteFatal("No installed version. Cannot \"Uninstall\"!");
+                rc = 4;
+            }
+            else if (false == RulesAndChecks.CanUNinstall(setupstate))
+            {
+                rc = 4;
+            }
+            else if (0 != AdfsServer.StopAdFsService())
+            {
+                rc = 8;
+                Console.WriteLine("Cannot uninstall without stopping ADFS.");
+            }
+            else if (0 != (rc = AdapterMaintenance.Uninstall(setupstate.InstalledVersionDescription)))
+            {
+                rc = 8;
+            }
+            else if (0 != (rc = AdfsServer.StartAdFsService()))
+            {
+                Console.WriteLine("EventLog?????");
+            }
+            else
+            {
+                Messages.SayAllSeemsOK();
+            }
+
+            return rc;
+        }
+
+        private static int Reconfigure(SetupState setupstate)
+        {
+            int rc = 0;
+
+            LogService.Log.Info("Reconfigure.");
+            if (setupstate.DetectedVersion.Major == 0)
+            {
+                LogService.WriteFatal("No (correct) installed version. Cannot \"Reconfigure\"!");
+                rc = 4;
+            }
+            else if (setupstate.DetectedVersion != setupstate.SetupProgramVersion)
+            {
+                LogService.WriteFatal("Can only reconfigure version equal to this setup program version.");
+                LogService.WriteFatal("Cannot (yet....) write old configuration files.");
+                rc = 4;
+            }
+            else if (0 != SettingsChecker.VerifySettingsComplete(setupstate, AllDescriptions.ThisVersion))
+            {
+                // SETTING PROBLEM
+                LogService.Log.Info("Setting problem!!");
+                rc = 8;
+            }
+            else
+            {
+                Console.WriteLine("Reconfiguration started.");
+
+                rc = AdapterMaintenance.ReConfigure(AllDescriptions.ThisVersion,
+                                    setupstate.FoundSettings);
+                if (rc == 0)
+                {
+                    Console.WriteLine("Reconfigure successful.");
+                }
+            }
+
+            return rc;
+        }
+
+
+        /// <summary>
+        /// Not called. Left for possible future real fix things.
+        /// </summary>
+        /// <param name="setupstate"></param>
+        /// <returns>0 if OK</returns>
+        private static int Fix(SetupState setupstate)
+        {
+            int rc = 0;
+
+            // TODONOW: Real logic after decisions.
+            if (setupstate.DetectedVersion.Major != 0)
+            {
+                if (setupstate.DetectedVersion == setupstate.SetupProgramVersion)
+                {
+                    if (setupstate.AdfsConfig.RegisteredAdapterVersion.Major == 0)
+                    {
+                        // nothing in Adfs
+                        if (setupstate.AdfsConfig.SyncProps.IsPrimary)
+                        {
+                            Console.WriteLine("Tempting fixing registration.");
+                            bool x = AdfsPSService.RegisterAdapter(setupstate.InstalledVersionDescription.Adapter);
+                            if (false == x)
+                                rc = 8;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                Console.WriteLine("Did not try to fix......");
+            }
+
+            return rc;
+        }
 
         static void WaitForEnter()
         {
@@ -342,7 +375,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
             }
             else if (setupstate.AdfsConfig.RegisteredAdapterVersion != AllDescriptions.ThisVersion.DistributionVersion)
             {
-                if (false == Messages.DoYouWantTO($"Upgrade registration from {setupstate.DetectedVersion} to version {AllDescriptions.ThisVersion.DistributionVersion}"))
+                if (false == Messages.DoYouWantTO($"Upgrade ADFS REGISTRATION from {setupstate.AdfsConfig.RegisteredAdapterVersion} to version {AllDescriptions.ThisVersion.DistributionVersion}"))
                 {
                     rc = 4;
                 }
@@ -474,16 +507,16 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                                 LogService.Log.Info("Check flag");
                                 break;
 
-                            case 'f':
-                                // Fix
-                                if (SetupModeOK(setupstate.mode))
-                                {
-                                    LogService.Log.Info("Fix flag");
-                                    setupstate.mode |= SetupFlags.Fix;
-                                }
-                                else
-                                    rc = 4;
-                                break;
+                            //case 'f':
+                            //    // Fix
+                            //    if (SetupModeOK(setupstate.mode))
+                            //    {
+                            //        LogService.Log.Info("Fix flag");
+                            //        setupstate.mode |= SetupFlags.Fix;
+                            //    }
+                            //    else
+                            //        rc = 4;
+                            //    break;
 
                             case 'i':
                                 // Install
@@ -554,7 +587,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
             Console.WriteLine("   Adds Second Factor Only MFA extension to an ADFS server.");
             Console.WriteLine(" -? -h  This help");
             Console.WriteLine(" -c     Check/Analyze existing installation only");
-            Console.WriteLine(" -f     Fix (experimental)");
+//            Console.WriteLine(" -f     Fix (experimental)");
             Console.WriteLine(" -i     Install (including automatic upgrade)");
             Console.WriteLine(" -r     Reconfigure existing installation");
             Console.WriteLine(" -x     Uninstall");
