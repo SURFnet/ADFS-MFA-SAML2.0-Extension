@@ -46,14 +46,14 @@ copy ..\src\SURFnet.Authentication.Adfs.Plugin\bin\Release\System.Security.Princ
 copy ..\src\SURFnet.Authentication.Adfs.Plugin\bin\Release\System.ValueTuple.dll %release%\dist || goto :error
 
 @echo Signing Setup.exe
-signtool sign %release%\Setup.exe || goto :error
+signtool sign /tr http://timestamp.digicert.com /td sha256 /fd sha256 /a %release%\Setup.exe || goto :error
 
 @echo Making Self extracting archive
 del %release%.exe
 "C:\Program Files\7-Zip\7z.exe" a -bb3 -sfx7z.sfx -r %release%.exe %release%
 
 @echo Signing SetupPackage self extracting archive
-signtool sign %release%.exe || goto :error
+signtool sign /tr http://timestamp.digicert.com /td sha256 /fd sha256 /a %release%.exe || goto :error
 
 @echo Sucessfully created Release %release%.exe
 exit /b 0
