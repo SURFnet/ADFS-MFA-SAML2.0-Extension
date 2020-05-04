@@ -15,7 +15,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
         /// <summary>
         /// Removes old registration if there, then registers the current version (if not yet there).
         /// </summary>
-        /// <param name="registeredVerion">The version from the ADFS configuration</param>
+        /// <param name="registeredVerion">The version from the current ADFS configuration</param>
         /// <returns>non zero if failed</returns>
         public static int UpdateRegistration(Version registeredVerion)
         {
@@ -50,6 +50,10 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
                         Console.WriteLine("Registration of new adapter successful.");
                     }
                 }
+            }
+            else
+            {
+                LogService.Log.Info("Why calling UpdateRegistration if the registration is already at this setup level?");
             }
 
             return rc;
