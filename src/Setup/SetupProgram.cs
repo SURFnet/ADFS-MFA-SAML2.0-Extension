@@ -313,19 +313,35 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                 Console.WriteLine();
                 rc = 4;
             }
-            if (Messages.DoYouWantTO($"Upgrade from {setupstate.DetectedVersion} version {AllDescriptions.ThisVersion.DistributionVersion}"))
+            if (Messages.DoYouWantTO($"Upgrade from {setupstate.DetectedVersion} to version {AllDescriptions.ThisVersion.DistributionVersion}"))
             {
-                Console.WriteLine($"Starting Upgrade to {setupstate.SetupProgramVersion}");
-                if (0 != (rc = AdapterMaintenance.UpdateRegistration(setupstate.AdfsConfig.RegisteredAdapterVersion)))
-                {
-                    // No cigar by the rules, no further message.
-                    rc = 8;
-                }
-                else
-                {
-                    if (setupstate.IsPrimaryComputer)
-                        RegistrationData.PrepareAndWrite();
+                LogService.Log.Info("Starting Upgrade");
 
+                if (setupstate.IsPrimaryComputer)
+                {
+                    LogService.Log.Info("Write registration and other cfg");
+
+                    // primary: Update ADFS registration and write Registration data 
+                    if (0 != AllDescriptions.ThisVersion.WriteConfiguration(setupstate.FoundSettings))
+                    {
+                        rc = 8;
+                        Console.WriteLine();
+                        Console.WriteLine("Preparing new configuration failed.  Aborting Upgrade.");
+                    }
+                    else if (0 != AdapterMaintenance.UpdateRegistration(setupstate.RegisteredVersionInAdfs))
+                    {
+                        rc = 8;
+                        Console.WriteLine();
+                        Console.WriteLine("Update of registration in ADFS failed.  Aborting Upgrade.");
+                    }
+                    else
+                    {
+                        RegistrationData.PrepareAndWrite();
+                    }
+                }
+
+                if ( rc==0 )
+                {
                     // now:  stop; upgrade; install; start
                     if (0 != AdfsServer.StopAdFsService())
                     {

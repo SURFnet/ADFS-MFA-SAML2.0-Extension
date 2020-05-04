@@ -90,37 +90,45 @@ namespace SURFnet.Authentication.Adfs.Plugin.Configuration
             if (adapterCfgPath == null)
                 return 1;   // was written!!
 
-            var adapterConfig = XDocument.Load(adapterCfgPath);
-            var root = adapterConfig.Descendants(XName.Get(AdapterElement)).FirstOrDefault();
-            if (root == null)
+            try
             {
-                initErrors.AppendLine($"Cannot find '{AdapterElement}' element in {adapterCfgPath}");
-                return 2;
-            }
+                var adapterConfig = XDocument.Load(adapterCfgPath);
+                var root = adapterConfig.Descendants(XName.Get(AdapterElement)).FirstOrDefault();
+                if (root == null)
+                {
+                    initErrors.AppendLine($"Cannot find '{AdapterElement}' element in {adapterCfgPath}");
+                    return 2;
+                }
 
-            newcfg.SchacHomeOrganization = root?.Attribute(XName.Get(AdapterSchacHomeOrganization))?.Value;
-            if (string.IsNullOrWhiteSpace(newcfg.SchacHomeOrganization))
-            {
-                initErrors.AppendLine($"Cannot find '{AdapterSchacHomeOrganization}' attribute in {adapterCfgPath}");
-                rc--;
-            }
+                newcfg.SchacHomeOrganization = root?.Attribute(XName.Get(AdapterSchacHomeOrganization))?.Value;
+                if (string.IsNullOrWhiteSpace(newcfg.SchacHomeOrganization))
+                {
+                    initErrors.AppendLine($"Cannot find '{AdapterSchacHomeOrganization}' attribute in {adapterCfgPath}");
+                    rc--;
+                }
 
-            newcfg.ActiveDirectoryUserIdAttribute = root?.Attribute(XName.Get(AdapterADAttribute))?.Value;
-            if (string.IsNullOrWhiteSpace(newcfg.ActiveDirectoryUserIdAttribute))
-            {
-                initErrors.AppendLine($"Cannot find '{AdapterADAttribute}' attribute in {adapterCfgPath}");
-                rc--;
-            }
+                newcfg.ActiveDirectoryUserIdAttribute = root?.Attribute(XName.Get(AdapterADAttribute))?.Value;
+                if (string.IsNullOrWhiteSpace(newcfg.ActiveDirectoryUserIdAttribute))
+                {
+                    initErrors.AppendLine($"Cannot find '{AdapterADAttribute}' attribute in {adapterCfgPath}");
+                    rc--;
+                }
 
-            string tmp = root?.Attribute(XName.Get(AdapterMinimalLoa))?.Value;
-            if (string.IsNullOrWhiteSpace(tmp))
-            {
-                initErrors.AppendLine($"Cannot find '{AdapterMinimalLoa}' attribute in {adapterCfgPath}");
-                rc--;
+                string tmp = root?.Attribute(XName.Get(AdapterMinimalLoa))?.Value;
+                if (string.IsNullOrWhiteSpace(tmp))
+                {
+                    initErrors.AppendLine($"Cannot find '{AdapterMinimalLoa}' attribute in {adapterCfgPath}");
+                    rc--;
+                }
+                else
+                {
+                    newcfg.MinimalLoa = new Uri(tmp);
+                }
             }
-            else
+            catch (Exception ex)
             {
-                newcfg.MinimalLoa = new Uri(tmp);
+                initErrors.AppendLine(ex.ToString());
+                rc--;
             }
 
             if ( rc == 0 )

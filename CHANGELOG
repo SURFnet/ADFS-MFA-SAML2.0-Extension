@@ -1,3 +1,8 @@
+Version 2.0.1
+- Fix: Adapter is registered in AD FS with the wrong configuration
+- Adapter registration now fails when SURFnet.Authentication.ADFS.Plugin.config.xml is missing
+
+
 Version 2.0.0
 - Replace the powershell based installation script with a CLI based setup.exe
 - Support upgrading from version 1.0 and 1.0.1

@@ -21,12 +21,12 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Common
         /// <summary>
         /// The file version for all.
         /// </summary>
-        public const string FileVersion = "2.0.0.0";
+        public const string FileVersion = "2.0.1.0";
 
         /// <summary>
         /// The product version for all.
         /// </summary>
-        public const string ProductVersion = "2.0.0.0";
+        public const string ProductVersion = "2.0.1.0";
 
         /// <summary>
         /// Used as -Name parameter in registration. First part of AdminName. Also in Registry at Registration time.

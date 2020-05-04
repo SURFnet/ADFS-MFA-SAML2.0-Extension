@@ -143,7 +143,7 @@
     <Compile Include="Versions\V1AdapterImp.cs" />
     <Compile Include="Versions\V1Components.cs" />
     <Compile Include="Versions\ISetupHandler.cs" />
-    <Compile Include="Versions\V2_0_0AdapterImp.cs" />
+    <Compile Include="Versions\V2_0AdapterImp.cs" />
     <Compile Include="Versions\AllDescriptions.cs" />
     <Compile Include="Versions\V2Components.cs" />
     <Compile Include="Versions\V1DescriptionImp.cs" />

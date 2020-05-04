@@ -1,4 +1,5 @@
-﻿using SURFnet.Authentication.Adfs.Plugin.Setup.Common;
+﻿using SURFnet.Authentication.Adfs.Plugin.Setup.Assemblies;
+using SURFnet.Authentication.Adfs.Plugin.Setup.Common;
 using SURFnet.Authentication.Adfs.Plugin.Setup.Configuration;
 using SURFnet.Authentication.Adfs.Plugin.Setup.Models;
 using SURFnet.Authentication.Adfs.Plugin.Setup.Services;
@@ -13,9 +14,9 @@ using System.Xml.Linq;
 
 namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
 {
-    public class V2_0_0AdapterImp : AdapterComponent
+    public class V2_0AdapterImp : AdapterComponent
     {
-        public V2_0_0AdapterImp() : base(V2Assemblies.Adapter_2_0_0Spec)
+        public V2_0AdapterImp(AssemblySpec adapterAssembly) : base(adapterAssembly)
         {
             ConfigParameters = new string[]
             {
