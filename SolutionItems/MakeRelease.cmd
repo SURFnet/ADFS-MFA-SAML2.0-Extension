@@ -1,4 +1,4 @@
-SET version=2.0.0
+SET version=2.0.1
 
 mkdir ..\release
 SET release=..\release\SetupPackage-%version%
