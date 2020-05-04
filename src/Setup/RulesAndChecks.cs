@@ -42,7 +42,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                 {
                     // primary
                     Console.WriteLine("*******");
-                    Console.WriteLine("  Primary computer in the farm with an MFA registration the ADFS configuration.");
+                    Console.WriteLine("  Primary computer in the farm with an MFA registration in the ADFS configuration.");
                     Console.WriteLine("  Not removing this MFA registration from ADFS will produce messages in the EventLog.");
                     Console.WriteLine();
                     if ( Messages.DoYouWantTO("Unregister the SFO MFA extension configuration for all servers in the farm?") )
@@ -53,7 +53,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                             setupstate.AdfsConfig.RegisteredAdapterVersion = V0Assemblies.AssemblyNullVersion;
                             Console.WriteLine("\"Unregister\" successful, the ADFS EventLog should no longer show loading this adapter.");
                             Console.WriteLine();
-                            if ( ! Messages.DoYouWantTO("Continue with Uninstall?") )
+                            if ( ! Messages.DoYouWantTO($"Continue with Uninstall version {setupstate.InstalledVersionDescription}") )
                             {
                                 // abandon as the admin said
                                 doit = false;

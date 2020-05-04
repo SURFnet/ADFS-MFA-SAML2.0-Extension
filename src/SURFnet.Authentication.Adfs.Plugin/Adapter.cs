@@ -77,9 +77,10 @@ namespace SURFnet.Authentication.Adfs.Plugin
             AdapterDir = Path.GetDirectoryName(myassemblyname);
 
 
-
             if (RegistrationLog.IsRegistration)
             {
+                bool mustThrow = false;
+
                 // Not running under ADFS. I.e. test or registration context.....
                 try
                 {
@@ -88,27 +89,25 @@ namespace SURFnet.Authentication.Adfs.Plugin
 
                     if ( 0==StepUpConfig.ReadXmlConfig() )
                     {
-                        RegistrationLog.WriteLine("Adater parms loaded from small XML.");
+                        RegistrationLog.WriteLine("Adapter parms loaded from small XML.");
                     }
                     else
                     {
                         RegistrationLog.WriteLine(StepUpConfig.GetErrors());
-
-                        //var minimalLoa = RegistryConfiguration.GetMinimalLoa();
-                        //if (!string.IsNullOrWhiteSpace(minimalLoa))
-                        //    StepUpConfig.PreSet(minimalLoa);
-                        //else
-                        //    RegistrationLog.WriteLine("Minimal LOA is required if not Production.");
+                        mustThrow = true;
                     }
-
                 }
                 catch (Exception e)
                 {
                     RegistrationLog.WriteLine($"Failed to load minimal LOA. Details: '{e.GetBaseException()}'");
+                    mustThrow = true;
                 }
 
                 RegistrationLog.WriteLine("Finishing static Adapter constructor");
                 RegistrationLog.Flush();
+
+                if (mustThrow)
+                    throw new ApplicationException("Registration exception. See registration log.");
             }
             else
             {
@@ -365,9 +364,8 @@ namespace SURFnet.Authentication.Adfs.Plugin
                 if (0 != StepUpConfig.ReadXmlConfig())
                 {
                     LogService.Log.Error(StepUpConfig.GetErrors());
+                    throw new ApplicationException("Configuration error. See adapter log.");
                 }
-
-                //ReadConfigurationFromSection(); // OLD: read Adapter configuration, throws on error.
 
                 ConfigureSustainsys(); // read Sustainsys configuration
 
@@ -418,52 +416,5 @@ namespace SURFnet.Authentication.Adfs.Plugin
                 throw new InvalidConfigurationException("Accessing Sustainsys configuration failed. Caught in Adapter!", ex);
             }
         }
-
-        /// <summary>
-        /// Reads the configuration from section.
-        /// </summary>
-        //private static void ReadConfigurationFromSection()
-        //{
-        //    if ( 0 == StepUpConfig.ReadXmlConfig() )
-        //    {
-        //        // new 
-        //        LogService.Log.Info("Hello from new Configuration");
-        //        if ( StepUpConfig.Current == null )
-        //            LogService.Log.Error("But Somehow Current == null");
-        //        else
-        //        {
-        //            if (StepUpConfig.Current.SchacHomeOrganization == null)
-        //                LogService.Log.Error("But Somehow SchacHomeOrganization == null");
-        //            if (StepUpConfig.Current.ActiveDirectoryUserIdAttribute == null)
-        //                LogService.Log.Error("But Somehow ActiveDirectoryUserIdAttribute == null");
-        //            if (StepUpConfig.Current.MinimalLoa == null)
-        //                LogService.Log.Error("But Somehow MinimalLoa URI == null");
-        //        }
-        //    }
-        //    else
-        //    {
-        //        // old + error
-        //        LogService.Log.Error(StepUpConfig.GetErrors());
-
-        //        var adapterAssembly = Assembly.GetExecutingAssembly();
-        //        var assemblyConfigPath = adapterAssembly.Location + ".config";
-
-        //        var map = new ExeConfigurationFileMap { ExeConfigFilename = assemblyConfigPath };
-        //        var cfg = ConfigurationManager.OpenMappedExeConfiguration(map, ConfigurationUserLevel.None);
-
-        //        var stepUpSection = (StepUpSection)cfg.GetSection(StepUpSection.AdapterSectionName);
-        //        if (stepUpSection == null)
-        //        {
-        //            throw new InvalidConfigurationException($"Missing/invalid StepUp Adapter (SP) configuration. Expected config at '{assemblyConfigPath}'");
-        //        }
-
-        //        StepUpConfig.Reload(stepUpSection);
-        //        if (StepUpConfig.Current == null)
-        //        {
-        //            LogService.Log.Fatal(StepUpConfig.GetErrors());
-        //            throw new InvalidConfigurationException($"Cannot load StepUp config. Details: '{StepUpConfig.GetErrors()}'");
-        //        }
-        //    }
-        //}
     }
 }
