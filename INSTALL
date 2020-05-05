@@ -29,7 +29,8 @@ The plugin distribution includes the current SAML configurations for several SUR
 pilot, test. The setup program lets you choose one of these configurations and automatically configures the plugin with
 the parameters from the included configuration.
 
-Edit the <TODO>.json file to configure the configuration available from the setup program.
+Edit the SURFnet.Authentication.MFA.plugin.Environments.json file to customize the configuration available from the setup
+for other environments than the SURFnet environments.
 
 
 Notices
@@ -67,12 +68,12 @@ Installation process
      - EntityID for the Plugin
      - The SP signing certificate of the plugin
      - The name of the user's attribute in AD FS from which to get the user's uid for the Stepup-Gateway
-     - The value for the schacHomeOrganization attribute your organisation is using with the Stepup-Gateway
+     - The value for the schacHomeOrganization attribute your organization is using with the Stepup-Gateway
    - Install the 2.x version of the plugin.
    - Restart the AD FS service
 4. Verify that the AD FS service starts
 5. In the logs of the AD FS service verify the plugin is being loaded
-6. In the logs of hte AD FS plugin verify that the plugin was successfully initialised
+6. In the logs of the AD FS plugin verify that the plugin was successfully initialized
 7. The configuration setting of the plugin to sent to the Stepup-Gateway administrator were written to "TODO".
    Sent this file to the Stepup-Gateway administrator, this configuration must be added to the Stepup-Gateway for
    authentication with the plugin to be possible.
@@ -84,7 +85,7 @@ If you do not have secondary AD FS servers, you are done.
 
 #### Preparation
 
-1. The setup program saved the configuration choices you made during installation of the primary AD FS server to "TODO"
+1. The setup program saved the configuration choices you made during installation of the primary AD FS server to "UsedSettings.json"
    on the primary.
    Copy this file to each secondary AD FS server to the same directory. This saves you from having to reenter the
    plugin configuration settings on the secondary server(s)
@@ -109,7 +110,7 @@ If you do not have secondary AD FS servers, you are done.
    - Restart the AD FS service
 3. Verify that the AD FS service starts
 4. In the logs of the AD FS service verify the plugin is being loaded
-5. In the logs of hte AD FS plugin verify that the plugin was successfully initialised
+5. In the logs of hte AD FS plugin verify that the plugin was successfully initialized
 
 Repeat this same process on any other AD FS secondary you have.
 
@@ -141,7 +142,7 @@ Uninstalling the plugin configuration
 3. Change to the directory where you unpacked the 2.0 version of the plugin and run "setup.exe -x" to uninstall the
    plugin. This command will:
    - Deregister the AD FS plugin with the AD FS service
-   - Remove the Plugin files from the \Windows\ADFS directory. Removed files are moved to the "TODO backup" directory
+   - Remove the Plugin files from the \Windows\ADFS directory. Removed files are moved to the "backupyyyy-mmm-ddThhmmss" directory
    - Restart the AD FS service
 
 Repeat the command on each AD FS secondary server to remove the plugin's file from the \Windows\ADFS directory and
@@ -153,9 +154,11 @@ Diagnostics / troubleshooting
 
 Problems during installation:
 
-- The setup program stores a log of al actions performed in "MFA-extension.SetupLog.txt" in the same directory as the
+- The setup program stores a log of all actions performed in "MFA-extension.SetupLog.txt" in the same directory as the
   "setup.exe" program.
-- The setup program creates a backup of the files it removes or modifies in "TODO backup" directory
+- The setup program creates a backup of the files it removes or modifies in "backupyyyy-mmm-ddThhmmss" directory
+- Registration with the Setup.exe program (or PowerShell) produces "StepUp.RegistrationLog.txt" in the same directory
+  as the plugin.dll (i.e. "dist" directory of setup.exe or the ADFS directory). It always overwrites, check timestamps.
 
 You can run the setup program in check mode to diagnose installation issues. This does not make any changes:
 
@@ -174,4 +177,4 @@ Problems with the plugin
 When the plugin was installed successfully, but there are problem using the plugin:
 
 1. Check the event log of the AD FS Service for errors.
-2. The plugin has it's own event log "ADFS Plugin". Check this log for errors.
+2. The plugin has it's own event log "AD FS Plugin". Check this log for errors.

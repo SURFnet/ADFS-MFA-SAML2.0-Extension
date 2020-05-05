@@ -46,7 +46,15 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
             {
                 if (found == AllDescriptions.ThisVersion.DistributionVersion)
                 {
-                    Description = AllDescriptions.ThisVersion; // V2_0_0
+                    Description = AllDescriptions.ThisVersion;
+                }
+                //else if (found == AllDescriptions.V2_0_1_0.DistributionVersion)
+                //{
+                //    Description = AllDescriptions.V2_0_1_0;
+                //}
+                else if (found == AllDescriptions.V2_0_0_0.DistributionVersion)
+                {
+                    Description = AllDescriptions.V2_0_0_0;
                 }
                 else if (found == AllDescriptions.V1_0_1_0.DistributionVersion)
                 {
@@ -68,14 +76,23 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
                     }
                     else
                     {
-                        LogService.Log.Info($"On disk version: {Description.DistributionVersion}, start Verify()");
-                        if (0 != Description.Verify())
+                        if (Description == null)
                         {
-                            LogService.Log.Fatal($"   Verify() failed on {Description.DistributionVersion}");
+                            // BUG trap: No description assignment for this version! Should add it above!
+                            LogService.WriteFatal($"Description==null bug for detected: v{found}");
+                            ok = false;
                         }
                         else
                         {
-                            VerifyIsOK = true;
+                            LogService.Log.Info($"On disk version: {Description.DistributionVersion}, start Verify()");
+                            if (0 != Description.Verify())
+                            {
+                                LogService.Log.Fatal($"   Verify() failed on {Description.DistributionVersion}");
+                            }
+                            else
+                            {
+                                VerifyIsOK = true;
+                            }
                         }
                     }
                 }

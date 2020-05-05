@@ -26,10 +26,11 @@ Note that these prebuild versions are targeted to SURFnet's SURFsecureID,
 and contain SURFsecureID specific configuration.
 Since version 2.0 of the plugin you no longer need to recompile the plugin
 to support other Stepup installations. To use the setup program
-with your own environments, update the included <TODO> file with the
-configuration for your own installation.
+with your own environments, update the included 
+    SURFnet.Authentication.MFA.plugin.Environments.json
+file with the configuration for your own installation.
 
-Latest release 2.0: [SetupPackage-2.0.0.zip TODO](https://github.com/SURFnet/ADFS-MFA-SAML2.0-Extension/releases/download/2.0.0/SetupPackage-2.0.0.zip)
+Latest release 2.0.1.0: [SetupPackage-2.0.1.zip TODO](https://github.com/SURFnet/ADFS-MFA-SAML2.0-Extension/releases/download/2.0.0/SetupPackage-2.0.1.zip)
 
 
 Installation and upgading
@@ -61,6 +62,9 @@ Building from Source
 * You need a .snk private key for signing the plugin dll's and generating
   strong names
   - Put your .snk in SolutionItems/SURFnet.Authentication.Adfs.Plugin.snk
+  - Use SignSustainsys.cmd to sign the Sustainsys component
+  
+* Now you can build
 
 
 Resources

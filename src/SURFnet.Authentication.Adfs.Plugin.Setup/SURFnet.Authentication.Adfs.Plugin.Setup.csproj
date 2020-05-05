@@ -129,7 +129,6 @@
     <Compile Include="Configuration\ConfigSettings.cs" />
     <Compile Include="Util\UAC.cs" />
     <Compile Include="Util\XmlUtil.cs" />
-    <Compile Include="VersionDetector.cs" />
     <Compile Include="Versions\AdapterComponent.cs" />
     <Compile Include="Versions\ComponentAssemblies.cs" />
     <Compile Include="Versions\CurrentPublicTokenKey.cs" />
