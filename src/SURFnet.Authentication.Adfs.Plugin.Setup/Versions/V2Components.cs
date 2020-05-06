@@ -11,6 +11,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
     {
         public static readonly AdapterComponent V2_0_0Adapter = new V2_0AdapterImp(V2Assemblies.Adapter_2_0_0Spec);
         public static readonly AdapterComponent V2_0_1Adapter = new V2_0AdapterImp(V2Assemblies.Adapter_2_0_1Spec);
+        public static readonly AdapterComponent V2_0_2Adapter = new V2_0AdapterImp(V2Assemblies.Adapter_2_0_2Spec);
 
         public static readonly StepupComponent[] V2_0Components = new StepupComponent[]
         {
