@@ -118,14 +118,7 @@
     <Compile Include="Adapter.cs" />
     <Compile Include="AuthFailedForm.cs" />
     <Compile Include="AuthForm.cs" />
-    <Compile Include="Configuration\InstitutionConfig.cs" />
-    <Compile Include="Configuration\InstitutionElement.cs" />
-    <Compile Include="Configuration\LocalSPConfig.cs" />
-    <Compile Include="Configuration\LocalSPElement.cs" />
     <Compile Include="Configuration\StepUpConfig.cs" />
-    <Compile Include="Configuration\StepUpIdPConfig.cs" />
-    <Compile Include="Configuration\StepUpIdPElement.cs" />
-    <Compile Include="Configuration\StepUpSection.cs" />
     <Compile Include="Extensions\LogExtensions.cs" />
     <Compile Include="Models\Saml2AuthenticationSecondFactorRequest.cs" />
     <Compile Include="Models\SecondFactorAuthResponse.cs" />
