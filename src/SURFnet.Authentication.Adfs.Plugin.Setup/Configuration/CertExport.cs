@@ -13,9 +13,13 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
 {
     public static class CertExport
     {
-        private static readonly RNGCryptoServiceProvider rg = new RNGCryptoServiceProvider(); // avoid expensive GC
+        private static readonly RNGCryptoServiceProvider rg = new RNGCryptoServiceProvider(); // avoid expensive GC, reuse as often as you want.
 
 
+        /// <summary>
+        /// Asks and exports (to "config" directory) if so required.
+        /// </summary>
+        /// <param name="certificate"></param>
         public static void DoYouWantToExport(X509Certificate2 certificate)
         {
             QuestionIO.WriteLine();
@@ -54,7 +58,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
         }
 
         /// <summary>
-        /// For the time being.....
+        /// Creates a cryptographically random byte array and converts it to base64.
         /// </summary>
         /// <param name="length"></param>
         /// <returns></returns>

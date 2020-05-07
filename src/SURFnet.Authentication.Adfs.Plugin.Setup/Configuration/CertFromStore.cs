@@ -12,7 +12,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
     public static class CertFromStore
     {
         /// <summary>
-        /// Preset the certificate selection dialog. (only certs Machine\My with a private key).
+        /// Selects the certificate selection dialog entries. (only certs Machine\My with a private key). And displays for choosing.
         /// </summary>
         /// <param name="certificate">Valid cert if returns 0, null otherwise</param>
         /// <returns>0 if OK</returns>

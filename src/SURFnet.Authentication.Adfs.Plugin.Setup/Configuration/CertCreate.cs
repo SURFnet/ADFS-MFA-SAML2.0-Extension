@@ -18,6 +18,11 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
     /// </summary>
     public class CertCreate
     {
+        /// <summary>
+        /// Creates a certificate with key pair. the store. Uses "native" code.
+        /// </summary>
+        /// <param name="entityID">For Subject==Issuer name</param>
+        /// <returns></returns>
         public static X509Certificate2 Create(string entityID)
         {
             X509Certificate2 cert = null;
@@ -44,6 +49,13 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
             return cert;
         }
 
+        /// <summary>
+        /// The usual native code as used in all PowerShellSamples.
+        /// </summary>
+        /// <param name="subjectName"></param>
+        /// <param name="durationInMinutes"></param>
+        /// <param name="ekuExtensions"></param>
+        /// <returns></returns>
         private static unsafe X509Certificate2 CreateSelfSignedCertificate(string subjectName, int durationInMinutes, OidCollection ekuExtensions)
         {
             int keySize = 3 * 1024;

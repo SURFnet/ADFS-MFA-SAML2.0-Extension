@@ -14,6 +14,10 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
         const string Source = "ADFS Plugin";
         const string LogName = "AD FS Plugin";
 
+        /// <summary>
+        /// Creates the EventLog entries for the Plugin. The adapter cannot do it (is not local Administrator).
+        /// </summary>
+        /// <returns>0 if OK</returns>
         public static int Create()
         {
             int rc = -1;

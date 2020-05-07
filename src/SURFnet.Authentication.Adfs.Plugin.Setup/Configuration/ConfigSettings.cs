@@ -12,8 +12,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
     /// <summary>
     /// Static class with static Configuration setting instances.
     /// This is Global memory for the Program!!
-    /// Although there are lists with subsets of the instances here, all
-    /// work on the same single instance of the setting!
+    /// Although there are lists with subsets of the instances here and
+    /// there, all work on the same single instance of the setting!
     /// </summary>
     public static class ConfigSettings
     {
@@ -22,6 +22,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
         {
             // First initializers of this class, which adds them.
             // Then this static constructor which links them.
+            // One of the initializers must be "touched" first.
+            // PrepareForSetup() does that!
             Setting.LinkChildren();
         }
 
@@ -47,6 +49,11 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
             }
         }
 
+        /// <summary>
+        /// Add only if not yet there.
+        /// </summary>
+        /// <param name="settings"></param>
+        /// <param name="setting"></param>
         public static void AddCfgSetting(this List<Setting> settings, Setting setting)
         {
             if (! settings.Contains(setting) )
@@ -119,10 +126,6 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
         //
         public const string IdPSSOLocation = "IdPSSOLocation";
         public const string IdPEntityId = "IdPentityId";
-        //public const string IdPSignThumb1 = "IdPSignThumb1";   // TODO: Is SustainSys 2.3 config writer specific!!!
-        //public const string IdPSignThumb2 = "IdPSignThumb2";   // TODO: Is SustainSys 2.3 config writer specific!!!
-        //public const string IdPSignCert1 = "IdPSignCert1";
-        //public const string IdPSignCert2 = "IdPSignCert2";
         public const string MinimalLoa = "MinimalLoa";
         public const string IdPMdFilename = "IdPMdFilename";
         //public const string IdPMdLocation = "IdPMdLocation";  // not yet. Just on disk
@@ -141,16 +144,6 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
         {
             DisplayName = "IdPSSOLocation",
         };
-
-        //public readonly static Setting IdPSigningThumbPrint_1_Setting = new Setting(IdPSignThumb1, IdPEntityId)
-        //{
-        //    DisplayName = "SHA1 hash (thumbprint) of IdP signer",
-        //};
-
-        //public readonly static Setting IdPSigningThumbPrint_2_Setting = new Setting(IdPSignThumb2, IdPEntityId)
-        //{
-        //    DisplayName = "SHA1 hash (thumbprint) of second IdP signer",
-        //};
 
         public readonly static Setting MinimaLoaSetting = new Setting(MinimalLoa, IdPEntityId)
         {

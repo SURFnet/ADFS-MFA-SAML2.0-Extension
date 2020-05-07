@@ -87,10 +87,7 @@
     <Compile Include="FileDirectory.cs" />
     <Compile Include="Models\AdfsConfiguration.cs" />
     <Compile Include="Models\RegistrationData.cs" />
-    <Compile Include="Models\IdentityProvider.cs" />
-    <Compile Include="Models\PluginConfiguration.cs" />
     <Compile Include="Models\Setting.cs" />
-    <Compile Include="Models\SustainSysConfiguration.cs" />
     <Compile Include="Question\AskYesNo.cs" />
     <Compile Include="Question\IsThisCorrect.cs" />
     <Compile Include="Question\OptionList.cs" />

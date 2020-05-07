@@ -16,9 +16,9 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
         private readonly List<Setting> FoundSettings;
         private readonly List<Dictionary<string, string>> IdPEnvironments;
 
-        // Must enable the Admin to change anything of the SP.
-        // The IdP comes from Metadata. Environment (IdP) is Admin choice.
-        // The rest of the IdP is not!
+        /// Must enable the Admin to change anything of the SP.
+        /// The IdP comes from Metadata. Environment (IdP) is Admin choice.
+        /// The rest of the IdP is not!
         public static readonly List<Setting> AdminChoicesList = new List<Setting>
         {
             ConfigSettings.IdPEntityID,
@@ -83,18 +83,11 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
             return rc;
         }
 
-        int VerifyLocalPresence()
-        {
-            int rc = -1;
-
-            return rc;
-        }
-
         /// <summary>
         /// Quick just doit Question.
         /// Asks if the settings as found on disk are OK to continue.
         /// </summary>
-        /// <param name="foundSettings"></param>
+        /// <param name="foundSettings">List of which the minimal subset will be displayed</param>
         /// <returns>0 if they should be used.</returns>
         int AskCurrentOK(List<Setting> foundSettings)
         {
@@ -158,9 +151,9 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
                     }
                     else
                     {
-                        /// Mandatory and string has value
+                        /// Mandatory and string has value.
                         /// EXTRA processing for the SPECIAL ones!!! 
-                        /// 
+                        /// Maybe some day move that to a special Setting derived class.
 
                         if ( setting == ConfigSettings.SPPrimarySigningThumbprint )
                         {
@@ -189,6 +182,10 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
             return allthere;
         }
 
+        /// <summary>
+        /// Ask for confirmation and/or allows change.
+        /// </summary>
+        /// <returns></returns>
         int WalkThroughSettings()
         {
             int rc = -1;

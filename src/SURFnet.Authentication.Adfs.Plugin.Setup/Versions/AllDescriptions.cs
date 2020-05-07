@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
 {
+    /// <summary>
+    /// Do remember to update the pointer at teh bottom and update Heuristics!!
+    /// </summary>
     public static class AllDescriptions
     {
 

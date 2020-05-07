@@ -12,6 +12,12 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Assemblies
 {
     public class AssemblySpec
     {
+        /// <summary>
+        /// Constructor for the "static readonly" instances in the descriptions of
+        /// a version. They typically (must and do) set the other properties.
+        /// </summary>
+        /// <param name="filename"></param>
+        /// <param name="direnum"></param>
         public AssemblySpec(string filename, FileDirectory direnum = FileDirectory.AdfsDir)
         {
             InternalName = filename;
@@ -20,6 +26,11 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Assemblies
             // Caller must initialize the other properties!
         }
 
+        /// <summary>
+        /// Constructor for GetAssemblySpec (used on a known filepath).
+        /// </summary>
+        /// <param name="fvi"></param>
+        /// <param name="name"></param>
         private AssemblySpec(FileVersionInfo fvi, AssemblyName name)
         {
             FilePath = fvi.FileName;
@@ -62,6 +73,11 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Assemblies
             return rc;
         }
 
+        /// <summary>
+        /// The real AssemblySpec comparer. Attention, it only compares versions, not Culture nor PubicKeyToken.
+        /// </summary>
+        /// <param name="found"></param>
+        /// <returns></returns>
         public int Verify(AssemblySpec found)
         {
             int rc = 0;
@@ -95,7 +111,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Assemblies
         /// </summary>
         /// <param name="filepath">full path</param>
         /// <returns>Null if not there, AssemblySpec if there.</returns>
-        static public AssemblySpec GetAssemblySpec(string filepath)
+        public static AssemblySpec GetAssemblySpec(string filepath)
         {
             AssemblySpec rc = null;
             try
@@ -157,6 +173,10 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Assemblies
             LogService.Log.Warn($"  Assembly {InternalName} mismatch in {versionname}. Found: {found}, should be: {should}");
         }
 
+        /// <summary>
+        /// For DepNames.....
+        /// </summary>
+        /// <returns></returns>
         public string WriteNewInstance()
         {
             StringBuilder sb = new StringBuilder();

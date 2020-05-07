@@ -8,11 +8,16 @@ using System.Threading.Tasks;
 
 namespace SURFnet.Authentication.Adfs.Plugin.Test.DepNames
 {
+    /// <summary>
+    /// Throw away level code. Used to generat the Assembly list. It generates too much.
+    /// But that is better than nothing. Also use to test/singlestep through the 
+    /// AssemblySpec code.
+    /// </summary>
     class Program
     {
         /// <summary>
         /// Program to test the assembly code in:
-        ///    SURFnet.Authentication.Adfs.Plugin.Setup.Common.
+        ///    SURFnet.Authentication.Adfs.Plugin.Setup.Assemblies.
         /// Not a real test, morre ability to step through.
         /// It can actually make a list of C# initializers that describe the
         /// dependencies.

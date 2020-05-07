@@ -21,6 +21,10 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
                 ResultCertificate = SetupCertService.CertDispose(ResultCertificate);
         }
 
+        /// <summary>
+        /// Two step import. Core first, then to store.
+        /// </summary>
+        /// <returns>0 if ok.</returns>
         public int Doit()
         {
             int rc = -1;

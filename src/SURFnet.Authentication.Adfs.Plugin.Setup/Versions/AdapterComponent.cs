@@ -9,9 +9,10 @@ using System.Threading.Tasks;
 namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
 {
     /// <summary>
-    /// Specific Component. Name is built automatically and other properties
-    /// for adapter specific operations.
+    /// Specific StepupComponent. Name is built automatically.
+    /// It has some properties for adapter specific operations.
     /// The derived Adapter must implement the configuration reader.
+    /// Must also have a list of required settings.
     /// </summary>
     public class AdapterComponent : StepupComponent
     {
@@ -32,7 +33,6 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
         {
             return $"StepupAdapter v{assembly.FileVersion}";
         }
-
 
         public AssemblySpec AdapterSpec => Assemblies[0];
 

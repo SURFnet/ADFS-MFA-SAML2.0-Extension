@@ -18,6 +18,9 @@ namespace SURFnet.Authentication.Adfs.PSObjTest
     /// 
     /// ==>  Copy to DIST is a manual operation!!!!
     /// ==> do not forget it when you test.
+    /// 
+    /// This is throw away code. It was used for testing. Whenever you have Assembly Loading
+    /// errors, then you probably want to look here (and/or call Paul).
     /// </summary>
     class Program
     {

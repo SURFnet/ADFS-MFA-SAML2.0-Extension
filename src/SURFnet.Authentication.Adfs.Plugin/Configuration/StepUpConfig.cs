@@ -39,11 +39,6 @@ namespace SURFnet.Authentication.Adfs.Plugin.Configuration
         private static StringBuilder initErrors = new StringBuilder();
 
         /// <summary>
-        /// The initialize lock.
-        /// </summary>
-        private static readonly object InitLock = new object();
-
-        /// <summary>
         ///  the real configuration Secondton
         /// </summary>
         private static StepUpConfig current;

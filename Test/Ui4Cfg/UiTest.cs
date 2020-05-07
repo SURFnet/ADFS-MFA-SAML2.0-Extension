@@ -11,6 +11,9 @@ using System.Threading.Tasks;
 
 namespace Ui4Cfg
 {
+    /// <summary>
+    /// Throw away code. Used for random UI tests.
+    /// </summary>
     static class Program
     {
         static List<Setting> testCfg = new List<Setting>();
