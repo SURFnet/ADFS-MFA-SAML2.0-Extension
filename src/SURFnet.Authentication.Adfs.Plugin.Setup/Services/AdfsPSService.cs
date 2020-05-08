@@ -147,11 +147,11 @@
             try
             {
                 AdfsAuthnCmds.RegisterAuthnProvider(adapterName, adapter.TypeName);
-                LogService.Log.Info("AuthenticationProvider Registered");
+                LogService.Log.Info("  AuthenticationProvider Registered");
             }
             catch (Exception ex)
             {
-                PSUtil.ReportFatalPS("Register-AdfsAuthenticationProvider", ex);
+                PSUtil.ReportFatalPS("  Register-AdfsAuthenticationProvider", ex);
                 ok = false;
             }
 
@@ -216,9 +216,11 @@
             var policy = AdfsAuthnCmds.GetGlobAuthnPol();
             if ( policy != null )
             {
+                ListCurrentProvidersInPolicy(policy.AdditionalAuthenticationProviders);
+
                 if (policy.AdditionalAuthenticationProviders.Contains(adapterName))
                 {
-                    LogService.Log.Info("Removing it from GlobalAuthenticationPolicy.");
+                    LogService.Log.Info($"Removing '{adapterName}' from GlobalAuthenticationPolicy.");
                     policy.AdditionalAuthenticationProviders.Remove(adapterName);
                     try
                     {
@@ -254,7 +256,18 @@
         }
 
 
+        static void ListCurrentProvidersInPolicy(IList<string> providers)
+        {
+            if (providers.Count > 0)
+            {
+                LogService.Log.Info("  Current providers in GlobalAuthnPolicy:");
+                foreach (var prov in providers)
+                {
+                    LogService.Log.Info("      " + prov);
+                }
+            }
 
+        }
 
         /// <summary>
         /// Gets the Adapter Version which is registered in the ADFS Server (on the AdminName).
