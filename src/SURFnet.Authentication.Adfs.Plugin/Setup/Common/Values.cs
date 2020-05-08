@@ -19,17 +19,17 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Common
     public class Values
     {
         /// <summary>
-        /// The file version for all.
+        /// The file version for all (by referencing THIS value).
         /// </summary>
-        public const string FileVersion = "2.0.1.0";
+        public const string FileVersion = "2.0.2.0";
 
         /// <summary>
-        /// The product version for all.
+        /// The product version for all (by referencing THIS value).
         /// </summary>
-        public const string ProductVersion = "2.0.1.0";
+        public const string ProductVersion = "2.0.2.0";
 
         /// <summary>
-        /// Used as -Name parameter in registration. First part of AdminName. Also in Registry at Registration time.
+        /// Used as -Name parameter in registration. First part of AdminName.
         /// </summary>
         public const string AdapterRegistrationName = "ADFS.SCSA";
 

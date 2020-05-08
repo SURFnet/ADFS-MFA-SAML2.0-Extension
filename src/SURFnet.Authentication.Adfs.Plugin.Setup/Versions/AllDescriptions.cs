@@ -44,6 +44,6 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
 
         // Do not forget to update his to the newest!! :-)
         // Do not move up..... Otherwise it is not initialized.... TODO: fix this!
-        public static VersionDescription ThisVersion = V2_0_1_0;
+        public static VersionDescription ThisVersion = V2_0_2_0;
     }
 }
