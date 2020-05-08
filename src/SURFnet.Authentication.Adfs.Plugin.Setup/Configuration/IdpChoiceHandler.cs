@@ -2,6 +2,7 @@
 using SURFnet.Authentication.Adfs.Plugin.Setup.Services;
 using System;
 using System.Collections.Generic;
+using System.Data.SqlTypes;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -23,6 +24,9 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
             bool ok = true;
 
             int index = EntityID2Index(setting.Value, idpEnvironments);
+            if (index < 0)
+                return false;  // already logged.
+
             var dialogue = new IdPChoiceController(idpEnvironments, index);
             if (dialogue.Ask())
             {
@@ -58,6 +62,13 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
                 }
             }
 
+            /// It should not happen, but it did. The value in the json file was incorrect.
+            if ( index < 0 )
+            {
+                LogService.WriteFatal("Incorrect configuration value for 'entityID': " + entityID);
+                LogService.WriteFatal("    In current configuraion files or in the environment configuration file.");
+            }
+
             return index;
         }
 
@@ -91,6 +102,11 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
                 LogService.Log.Info("Start updating IdP settings for: " + entityID);
 
                 int index = EntityID2Index(entityID, idpEnvironments);
+                if ( index < 0 )
+                {
+                    return -1;   // Already logged.
+                }
+
                 Dictionary<string, string> idpsettings = idpEnvironments[index];
 
                 // for all children of ConfigSettings.IdPEntityID: get possibly updated value.
