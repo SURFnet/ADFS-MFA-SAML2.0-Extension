@@ -10,7 +10,7 @@
     "Name": "Pilot",
     "MinimalLoa": "http://pilot.surfconext.nl/assurance/sfo-level2",
     "IdPSSOLocation": "https://gateway.pilot.stepup.surfconext.nl/second-factor-only/single-sign-on",
-    "IdPentityId": "https://gateway.pilot.surfconext.nl/second-factor-only/metadata",
+    "IdPentityId": "https://gateway.pilot.stepup.surfconext.nl/second-factor-only/metadata",
     "IdPMdFilename": "gateway.pilot.stepup.surfconext.nl.xml"
   },
   {
