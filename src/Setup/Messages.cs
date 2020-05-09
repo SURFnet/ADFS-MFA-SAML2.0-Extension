@@ -25,6 +25,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
 
         public static int EndWarning(string msg)
         {
+            LogService.Log.Warn("EndWarning: " + msg);
             Console.WriteLine();
             Console.WriteLine(msg);
 
@@ -33,6 +34,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
 
         public static void SayAllSeemsOK()
         {
+            LogService.Log.Info("SayAllSeemsOK()");
+
             Console.WriteLine();
             Console.WriteLine("Everything was OK.");
             Console.WriteLine("Take a look at the ADFS EventLog and also the");

@@ -4,7 +4,7 @@
     "MinimalLoa": "http://surfconext.nl/assurance/sfo-level2",
     "IdPSSOLocation": "https://sa-gw.surfconext.nl/second-factor-only/single-sign-on",
     "IdPentityId": "https://sa-gw.surfconext.nl/second-factor-only/metadata",
-    "IdPMdFilename": "sa-gw.surfconext.nl"
+    "IdPMdFilename": "sa-gw.surfconext.nl.xml" 
   },
   {
     "Name": "Pilot",

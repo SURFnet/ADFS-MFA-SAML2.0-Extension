@@ -28,7 +28,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                 ILog log = LogManager.GetLogger("Setup");
                 LogService.InsertLoggerDependency(log);
 
-                LogService.Log.Info("Log Started");  // just to check if logging works. Needs Admin etc.
+                LogService.Log.Info("---- Log Started ----");  // just to check if logging works. Needs Admin etc.
             }
             catch (Exception ex)
             {
