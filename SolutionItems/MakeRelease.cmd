@@ -1,4 +1,12 @@
-SET version=2.0.1
+@IF [%1] == [] (
+    @echo Missing parameter.
+	@echo.
+	@echo Usage: MakeRelease.cmd ^<ersion^>
+	@echo.
+	goto :error
+)
+
+SET version=%1
 
 mkdir ..\release
 SET release=..\release\SetupPackage-%version%
