@@ -53,6 +53,13 @@ copy ..\src\SURFnet.Authentication.Adfs.Plugin\bin\Release\System.Security.Permi
 copy ..\src\SURFnet.Authentication.Adfs.Plugin\bin\Release\System.Security.Principal.Windows.dll %release%\dist || goto :error
 copy ..\src\SURFnet.Authentication.Adfs.Plugin\bin\Release\System.ValueTuple.dll %release%\dist || goto :error
 
+copy ..\CHANGELOG %release% || goto :error
+copy ..\LICENSE %release% || goto :error
+copy ..\NOTICE %release% || goto :error
+copy ..\INSTALL %release% || goto :error
+copy ..\UPGRADE %release% || goto :error
+
+
 @echo Signing Setup.exe
 signtool sign /tr http://timestamp.digicert.com /td sha256 /fd sha256 /a %release%\Setup.exe || goto :error
 
