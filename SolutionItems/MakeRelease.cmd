@@ -11,7 +11,7 @@ SET version=%1
 mkdir ..\release
 SET release=..\release\SetupPackage-%version%
 
-if exist %release%\ (
+@if exist %release%\ (
   @echo Deleting %release%
   rmdir /S /Q %release% || goto :error
 )
@@ -71,8 +71,10 @@ del %release%.exe
 signtool sign /tr http://timestamp.digicert.com /td sha256 /fd sha256 /a %release%.exe || goto :error
 
 @echo Sucessfully created Release %release%.exe
-exit /b 0
+@echo.
+@exit /b 0
 
 :error
 @echo Building setup package failed
-exit /b %errorlevel%
+@echo.
+@exit /b %errorlevel%
