@@ -1,9 +1,17 @@
-SET version=2.0.1
+@IF [%1] == [] (
+    @echo Missing parameter.
+	@echo.
+	@echo Usage: MakeRelease.cmd ^<ersion^>
+	@echo.
+	goto :error
+)
+
+SET version=%1
 
 mkdir ..\release
 SET release=..\release\SetupPackage-%version%
 
-if exist %release%\ (
+@if exist %release%\ (
   @echo Deleting %release%
   rmdir /S /Q %release% || goto :error
 )
@@ -45,6 +53,13 @@ copy ..\src\SURFnet.Authentication.Adfs.Plugin\bin\Release\System.Security.Permi
 copy ..\src\SURFnet.Authentication.Adfs.Plugin\bin\Release\System.Security.Principal.Windows.dll %release%\dist || goto :error
 copy ..\src\SURFnet.Authentication.Adfs.Plugin\bin\Release\System.ValueTuple.dll %release%\dist || goto :error
 
+copy ..\CHANGELOG %release% || goto :error
+copy ..\LICENSE %release% || goto :error
+copy ..\NOTICE %release% || goto :error
+copy ..\INSTALL %release% || goto :error
+copy ..\UPGRADE %release% || goto :error
+
+
 @echo Signing Setup.exe
 signtool sign /tr http://timestamp.digicert.com /td sha256 /fd sha256 /a %release%\Setup.exe || goto :error
 
@@ -56,8 +71,10 @@ del %release%.exe
 signtool sign /tr http://timestamp.digicert.com /td sha256 /fd sha256 /a %release%.exe || goto :error
 
 @echo Sucessfully created Release %release%.exe
-exit /b 0
+@echo.
+@exit /b 0
 
 :error
 @echo Building setup package failed
-exit /b %errorlevel%
+@echo.
+@exit /b %errorlevel%
