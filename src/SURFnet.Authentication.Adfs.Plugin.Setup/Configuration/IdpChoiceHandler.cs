@@ -16,7 +16,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
         /// We will make this a derived class of the Setting.
         /// Setting would then have some virtual method for the handler....
         /// 
-        /// It is messy! SP cert stuff is similar, need to harmonize!
+        /// It is messy! SP cert stuff has a similar issue, need to harmonize!
 
 
         public static bool Handle(Setting setting, List<Dictionary<string, string>> idpEnvironments)
