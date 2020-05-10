@@ -22,10 +22,15 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
         public static bool Handle(Setting setting, List<Dictionary<string, string>> idpEnvironments)
         {
             bool ok = true;
+            int index = 0;
 
-            int index = EntityID2Index(setting.Value, idpEnvironments);
-            if (index < 0)
-                return false;  // already logged.
+            if ( ! string.IsNullOrWhiteSpace(setting.Value))
+            {
+                index = EntityID2Index(setting.Value, idpEnvironments);
+                if (index < 0)
+                    return false;  // already logged.
+            }
+
 
             var dialogue = new IdPChoiceController(idpEnvironments, index);
             if (dialogue.Ask())
