@@ -141,7 +141,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
         }
 
         /// <summary>
-        /// Gets the metadata Secondton.
+        /// Gets the metadata Singleton.
         /// </summary>
         /// <value>The metadata.</value>
         public IAuthenticationAdapterMetadata Metadata => AdapterMetadata.Instance;

@@ -83,9 +83,9 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Models
             const string CfgFormat =
                         "{{\r\n" +
                         "  \"entity_id\": \"{0}\",\r\n" +  // <==
-                        "  \"public_key\": \"{1}\"\r\n" +  // <==
+                        "  \"public_key\": \"{1}\",\r\n" +  // <==
                         "  \"acs\": [\r\n" +
-                        "    {2}\r\n" +                    // <==
+                        "    \"{2}\"\r\n" +                    // <==
                         "  ],\r\n" +
                         "  \"loa\": {{\r\n" +
                         "    \"__default__\": \"{{{{ stepup_uri_loa2 }}}}\"\r\n" +

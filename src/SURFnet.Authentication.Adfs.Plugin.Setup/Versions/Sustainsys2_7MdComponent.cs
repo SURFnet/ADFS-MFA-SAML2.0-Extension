@@ -41,6 +41,20 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
             return rc;
         }
 
+        public override int InstallCfgOnly()
+        {
+            int rc = base.InstallCfgOnly();
+
+            if (rc == 0)
+            {
+                // now metadata from "config" to ADFS directory
+                string filename = ConfigSettings.IdPMetadataFilename.Value;
+                rc = FileService.FileCopy(FileDirectory.Config, FileDirectory.AdfsDir, filename);
+            }
+
+            return rc;
+        }
+
         protected override int ExctractSustainsysConfig(List<Setting> settings)
         {
             int rc = 0;
