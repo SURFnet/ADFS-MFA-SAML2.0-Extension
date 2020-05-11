@@ -27,11 +27,11 @@ and contain SURFsecureID specific configuration.
 However, since version 2.0 of the plugin you no longer need to recompile
 the plugin to support other Stepup installations. To use the setup program
 with your own environments, update the "SURFnet.Authentication.MFA.plugin.Environments.json"
-file in the "conf" directory of the SetupPackage with the configuration
+file in the "config" directory of the SetupPackage with the configuration
 for your own installation(s).
 The SetupPackage-2.x.x has been codesigned with "SURFnet bv".
 
-Latest release 2.0.2: [SetupPackage-2.0.2.zip](https://github.com/SURFnet/ADFS-MFA-SAML2.0-Extension/releases/download/2.0.2/SetupPackage-2.0.2.exe)
+Latest release 2.0.2: [SetupPackage-2.0.2.exe](https://github.com/SURFnet/ADFS-MFA-SAML2.0-Extension/releases/download/2.0.2/SetupPackage-2.0.2.exe)
 
 
 Installation and upgading
