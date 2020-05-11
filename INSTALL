@@ -65,30 +65,33 @@ Installation process
 2. Open an elevated command prompt on the AD FS server
 3. Change to the directory where you unpacked the 2.0 version of the plugin and run "setup.exe -i" to install the
    plugin. This command will:
+   - Present current settings which you can simply accept
+   OR:
    - Ask you to select the configuration of Stepup-Gateway to use
    - Ask you to enter the local configuration settings:
      - EntityID for the Plugin
+     - The value for the schacHomeOrganization attribute your organization is using with the Stepup-Gateway
+     - The name of the user's attribute in AD from which to get the user's uid for the Stepup-Gateway
+     - The SP entityID of the MFA extension (it will present a default)
      - The SP signing certificate of the plugin. You can choose to
        - generate a new certificate and keypair
        - import an existing certificate and keypair from a .pfx (i.e. PKCS#12) file
        - select an existing certificate from the certificate store
-     - The hostname of the AD server for querying user information
-     - The name of the user's attribute in AD from which to get the user's uid for the Stepup-Gateway
-     - The value for the schacHomeOrganization attribute your organization is using with the Stepup-Gateway
+   - Register the plugin in the AD FS configuration database
    - Stop the AD FS Service
-   - Register the plugin with AD FS
    - Install the 2.x version of the plugin.
    - Start the AD FS service
 4. Verify that the AD FS service starts
 5. In the eventlog of the AD FS service verify the plugin is being loaded
 6. In the event of the AD FS plugin verify that the plugin was successfully initialized
-7. The configuration settings you choose during installation of the plugin were written to the "conf" directory of the
+7. The configuration settings you choose during installation of the plugin were written to the "config" directory of the
    SetupPackage:
    - The "MfaRegistrationData.txt" file contains the registration data that the administrator of the Stepup-Gateway
-     needs to allow this installation of the AD FS to work with the Stepup-Gateway. Send this file to the Stepup-Gateway
+     needs, to allow this installation of the AD FS to work with the Stepup-Gateway. Send this file to the Stepup-Gateway
      administrator.
-   - The "CurrentSettings.json" file contains all the configuration settings of the Plugin and can be used to
+   - The "UsedSettings.json" file contains all the configuration settings of the Plugin and can be used to
      configure the plugin on the secondaries.
+   - If certificates were created and exported, then they are in the "config" directory too.
 
 
 If you do not have secondary AD FS servers, you are done.
@@ -99,7 +102,7 @@ If you do not have secondary AD FS servers, you are done.
 #### Preparation
 
 1. The setup program saved the configuration choices you made during installation of the primary AD FS server to
-   "CurrentSettings.json" in the "conf" directory of the SetupPackage on the primary.
+   "UsedSettings.json" in the "config" directory of the SetupPackage on the primary.
    Copy this file to each secondary AD FS server to the same directory. This saves you from having to reenter the
    plugin configuration settings on the secondary server(s)
 2. Bring the SP signing certificate you used on the primary to the secondary servers. If you generated this certificate
@@ -112,18 +115,22 @@ If you do not have secondary AD FS servers, you are done.
 1. Open an elevated command prompt on the secondary AD FS server
 2. Change to the directory where you unpacked the 2.0 version of the plugin and run "Setup.exe -i" to install the
    plugin. This command will:
-   - Ask for the SP signing certificate if it is not already in the Certificate Store of the seconday. Choose to import
-     the .pfx file you brought from the secondary.
+   - Present current settings which you can simply accept (from "UsedSettings.json)
+   OR:
    - Ask you to select the configuration of Stepup-Gateway to use
-   - Ask you to enter the local configuration settings. You can view and change the settings. They will have been be
-     read from the "CurrentSettings.json" file you copied from the primary so the current configuration should match
-     the configuration values you entered there.
+   - Ask you to enter the local configuration settings:
+     - EntityID for the Plugin
+     - The value for the schacHomeOrganization attribute your organization is using with the Stepup-Gateway
+     - The name of the user's attribute in AD from which to get the user's uid for the Stepup-Gateway
+     - The SP entityID of the MFA extension (it will present a default)
+     - The SP signing certificate of the plugin. You can choose to
+       - Select or import from PFX
    - Stop the AD FS service
    - Install the 2.x version of the plugin.
    - Start the AD FS service
 3. Verify that the AD FS service starts
 4. In the logs of the AD FS service verify the plugin is being loaded
-5. In the logs of hte AD FS plugin verify that the plugin was successfully initialized
+5. In the logs of the AD FS plugin verify that the plugin was successfully initialized
 
 Repeat this same process on any other AD FS secondary servers you have.
 
@@ -133,11 +140,12 @@ Changing the plugin configuration
 
 Each plugin stores it's configuration on the AD FS server locally in the /Windows/ADFS directory. The configuration is
 only read when the plugin is loaded by the AD FS service (i.e. when the AD FS service starts). This means the AD FS
-service must be restarted after making changes to the plugin configuration.
+service must be restarted after making changes to the plugin configuration. You can update the log4net configuration
+without an ADFS restart.
 
 You typically want the configuration of the plugin to be the same on each AD FS server in the farm. So if you make a
 change to the plugin in one AD FS servers, you want to repeat the change on each other server. You can use the
-"CurrentSettings.json" file to transport plugin settings between AD FS servers.
+"UsedSettings.json" file to transport plugin settings between AD FS servers.
 
 Change the configuration of the plugin by running the setup program in "reconfigure" mode.
 1. Open an elevated command prompt on the AD FS server where you want to change the configuration
@@ -169,7 +177,7 @@ Diagnostics / troubleshooting
 Problems during installation:
 
 - The setup program stores a log of all actions performed in "MFA-extension.SetupLog.txt" in the same directory as the
-  "Setup.exe" program.
+  "Setup.exe" program
 - The setup program creates a backup of the files it removes or modifies in "backupyyyy-mmm-ddThhmmss" directory in the
   SetupPackage
 - Registration with the Setup.exe program (or PowerShell) produces "StepUp.RegistrationLog.txt" in the same directory
@@ -182,7 +190,7 @@ You can run the setup program in check mode to diagnose installation issues. Thi
 2. Change to the directory where you unpacked the 2.0 version of the plugin and run "Setup.exe -c".
 
 If there is an issue with the registration of the plugin, try rerunning the installation (i.e. "Setup.exe -i").
-Otherwise and uninstall ("Setup.exe -x") followed by an install ("Setup.exe -i") should solve the issue.
+Otherwise an uninstall ("Setup.exe -x") followed by an install ("Setup.exe -i") should solve the issue.
 
 
 Problems with the plugin

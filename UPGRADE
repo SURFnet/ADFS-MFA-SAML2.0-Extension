@@ -94,6 +94,7 @@ Upgrade process
    - Read the configuration of the currently installed plugin. Then asks if you want to continue with these settings.
      This is what you normally would do, but you have the option of changing the settings.
    - Write configuration new configuration files
+   - Update the registration in the ADFS database if on primary and older version
    - Stop the AD FS service
    - Remove the old version of the plugin
    - Install the new version of the plugin.
