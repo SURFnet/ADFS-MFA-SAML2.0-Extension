@@ -29,8 +29,8 @@ The plugin distribution includes the current SAML configurations for several SUR
 pilot, test. The setup program lets you choose one of these configurations and automatically configures the plugin with
 the parameters from the included configuration.
 
-Edit the SURFnet.Authentication.MFA.plugin.Environments.json file to customize the configuration available from the setup
-for other environments than the SURFnet environments.
+Edit the "SURFnet.Authentication.MFA.plugin.Environments.json" file in the "config" directory of the SetupPackage to
+customize the configuration available from the setup for other environments than the SURFnet environments.
 
 
 Notices
@@ -44,15 +44,17 @@ Preparation
 
 We recommend that you create a backup of the AD FS server(s) before you start the installation process
 
-Download the zip file containing the new ADFS plugin from <TODO link>
-and unpack it on each AD FS server you want to upgrade. Check the configuration of the AD FS server. You do this by
-running the setup program in check mode. This performs a check of the current AD FS service and reports any problems
-that it finds.
+When using the binary distribution for SURFnet's SURFsecureID:
+Download the SetupPackage.2.x.x.exe file containing the new ADFS plugin and Setup.exe from the project's GitHub releases
+page: https://github.com/SURFnet/ADFS-MFA-SAML2.0-Extension/releases
+The SetupPackage.2.x.x.exe is codesigned by "SURFnet bv".
+
+Extract the SetupPackage on each AD FS server you want to upgrade and check the configuration of the AD FS server. You
+do this by running the setup program in check mode. This performs a check of the current AD FS service and reports any
+problems that it finds.
 
 1. Open an elevated command prompt on the AD FS server
-2. Change to the directory where you unpacked the 2.0 version of the plugin and run "setup.exe -c".
-
-The setup program requires the following information from you
+2. Change to the directory where you unpacked the 2.0 version of the plugin and run "Setup.exe -c".
 
 Installation process
 --------------------
@@ -66,17 +68,28 @@ Installation process
    - Ask you to select the configuration of Stepup-Gateway to use
    - Ask you to enter the local configuration settings:
      - EntityID for the Plugin
-     - The SP signing certificate of the plugin
-     - The name of the user's attribute in AD FS from which to get the user's uid for the Stepup-Gateway
+     - The SP signing certificate of the plugin. You can choose to
+       - generate a new certificate and keypair
+       - import an existing certificate and keypair from a .pfx (i.e. PKCS#12) file
+       - select an existing certificate from the certificate store
+     - The hostname of the AD server for querying user information
+     - The name of the user's attribute in AD from which to get the user's uid for the Stepup-Gateway
      - The value for the schacHomeOrganization attribute your organization is using with the Stepup-Gateway
+   - Stop the AD FS Service
+   - Register the plugin with AD FS
    - Install the 2.x version of the plugin.
-   - Restart the AD FS service
+   - Start the AD FS service
 4. Verify that the AD FS service starts
-5. In the logs of the AD FS service verify the plugin is being loaded
-6. In the logs of the AD FS plugin verify that the plugin was successfully initialized
-7. The configuration setting of the plugin to sent to the Stepup-Gateway administrator were written to "TODO".
-   Sent this file to the Stepup-Gateway administrator, this configuration must be added to the Stepup-Gateway for
-   authentication with the plugin to be possible.
+5. In the eventlog of the AD FS service verify the plugin is being loaded
+6. In the event of the AD FS plugin verify that the plugin was successfully initialized
+7. The configuration settings you choose during installation of the plugin were written to the "conf" directory of the
+   SetupPackage:
+   - The "MfaRegistrationData.txt" file contains the registration data that the administrator of the Stepup-Gateway
+     needs to allow this installation of the AD FS to work with the Stepup-Gateway. Send this file to the Stepup-Gateway
+     administrator.
+   - The "CurrentSettings.json" file contains all the configuration settings of the Plugin and can be used to
+     configure the plugin on the secondaries.
+
 
 If you do not have secondary AD FS servers, you are done.
 
@@ -85,53 +98,53 @@ If you do not have secondary AD FS servers, you are done.
 
 #### Preparation
 
-1. The setup program saved the configuration choices you made during installation of the primary AD FS server to "UsedSettings.json"
-   on the primary.
+1. The setup program saved the configuration choices you made during installation of the primary AD FS server to
+   "CurrentSettings.json" in the "conf" directory of the SetupPackage on the primary.
    Copy this file to each secondary AD FS server to the same directory. This saves you from having to reenter the
    plugin configuration settings on the secondary server(s)
 2. Bring the SP signing certificate you used on the primary to the secondary servers. If you generated this certificate
-   during the installation it was exported as "TODO.pfx". Copy this file as well, and bring the encryption passphrase
-   of the pfx.
+   during the installation it was exported as a ".pfx". Copy this file to the secondary as well, and bring the
+   encryption passphrase of the pfx.
 
 
 #### Installation
 
 1. Open an elevated command prompt on the secondary AD FS server
-2. Change to the directory where you unpacked the 2.0 version of the plugin and run "setup.exe -i" to install the
+2. Change to the directory where you unpacked the 2.0 version of the plugin and run "Setup.exe -i" to install the
    plugin. This command will:
+   - Ask for the SP signing certificate if it is not already in the Certificate Store of the seconday. Choose to import
+     the .pfx file you brought from the secondary.
    - Ask you to select the configuration of Stepup-Gateway to use
    - Ask you to enter the local configuration settings. You can view and change the settings. They will have been be
-     read from the "TODO" file you copied from the primary so the current configuration should match the configuration
-     values you entered there.
-   - Asked for the SP signing certificate if it is not already in the Certificate Store. Choose import to import the
-     .pfx file you brought from the secondary.
-   - Register the plugin with the AD FS service
+     read from the "CurrentSettings.json" file you copied from the primary so the current configuration should match
+     the configuration values you entered there.
+   - Stop the AD FS service
    - Install the 2.x version of the plugin.
-   - Restart the AD FS service
+   - Start the AD FS service
 3. Verify that the AD FS service starts
 4. In the logs of the AD FS service verify the plugin is being loaded
 5. In the logs of hte AD FS plugin verify that the plugin was successfully initialized
 
-Repeat this same process on any other AD FS secondary you have.
+Repeat this same process on any other AD FS secondary servers you have.
 
 
 Changing the plugin configuration
 =================================
 
 Each plugin stores it's configuration on the AD FS server locally in the /Windows/ADFS directory. The configuration is
-only read when the plugin is loaded by the AD FS service. This means the AD FS service must be restarted after making
-changes to the plugin configuration.
+only read when the plugin is loaded by the AD FS service (i.e. when the AD FS service starts). This means the AD FS
+service must be restarted after making changes to the plugin configuration.
 
 You typically want the configuration of the plugin to be the same on each AD FS server in the farm. So if you make a
 change to the plugin in one AD FS servers, you want to repeat the change on each other server. You can use the
-"TODO current settings" file to transport settings between AD FS servers.
+"CurrentSettings.json" file to transport plugin settings between AD FS servers.
 
 Change the configuration of the plugin by running the setup program in "reconfigure" mode.
 1. Open an elevated command prompt on the AD FS server where you want to change the configuration
 2. Change to the directory where you unpacked the 2.0 version of the plugin and run "setup.exe -r" to install the
    plugin. This command:
    - Allows you to change each of the configuration settings of the plugin
-   - Restart the AD FS service
+   - Restarts the AD FS service
 
 
 Uninstalling the plugin configuration
@@ -139,10 +152,11 @@ Uninstalling the plugin configuration
 
 1. Start the uninstallation process on the primary AD FS Server. The AD FS service must be running
 2. Open an elevated command prompt on the AD FS server
-3. Change to the directory where you unpacked the 2.0 version of the plugin and run "setup.exe -x" to uninstall the
+3. Change to the directory where you unpacked the 2.0 version of the plugin and run "Setup.exe -x" to uninstall the
    plugin. This command will:
    - Deregister the AD FS plugin with the AD FS service
-   - Remove the Plugin files from the \Windows\ADFS directory. Removed files are moved to the "backupyyyy-mmm-ddThhmmss" directory
+   - Remove the Plugin files from the \Windows\ADFS directory. Removed files are moved to the "backupyyyy-mmm-ddThhmmss"
+     directory
    - Restart the AD FS service
 
 Repeat the command on each AD FS secondary server to remove the plugin's file from the \Windows\ADFS directory and
@@ -155,20 +169,20 @@ Diagnostics / troubleshooting
 Problems during installation:
 
 - The setup program stores a log of all actions performed in "MFA-extension.SetupLog.txt" in the same directory as the
-  "setup.exe" program.
-- The setup program creates a backup of the files it removes or modifies in "backupyyyy-mmm-ddThhmmss" directory
+  "Setup.exe" program.
+- The setup program creates a backup of the files it removes or modifies in "backupyyyy-mmm-ddThhmmss" directory in the
+  SetupPackage
 - Registration with the Setup.exe program (or PowerShell) produces "StepUp.RegistrationLog.txt" in the same directory
-  as the plugin.dll (i.e. "dist" directory of setup.exe or the ADFS directory). It always overwrites, check timestamps.
+  as the plugin.dll (i.e. "dist" directory of setup.exe or the ADFS directory respectively). It always overwrites,
+  check timestamps.
 
 You can run the setup program in check mode to diagnose installation issues. This does not make any changes:
 
 1. Open an elevated command prompt on the AD FS server
-2. Change to the directory where you unpacked the 2.0 version of the plugin and run "setup.exe -c".
+2. Change to the directory where you unpacked the 2.0 version of the plugin and run "Setup.exe -c".
 
-- You can run the setup program in repair mode to try to fix (repair) an existing 2.x installation:
-
-1. Open an elevated command prompt on the AD FS server
-2. Change to the directory where you unpacked the 2.0 version of the plugin and run "setup.exe -f".
+If there is an issue with the registration of the plugin, try rerunning the installation (i.e. "Setup.exe -i").
+Otherwise and uninstall ("Setup.exe -x") followed by an install ("Setup.exe -i") should solve the issue.
 
 
 Problems with the plugin
