@@ -14,73 +14,70 @@
 * limitations under the License.
 */
 
-using System;
-using System.Security.Claims;
-
 namespace SURFnet.Authentication.Adfs.Plugin.Repositories
 {
+    using System;
     using System.DirectoryServices;
     using System.DirectoryServices.AccountManagement;
+    using System.Security.Claims;
 
-    using SURFnet.Authentication.Adfs.Plugin.Properties;
+    using SURFnet.Authentication.Adfs.Plugin.Setup.Common.Exceptions;
+    using SURFnet.Authentication.Adfs.Plugin.Configuration;
 
     /// <summary>
     /// Data access for the active directory.
     /// </summary>
-    public class ActiveDirectoryRepository
+    public static class ActiveDirectoryRepository
     {
-        /// <summary>
-        /// Gets the user identifier for the given identity.
-        /// </summary>
-        /// <param name="identityClaim">The identity claim.</param>
-        /// <returns>A user id.</returns>
-        public string GetUserIdForIdentity(Claim identityClaim)
+        static public bool TryGetAttributeValue(string domain, string windowsaccountname, string attributename, out string attributevalue, out string error)
         {
-            if (string.IsNullOrWhiteSpace(Settings.Default.ActiveDirectoryUserIdAttribute))
+            bool rc = false;
+
+            attributevalue = null;
+            error = null;
+            using (var ctx = new PrincipalContext(ContextType.Domain, domain))
             {
-                throw new Exception(
-                    "The setting 'ActiveDirectoryUserIdAttribute' is not properly set in the application settings");
-            }
-
-            var userId = this.GetUserIdFromActiveDirectory(identityClaim);
-            return userId;
-        }
-
-        /// <summary>
-        /// Gets the user identifier from active directory.
-        /// </summary>
-        /// <param name="identityClaim">The identity claim.</param>
-        /// <returns>The user id.</returns>
-        private string GetUserIdFromActiveDirectory(Claim identityClaim)
-        {
-            string userId;
-            var domainName = identityClaim.Value.Split('\\')[0];
-            
-            var ctx = new PrincipalContext(ContextType.Domain, domainName);
-            var currentUser = UserPrincipal.FindByIdentity(ctx, identityClaim.Value);
-
-            if (currentUser == null)
-            {
-                // This should never happen, but just to be sure
-                throw new Exception($"User '{identityClaim.Value}' not found in active directory '{Settings.Default.ActiveDirectoryName}'");
-            }
-
-            using (var entry = currentUser.GetUnderlyingObject() as DirectoryEntry)
-            {
-                if (entry == null)
+                error = $"TryGetAttributeValue() lastOK: new PrincipalContext( {domain})";
+                var currentUser = UserPrincipal.FindByIdentity(ctx, windowsaccountname);
+                if (null != currentUser)
                 {
-                    throw new Exception("Cannot get the properties from active directory. Reason: it's not a DirectoryEntry type");
+                    error = $"TryGetAttributeValue() lastOK: UserPrincipal.FindByIdentity( ,{windowsaccountname})";
+                    using (DirectoryEntry de = currentUser.GetUnderlyingObject() as DirectoryEntry)
+                    {
+                        // according to documentation this cannot happen, it should have thrown!
+                        if (de == null)
+                        {
+                            error = "Bug: no underlying DirectoryEntry!" + windowsaccountname;
+                        }
+                        else if (de.Properties.Contains(attributename))
+                        {
+                            attributevalue = de.Properties[attributename].Value.ToString();
+                            if ( string.IsNullOrWhiteSpace(attributevalue) )
+                            {
+                                error = $"'{attributename}' IsNullOrWhiteSpace()";
+                            }
+                            else
+                            {
+                                rc = true;   // the only perfect result.
+                                error = null;
+                            }
+                        }
+                        else
+                        {
+                            // Operational (functional) error. The account does not have the attribute.
+                            // Do not report or set an error. That is up to the caller!
+                            error = $"'{attributename}' not present";
+                        }
+                    }
                 }
-
-                if (!entry.Properties.Contains(Settings.Default.ActiveDirectoryUserIdAttribute))
+                else
                 {
-                    throw new Exception($"Property '{Settings.Default.ActiveDirectoryUserIdAttribute}' not found in the active directory. Please add the property or update the plugin configuration");
+                    // Unthinkable, the user was there in ADFS!!
+                    error = "BUG, did not find the account in AD: " + windowsaccountname;
                 }
-
-                userId = entry.Properties[Settings.Default.ActiveDirectoryUserIdAttribute].Value.ToString();
             }
 
-            return userId;
+            return rc;
         }
     }
 }

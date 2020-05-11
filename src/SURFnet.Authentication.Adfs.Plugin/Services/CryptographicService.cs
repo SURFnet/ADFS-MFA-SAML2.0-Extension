@@ -20,18 +20,25 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
     using System.Security.Cryptography.X509Certificates;
     using System.Text;
 
-    using Kentor.AuthServices;
-
     using log4net;
 
+    using SURFnet.Authentication.Adfs.Plugin.Setup.Common.Exceptions;
+    using SURFnet.Authentication.Adfs.Plugin.Configuration;
     using SURFnet.Authentication.Adfs.Plugin.Models;
-    using SURFnet.Authentication.Adfs.Plugin.Properties;
+
+    using Sustainsys.Saml2;
 
     /// <summary>
     /// Handles the signing.
     /// </summary>
-    public class CryptographicService : IDisposable
+    public sealed class CryptographicService : IDisposable
     {
+        /// <summary>
+        /// Gets the signing algorithm for the SAML request.
+        /// </summary>
+        /// <value>The signing algorithm.</value>
+        private const string SigningAlgorithm = "http://www.w3.org/2001/04/xmldsig-more#rsa-sha256";
+
         /// <summary>
         /// To enable SHA256 signatures in the SAML Library we need to enable this only once.
         /// </summary>
@@ -43,36 +50,60 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
         private readonly ILog log;
 
         /// <summary>
-        /// Gets the signing algorithm for the SAML request.
-        /// </summary>=
-        /// <value>The signing algorithm.</value>
-        private string sigAlgoritm = "http://www.w3.org/2001/04/xmldsig-more#rsa-sha256";
-
-        /// <summary>
         /// Contains the signing certificate.
         /// </summary>
         private X509Certificate2 signingCertificate;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="CryptographicService"/> class.
-        /// </summary>
-        public CryptographicService()
-        {
-            this.EnableSha256Support();
+        private CryptographicService() { }  // hide
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CryptographicService" /> class.
+        /// </summary>
+        /// <param name="certificateService">The certificate service.</param>
+        public CryptographicService(X509Certificate2 certificate)
+        {
+            signingCertificate = certificate;
+            EnableSha256Support();
             this.log = LogManager.GetLogger("CryptographicService");
-            this.LoadCertificate();
+
+            if (certificate == null)
+                LogService.Log.Fatal("cert==null .ctor CryptographicService");
         }
+
+        /// <summary>
+        /// Creates a CryptographicService for the certificate thumbprint.
+        /// Only call this when it is absolutely there, because it was verified before!
+        /// </summary>
+        /// <param name="thumbprint">The verified thumbprint for a valid certificate.</param>
+        /// <returns>A service, ready to run.</returns>
+        //public static CryptographicService Create(string thumbprint)
+        //{
+        //    CryptographicService rc = null; // just for idiots that did not check. It will throw-up on the first test!
+
+        //    if (CertificateService.IsValidThumbPrint(thumbprint, out string error))
+        //    {
+        //        var certWrapper = new CertificateService(thumbprint);
+        //        if (certWrapper.TryGetCertificate(false)) // generic fetch, we do not care about the key.
+        //        {
+        //            rc = new CryptographicService(certWrapper.Cert);
+        //        }
+        //        // else:  return a null and kill the caller!
+        //    }
+
+        //    return rc;
+        //}
 
         /// <summary>
         /// Signs the SAML request.
         /// </summary>
         /// <param name="authRequest">The authentication request.</param>
-        /// <returns>Signed Xml.</returns>
+        /// <returns>
+        /// The signed XML.
+        /// </returns>
         public string SignSamlRequest(Saml2AuthenticationSecondFactorRequest authRequest)
         {
             var xmlDoc = XmlHelpers.XmlDocumentFromString(authRequest.ToXml());
-            xmlDoc.Sign(this.signingCertificate, true, this.sigAlgoritm);
+            xmlDoc.Sign(this.signingCertificate, true, SigningAlgorithm);
             var xml = xmlDoc.OuterXml;
             var encodedXml = Convert.ToBase64String(Encoding.UTF8.GetBytes(xml));
             return encodedXml;
@@ -83,70 +114,40 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
         /// </summary>
         public void Dispose()
         {
+            this.signingCertificate.Dispose();
             this.signingCertificate = null;
         }
 
         /// <summary>
         /// To enable SHA256 signatures in the SAML Library we need to enable this only once.
         /// </summary>
-        private void EnableSha256Support()
+        private static void EnableSha256Support()
         {
             if (isSha265Enabled)
             {
                 return;
             }
 
-            Kentor.AuthServices.Configuration.Options.GlobalEnableSha256XmlSignatures();
+            /// TODO: Double check if indeed now default if not specified in config (Plem)
+            //Sustainsys.Saml2.Configuration.Options.GlobalEnableSha256XmlSignatures();
             isSha265Enabled = true;
         }
 
         /// <summary>
-        /// Loads the signing certificate.
+        /// Loads the certificate.
         /// </summary>
-        private void LoadCertificate()
-        {
-            this.log.DebugFormat("Search siginging certificate with thumbprint '{0}' in the 'LocalMachine' 'My' store.", Settings.Default.SpSigningCertificate);
-            var store = new X509Store(StoreName.My, StoreLocation.LocalMachine);
-            store.Open(OpenFlags.ReadOnly);
-            try
-            {
-                var cert = this.GetCertificateWithPrivateKey(store);
-                this.signingCertificate = cert;
-                this.log.DebugFormat("Found signing certificate with thumbprint '{0}'", Settings.Default.SpSigningCertificate);
-            }
-            catch (Exception e)
-            {
-                this.log.ErrorFormat("Error while loading signing certificate. Details: {0}", e);
-                throw;
-            }
-            finally
-            {
-                this.log.Debug("Closing LocalMachine store");
-                store.Close();
-            }
-        }
-
-        /// <summary>
-        /// Gets the certificate with private key.
-        /// </summary>
-        /// <param name="store">The certificate store.</param>
-        /// <returns>A certificate for signing the SAML authentication request.</returns>
-        private X509Certificate2 GetCertificateWithPrivateKey(X509Store store)
-        {
-            var thumbprint = Settings.Default.SpSigningCertificate;
-            var certCollection = store.Certificates.Find(X509FindType.FindByThumbprint, thumbprint, false);
-            if (certCollection.Count == 0)
-            {
-                throw new Exception($"No certificate found with thumbprint '{Settings.Default.SpSigningCertificate}'");
-            }
-
-            var cert = certCollection[0];
-            if (!cert.HasPrivateKey)
-            {
-                throw new Exception($"Certificate with thumbprint '{Settings.Default.SpSigningCertificate}' doesn't have a private key.");
-            }
-
-            return cert;
-        }
+        /// <param name="certificateService">The certificate service.</param>
+        ////private void LoadCertificate(ICertificateService certificateService)
+        ////{
+        ////    try
+        ////    {
+        ////        this.signingCertificate = certificateService.GetCertificate(StepUpConfig.Current.LocalSpConfig.SPSigningCertificate);
+        ////    }
+        ////    catch (Exception e)
+        ////    {
+        ////        this.log.FatalFormat("Error while loading signing certificate. Details: {0}", e);
+        ////        throw new InvalidConfigurationException("ERROR_0002", "Error while loading signing certificate", e);
+        ////    }
+        //}
     }
 }

@@ -17,6 +17,7 @@
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using SURFnet.Authentication.Adfs.Plugin.Setup.Common;
 
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
@@ -26,9 +27,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("SURFnet bv")]
 [assembly: AssemblyProduct("SURFnet.Authentication.Adfs.Plugin")]
-[assembly: AssemblyCopyright("Copyright ©  2017")]
+[assembly: AssemblyCopyright("Copyright © SURFnet bv 2017-2020")]
 [assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("nl-NL")]
+[assembly: AssemblyCulture("neutral")]
 
 // Setting ComVisible to false makes the types in this assembly not visible 
 // to COM components.  If you need to access a type in this assembly from 
@@ -48,5 +49,8 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.0.1.0")]
-[assembly: log4net.Config.XmlConfigurator(ConfigFile = "SURFnet.Authentication.ADFS.MFA.Plugin.log4net")]
+[assembly: AssemblyVersion("1.0.1.0")]   // Do NOT CHANGE!!
+// Shows as "Product version" in the File Explorer
+[assembly: AssemblyInformationalVersion(Values.ProductVersion)]
+// Shows as "File version" in the File Explorer
+[assembly: AssemblyFileVersion(Values.FileVersion)]

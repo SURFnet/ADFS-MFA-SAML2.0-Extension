@@ -1,19 +1,41 @@
 Version 2.0.2
-Mergin branch 1.0 into 2.0.1
+- Fix: Typing errors in the IdP selection file.
+- Fix: Missing Dispose() in AD code
+- Fix: Commas and quotes in json registration data.
+- Fix: Failing to copy IdP metadata file when using "-r"
+- Fix: Outdated metadata files in config directory.
+- Fix: Error in dealing with 2.0.0.0
 
-Version 2.0 (plugin version 1.0.0.0)
-Added MSI installer to deploy the setup files and PowerShell Module.
+Version 2.0.1
+- Fix: Adapter is registered in AD FS with the wrong configuration
+- Adapter registration now fails when SURFnet.Authentication.ADFS.Plugin.config.xml is missing
+- New bug: does not deal correctly with 2.0.0. Can use "setup -x" of 2.0.0.0 to remove 2.0.0.0
+
+
+Version 2.0.0
+- Replace the powershell based installation script with a CLI based setup.exe
+- Support upgrading from version 1.0 and 1.0.1
+- Fix: some changes are not applied when the plugin is reconfigured
+- Updated Sustainsys to version 2.7.0
+- Fix: looking up a user does not work cross domain or cross forest
+- Support a second IdP certificate to be configured
+- Logging improvements:
+  - Many improvements to the messages being logged by the plugin
+  - The current configuration anf version is logged when the plugin is loaded by the AD FS server
+  - By default debug messages are not logged
+- Improved error handling when a user could not be found in AD
+
+Notes:
+- Please see README.md for installation and upgrade instructions.
+  The best way to upgrade from version 1.0(.1) to 2.0 is to use the setup.exe from version 2.x to do the upgrade.
+  Do NOT uninstall version 1.0(.1) using the uninstall script from version 1.0(.1)
+- The format of the configuration files was changed
+
 
 Version 1.0.1
-Add LoA identifiers for the SURFsecureID public test environment
+- Add LoA identifiers for the SURFsecureID public test environment
+
 
 Version 1.0
-First public release
-Fix issues that were found during security audit
-
-Version 0.2 (plugin version 2.0.0.0)
-Allow the extension to work directly with Stepup-Gateway, removing the need for the "Authentication Services".
-Requires Stepup-Gateway version 2.7.0
-
-Version 0.1 (plugin version 1.0.0.0)
-Initial release
+- First public release
+- Fix issues that were found during security audit

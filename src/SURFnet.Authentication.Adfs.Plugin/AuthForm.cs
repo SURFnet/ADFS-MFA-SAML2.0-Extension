@@ -17,17 +17,16 @@
 namespace SURFnet.Authentication.Adfs.Plugin
 {
     using System;
+    using System.Text;
 
     using log4net;
 
     using Microsoft.IdentityServer.Web.Authentication.External;
 
-    using Properties;
-
     /// <summary>
     /// The presentation form for the adapter.
     /// </summary>
-    /// <seealso cref="Microsoft.IdentityServer.Web.Authentication.External.IAdapterPresentationForm" />
+    /// <seealso cref="IAdapterPresentationForm" />
     public class AuthForm : IAdapterPresentationForm
     {
         /// <summary>
@@ -66,10 +65,12 @@ namespace SURFnet.Authentication.Adfs.Plugin
         public string GetFormHtml(int lcid)
         {
             this.log.DebugFormat("Rendering form for posting request to '{0}'", this.serviceUrl);
-            var form = Resources.AuthForm;
-            form = form.Replace("%FormUrl%", System.Net.WebUtility.HtmlEncode(this.serviceUrl.ToString()));
-            form = form.Replace("%SAMLRequest%", this.signedXml);
-            return form;
+            var builder = new StringBuilder(Resources.GetForm("AuthForm"));
+            builder.Replace("%FormUrl%", System.Net.WebUtility.HtmlEncode(this.serviceUrl.ToString()));
+            builder.Replace("%SAMLRequest%", this.signedXml);
+            builder.Replace("%NoJavascript%", Resources.GetLabel(lcid, "NoJavascript"));
+            builder.Replace("%OneMomentPlease%", Resources.GetLabel(lcid, "OneMomentPlease"));
+            return builder.ToString();
         }
 
         /// <summary>
@@ -89,7 +90,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
         /// <returns>The page title.</returns>
         public string GetPageTitle(int lcid)
         {
-            return "Working...";
+            return Resources.GetLabel(lcid, "Working");
         }
     }
 }

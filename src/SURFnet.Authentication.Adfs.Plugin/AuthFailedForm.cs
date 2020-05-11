@@ -16,36 +16,52 @@
 
 namespace SURFnet.Authentication.Adfs.Plugin
 {
+    using System.Text;
+
     using Microsoft.IdentityServer.Web.Authentication.External;
 
-    using Properties;
+    using SURFnet.Authentication.Adfs.Plugin.Setup.Common;
 
     /// <summary>
     /// The presentation form for the adapter.
     /// </summary>
-    /// <seealso cref="Microsoft.IdentityServer.Web.Authentication.External.IAdapterPresentationForm" />
+    /// <seealso cref="IAdapterPresentationForm" />
     public class AuthFailedForm : IAdapterPresentationForm
     {
         /// <summary>
-        /// The status message.
+        /// Indicate whether the error is transient and the request can be executed again.
+        /// Note: not implemented for now, cause the responses from the Stepup gateway are subject to change.
         /// </summary>
-        private string statusMessage;
+        private readonly bool isTransient;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="AuthFailedForm"/> class.
+        /// The message resource identifier to display a localized message to the user.
         /// </summary>
-        public AuthFailedForm()
-        {
-            
-        }
+        private readonly string messageResourceId;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="AuthFailedForm"/> class.
+        /// The context identifier.
         /// </summary>
-        /// <param name="statusMessage">The status message.</param>
-        public AuthFailedForm(string statusMessage)
+        private readonly string contextId;
+
+        /// <summary>
+        /// The activity identifier.
+        /// </summary>
+        private readonly string activityId;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AuthFailedForm" /> class.
+        /// </summary>
+        /// <param name="isTransient">if set to <c>true</c> [is transient].</param>
+        /// <param name="messageResourceId">The message resource identifier.</param>
+        /// <param name="contextId">The context identifier.</param>
+        /// <param name="activityId">The activity identifier.</param>
+        public AuthFailedForm(bool isTransient, string messageResourceId, string contextId, string activityId)
         {
-            this.statusMessage = statusMessage;
+            this.isTransient = isTransient;
+            this.messageResourceId = messageResourceId;
+            this.contextId = contextId;
+            this.activityId = activityId;
         }
 
         /// <summary>
@@ -55,15 +71,16 @@ namespace SURFnet.Authentication.Adfs.Plugin
         /// <returns>The form HTML.</returns>
         public string GetFormHtml(int lcid)
         {
-            var message = "Er is een onherstelbare fout opgetreden. Probeer het opnieuw.";
-            if (!string.IsNullOrWhiteSpace(this.statusMessage))
+            var message = Resources.GetLabel(lcid, this.messageResourceId, this.contextId, this.activityId);
+            if (string.IsNullOrWhiteSpace(message))
             {
-                message = $"De verificatie is mislukt vanwege de volgende reden:\n{this.statusMessage}";
+                message = Resources.GetLabel(lcid, Values.DefaultErrorMessageResourcerId, this.contextId, this.activityId);
             }
-
-            var form = Resources.AuthFailedForm;
-            form = form.Replace("{message}", message);
-            return form;
+            
+            var builder = new StringBuilder(Resources.GetForm("AuthFailedForm"));
+            builder.Replace("{message}", message);
+            builder.Replace("{AuthFailedFormTitle}", Resources.GetLabel(lcid, "AuthFailedFormTitle"));
+            return builder.ToString();
         }
 
         /// <summary>
@@ -83,7 +100,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
         /// <returns>The page title.</returns>
         public string GetPageTitle(int lcid)
         {
-            return "Authentication failed";
+            return Resources.GetLabel(lcid, "AuthFailedFormTitle");
         }
     }
 }

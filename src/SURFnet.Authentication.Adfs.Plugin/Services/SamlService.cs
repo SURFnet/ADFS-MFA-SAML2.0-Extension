@@ -14,25 +14,23 @@
 * limitations under the License.
 */
 
-using System;
-
 namespace SURFnet.Authentication.Adfs.Plugin.Services
 {
-    using System.Collections.Generic;
+    using System;
     using System.Diagnostics.CodeAnalysis;
-    using System.IdentityModel.Tokens;
     using System.Linq;
     using System.Security.Claims;
+    using Microsoft.IdentityModel.Tokens.Saml2;
 
-    using Kentor.AuthServices;
-    using Kentor.AuthServices.Configuration;
-    using Kentor.AuthServices.Saml2P;
+    using SURFnet.Authentication.Adfs.Plugin.Setup.Common.Exceptions;
+    using Configuration;
+    using Models;
 
     using log4net;
 
-    using SURFnet.Authentication.Adfs.Plugin.Models;
-    using SURFnet.Authentication.Adfs.Plugin.Properties;
-    using SURFnet.Authentication.Adfs.Plugin.Repositories;
+    using Sustainsys.Saml2;
+    using Sustainsys.Saml2.Configuration;
+    using Sustainsys.Saml2.Saml2P;
 
     /// <summary>
     /// Creates the SAML assertions and processes the response.
@@ -47,52 +45,68 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
         /// <summary>
         /// Creates the SAML authentication request with the correct name identifier.
         /// </summary>
-        /// <param name="identityClaim">The identity claim.</param>
+        /// <param name="userid">The stepup userid as found in the active Directory.</param>
         /// <param name="authnRequestId">The AuthnRequest identifier.</param>
         /// <param name="ascUri">The asc URI.</param>
-        /// <returns>The authentication request.</returns>
-        public static Saml2AuthenticationSecondFactorRequest CreateAuthnRequest(Claim identityClaim, string authnRequestId, Uri ascUri)
+        /// <returns>
+        /// The authentication request.
+        /// </returns>
+        public static Saml2AuthenticationSecondFactorRequest CreateAuthnRequest(string userid, string authnRequestId, Uri ascUri)
         {
-            var serviceproviderConfiguration = Kentor.AuthServices.Configuration.Options.FromConfiguration;
-            Log.DebugFormat("Creating AuthnRequest for identity '{0}'", identityClaim.Value);
-            var nameIdentifier = new Saml2NameIdentifier(GetNameId(identityClaim), new Uri("urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified"));
+            string stepupNameID = GetNameId(userid);  // TODO: This code should move up to the adapter, should not be in SAML code
+
+            var nameIdentifier = new Saml2NameIdentifier(stepupNameID, new Uri("urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified"));
+            Log.DebugFormat("Creating AuthnRequest for NameID '{0}'", nameIdentifier);
+
+            // This was testes in constructors!!!
+            var samlConfiguration = Options.FromConfiguration;
+            if (samlConfiguration == null)
+            {
+                throw new InvalidConfigurationException("ERROR_0002", "The SAML configuration could not be loaded");
+            }
+
+            // Should have been tested in constructors!
+            var spConfiguration = samlConfiguration.SPOptions;
+            if (spConfiguration == null)
+            {
+                throw new InvalidConfigurationException("ERROR_0002", "The service provider section of the SAML configuration could not be loaded");
+            }
 
             var authnRequest = new Saml2AuthenticationSecondFactorRequest
             {
-                DestinationUrl = Settings.Default.SecondFactorEndpoint,
+                DestinationUrl = Sustainsys.Saml2.Configuration.Options.FromConfiguration.IdentityProviders.Default.SingleSignOnServiceUrl,
+                //DestinationUrl = StepUpConfig.Current.StepUpIdPConfig.SecondFactorEndPoint,
                 AssertionConsumerServiceUrl = ascUri,
-                Issuer = serviceproviderConfiguration.SPOptions.EntityId,
-                RequestedAuthnContext = new Saml2RequestedAuthnContext(Settings.Default.MinimalLoa, AuthnContextComparisonType.Exact),
+                Issuer = spConfiguration.EntityId,
+                RequestedAuthnContext = new Saml2RequestedAuthnContext(StepUpConfig.Current.MinimalLoa, AuthnContextComparisonType.Minimum),
                 Subject = new Saml2Subject(nameIdentifier),
             };
             authnRequest.SetId(authnRequestId);
 
-            Log.InfoFormat("Created AuthnRequest for '{0}' with id '{1}'", identityClaim.Value, authnRequest.Id.Value);
+            Log.DebugFormat("Created AuthnRequest for '{0}' with id '{1}'", userid, authnRequest.Id.Value);
             return authnRequest;
         }
-        
+
         /// <summary>
-        /// Verifies the response and gets authentication claim from the response.
+        /// Verifies the response and gets the first claim of the requested type from the response.
         /// </summary>
         /// <param name="samlResponse">The SAML response.</param>
-        /// <returns>The authentication claim.</returns>
-        public static Claim[] VerifyResponseAndGetAuthenticationClaim(Saml2Response samlResponse)
+        /// <param name="claimType">The type of claim to look for.</param>
+        /// <returns>
+        /// The authentication claim.
+        /// </returns>
+        public static Claim[] VerifyResponseAndGetAuthenticationClaim(Saml2Response samlResponse, string claimType = "http://schemas.microsoft.com/ws/2008/06/identity/claims/authenticationmethod")
         {
             // The response is verified when the claims are retrieved.
-            var responseClaims = samlResponse.GetClaims(Kentor.AuthServices.Configuration.Options.FromConfiguration).ToList();
+            var responseClaims = samlResponse.GetClaims(Options.FromConfiguration).ToList();
 
-            var claims = new List<Claim>();
-            foreach (var claimsIdentity in responseClaims)
-            {
-                var authClaim = claimsIdentity.Claims.FirstOrDefault(c => c.Type.Equals("http://schemas.microsoft.com/ws/2008/06/identity/claims/authenticationmethod"));
-                if (authClaim != null)
-                {
-                    claims.Add(authClaim);
-                    break;
-                }
-            }
+            // Get the first response claim where the type is right
+            var authClaim = responseClaims
+                .Select(claimsIdentity => claimsIdentity.Claims.FirstOrDefault(c =>
+                    c.Type.Equals(claimType)))
+                .FirstOrDefault(a => a != null);
 
-            return claims.ToArray();
+            return authClaim == null ? Array.Empty<Claim>() : new[] { authClaim };
         }
 
         /// <summary>
@@ -106,12 +120,12 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
             var providers = serviceProviderConfiguration.IdentityProviders.KnownIdentityProviders.ToList();
             if (providers.Count == 0)
             {
-                throw new Exception("No identity providers found. Add the SURFConext identity provider before using Second Factor Authentication");
+                throw new InvalidConfigurationException("ERROR_0002", "No identity providers found. Add the SURFConext identity provider before using Second Factor Authentication");
             }
 
             if (providers.Count > 1)
             {
-                throw new Exception("Too many identity providers found. Add only the SURFConext identity provider");
+                throw new InvalidConfigurationException("ERROR_0002", "Too many identity providers found. Add only the SURFConext identity provider");
             }
 
             return providers[0];
@@ -122,10 +136,9 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
         /// </summary>
         /// <param name="identityClaim">The identity claim.</param>
         /// <returns>A name identifier.</returns>
-        private static string GetNameId(Claim identityClaim)
+        private static string GetNameId(string userid)
         {
-            var repository = new ActiveDirectoryRepository();
-            var nameid = $"urn:collab:person:{Settings.Default.schacHomeOrganization}:{repository.GetUserIdForIdentity(identityClaim)}";
+            var nameid = $"urn:collab:person:{StepUpConfig.Current.SchacHomeOrganization}:{userid}";
 
             nameid = nameid.Replace('@', '_');
             return nameid;

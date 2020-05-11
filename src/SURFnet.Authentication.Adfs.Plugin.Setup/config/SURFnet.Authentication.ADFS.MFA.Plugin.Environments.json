@@ -1,0 +1,23 @@
+[
+  {
+    "Name": "Production",
+    "MinimalLoa": "http://surfconext.nl/assurance/sfo-level2",
+    "IdPSSOLocation": "https://sa-gw.surfconext.nl/second-factor-only/single-sign-on",
+    "IdPentityId": "https://sa-gw.surfconext.nl/second-factor-only/metadata",
+    "IdPMdFilename": "sa-gw.surfconext.nl.xml" 
+  },
+  {
+    "Name": "Pilot",
+    "MinimalLoa": "http://pilot.surfconext.nl/assurance/sfo-level2",
+    "IdPSSOLocation": "https://gateway.pilot.stepup.surfconext.nl/second-factor-only/single-sign-on",
+    "IdPentityId": "https://gateway.pilot.stepup.surfconext.nl/second-factor-only/metadata",
+    "IdPMdFilename": "gateway.pilot.stepup.surfconext.nl.xml"
+  },
+  {
+    "Name": "Test",
+    "MinimalLoa": "http://test.surfconext.nl/assurance/sfo-level2",
+    "IdPSSOLocation": "https://sa-gw.test.surfconext.nl/second-factor-only/single-sign-on",
+    "IdPentityId": "https://sa-gw.test.surfconext.nl/second-factor-only/metadata",
+    "IdPMdFilename": "sa-gw.test.surfconext.nl.xml"
+  }
+]

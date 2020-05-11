@@ -1,0 +1,171 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{9CAB3115-6BE7-4A01-BEF1-5D506F943361}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>SURFnet.Authentication.Adfs.Plugin.Setup</RootNamespace>
+    <AssemblyName>SURFnet.Authentication.Adfs.Plugin.Setup</AssemblyName>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;LOCAL</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>..\..\SolutionItems\SURFnet.Authentication.Adfs.Plugin.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <PropertyGroup />
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="log4net, Version=2.0.8.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.EnterpriseServices" />
+    <Reference Include="System.Management" />
+    <Reference Include="System.Management.Automation, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Windows\Microsoft.NET\assembly\GAC_MSIL\System.Management.Automation\v4.0_3.0.0.0__31bf3856ad364e35\System.Management.Automation.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Security" />
+    <Reference Include="System.ServiceProcess" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AdfsServer.cs" />
+    <Compile Include="Configuration\AdapterMaintenance.cs" />
+    <Compile Include="Configuration\AnyControllerUtils.cs" />
+    <Compile Include="Configuration\CertCreate.cs" />
+    <Compile Include="Configuration\CertExport.cs" />
+    <Compile Include="Configuration\CertImportPfx.cs" />
+    <Compile Include="Configuration\CertMethodController.cs" />
+    <Compile Include="Configuration\EnsureEventLog.cs" />
+    <Compile Include="Configuration\IdPChoiceController.cs" />
+    <Compile Include="Configuration\IdpChoiceHandler.cs" />
+    <Compile Include="Configuration\CertFromStore.cs" />
+    <Compile Include="Configuration\SettingCollector.cs" />
+    <Compile Include="Configuration\SPCertController.cs" />
+    <Compile Include="FileDirectory.cs" />
+    <Compile Include="Models\AdfsConfiguration.cs" />
+    <Compile Include="Models\RegistrationData.cs" />
+    <Compile Include="Models\Setting.cs" />
+    <Compile Include="Question\AskYesNo.cs" />
+    <Compile Include="Question\IsThisCorrect.cs" />
+    <Compile Include="Question\OptionList.cs" />
+    <Compile Include="Question\QuestionIO.cs" />
+    <Compile Include="Configuration\SettingController.cs" />
+    <Compile Include="Question\ShowAndGet.cs" />
+    <Compile Include="Question\ShowAndGetChar.cs" />
+    <Compile Include="Question\ShowAndGetDigit.cs" />
+    <Compile Include="Question\ShowAndGetString.cs" />
+    <Compile Include="Question\ShowAndGetYesNo.cs" />
+    <Compile Include="Question\ShowListGetDigit.cs" />
+    <Compile Include="Question\ShowListGetYesNo.cs" />
+    <Compile Include="Services\SetupCertService.cs" />
+    <Compile Include="SetupConstants.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Assemblies\AssemblyList.cs" />
+    <Compile Include="Assemblies\AssemblySpec.cs" />
+    <Compile Include="Assemblies\GACUtil.cs" />
+    <Compile Include="..\SURFnet.Authentication.Adfs.Plugin\Setup\**\*.cs">
+      <Link>%(RecursiveDir)%(FileName)%(Extension)</Link>
+    </Compile>
+    <Compile Include="PS\AdfsAuthnCmds.cs" />
+    <Compile Include="PS\AdfsAuthnMethodDesc.cs" />
+    <Compile Include="PS\AdfsExtAuthProviderProps.cs" />
+    <Compile Include="PS\AdfsGlobAuthPolicy.cs" />
+    <Compile Include="PS\AdfsProperties.cs" />
+    <Compile Include="PS\AdfsPropertiesCmds.cs" />
+    <Compile Include="PS\AdfsSyncProperties.cs" />
+    <Compile Include="PS\AdfsSyncPropertiesCmds.cs" />
+    <Compile Include="PS\PSUtil.cs" />
+    <Compile Include="Services\AdfsPSService.cs" />
+    <Compile Include="Services\ConfigurationFileService.cs" />
+    <Compile Include="Services\FileService.cs" />
+    <Compile Include="Services\LogService.cs" />
+    <Compile Include="SetupFlags.cs" />
+    <Compile Include="Configuration\ConfigSettings.cs" />
+    <Compile Include="Util\UAC.cs" />
+    <Compile Include="Util\XmlUtil.cs" />
+    <Compile Include="Versions\AdapterComponent.cs" />
+    <Compile Include="Versions\ComponentAssemblies.cs" />
+    <Compile Include="Versions\CurrentPublicTokenKey.cs" />
+    <Compile Include="Versions\Kentorv0_21_Component.cs" />
+    <Compile Include="Versions\Log4netV2_0_8GAC.cs" />
+    <Compile Include="Versions\Log4netV2_0_8Component.cs" />
+    <Compile Include="Versions\Sustainsys2_7Deps.cs" />
+    <Compile Include="Versions\Sustainsys2_7MdComponent.cs" />
+    <Compile Include="Versions\Sustainsys2_xComponent.cs" />
+    <Compile Include="Versions\V0Assemblies.cs" />
+    <Compile Include="Versions\V1AdapterImp.cs" />
+    <Compile Include="Versions\V1Components.cs" />
+    <Compile Include="Versions\ISetupHandler.cs" />
+    <Compile Include="Versions\V2_0AdapterImp.cs" />
+    <Compile Include="Versions\AllDescriptions.cs" />
+    <Compile Include="Versions\V2Components.cs" />
+    <Compile Include="Versions\V1DescriptionImp.cs" />
+    <Compile Include="Versions\StepupComponent.cs" />
+    <Compile Include="Versions\V1Assemblies.cs" />
+    <Compile Include="Versions\V2Assemblies.cs" />
+    <Compile Include="Versions\VersionDescription.cs" />
+    <Compile Include="Versions\VersionHeuristics.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+    <None Include="config\SURFnet.Authentication.ADFS.MFA.Plugin.Environments.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="config\gateway.pilot.stepup.surfconext.nl.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="config\sa-gw.surfconext.nl.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="config\sa-gw.test.surfconext.nl.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

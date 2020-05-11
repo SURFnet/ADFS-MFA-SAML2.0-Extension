@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<md:EntityDescriptor xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata" xmlns:mdui="urn:oasis:names:tc:SAML:metadata:ui" ID="idm45959398119184" entityID="https://sa-gw.surfconext.nl/second-factor-only/metadata">
+	<md:IDPSSODescriptor protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
+		<md:KeyDescriptor xmlns:ds="http://www.w3.org/2000/09/xmldsig#" use="signing">
+			<ds:KeyInfo>
+				<ds:X509Data>
+					<ds:X509Certificate>MIIDsjCCAhoCCQDaq/SxtExjXTANBgkqhkiG9w0BAQsFADAbMRkwFwYDVQQDDBBnYXRld2F5X3NhbWxfaWRwMB4XDTIwMDQwOTExNDE1NVoXDTI1MDQwODExNDE1NVowGzEZMBcGA1UEAwwQZ2F0ZXdheV9zYW1sX2lkcDCCAaIwDQYJKoZIhvcNAQEBBQADggGPADCCAYoCggGBAL7dfZ65PjUxW9yRXRoJ0PDiSh2J0WZ792krxj00jJkyB/eFPnVg5hTVbt85qDkkZuiK8Ym0Suzeo1PA46fRALhnajQ22GQzK1mybQIAXZbs739g49QAnoKY+wQW205EPtuQ8Y7BqFg+fmXKKo4gTlpX3FP5PTp18no99kKcCbx8hq9EfaBKdlPOGvFJUFnTalcSm3djHnmn+/KuIMXM4HEgQ6fgHlqsJPWAxBqKBWxvQdTde56dr2T64qNyj7t3u54rTCaip6c3vyTB80w8CK9M5mTTqp/Z+kxqhb255UUpLW1hzySgPfzSE4jtr05olkW+d4oMONKqYxlouUPhoUN5YBL3a1H0c8ns+hg1x5hBB5tWQpwY34ZpH+43RflHXdJ6/MxCY7odMuvcua/4iTyRXPkPoGleqguHx9RVe/yFGa+NvTZIo4YBoOESgcDyjU+XrlkmWmyMpYkn6TPdYMKo/bMQkFAE48JhREdpvHWpIrT1PfUiCy/SLWy0HN0wCQIDAQABMA0GCSqGSIb3DQEBCwUAA4IBgQCPrFBvw53LMd5w2VpdmZCJuHg09uIu5F3Cy8eGg+hTLtb2CC9f66Ue/CsH4qrBFGSuBWdSBWS3fzVwmPYbI882J7JtLXZCOyZFMVKaL2kk5D5pP8/NBCam9+cDnJ4zjYJJS3wcY2VMjH24fNYu+Fix6p4mL8o8itTCqJhb4zz4Ft8GZigxD8DXB/jYUTHWtS5ubMs/mOwxuQ2UE7QFdeE064TqSPpRVI8PBPxetRy5n00/JGFNou/pivUTavRMA3LZpIkxzlcddzf2zUSaWnAGf1JoPxRWjMq5F1C/hZvW7qDX0jrYK7UE3oXi4NHrER0EUFwCS0PrDQRdDEYs/kVZmPsMT9thR0l11B7xU8xFOaYYOdP1tCY2jqBruspx9ApnRI+es5j8Lr/qTbILTe3pVdNgWoNIeIBj2mINQQp0O0TqXSzbWO+nLJSkbZhPZAXyX9ZP00aU4SbnkkGJ29xWeqSL+Jh+rUSyMFU16Ri7gHZce+3VgkgyzvSBQFjfG6U=
+					</ds:X509Certificate>
+				</ds:X509Data>
+			</ds:KeyInfo>
+		</md:KeyDescriptor>
+		<md:KeyDescriptor xmlns:ds="http://www.w3.org/2000/09/xmldsig#" use="signing">
+			<ds:KeyInfo>
+				<ds:X509Data>
+					<ds:X509Certificate>MIICsjCCAZoCCQDHN3+HzElEDDANBgkqhkiG9w0BAQUFADAbMRkwFwYDVQQDFBBnYXRld2F5X3NhbWxfaWRwMB4XDTE1MDcyMzEyMTUxOVoXDTIwMDcyMTEyMTUxOVowGzEZMBcGA1UEAxQQZ2F0ZXdheV9zYW1sX2lkcDCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBALK/JwHWd5JftXYKO9qcTQ4dfKEnl35oJj6PlEyR6gpikdpgm2OY/zy4e7vcXfBChedVF3OUI4rRDWCz4yXT2sldzjuIyONJfA86xva5lxDARqT/+gRBuZ2pyMTb0okvl1G9ZlAjPumVH14591rp6OGT5TJIkILQ/pKp1INdiBqpiR53Z5YvsXEUJ8PHHZyILO00HnBldq0d77lmATr6QamXpbY+CZ9pIw65t32fhFcUfRC68C81/P2crCn3v5GMyrQcM/tB/xdVf/haEZiqgI/bjcreBpQobnAhwEsve+uvbSLFN1Rsc7o0W/7Pn6EGBX1h9rjKjDgqssHuWkVuU4sCAwEAATANBgkqhkiG9w0BAQUFAAOCAQEAmlqfTvEfGDeqqqvuAMDG5IKDo6h21wwByywNbRhimfOvL6FqIgAgx+D3gxW1lO41PcqQQKYIVUEAuYv+tW8COLdHcFRh/UV9ei4iquMwBCkO/XOoMC9FsRBo3yPaQClRK8OYj1IXer4JXNuFHeLblzf+GLYFoqMWWwT2dnBLAePoEgANKUm2aasxyiJmnroNa+O5zTP9ExT3qHphCCG1gh3iHrQu9iSEJxY12zAQYtPomIs8Vk/GBfj+ucUiBEEqaMpCH+t6f0VOIoP1SNHgNAaeBLVuOpS0VlLnwZFJkNPVOQpFgRuoFsH3/9i53Fs3eQreb9wzq2VkjDhhlc5eyA==
+					</ds:X509Certificate>
+				</ds:X509Data>
+			</ds:KeyInfo>
+		</md:KeyDescriptor>
+		<md:SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="https://sa-gw.surfconext.nl/second-factor-only/single-sign-on"/>
+	</md:IDPSSODescriptor>
+	<md:Organization>
+		<md:OrganizationName xml:lang="en">SURFnet BV</md:OrganizationName>
+		<md:OrganizationDisplayName xml:lang="en">SURFnet</md:OrganizationDisplayName>
+		<md:OrganizationURL xml:lang="en">https://www.surfnet.nl</md:OrganizationURL>
+	</md:Organization>
+	<md:ContactPerson contactType="administrative">
+		<md:GivenName>SURFconext support</md:GivenName>
+		<md:EmailAddress>mailto:support@surfconext.nl</md:EmailAddress>
+	</md:ContactPerson>
+	<md:ContactPerson contactType="technical">
+		<md:GivenName>SURFconext support</md:GivenName>
+		<md:EmailAddress>mailto:support@surfconext.nl</md:EmailAddress>
+	</md:ContactPerson>
+	<md:ContactPerson contactType="support">
+		<md:GivenName>SURFconext support</md:GivenName>
+		<md:EmailAddress>mailto:help@surfconext.nl</md:EmailAddress>
+	</md:ContactPerson>
+</md:EntityDescriptor>
