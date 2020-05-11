@@ -24,13 +24,14 @@ Precompiled versions of the extension can be downloaded from the
 [github releases page](https://github.com/SURFnet/ADFS-MFA-SAML2.0-Extension/releases).
 Note that these prebuild versions are targeted to SURFnet's SURFsecureID,
 and contain SURFsecureID specific configuration.
-Since version 2.0 of the plugin you no longer need to recompile the plugin
-to support other Stepup installations. To use the setup program
-with your own environments, update the included 
-    SURFnet.Authentication.MFA.plugin.Environments.json
-file with the configuration for your own installation.
+However, since version 2.0 of the plugin you no longer need to recompile
+the plugin to support other Stepup installations. To use the setup program
+with your own environments, update the "SURFnet.Authentication.MFA.plugin.Environments.json"
+file in the "conf" directory of the SetupPackage with the configuration
+for your own installation(s).
+The SetupPackage-2.x.x has been codesigned with "SURFnet bv".
 
-Latest release 2.0.1.0: [SetupPackage-2.0.1.zip TODO](https://github.com/SURFnet/ADFS-MFA-SAML2.0-Extension/releases/download/2.0.0/SetupPackage-2.0.1.zip)
+Latest release 2.0.2: [SetupPackage-2.0.2.zip](https://github.com/SURFnet/ADFS-MFA-SAML2.0-Extension/releases/download/2.0.2/SetupPackage-2.0.2.exe)
 
 
 Installation and upgading
@@ -56,6 +57,9 @@ for troubleshooting:
 Building from Source
 ====================
 
+* Use Visual Studio 2017 or 2019 with ".NET desktop development"
+  workload to open the solution. We currently use the "Visual Studio 2017 Community edition"
+
 * This project uses the NuGet package manager. Before building you must
   Restore the NuGet packages (e.g. run "nuget restore" from the console).
 
@@ -64,7 +68,14 @@ Building from Source
   - Put your .snk in SolutionItems/SURFnet.Authentication.Adfs.Plugin.snk
   - Use SignSustainsys.cmd to sign the Sustainsys component
   
-* Now you can build
+* Update "src\SURFnet.Authentication.Adfs.Plugin.Setup\Versions\CurrentPublicTokenKey.cs"
+  with the PublicKeyToken of your SolutionItems/SURFnet.Authentication.Adfs.Plugin.snk
+
+* To make a release, run the SolutionItems/MakeRelease.cmd script. This script
+  requires:
+  * 7z.exe in "C:\Program Files\7-Zip\" (download from https://www.7-zip.org/)
+  * signtool.exe from a Windows SDK (e.g. the Windows 10 SDK)
+  * A code signing certificate in the certificate store
 
 
 Resources
