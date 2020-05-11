@@ -35,28 +35,38 @@ namespace SURFnet.Authentication.Adfs.Plugin.Repositories
 
             attributevalue = null;
             error = null;
-            try
+            using (var ctx = new PrincipalContext(ContextType.Domain, domain))
             {
-                var ctx = new PrincipalContext(ContextType.Domain, domain);
+                error = $"TryGetAttributeValue() lastOK: new PrincipalContext( {domain})";
                 var currentUser = UserPrincipal.FindByIdentity(ctx, windowsaccountname);
-                if ( null!=currentUser )
+                if (null != currentUser)
                 {
-                    using ( DirectoryEntry de = currentUser.GetUnderlyingObject() as DirectoryEntry )
+                    error = $"TryGetAttributeValue() lastOK: UserPrincipal.FindByIdentity( ,{windowsaccountname})";
+                    using (DirectoryEntry de = currentUser.GetUnderlyingObject() as DirectoryEntry)
                     {
                         // according to documentation this cannot happen, it should have thrown!
-                        if ( de == null )
+                        if (de == null)
                         {
                             error = "Bug: no underlying DirectoryEntry!" + windowsaccountname;
                         }
-                        else if ( de.Properties.Contains(attributename) )
+                        else if (de.Properties.Contains(attributename))
                         {
                             attributevalue = de.Properties[attributename].Value.ToString();
-                            rc = true;   // the only perfect result.
+                            if ( string.IsNullOrWhiteSpace(attributevalue) )
+                            {
+                                error = $"'{attributename}' IsNullOrWhiteSpace()";
+                            }
+                            else
+                            {
+                                rc = true;   // the only perfect result.
+                                error = null;
+                            }
                         }
                         else
                         {
                             // Operational (functional) error. The account does not have the attribute.
                             // Do not report or set an error. That is up to the caller!
+                            error = $"'{attributename}' not present";
                         }
                     }
                 }
@@ -65,11 +75,6 @@ namespace SURFnet.Authentication.Adfs.Plugin.Repositories
                     // Unthinkable, the user was there in ADFS!!
                     error = "BUG, did not find the account in AD: " + windowsaccountname;
                 }
-            }
-            catch (Exception ex)
-            {
-                // Also unthinkable, the user was there in ADFS!!
-                error = ex.ToString();
             }
 
             return rc;
