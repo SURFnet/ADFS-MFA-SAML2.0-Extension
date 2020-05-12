@@ -116,6 +116,9 @@ Problems during installation:
 - Registration with the Setup.exe program (or PowerShell) produces "StepUp.RegistrationLog.txt" in the same directory
   as the plugin.dll (i.e. "dist" directory of setup.exe or the ADFS directory respectively). It always overwrites,
   check timestamps.
+- We have seen errors when a half configured classic/old Azure MFA (-Name = "AzureMfaAuthentication") is not
+  fully configured. It produces exceptions and Setup.exe stops.Repeating the operation often solves it.
+  Do give us the "MFA-extension.SetupLog.txt" if you need help there. This is a very exceptional case.
 
 You can run the setup program in check mode to diagnose installation issues. This does not make any changes:
 
