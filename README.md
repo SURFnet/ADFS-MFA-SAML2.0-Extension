@@ -37,8 +37,8 @@ Latest release 2.0.2: [SetupPackage-2.0.2.exe](https://github.com/SURFnet/ADFS-M
 Installation and upgading
 =========================
 
-See the included INSTALL file for installation instructions
-See the included README file for upgrade instructions
+* See the included [INSTALL](INSTALL) file for installation instructions
+* See the included [UPGRADE](UPGRADE) file for upgrade instructions
 
 
 Known issues and troubleshooting
