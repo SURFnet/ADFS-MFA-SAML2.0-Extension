@@ -77,7 +77,10 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
             if ( rc == 0 )
             {
                 // Write this AdminChoiceList to used settings file
-                SaveUsedSettings(AdminChoicesList);
+                if (AdminChoicesList.Any(s => s.IsUpdated))
+                {
+                    SaveUsedSettings(AdminChoicesList);
+                }
             }
 
             return rc;
@@ -108,11 +111,18 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
             // then iff they are all there: Ask confirmation
             if ( AllMandatoryHaveValue(minimalSubset) )
             {
+                var introductionString = "*** Setup did find an existing CORRECT CONFIGURATION. With settings as follows: ";
+                if (!string.IsNullOrWhiteSpace(minimalSubset.FirstOrDefault()?.NewValue))
+                {
+                    var configPath = FileService.OurDirCombine(FileDirectory.Config, SetupConstants.UsedSettingsFilename);
+                    introductionString =
+                        $"*** Setup did find a settings file from a previous installation at '{configPath}'. Delete or update this file if you don't want to use the following settings: ";
+                }
 
                 // Ask for quick GO confirmation.
                 QuestionIO.WriteLine();
                 QuestionIO.WriteLine();
-                switch (AskConfirmation(minimalSubset, "*** Setup did find a CORRECT CONFIGURATION. With settings as follows: "))
+                switch (AskConfirmation(minimalSubset, introductionString))
                 {
                     case 'y':
                         rc = 0;

@@ -407,6 +407,11 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                 else
                     Messages.SayAllSeemsOK();
             }
+            else
+            {
+                Console.WriteLine();
+                Console.WriteLine("Setup didn't make any changes, cause everything is correctly installed. Please use the -r flag to reconfigure the installation");
+            }
 
             return rc;
         }

@@ -180,6 +180,10 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
             try
             {
                 File.WriteAllText(path, json);
+                Console.WriteLine();
+                Console.WriteLine("***Writen config to disk for use on other servers in __this__ farm");
+                Console.WriteLine($"Location: '{path}'");
+                Console.WriteLine();
             }
             catch (Exception ex)
             {

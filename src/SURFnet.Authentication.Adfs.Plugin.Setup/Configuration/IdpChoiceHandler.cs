@@ -130,7 +130,6 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
                         {
                             LogService.Log.Info($"    Updating {name} to: {jsonValueForIdP}");
                             setting.NewValue = jsonValueForIdP;
-                            setting.IsUpdated = true;
                         }
                     }
                     else

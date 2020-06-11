@@ -158,7 +158,9 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Models
         /// in some configuration file (JSON). Helps for save/no-save decision.
         /// An updated value, goes directly to NewValue.
         /// </summary>
-        public bool IsUpdated { get; set; }
+        public bool IsUpdated => !string.IsNullOrWhiteSpace(this.NewValue) && 
+                                 !string.IsNullOrWhiteSpace(this.FoundCfgValue) && 
+                                 !this.FoundCfgValue.Equals(this.NewValue);
 
         /// <summary>
         /// Helper to decide if we need to write while reconfiguring.
