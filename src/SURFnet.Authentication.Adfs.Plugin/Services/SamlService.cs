@@ -20,13 +20,16 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
     using System.Diagnostics.CodeAnalysis;
     using System.Linq;
     using System.Security.Claims;
-    using Microsoft.IdentityModel.Tokens.Saml2;
 
-    using SURFnet.Authentication.Adfs.Plugin.Setup.Common.Exceptions;
     using Configuration;
-    using Models;
 
     using log4net;
+
+    using Microsoft.IdentityModel.Tokens.Saml2;
+
+    using Models;
+
+    using SURFnet.Authentication.Adfs.Plugin.Setup.Common.Exceptions;
 
     using Sustainsys.Saml2;
     using Sustainsys.Saml2.Configuration;
@@ -53,10 +56,10 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
         /// </returns>
         public static Saml2AuthenticationSecondFactorRequest CreateAuthnRequest(string userid, string authnRequestId, Uri ascUri)
         {
-            string stepupNameID = GetNameId(userid);  // TODO: This code should move up to the adapter, should not be in SAML code
+            var stepupNameId = GetNameId(userid);  // TODO: This code should move up to the adapter, should not be in SAML code
 
-            var nameIdentifier = new Saml2NameIdentifier(stepupNameID, new Uri("urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified"));
-            Log.DebugFormat("Creating AuthnRequest for NameID '{0}'", nameIdentifier);
+            var nameIdentifier = new Saml2NameIdentifier(stepupNameId, new Uri("urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified"));
+            Log.DebugFormat("Creating AuthnRequest for NameID '{0}'", stepupNameId);
 
             // This was testes in constructors!!!
             var samlConfiguration = Options.FromConfiguration;
@@ -74,8 +77,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
 
             var authnRequest = new Saml2AuthenticationSecondFactorRequest
             {
-                DestinationUrl = Sustainsys.Saml2.Configuration.Options.FromConfiguration.IdentityProviders.Default.SingleSignOnServiceUrl,
-                //DestinationUrl = StepUpConfig.Current.StepUpIdPConfig.SecondFactorEndPoint,
+                DestinationUrl = Options.FromConfiguration.IdentityProviders.Default.SingleSignOnServiceUrl,
                 AssertionConsumerServiceUrl = ascUri,
                 Issuer = spConfiguration.EntityId,
                 RequestedAuthnContext = new Saml2RequestedAuthnContext(StepUpConfig.Current.MinimalLoa, AuthnContextComparisonType.Minimum),
@@ -83,7 +85,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
             };
             authnRequest.SetId(authnRequestId);
 
-            Log.DebugFormat("Created AuthnRequest for '{0}' with id '{1}'", userid, authnRequest.Id.Value);
+            Log.InfoFormat("Created AuthnRequest for '{0}' with id '{1}'", userid, authnRequest.Id.Value);
             return authnRequest;
         }
 
@@ -134,7 +136,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
         /// <summary>
         /// Gets the name identifier based in the identity claim.
         /// </summary>
-        /// <param name="identityClaim">The identity claim.</param>
+        /// <param name="userid">The userid.</param>
         /// <returns>A name identifier.</returns>
         private static string GetNameId(string userid)
         {

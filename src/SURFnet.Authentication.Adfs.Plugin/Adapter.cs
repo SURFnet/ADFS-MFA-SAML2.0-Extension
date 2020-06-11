@@ -25,16 +25,16 @@ namespace SURFnet.Authentication.Adfs.Plugin
 
     using Microsoft.IdentityModel.Tokens.Saml2;
     using Microsoft.IdentityServer.Web.Authentication.External;
-    using SURFnet.Authentication.Adfs.Plugin.Setup.Common;
-    using SURFnet.Authentication.Adfs.Plugin.Setup.Common.Exceptions;
+
     using SURFnet.Authentication.Adfs.Plugin.Configuration;
     using SURFnet.Authentication.Adfs.Plugin.Extensions;
     using SURFnet.Authentication.Adfs.Plugin.Models;
+    using SURFnet.Authentication.Adfs.Plugin.Repositories;
     using SURFnet.Authentication.Adfs.Plugin.Services;
+    using SURFnet.Authentication.Adfs.Plugin.Setup.Common;
+    using SURFnet.Authentication.Adfs.Plugin.Setup.Common.Exceptions;
 
     using Sustainsys.Saml2.Saml2P;
-    using SURFnet.Authentication.Adfs.Plugin.Repositories;
-    using System.Security.Cryptography.X509Certificates;
 
     /// <summary>
     /// The ADFS MFA Adapter.
@@ -64,8 +64,6 @@ namespace SURFnet.Authentication.Adfs.Plugin
         /// </summary>
         private CryptographicService cryptographicService;
 
-        //private UserForStepup _user4Stepup; /* See: IsAvailableForuser() */
-
         /// <summary>
         /// Initializes static members of the <see cref="Adapter"/> class.
         /// </summary>
@@ -76,10 +74,9 @@ namespace SURFnet.Authentication.Adfs.Plugin
             var myassemblyname = Assembly.GetExecutingAssembly().Location;
             AdapterDir = Path.GetDirectoryName(myassemblyname);
 
-
             if (RegistrationLog.IsRegistration)
             {
-                bool mustThrow = false;
+                var mustThrow = false;
 
                 // Not running under ADFS. I.e. test or registration context.....
                 try
@@ -87,7 +84,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
                     // we do want to read our own configuration before the Registration CmdLet reads our metadata
                     RegistrationLog.WriteLine(AdapterDir);
 
-                    if ( 0==StepUpConfig.ReadXmlConfig() )
+                    if (StepUpConfig.ReadXmlConfig() == 0)
                     {
                         RegistrationLog.WriteLine("Adapter parms loaded from small XML.");
                     }
@@ -107,7 +104,9 @@ namespace SURFnet.Authentication.Adfs.Plugin
                 RegistrationLog.Flush();
 
                 if (mustThrow)
+                {
                     throw new ApplicationException("Registration exception. See registration log.");
+                }
             }
             else
             {
@@ -117,11 +116,12 @@ namespace SURFnet.Authentication.Adfs.Plugin
         }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="Adapter"/> class.
         /// Does nothing at registration time. Initializes a cert in normal operation.
         /// </summary>
         public Adapter()
         {
-            if (false==RegistrationLog.IsRegistration)
+            if (!RegistrationLog.IsRegistration)
             {
                 // Initialize cert for this adapter from Sustainsys.Saml2,
                 // BUT NO REFERENCE to that assembly here, because it will produce
@@ -129,15 +129,8 @@ namespace SURFnet.Authentication.Adfs.Plugin
                 // dependencies if the constructor does not call them.
                 //
                 // TODO: make it something Lazy closer to Sustain??
-
-                DelayPickupOfCertFromSustainsys();
+                this.DelayPickupOfCertFromSustainsys();
             }
-        }
-
-        private void DelayPickupOfCertFromSustainsys()
-        {
-            X509Certificate2 cert = Sustainsys.Saml2.Configuration.Options.FromConfiguration.SPOptions.SigningServiceCertificate;
-            this.cryptographicService = new CryptographicService(cert);
         }
 
         /// <summary>
@@ -145,6 +138,36 @@ namespace SURFnet.Authentication.Adfs.Plugin
         /// </summary>
         /// <value>The metadata.</value>
         public IAuthenticationAdapterMetadata Metadata => AdapterMetadata.Instance;
+
+        /// <summary>
+        /// Called by static constructor and by testcode outside ADFS environment (to simulate static constructor under ADFS).
+        /// After this method call, other parts of the adapter can be tested without ADFS.
+        /// </summary>
+        public static void ConfigureDependencies()
+        {
+            LogService.InitializeLogger();
+#if DEBUG
+            LogService.Log.Debug("Logging initialized");
+#endif
+
+            try
+            {
+                if (StepUpConfig.ReadXmlConfig() != 0)
+                {
+                    LogService.Log.Error(StepUpConfig.GetErrors());
+                    throw new ApplicationException("Configuration error. See adapter log.");
+                }
+
+                ConfigureSustainsys(); // read Sustainsys configuration
+
+                LogService.LogConfigOnce(AdapterMetadata.Instance);
+            }
+            catch (Exception ex)
+            {
+                LogService.Log.Fatal(ex.ToString());
+                throw;
+            }
+        }
 
         /// <summary>
         /// Called when the authentication pipeline is loaded.
@@ -176,31 +199,8 @@ namespace SURFnet.Authentication.Adfs.Plugin
         /// </returns>
         public bool IsAvailableForUser(Claim identityClaim, IAuthenticationContext context)
         {
-            //LogService.PrepareCorrelatedLogger(context.ContextId, context.ActivityId);
-
-            // Do not throw away yet. This was used for a test,
-            // prepare a Stepup uid here. Use it in BeginAuthentication().
-            // But it was deemed too dangerous. (Paullem: march 2020)
-            //
-            //bool rc = false;
-            //var tmpuser = new UserForStepup(identityClaim);
-            //if (tmpuser.TryGetSfoUidValue())
-            //{
-            //    // OK, attribute was there.
-            //    _user4Stepup = tmpuser;
-            //    rc = true;
-            //}
-            //else
-            //{
-            //    LogService.Log.Info(tmpuser.ErrorMsg);
-            //    _user4Stepup = null;
-            //}
-            //return rc;
-
             return true;
         }
-
-
 
         /// <summary>
         /// Begins the authentication.
@@ -217,7 +217,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
             {
                 LogService.PrepareCorrelatedLogger(context.ContextId, context.ActivityId);
                 LogService.Log.Debug("Enter BeginAuthentication");
-                LogService.Log.DebugFormat("context.Lcid={0}", context.Lcid);
+                LogService.Log.InfoFormat("context.Lcid={0}", context.Lcid);
 
                 string stepUpUid;
                 var tmpuser = new UserForStepup(identityClaim);
@@ -229,17 +229,17 @@ namespace SURFnet.Authentication.Adfs.Plugin
                 else
                 {
                     // Ouch user is not configured for StepUp in AD
-                    if ( null!= tmpuser.ErrorMsg)
+                    if (tmpuser.ErrorMsg != null)
                     {
                         LogService.Log.Warn(tmpuser.ErrorMsg);  // low level error!
                     }
+
                     return new AuthFailedForm(false, "ERROR_0003", context.ContextId, context.ActivityId);
                 }
 
                 var requestId = $"_{context.ContextId}";
                 var authRequest = SamlService.CreateAuthnRequest(stepUpUid, requestId, httpListenerRequest.Url);
-
-                LogService.Log.DebugFormat("Signing AuthnRequest with id {0}", requestId);
+                LogService.Log.InfoFormat("Signing AuthnRequest with id {0}", requestId);
                 var signedXml = this.cryptographicService.SignSamlRequest(authRequest);
                 var ssoUrl = Sustainsys.Saml2.Configuration.Options.FromConfiguration.IdentityProviders.Default.SingleSignOnServiceUrl;
                 return new AuthForm(ssoUrl, signedXml);
@@ -279,16 +279,16 @@ namespace SURFnet.Authentication.Adfs.Plugin
             var requestId = $"_{ context.ContextId}";
             LogService.PrepareCorrelatedLogger(context.ContextId, context.ActivityId);
             LogService.Log.Debug("Enter TryEndAuthentication");
-            LogService.Log.DebugFormat("context.Lcid={0}", context.Lcid);
+            LogService.Log.InfoFormat("context.Lcid={0}", context.Lcid);
 
-            LogService.Log.DebugLogDictionary(context.Data, "context.Data");
-            LogService.Log.DebugLogDictionary(proofData.Properties, "proofData.Properties");
+            LogService.Log.InfoLogDictionary(context.Data, "context.Data");
+            LogService.Log.InfoLogDictionary(proofData.Properties, "proofData.Properties");
 
             claims = null;
             try
             {
                 var response = SecondFactorAuthResponse.Deserialize(proofData, context);
-                LogService.Log.DebugFormat("Received response for request with id '{0}'", requestId);
+                LogService.Log.InfoFormat("Received response for request with id '{0}'", requestId);
                 var samlResponse = new Saml2Response(response.SamlResponse, new Saml2Id(requestId));
                 if (samlResponse.Status != Saml2StatusCode.Success)
                 {
@@ -298,7 +298,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
                 claims = SamlService.VerifyResponseAndGetAuthenticationClaim(samlResponse);
                 foreach (var claim in claims)
                 {
-                    LogService.Log.DebugFormat(
+                    LogService.Log.InfoFormat(
                         "claim.Issuer='{0}'; claim.OriginalIssuer='{1}; claim.Type='{2}'; claim.Value='{3}'",
                         claim.Issuer,
                         claim.OriginalIssuer,
@@ -306,11 +306,11 @@ namespace SURFnet.Authentication.Adfs.Plugin
                         claim.Value);
                     foreach (var p in claim.Properties)
                     {
-                        LogService.Log.DebugFormat("claim.Properties: '{0}'='{1}'", p.Key, p.Value);
+                        LogService.Log.InfoFormat("claim.Properties: '{0}'='{1}'", p.Key, p.Value);
                     }
                 }
 
-                LogService.Log.DebugFormat("Successfully processed response for request with id '{0}'", requestId);
+                LogService.Log.InfoFormat("Successfully processed response for request with id '{0}'", requestId);
                 return null;
             }
             catch (Exception ex)
@@ -344,41 +344,6 @@ namespace SURFnet.Authentication.Adfs.Plugin
             return new AuthFailedForm(false, Values.DefaultErrorMessageResourcerId, ex.Context.ContextId, ex.Context.ActivityId);
         }
 
-
-
-
-        /// <summary>
-        /// Called by static constructor and by testcode outside ADFS environment (to simulate static constructor under ADFS).
-        /// After this method call, other parts of the adapter can be tested without ADFS.
-        /// </summary>
-        public static void ConfigureDependencies()
-        {
-            LogService.InitializeLogger();
-#if DEBUG
-            LogService.Log.Debug("Logging initialized");
-#endif
-
-            try
-            {
-
-                if (0 != StepUpConfig.ReadXmlConfig())
-                {
-                    LogService.Log.Error(StepUpConfig.GetErrors());
-                    throw new ApplicationException("Configuration error. See adapter log.");
-                }
-
-                ConfigureSustainsys(); // read Sustainsys configuration
-
-                LogService.LogConfigOnce(AdapterMetadata.Instance);
-            }
-            catch (Exception ex)
-            {
-                LogService.Log.Fatal(ex.ToString());
-                throw;
-            }
-        }
-
-
         /// <summary>
         /// Configures the sustainsys once per ADFS server.
         /// </summary>
@@ -409,12 +374,21 @@ namespace SURFnet.Authentication.Adfs.Plugin
                 Sustainsys.Saml2.Configuration.SustainsysSaml2Section.Configuration = configuration;
 
                 // Call now to provoke/localize/isolate parsing errors.
-                var defaultIdP = Sustainsys.Saml2.Configuration.Options.FromConfiguration.IdentityProviders.Default;
+                var unused = Sustainsys.Saml2.Configuration.Options.FromConfiguration.IdentityProviders.Default;
             }
             catch (Exception ex)
             {
                 throw new InvalidConfigurationException("Accessing Sustainsys configuration failed. Caught in Adapter!", ex);
             }
+        }
+
+        /// <summary>
+        /// Delays the pickup of cert from sustainsys.
+        /// </summary>
+        private void DelayPickupOfCertFromSustainsys()
+        {
+            var cert = Sustainsys.Saml2.Configuration.Options.FromConfiguration.SPOptions.SigningServiceCertificate;
+            this.cryptographicService = new CryptographicService(cert);
         }
     }
 }

@@ -33,11 +33,11 @@ namespace SURFnet.Authentication.Adfs.Plugin.Extensions
         /// <param name="log">The log.</param>
         /// <param name="dictionary">The dictionary.</param>
         /// <param name="variableName">Name of the variable.</param>
-        public static void DebugLogDictionary<T1, T2>(this ILog log, IDictionary<T1, T2> dictionary, string variableName)
+        public static void InfoLogDictionary<T1, T2>(this ILog log, IDictionary<T1, T2> dictionary, string variableName)
         {
             foreach (var d in dictionary)
             {
-                log.DebugFormat("{0}: '{1}'='{2}'", variableName, d.Key, d.Value);
+                log.InfoFormat("{0}: '{1}'='{2}'", variableName, d.Key, d.Value);
             }
         }
     }
