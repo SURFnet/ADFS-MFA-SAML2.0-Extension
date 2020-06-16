@@ -144,7 +144,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
             }
             else if (0 != (rc = AdfsServer.StartAdFsService()))
             {
-                Console.WriteLine("EventLog?????");
+                Console.WriteLine("Please check the AD FS EventLog for messages");
             }
             else
             {
@@ -166,8 +166,10 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
             }
             else if (setupstate.DetectedVersion != setupstate.SetupProgramVersion)
             {
-                LogService.WriteFatal("Can only reconfigure version equal to this setup program version.");
-                LogService.WriteFatal("Cannot (yet....) write old configuration files.");
+                LogService.WriteFatal("Setup.exe can only reconfigure an installed version that is equal");
+                LogService.WriteFatal("to the version of this setup program.");
+                LogService.WriteFatal("Please use the version of Setup.exe that matches the installed version");
+                LogService.WriteFatal("or use Setup.exe with the '-i' (install/upgrade) option to upgrade.");
                 rc = 4;
             }
             else if (0 != SettingsChecker.VerifySettingsComplete(setupstate, AllDescriptions.ThisVersion))
@@ -278,8 +280,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                         if (0 != (rc = AdfsServer.RestartAdFsService()))
                         {
                             Console.WriteLine();
-                            Console.WriteLine("Everything was OK. However, Restarting ADFS Failed.");
-                            Console.WriteLine("Take a look at the ADFS EventLog and also MFA extension EventLog 'AD FS plugin'");
+                            Console.WriteLine("Installation was successful. However, restarting ADFS Failed.");
+                            Console.WriteLine("Please check the ADFS EventLog and also the MFA extension EventLog 'AD FS plugin'");
                             rc = 8;
                         }
                         else
@@ -307,7 +309,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                 // On Secondary, nothing in ADFS and old version.....
                 // Nope, too weird
                 Console.WriteLine();
-                Console.WriteLine("On Secondary computer with an old version on disk.");
+                Console.WriteLine("On Secondary ADFS server with an old version on disk.");
                 Console.WriteLine("Nothing registered in the ADFS configuration database.");
                 Console.WriteLine("Will not upgrade. First uninstall or register in ADFS.");
                 Console.WriteLine();
@@ -358,8 +360,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                     {
                         rc = 8;
                         Console.WriteLine();
-                        Console.WriteLine("Everything was OK. However, Starting ADFS Failed.");
-                        Console.WriteLine("Take a look at the ADFS EventLog and also MFA extension EventLog 'AD FS plugin'");
+                        Console.WriteLine("The upgrade was successful. However, starting ADFS Failed.");
+                        Console.WriteLine("Please check the ADFS EventLog and also MFA extension EventLog 'AD FS plugin'");
                     }
                     else
                     {
@@ -384,7 +386,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
             if (!setupstate.IsPrimaryComputer)
             {
                 Console.WriteLine();
-                Console.WriteLine($"On a Secondary computer with {setupstate.SetupProgramVersion} already installed.");
+                Console.WriteLine($"On a Secondary ADFS server with {setupstate.SetupProgramVersion} already installed.");
                 Console.WriteLine("There is nothing to do/install.");
                 Console.WriteLine();
                 rc = 4;
@@ -410,7 +412,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
             else
             {
                 Console.WriteLine();
-                Console.WriteLine("Setup didn't make any changes, cause everything is correctly installed. Please use the -r flag to reconfigure the installation");
+                Console.WriteLine("Setup didn't make any changes, because the software is already installed and up to date.");
+                Console.WriteLine("Use Setup.exe with the '-r' (reconfigure) flag to change the configuration.");
             }
 
             return rc;
@@ -434,7 +437,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
             {
                 Console.WriteLine("Must be a member of local Administrators and run with local");
                 Console.WriteLine("Administrative privileges.");
-                Console.WriteLine("\"Run as Administrator\" or start from an Administrator command prompt");
+                Console.WriteLine("\"Run as Administrator\" or start from an elevated command prompt");
                 return 4;
             }
 
@@ -458,7 +461,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                 if ( IdPEnvironments==null || IdPEnvironments.Count<3)
                 {
                     // Darn, no error check at low level?
-                    throw new ApplicationException("Some error in the SFO server (IdP) environment descriptions.");
+                    throw new ApplicationException("Error reading the SFO server (IdP) environment descriptions.");
                 }
                 else if (false == DetectAndRead.TryDetectAndReadCfg(setupstate))
                 {
@@ -605,7 +608,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
         private static void Help()
         {
             Console.WriteLine("Setup program for ADFS MFA Stepup Extension.");
-            Console.WriteLine("   Adds Second Factor Only MFA extension to an ADFS server.");
+            Console.WriteLine("   Adds the Second Factor Only MFA extension 'ADFS.SCSA' to an ADFS server.");
             Console.WriteLine(" -? -h  This help");
             Console.WriteLine(" -c     Check/Analyze existing installation only");
 //            Console.WriteLine(" -f     Fix (experimental)");

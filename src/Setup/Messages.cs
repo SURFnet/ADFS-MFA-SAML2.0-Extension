@@ -38,8 +38,9 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
 
             Console.WriteLine();
             Console.WriteLine("Everything was OK.");
-            Console.WriteLine("Take a look at the ADFS EventLog and also the");
-            Console.WriteLine("MFA extension EventLog 'AD FS plugin', to verify it.");
+            Console.WriteLine("Please check the ADFS EventLog and also the");
+            Console.WriteLine("MFA extension EventLog 'AD FS plugin' for warnings");
+            Console.WriteLine("and errors.");
         }
 
         public static bool DoYouWantTO(string question, string noMessage = null)

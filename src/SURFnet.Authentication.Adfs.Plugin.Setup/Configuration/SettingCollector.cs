@@ -58,7 +58,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
                 LogService.WriteFatal($"Fatal failure while fetching required parameters for {targetVersion.DistributionVersion}.");
                 rc = -1;
             }
-            // update original values (if any) with values from JSON files iff different.
+            // update original values (if any) with values from JSON files if different.
             else if ( 0!=IdpChoiceHandler.UpdateIdPValuesFromFiles(ConfigSettings.IdPEntityID, IdPEnvironments))
             {
                 // and it failed.....
@@ -108,7 +108,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
                 }
             }
 
-            // then iff they are all there: Ask confirmation
+            // then if they are all there: Ask confirmation
             if ( AllMandatoryHaveValue(minimalSubset) )
             {
                 var introductionString = "*** Setup did find an existing CORRECT CONFIGURATION. With settings as follows: ";
@@ -116,7 +116,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
                 {
                     var configPath = FileService.OurDirCombine(FileDirectory.Config, SetupConstants.UsedSettingsFilename);
                     introductionString =
-                        $"*** Setup did find a settings file from a previous installation at '{configPath}'. Delete or update this file if you don't want to use the following settings: ";
+                        $"*** Setup did find a settings file from a previous installation at '{configPath}'. You can safely remove this file if you don't want to use the settings below: ";
                 }
 
                 // Ask for quick GO confirmation.
