@@ -1,7 +1,7 @@
 @IF [%1] == [] (
     @echo Missing parameter.
 	@echo.
-	@echo Usage: MakeRelease.cmd ^<ersion^>
+	@echo Usage: MakeRelease.cmd ^<version^>
 	@echo.
 	goto :error
 )
@@ -59,16 +59,23 @@ copy ..\NOTICE %release% || goto :error
 copy ..\INSTALL %release% || goto :error
 copy ..\UPGRADE %release% || goto :error
 
+@set sign=0
+@choice /m "Sign release?" /c YN
+ @if "%errorlevel%" == "1" set sign=1
 
-@echo Signing Setup.exe
-signtool sign /tr http://timestamp.digicert.com /td sha256 /fd sha256 /a %release%\Setup.exe || goto :error
+@if "%sign%" == "1" (
+  @echo Signing Setup.exe
+  signtool sign /tr http://timestamp.digicert.com /td sha256 /fd sha256 /a %release%\Setup.exe || goto :error
+)
 
 @echo Making Self extracting archive
 del %release%.exe
 "C:\Program Files\7-Zip\7z.exe" a -bb3 -sfx7z.sfx -r %release%.exe %release%
 
-@echo Signing SetupPackage self extracting archive
-signtool sign /tr http://timestamp.digicert.com /td sha256 /fd sha256 /a %release%.exe || goto :error
+@if "%sign%" == "1" (
+  @echo Signing SetupPackage self extracting archive
+  signtool sign /tr http://timestamp.digicert.com /td sha256 /fd sha256 /a %release%.exe || goto :error
+)
 
 @echo Sucessfully created Release %release%.exe
 @echo.
