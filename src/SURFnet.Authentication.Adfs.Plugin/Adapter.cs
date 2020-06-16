@@ -217,7 +217,10 @@ namespace SURFnet.Authentication.Adfs.Plugin
             {
                 LogService.PrepareCorrelatedLogger(context.ContextId, context.ActivityId);
                 LogService.Log.Debug("Enter BeginAuthentication");
-                LogService.Log.InfoFormat("context.Lcid={0}", context.Lcid);
+                LogService.Log.DebugFormat("context.Lcid={0}", context.Lcid);
+
+                // Log the identityClaim Value and Type that we received from AD FS.
+                LogService.Log.InfoFormat("Received MFA authentication request for ADFS user with identityClaim '{0}' ({1})", identityClaim.Value, identityClaim.Type);
 
                 string stepUpUid;
                 var tmpuser = new UserForStepup(identityClaim);
@@ -239,9 +242,16 @@ namespace SURFnet.Authentication.Adfs.Plugin
 
                 var requestId = $"_{context.ContextId}";
                 var authRequest = SamlService.CreateAuthnRequest(stepUpUid, requestId, httpListenerRequest.Url);
-                LogService.Log.InfoFormat("Signing AuthnRequest with id {0}", requestId);
+                LogService.Log.DebugFormat("Signing AuthnRequest with id {0}", requestId);
                 var signedXml = this.cryptographicService.SignSamlRequest(authRequest);
                 var ssoUrl = Sustainsys.Saml2.Configuration.Options.FromConfiguration.IdentityProviders.Default.SingleSignOnServiceUrl;
+
+                // Log the SAML RequestID (which is the ADFS ContextId), the Subject NameID and the Destination of the SAML AuthnRequest at INFO level
+                // - The Stepup-Gateway application logs contain the RequestID (SARI) and the stepup-Gateway authentication log contains the NameID
+                // - The ssoUrl identifies the Stepup-Gateway to which the request is sent.
+                // These informations allows the authentication in the plugin to be correlated with the authentication on the Stepup-Gateway
+                LogService.Log.InfoFormat("Forwarding SAML SFO AuthnRequest with ID '{0}' for Stepup NameID '{1}' to '{2}'", requestId, stepUpUid, ssoUrl);
+
                 return new AuthForm(ssoUrl, signedXml);
             }
             catch (SurfNetException ex)
@@ -279,16 +289,16 @@ namespace SURFnet.Authentication.Adfs.Plugin
             var requestId = $"_{ context.ContextId}";
             LogService.PrepareCorrelatedLogger(context.ContextId, context.ActivityId);
             LogService.Log.Debug("Enter TryEndAuthentication");
-            LogService.Log.InfoFormat("context.Lcid={0}", context.Lcid);
+            LogService.Log.DebugFormat("context.Lcid={0}", context.Lcid);
 
-            LogService.Log.InfoLogDictionary(context.Data, "context.Data");
-            LogService.Log.InfoLogDictionary(proofData.Properties, "proofData.Properties");
+            LogService.Log.DebugLogDictionary(context.Data, "context.Data");
+            LogService.Log.DebugLogDictionary(proofData.Properties, "proofData.Properties");
 
             claims = null;
             try
             {
                 var response = SecondFactorAuthResponse.Deserialize(proofData, context);
-                LogService.Log.InfoFormat("Received response for request with id '{0}'", requestId);
+                LogService.Log.DebugFormat("Received response for request. Expected request ID='{0}'", requestId);
                 var samlResponse = new Saml2Response(response.SamlResponse, new Saml2Id(requestId));
                 if (samlResponse.Status != Saml2StatusCode.Success)
                 {
@@ -298,7 +308,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
                 claims = SamlService.VerifyResponseAndGetAuthenticationClaim(samlResponse);
                 foreach (var claim in claims)
                 {
-                    LogService.Log.InfoFormat(
+                    LogService.Log.DebugFormat(
                         "claim.Issuer='{0}'; claim.OriginalIssuer='{1}; claim.Type='{2}'; claim.Value='{3}'",
                         claim.Issuer,
                         claim.OriginalIssuer,
@@ -306,10 +316,12 @@ namespace SURFnet.Authentication.Adfs.Plugin
                         claim.Value);
                     foreach (var p in claim.Properties)
                     {
-                        LogService.Log.InfoFormat("claim.Properties: '{0}'='{1}'", p.Key, p.Value);
+                        LogService.Log.DebugFormat("claim.Properties: '{0}'='{1}'", p.Key, p.Value);
                     }
                 }
 
+                // TODO: Add Subject NameID from the samlResponse to this log message
+                // TODO: Add AuthnConextClassRef from the samlResponse to this log message
                 LogService.Log.InfoFormat("Successfully processed response for request with id '{0}'", requestId);
                 return null;
             }

@@ -85,7 +85,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
             };
             authnRequest.SetId(authnRequestId);
 
-            Log.InfoFormat("Created AuthnRequest for '{0}' with id '{1}'", userid, authnRequest.Id.Value);
+            Log.DebugFormat("Created AuthnRequest for '{0}' with id '{1}'", userid, authnRequest.Id.Value);
             return authnRequest;
         }
 
