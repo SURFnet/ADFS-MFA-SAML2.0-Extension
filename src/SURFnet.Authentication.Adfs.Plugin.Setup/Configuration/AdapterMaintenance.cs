@@ -160,7 +160,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
                 }
                 else if ( false == AdfsPSService.RegisterAdapter(desc.Adapter) )
                 {
-                    LogService.WriteFatal("Registration FAILED. Chech the Setup log file and maybe probably manual recovery.");
+                    LogService.WriteFatal("Registration FAILED. Check the Setup log file and maybe probably manual recovery.");
                 }
                 else if ( 0 != (rc=AdfsServer.RestartAdFsService()) )
                 {

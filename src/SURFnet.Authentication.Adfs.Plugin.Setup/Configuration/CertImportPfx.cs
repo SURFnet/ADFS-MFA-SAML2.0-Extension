@@ -114,9 +114,10 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
                         }
                         else
                         {
+                            rc = -3;
                             LogService.Log.Info("  Cert validation failed, should delete from disk.");
                             // mmm, key is on disk
-                            // TODONOW:  Must delete the key!!
+                            // TODONOW:  Must actually delete the key, not just call dummy!!
                             DeleteKey(ResultCertificate);
                             ResultCertificate = SetupCertService.CertDispose(ResultCertificate);
                         }
@@ -134,7 +135,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
 
         private void DeleteKey(X509Certificate2 resultCertificate)
         {
-            QuestionIO.WriteError("DeleteKey not yet implement!!!!");
+            QuestionIO.WriteError("DeleteKey not yet implemented!!!!");
 
             // create CSPParms(Containername); alg = new RSAProvider(CSPParms); alg.PersistKeyInCsp=false; alg.Clear()
         }

@@ -71,7 +71,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
             if ( index < 0 )
             {
                 LogService.WriteFatal("Incorrect configuration value for 'entityID': " + entityID);
-                LogService.WriteFatal("    In current configuraion files or in the environment configuration file.");
+                LogService.WriteFatal("    In current configuration files or in the environment configuration file.");
             }
 
             return index;
@@ -130,18 +130,17 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
                         {
                             LogService.Log.Info($"    Updating {name} to: {jsonValueForIdP}");
                             setting.NewValue = jsonValueForIdP;
-                            setting.IsUpdated = true;
                         }
                     }
                     else
                     {
-                        LogService.Log.Info($"    Ooops {name} not in JSON file.");
+                        LogService.Log.Info($"    Oops {name} not in JSON file.");
                     }
                 }
             }
             catch (Exception ex)
             {
-                LogService.WriteFatalException("UpDateValuesFromFiles() threw up... Probably a programming or configuration file error", ex);
+                LogService.WriteFatalException("Exception in UpDateValuesFromFiles(): Probably a programming or configuration file error", ex);
                 rc = -1;
             }
 

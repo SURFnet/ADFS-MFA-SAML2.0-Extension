@@ -26,7 +26,24 @@ namespace SURFnet.Authentication.Adfs.Plugin.Extensions
     public static class LogExtensions
     {
         /// <summary>
-        /// Logs all items in the dictionary in the debug log.
+        /// Logs all items in the dictionary at INFO level.
+        /// </summary>
+        /// <typeparam name="T1">The type of the t1.</typeparam>
+        /// <typeparam name="T2">The type of the t2.</typeparam>
+        /// <param name="log">The log.</param>
+        /// <param name="dictionary">The dictionary.</param>
+        /// <param name="variableName">Name of the variable.</param>
+        public static void InfoLogDictionary<T1, T2>(this ILog log, IDictionary<T1, T2> dictionary, string variableName)
+        {
+            foreach (var d in dictionary)
+            {
+                log.InfoFormat("{0}: '{1}'='{2}'", variableName, d.Key, d.Value);
+            }
+        }
+
+
+        /// <summary>
+        /// Logs all items in the dictionary at DEBUG level.
         /// </summary>
         /// <typeparam name="T1">The type of the t1.</typeparam>
         /// <typeparam name="T2">The type of the t2.</typeparam>
