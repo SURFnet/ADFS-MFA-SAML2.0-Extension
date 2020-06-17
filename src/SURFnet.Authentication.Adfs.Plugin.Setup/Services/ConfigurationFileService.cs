@@ -213,7 +213,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
                 QuestionIO.WriteLine();
                 QuestionIO.WriteLine($"  Registration Info filepath: {filePath}");
                 QuestionIO.WriteLine();
-                QuestionIO.WriteLine("   This file contains the registration information that the operator";
+                QuestionIO.WriteLine("   This file contains the registration information that the operator");
                 QuestionIO.WriteLine("   of the second factor only (SFO) server needs to allow this MFA extension");
                 QuestionIO.WriteLine("   to use the SFO server.");
             }

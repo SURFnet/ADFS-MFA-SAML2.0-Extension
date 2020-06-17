@@ -89,6 +89,30 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
             return authnRequest;
         }
 
+        public static ClaimsIdentity VerifyResponseAndGetClaimsIdentity(Saml2Response samlResponse)
+        {
+            ClaimsIdentity cid = null;
+
+            // The response is verified when the identities are retrieved.
+            var responseIdentities = samlResponse.GetClaims(Options.FromConfiguration).ToList();
+
+            if ( responseIdentities != null && responseIdentities.Count>0)
+            {
+                cid = responseIdentities[0];
+                if ( responseIdentities.Count > 1 )
+                {
+                    // weird, but not fatal.
+                    Log.WarnFormat("Using only the first ClaimsIdentity out of: {0}", responseIdentities.Count);
+                }
+            }
+            else
+            {
+                Log.Debug("Saml2Response.GetClaims returned null or no ClaimsIdentities");
+            }
+
+            return cid;
+        }
+
         /// <summary>
         /// Verifies the response and gets the first claim of the requested type from the response.
         /// </summary>

@@ -250,6 +250,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
                 // - The Stepup-Gateway application logs contain the RequestID (SARI) and the stepup-Gateway authentication log contains the NameID
                 // - The ssoUrl identifies the Stepup-Gateway to which the request is sent.
                 // These informations allows the authentication in the plugin to be correlated with the authentication on the Stepup-Gateway
+                // TODO: Fix to real full uid when NameID is loadable. Now it incorrectly happens in the SamlService.
                 LogService.Log.InfoFormat("Forwarding SAML SFO AuthnRequest with ID '{0}' for Stepup NameID '{1}' to '{2}'", requestId, stepUpUid, ssoUrl);
 
                 return new AuthForm(ssoUrl, signedXml);
@@ -305,24 +306,50 @@ namespace SURFnet.Authentication.Adfs.Plugin
                     return new AuthFailedForm(false, Values.DefaultVerificationFailedResourcerId, context.ContextId, context.ActivityId);
                 }
 
-                claims = SamlService.VerifyResponseAndGetAuthenticationClaim(samlResponse);
-                foreach (var claim in claims)
+                //claims = SamlService.VerifyResponseAndGetAuthenticationClaim(samlResponse);
+                string loa = string.Empty;
+                string nameID = null;
+                var ci = SamlService.VerifyResponseAndGetClaimsIdentity(samlResponse);
+                if ( ci != null )
                 {
-                    LogService.Log.DebugFormat(
-                        "claim.Issuer='{0}'; claim.OriginalIssuer='{1}; claim.Type='{2}'; claim.Value='{3}'",
-                        claim.Issuer,
-                        claim.OriginalIssuer,
-                        claim.Type,
-                        claim.Value);
-                    foreach (var p in claim.Properties)
+                    nameID = ci.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+                    Claim authClaim = ci.FindFirst(ClaimTypes.AuthenticationMethod);
+                    if (authClaim != null )
                     {
-                        LogService.Log.DebugFormat("claim.Properties: '{0}'='{1}'", p.Key, p.Value);
+                        claims = new[] { authClaim };
+                        if ( authClaim.Value != null )
+                        {
+                            loa = authClaim.Value;
+                        }
+                    }
+                    else
+                    {
+                        claims = Array.Empty<Claim>();
+                    }
+
+                    claims = authClaim == null ? Array.Empty<Claim>() : new[] { authClaim };
+                    foreach (var claim in claims)
+                    {
+                        LogService.Log.DebugFormat(
+                            "claim.Issuer='{0}'; claim.OriginalIssuer='{1}'; claim.Type='{2}'; claim.Value='{3}'",
+                            claim.Issuer,
+                            claim.OriginalIssuer,
+                            claim.Type,
+                            claim.Value);
+                        foreach (var p in claim.Properties)
+                        {
+                            LogService.Log.DebugFormat("claim.Properties: '{0}'='{1}'", p.Key, p.Value);
+                        }
                     }
                 }
 
                 // TODO: Add Subject NameID from the samlResponse to this log message
                 // TODO: Add AuthnConextClassRef from the samlResponse to this log message
-                LogService.Log.InfoFormat("Successfully processed response for request with id '{0}'", requestId);
+                LogService.Log.InfoFormat("Successfully processed response for request with id '{0}', NameID '{1}', LOA '{2}'",
+                            requestId,
+                            nameID ?? string.Empty,
+                            loa);
                 return null;
             }
             catch (Exception ex)
