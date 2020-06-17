@@ -116,6 +116,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
             {
                 if (alg.CspKeyContainerInfo.ProviderType != NativeMethods.XCN_PROV_RSA_AES)
                 {
+                    // See: https://www.magnumdb.com/search?q=parent:X509ProviderType for a list of the provider types
                     string error = $"Incorrect RSA providerType: {alg.CspKeyContainerInfo.ProviderType}";
                     LogService.Log.Warn(error);
                     QuestionIO.WriteError(error);
@@ -129,7 +130,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
             {
                 LogService.Log.Error("Unknown RSA Algorithm implementation: " + cert.PrivateKey.GetType().FullName);
                 isValid = true;
-                QuestionIO.WriteError("Untested RSA Algorithm implementation, please do send the setup logfile to Surfnet");
+                QuestionIO.WriteError("Untested RSA Algorithm implementation, please do send us the setup logfile");
             }
 
             return isValid;

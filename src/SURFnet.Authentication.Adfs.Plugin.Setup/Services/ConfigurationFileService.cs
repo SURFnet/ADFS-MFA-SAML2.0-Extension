@@ -180,6 +180,13 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
             try
             {
                 File.WriteAllText(path, json);
+                Console.WriteLine();
+                Console.WriteLine("*** Wrote your configuration choices to disk for use with the other servers in this farm ***");
+                Console.WriteLine($"Location: '{path}'");
+                Console.WriteLine("All servers in a farm must use the same configuration. When present, Setup.exe will read the");
+                Console.WriteLine("configuration from this file and use it during install/upgrade or reconfiguration.");
+                Console.WriteLine("You can safely remove this file.");
+                Console.WriteLine();
             }
             catch (Exception ex)
             {
@@ -206,6 +213,9 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
                 QuestionIO.WriteLine();
                 QuestionIO.WriteLine($"  Registration Info filepath: {filePath}");
                 QuestionIO.WriteLine();
+                QuestionIO.WriteLine("   This file contains the registration information that the operator";
+                QuestionIO.WriteLine("   of the second factor only (SFO) server needs to allow this MFA extension");
+                QuestionIO.WriteLine("   to use the SFO server.");
             }
             catch (Exception ex)
             {

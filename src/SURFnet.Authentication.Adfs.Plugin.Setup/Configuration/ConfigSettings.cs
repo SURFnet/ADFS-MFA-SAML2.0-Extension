@@ -78,32 +78,36 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
             DisplayName = "schacHomeOrganization",
             HelpLines = new string[] {
                 "The value to use for schacHomeOranization when calculating the NameID for",
-                "authenticating a user to the SFO server. This must be the same",
+                "authenticating a user to the second factor only (SFO) server. This must be the same",
                 "value as the value of the \"urn:mace:terena.org:attribute-def:schacHomeOrganization\"",
-                "claim that the that AD FS server sends when a user authenticates at the SFO server."
+                "claim that your Identity Provider sends when a user authenticates to the SFO server."
             }
         };
 
         public readonly static Setting ADAttributeSetting = new Setting(ActiveDirectoryUserIdAttribute)
         {
-            Introduction = "The name of the Active Directory attribute is required that contains the userID in the Stepup Only gateway",
+            Introduction = "The name of the Active Directory attribute that contains the userID for authentication to the SFO server",
             DisplayName = "Active Directory SFO userid Attribute",
             HelpLines = new string[] {
                 "The name of the AD attribute that contains the user ID (\"uid\") used when calculating",
-                "the NameID for authenticating a user to the SFO server.",
-                "This AD attribute must contain the value of the \"urn:mace:dir:attribute-def:uid\" claim that the",
-                "AD FS server sends when a user authenticates to the SFO server."
+                "the NameID for authenticating a user to the second factor only (SFO) server.",
+                "This AD attribute must contain the value of the \"urn:mace:dir:attribute-def:uid\" claim that your",
+                "Identity Provider sends when a user authenticates to the SFO server."
             }
         };
 
         public readonly static Setting SPPrimarySigningThumbprint = new Setting(SPSignThumb1)
         {
-            Introduction = "The MFA extension signs the SAML2 requests to the SFO server. The thumbprint identifies the certificate.",
+            Introduction = "The MFA extension signs the authentication requests to the SFO server. The thumbprint identifies this certificate.",
             DisplayName = "MFA Extension (SP) signing thumbprint",
             HelpLines = new string[] {
                 "The thumbprint (i.e. the SHA1 hash) of the X.509 signing certificate.",
-                "This is typically the self-signed certificate that we generated during install and that we",
-                "installed in the certificate store"
+                "This is typically the self-signed certificate that was generated during install and that was",
+                "installed in the certificate store.",
+                "The MFA extensions uses this certificate to sign the SAML Authentication Requests that it sends",
+                "to the second factor only (SFO) server.",
+                "Send the " + SetupConstants.RegistrationDataFilename + " to the operator of the SFO server",
+                "after changing this setting."
             }
         };
 
@@ -113,9 +117,11 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
             //DefaultValue = "http://hostname/stepup-mfa",
             DisplayName = "MFA Extension (SP) entityID",
             HelpLines = new string[] {
-                "The EntityID of the Stepup ADFS MFA Extension.",
-                "This must be an URI in a namespace that you control.",
-                "Example: http://<adfs domain name>/stepup-mfa"
+                "The SAML EntityID of the Stepup ADFS MFA Extension. This identifies this installation to the",
+                "second factor only (SFO) server. This must be an URI in a namespace that you control.",
+                "Example: http://<adfs server domain name>/stepup-mfa",
+                "Send the " + SetupConstants.RegistrationDataFilename + " to the operator of the SFO server",
+                "after changing this setting."
             }
         };
 
@@ -132,11 +138,11 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
 
         public readonly static Setting IdPEntityID = new Setting(IdPEntityId)
         {
-            Introduction = "Specify which SFO server (IdP) to use (equivalent of entityID of IdP)",
-            DisplayName = "SFO server (IdP) entityID",
+            Introduction = "Specify which second factor only (SFO) server to use",
+            DisplayName = "SFO server (IdP) EntityID",
             HelpLines = new string[] {
-                "TODO: ",
-                "TODO: "
+                "Specify the SAML EntityID of the SFO server. This is the server that this MFA extension",
+                "uses for authentication of the user's second factor."
             }
         };
 
@@ -147,7 +153,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
 
         public readonly static Setting MinimaLoaSetting = new Setting(MinimalLoa, IdPEntityId)
         {
-            Introduction = "Each SFO server has its own authentication level URIs",
+            Introduction = "Each second factor only (SFO) server has its own authentication level URIs",
             DisplayName = "MinimalLoa",
             HelpLines = new string[] {
                 "The LoA identifier indicating the minimal level of authentication in requests",
