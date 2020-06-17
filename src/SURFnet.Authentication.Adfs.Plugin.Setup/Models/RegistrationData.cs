@@ -58,7 +58,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Models
 
         public static void SetACS(string hostname)
         {
-            Instance.ACS = $"https://{hostname}:443/adfs/ls";
+            Instance.ACS = $"https://{hostname}:443/adfs/";
         }
 
         public static void SetCert(X509Certificate2 cert)
