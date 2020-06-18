@@ -37,7 +37,7 @@ Notices
 -------
 
 The installation process was tested with AD FS on Windows 2012R2, 2016 and 2019 with the AD FS configuration using a
-Windows integrated database (WID). No testing ws performed with an AD FS that uses a central MSQL server.
+Windows integrated database (WID). No testing was performed with an AD FS that uses a central MSQL server.
 
 Preparation
 -----------
@@ -90,7 +90,7 @@ Installation process
      needs, to allow this installation of the AD FS to work with the Stepup-Gateway. Send this file to the Stepup-Gateway
      administrator.
    - The "UsedSettings.json" file contains all the configuration settings of the Plugin and can be used to
-     configure the plugin on the secondaries.
+     configure the plugin on the secondaries of the same farm. This file is version and farm specific.
    - If certificates were created and exported, then they are in the "config" directory too.
 
 
@@ -145,7 +145,7 @@ without an ADFS restart.
 
 You typically want the configuration of the plugin to be the same on each AD FS server in the farm. So if you make a
 change to the plugin in one AD FS servers, you want to repeat the change on each other server. You can use the
-"UsedSettings.json" file to transport plugin settings between AD FS servers.
+"UsedSettings.json" file to transport plugin settings between AD FS servers in the same farm.
 
 Change the configuration of the plugin by running the setup program in "reconfigure" mode.
 1. Open an elevated command prompt on the AD FS server where you want to change the configuration

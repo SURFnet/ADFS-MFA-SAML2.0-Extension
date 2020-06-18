@@ -150,7 +150,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
         /// To help with copying settings from earlier runs with present and previous configuration
         /// file versions of the adapter.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Dictionary with key as in Setting.InternalName, data is value for Setting</returns>
         public static Dictionary<string,string> LoadUsedSettings()
         {
             Dictionary<string, string> dict = null;
@@ -160,6 +160,11 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
             {
                 var fileContents = File.ReadAllText(path);
                 dict = JsonConvert.DeserializeObject<Dictionary<string, string>>(fileContents);
+
+                Console.WriteLine();
+                Console.WriteLine("*** Found a configuration for this farm on disk. Using this configuration. ***");
+                Console.WriteLine($"Location: '{path}'");
+                Console.WriteLine();
             }
 
             return dict;
@@ -183,9 +188,10 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
                 Console.WriteLine();
                 Console.WriteLine("*** Wrote your configuration choices to disk for use with the other servers in this farm ***");
                 Console.WriteLine($"Location: '{path}'");
-                Console.WriteLine("All servers in a farm must use the same configuration. When present, Setup.exe will read the");
+                Console.WriteLine("All servers in the same farm must use the same configuration. When present, Setup.exe will read the");
                 Console.WriteLine("configuration from this file and use it during install/upgrade or reconfiguration.");
-                Console.WriteLine("You can safely remove this file.");
+                Console.WriteLine("The file contents are version specific.");
+                Console.WriteLine("You can safely remove this file, then you have to specify all settings manually.");
                 Console.WriteLine();
             }
             catch (Exception ex)
