@@ -1,14 +1,34 @@
 Version 2.0.3
-- Fix: Explanations on display for UsedSettings.json
-- Fix: Log id on for AuthNRequest and Response (added Subject and AuthContextClassRef)
+* Plugin
+- Add log messages at INFO level (the default log level) that log authentication related
+  information (https://www.pivotaltracker.com/story/show/172938062):
+  - The identity claim of the user that is received from ADFS
+  - The user's Subject NameID and the ID of SAML AuthnRequest for the SFO server
+  - The Subject NameID and AuthContextClassRef in the SAML Response from the SFO server
+- Require a SAML Response to have 1 Assertion
+- Fix: System.NullReferenceException exception after import of a pfx that was created by exporting
+  a certificate from an unsupported CSP
+
+* Setup
+- Make explicit in the Setup output when the UsedSettings.json file is used and when it is 
+  written (https://www.pivotaltracker.com/story/show/173267034)
+- In Setup show a notice that no configuration changes were made in install/upgrade mode
+  when the software is already up to date (https://www.pivotaltracker.com/story/show/173266899)
+- Update several Setup messages for clarity
+- Show adapter identifier in ADFS in Setup output
+
 
 Version 2.0.2
-- Fix: Typing errors in the IdP selection file.
+* Plugin
 - Fix: Missing Dispose() in AD code
+
+* Setup
+- Fix: Typing errors in the IdP selection file.
 - Fix: Commas and quotes in json registration data.
 - Fix: Failing to copy IdP metadata file when using "-r"
 - Fix: Outdated metadata files in config directory.
 - Fix: Error in dealing with 2.0.0.0
+
 
 Version 2.0.1
 - Fix: Adapter is registered in AD FS with the wrong configuration
