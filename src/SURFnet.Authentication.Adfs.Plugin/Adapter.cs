@@ -306,7 +306,6 @@ namespace SURFnet.Authentication.Adfs.Plugin
                     return new AuthFailedForm(false, Values.DefaultVerificationFailedResourcerId, context.ContextId, context.ActivityId);
                 }
 
-                //claims = SamlService.VerifyResponseAndGetAuthenticationClaim(samlResponse);
                 string loa = string.Empty;
                 string nameID = null;
                 var ci = SamlService.VerifyResponseAndGetClaimsIdentity(samlResponse);
@@ -342,14 +341,13 @@ namespace SURFnet.Authentication.Adfs.Plugin
                             LogService.Log.DebugFormat("claim.Properties: '{0}'='{1}'", p.Key, p.Value);
                         }
                     }
+
+                    LogService.Log.InfoFormat("Successfully processed response for request with id '{0}', NameID '{1}', LOA '{2}'",
+                                requestId,
+                                nameID ?? string.Empty,
+                                loa);
                 }
 
-                // TODO: Add Subject NameID from the samlResponse to this log message
-                // TODO: Add AuthnConextClassRef from the samlResponse to this log message
-                LogService.Log.InfoFormat("Successfully processed response for request with id '{0}', NameID '{1}', LOA '{2}'",
-                            requestId,
-                            nameID ?? string.Empty,
-                            loa);
                 return null;
             }
             catch (Exception ex)

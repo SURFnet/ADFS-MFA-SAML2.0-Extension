@@ -76,11 +76,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
 
             if ( rc == 0 )
             {
-                // Write this AdminChoiceList to used settings file
-                if (AdminChoicesList.Any(s => s.IsUpdated))
-                {
-                    SaveUsedSettings(AdminChoicesList);
-                }
+                SaveUsedSettings(AdminChoicesList);
             }
 
             return rc;

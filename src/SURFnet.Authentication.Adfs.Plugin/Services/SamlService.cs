@@ -89,6 +89,11 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
             return authnRequest;
         }
 
+        /// <summary>
+        /// Verifies the response and gets the the ClaimsPrincipal
+        /// </summary>
+        /// <param name="samlResponse">Response from SFO gateway.</param>
+        /// <returns></returns>
         public static ClaimsIdentity VerifyResponseAndGetClaimsIdentity(Saml2Response samlResponse)
         {
             ClaimsIdentity cid = null;
@@ -98,11 +103,14 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
 
             if ( responseIdentities != null && responseIdentities.Count>0)
             {
-                cid = responseIdentities[0];
                 if ( responseIdentities.Count > 1 )
                 {
-                    // weird, but not fatal.
-                    Log.WarnFormat("Using only the first ClaimsIdentity out of: {0}", responseIdentities.Count);
+                    // weird, SFO server does not send multiple Assertions!
+                    Log.ErrorFormat("Using only the first ClaimsIdentity out of: {0}", responseIdentities.Count);
+                }
+                else
+                {
+                    cid = responseIdentities[0];
                 }
             }
             else
@@ -111,28 +119,6 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
             }
 
             return cid;
-        }
-
-        /// <summary>
-        /// Verifies the response and gets the first claim of the requested type from the response.
-        /// </summary>
-        /// <param name="samlResponse">The SAML response.</param>
-        /// <param name="claimType">The type of claim to look for.</param>
-        /// <returns>
-        /// The authentication claim.
-        /// </returns>
-        public static Claim[] VerifyResponseAndGetAuthenticationClaim(Saml2Response samlResponse, string claimType = "http://schemas.microsoft.com/ws/2008/06/identity/claims/authenticationmethod")
-        {
-            // The response is verified when the claims are retrieved.
-            var responseClaims = samlResponse.GetClaims(Options.FromConfiguration).ToList();
-
-            // Get the first response claim where the type is right
-            var authClaim = responseClaims
-                .Select(claimsIdentity => claimsIdentity.Claims.FirstOrDefault(c =>
-                    c.Type.Equals(claimType)))
-                .FirstOrDefault(a => a != null);
-
-            return authClaim == null ? Array.Empty<Claim>() : new[] { authClaim };
         }
 
         /// <summary>
