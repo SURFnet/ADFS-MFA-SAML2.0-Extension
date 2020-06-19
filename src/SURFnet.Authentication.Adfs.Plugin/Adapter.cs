@@ -251,7 +251,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
                 // - The ssoUrl identifies the Stepup-Gateway to which the request is sent.
                 // These informations allows the authentication in the plugin to be correlated with the authentication on the Stepup-Gateway
                 // TODO: Fix to real full uid when NameID is loadable. Now it incorrectly happens in the SamlService.
-                LogService.Log.InfoFormat("Forwarding SAML SFO AuthnRequest with ID '{0}' for Stepup NameID '{1}' to '{2}'", requestId, stepUpUid, ssoUrl);
+                LogService.Log.InfoFormat("Forwarding SAML SFO AuthnRequest with ID '{0}' for Stepup NameID '{1}' to '{2}'", requestId, authRequest.Subject.NameId.Value, ssoUrl);
 
                 return new AuthForm(ssoUrl, signedXml);
             }
