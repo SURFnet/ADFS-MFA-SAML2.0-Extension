@@ -270,8 +270,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                         rc = AdapterMaintenance.UpdateRegistration(setupstate.AdfsConfig.RegisteredAdapterVersion);
                         if (rc == 0)
                         {
-                            Console.WriteLine("Registration Successful");
-                            Console.WriteLine();
+                            Console.WriteLine("Registration Successful.");
+                            Console.WriteLine("Adapter registration name: "+ SURFnet.Authentication.Adfs.Plugin.Setup.Common.Values.AdapterRegistrationName);
                         }
                     }
 
@@ -608,7 +608,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
         private static void Help()
         {
             Console.WriteLine("Setup program for ADFS MFA Stepup Extension.");
-            Console.WriteLine("   Adds the Second Factor Only MFA extension 'ADFS.SCSA' to an ADFS server.");
+            Console.WriteLine("   Adds the Second Factor Only MFA extension '" + SURFnet.Authentication.Adfs.Plugin.Setup.Common.Values.AdapterRegistrationName+"' to an ADFS server.");
             Console.WriteLine(" -? -h  This help");
             Console.WriteLine(" -c     Check/Analyze existing installation only");
 //            Console.WriteLine(" -f     Fix (experimental)");

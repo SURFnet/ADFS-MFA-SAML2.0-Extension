@@ -51,7 +51,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                         if ( AdfsPSService.UnregisterAdapter() )
                         {
                             setupstate.AdfsConfig.RegisteredAdapterVersion = V0Assemblies.AssemblyNullVersion;
-                            Console.WriteLine("\"Unregister\" successful, the ADFS EventLog should no longer show loading this adapter.");
+                            Console.WriteLine("\"Unregister\" successful, the ADFS EventLog should no longer show loading this ('" + SURFnet.Authentication.Adfs.Plugin.Setup.Common.Values.AdapterRegistrationName + "') adapter.");
                             Console.WriteLine();
                             if ( ! Messages.DoYouWantTO($"Continue with Uninstall version {setupstate.InstalledVersionDescription}") )
                             {
