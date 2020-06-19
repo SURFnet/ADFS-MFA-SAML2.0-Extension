@@ -58,6 +58,7 @@ copy ..\LICENSE %release% || goto :error
 copy ..\NOTICE %release% || goto :error
 copy ..\INSTALL %release% || goto :error
 copy ..\UPGRADE %release% || goto :error
+copy ..\KNOWN_ISSUES %release% || goto :error
 
 @set sign=0
 @choice /m "Sign release?" /c YN

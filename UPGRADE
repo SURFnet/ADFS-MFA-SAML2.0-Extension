@@ -136,3 +136,5 @@ When the plugin was installed successfully, but there are problem using the plug
 
 1. Check the event log of the AD FS Service for errors.
 2. The plugin has it's own event log "ADFS Plugin". Check this log for errors.
+
+Consult the included KNOWN_ISSUES file for known problems with Setup and the plugin and their solution 
