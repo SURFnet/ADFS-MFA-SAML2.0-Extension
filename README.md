@@ -34,8 +34,8 @@ The SetupPackage-2.x.x has been codesigned with "SURFnet bv".
 Latest release 2.0.2: [SetupPackage-2.0.2.exe](https://github.com/SURFnet/ADFS-MFA-SAML2.0-Extension/releases/download/2.0.2/SetupPackage-2.0.2.exe)
 
 
-Installation and upgading
-=========================
+Installation and upgrading
+==========================
 
 * See the included [INSTALL](INSTALL) file for installation instructions
 * See the included [UPGRADE](UPGRADE) file for upgrade instructions
