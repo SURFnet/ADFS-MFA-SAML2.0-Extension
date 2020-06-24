@@ -31,7 +31,7 @@ file in the "config" directory of the SetupPackage with the configuration
 for your own installation(s).
 The SetupPackage-2.x.x has been codesigned with "SURFnet bv".
 
-Latest release 2.0.2: [SetupPackage-2.0.2.exe](https://github.com/SURFnet/ADFS-MFA-SAML2.0-Extension/releases/download/2.0.2/SetupPackage-2.0.2.exe)
+Latest release 2.0.3: [SetupPackage-2.0.3.exe](https://github.com/SURFnet/ADFS-MFA-SAML2.0-Extension/releases/download/2.0.3/SetupPackage-2.0.3.exe)
 
 
 Installation and upgrading
