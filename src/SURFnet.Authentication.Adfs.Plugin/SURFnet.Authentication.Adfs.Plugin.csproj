@@ -172,21 +172,10 @@
     <Binaries Include="$(ProjectDir)bin\$(Configuration)\SURFnet.Authentication.Adfs.Plugin.dll.config" />
   </ItemGroup>
   <ItemGroup />
-  <Target Name="BuildPackage">
-    <GetAssemblyIdentity AssemblyFiles="$(ProjectDir)bin\$(Configuration)\Sustainsys.Saml2.dll">
-      <Output TaskParameter="Assemblies" ItemName="SustainsysAssemblyInfo" />
-    </GetAssemblyIdentity>
-    <GetAssemblyIdentity AssemblyFiles="$(ProjectDir)bin\$(Configuration)\SURFnet.Authentication.Adfs.Plugin.dll">
-      <Output TaskParameter="Assemblies" ItemName="PluginAssemblyInfo" />
-    </GetAssemblyIdentity>
-    <Zip Condition=" '$(Configuration)' == 'Release' " Files="@(Binaries);@(SetupFiles)" WorkingDirectory="$(TargetDir)" ZipFileName="$(TargetDir)SetupPackage-%(PluginAssemblyInfo.Version).zip" />
-    <Message Importance="High" Text="Created $(TargetDir)SetupPackage-%(PluginAssemblyInfo.Version).zip" />
-  </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
   </Target>-->
-  <Target Name="AfterBuild">
-    <CallTarget Targets="BuildPackage" />
-  </Target>
+  <!-- <Target Name="AfterBuild">   
+  </Target>-->
 </Project>
