@@ -83,7 +83,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                     else if (setupstate.DetectedVersion.Major == 0)
                     {
                         // GREEN FIELD scenario
-                        rc = GrenFieldInstallation(setupstate);
+                        rc = GreenFieldInstallation(setupstate);
                     }
                     else if (setupstate.DetectedVersion < AllDescriptions.ThisVersion.DistributionVersion)
                     {
@@ -235,7 +235,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
             Console.ReadLine();
         }
 
-        static int GrenFieldInstallation(SetupState setupstate)
+        static int GreenFieldInstallation(SetupState setupstate)
         {
             int rc = 0;
 

@@ -1,11 +1,4 @@
-﻿using SURFnet.Authentication.Adfs.Plugin.Setup.Configuration;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
+﻿namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
 {
     public static class V2Components
     {
@@ -13,6 +6,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
         public static readonly AdapterComponent V2_0_1Adapter = new V2_0AdapterImp(V2Assemblies.Adapter_2_0_1Spec);
         public static readonly AdapterComponent V2_0_2Adapter = new V2_0AdapterImp(V2Assemblies.Adapter_2_0_2Spec);
         public static readonly AdapterComponent V2_0_3Adapter = new V2_0AdapterImp(V2Assemblies.Adapter_2_0_3Spec);
+        public static readonly AdapterComponent V2_0_4Adapter = new V2_0AdapterImp(V2Assemblies.Adapter_2_0_4Spec);
 
         public static readonly StepupComponent[] V2_0Components = new StepupComponent[]
         {
@@ -22,7 +16,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
                 ConfigFilename = SetupConstants.SustainCfgFilename
             },
 
-            new Log4netV2_0_8Component("log4net V2.0.8.0"),
+            new Log4netV2_0_8Component("log4net V2.0.12.0"),
 
             new StepupComponent("Newtonsoft v12.0.3")
             {

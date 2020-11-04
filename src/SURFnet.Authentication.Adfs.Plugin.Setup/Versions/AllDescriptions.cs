@@ -48,7 +48,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
             ExtraAssemblies = Sustainsys2_7Deps.Sustainsys2_7_Extras
         };
 
-        static public readonly VersionDescription V2_0_4_0 = new VersionDescription(V2Components.V2_0_3Adapter)
+        static public readonly VersionDescription V2_0_4_0 = new VersionDescription(V2Components.V2_0_4Adapter)
         {
             Components = V2Components.V2_0Components,
             ExtraAssemblies = Sustainsys2_7Deps.Sustainsys2_7_Extras
