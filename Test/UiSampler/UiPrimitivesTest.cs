@@ -17,8 +17,8 @@ namespace UiSampler
         {
             bool more;
 
-            var q1 = new ShowAndGetYesNo("Q1 YesNo - Continue without default");
-            var q2 = new ShowAndGetYesNo("Q2 YesNo - Continue with a default reponse", 'y');
+            var q1 = new ShowAndGetYesNo("Q1 YesNo - Continue without default", true);
+            var q2 = new ShowAndGetYesNo("Q2 YesNo - Continue with a default reponse", 'y', true);
 
             more = true;
             while (more)

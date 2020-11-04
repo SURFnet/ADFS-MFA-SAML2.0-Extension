@@ -15,11 +15,11 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
         /// <param name="acceptCurrent">true if likes it.</param>
         /// <param name="question">question</param>
         /// <returns>false on error/abort, else true</returns>
-        public static bool WhatAboutCurrent(out bool acceptCurrent, string question)
+        public static bool WhatAboutCurrent(out bool acceptCurrent, string question, bool showHelpChar)
         {
             bool ok = false;
 
-            ShowAndGetYesNo yesorno = new ShowAndGetYesNo(question, 'y');
+            ShowAndGetYesNo yesorno = new ShowAndGetYesNo(question, 'y', showHelpChar);
             acceptCurrent = true;
 
             bool more = true;

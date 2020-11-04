@@ -189,7 +189,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
                     if ( SetupCertService.IsValidSPCert(tempCert) )
                     {
                         DisplayCert();
-                        if (!AnyControllerUtils.WhatAboutCurrent(out bool acceptCurrent, "             Continue with this certificate"))
+                        if (!AnyControllerUtils.WhatAboutCurrent(out bool acceptCurrent, "             Continue with this certificate", true))
                         {
                             // abort
                             // but first cleanup.
@@ -249,7 +249,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
             ok = false;
 
             DisplayCert(cert);
-            if (false==AnyControllerUtils.WhatAboutCurrent(out bool acceptCurrent, "             Continue with this certificate"))
+            if (false==AnyControllerUtils.WhatAboutCurrent(out bool acceptCurrent, "             Continue with this certificate",true))
             {
                 // abort
             }

@@ -103,7 +103,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                 {
                     // No EventLog for Adapter
                     LogService.Log.Warn("ExtraChecks() detected missing EventLog.");
-                    if ( 'y' == AskYesNo.Ask("Missing EventLog, create it", 'y') )
+                    if ( 'y' == AskYesNo.Ask("Missing EventLog, create it", true, 'y') )
                     {
                         EnsureEventLog.Create();
                     }

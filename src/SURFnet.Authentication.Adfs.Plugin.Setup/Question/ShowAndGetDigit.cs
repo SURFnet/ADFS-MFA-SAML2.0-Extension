@@ -14,7 +14,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Question
         /// <param name="question"></param>
         /// <param name="min"></param>
         /// <param name="max"></param>
-        public ShowAndGetDigit(string question, int min, int max) : base(question, GetValidChars(min, max))
+        public ShowAndGetDigit(string question, int min, int max, bool showHelpChar) : base(question, GetValidChars(min, max), showHelpChar)
         {
         }
 
@@ -25,7 +25,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Question
         /// <param name="min"></param>
         /// <param name="max"></param>
         /// <param name="defaulChoice"></param>
-        public ShowAndGetDigit(string question, int min, int max, int defaulChoice) : base(question, GetValidChars(min, max), (char)(defaulChoice+'0'))
+        public ShowAndGetDigit(string question, int min, int max, int defaulChoice, bool showHelpChar) : base(question, GetValidChars(min, max), (char)(defaulChoice+'0'), showHelpChar)
         {
         }
 

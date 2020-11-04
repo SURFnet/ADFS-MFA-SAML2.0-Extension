@@ -32,7 +32,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
             }
 
 
-            var dialogue = new IdPChoiceController(idpEnvironments, index);
+            var dialogue = new IdPChoiceController(idpEnvironments, index, true);
             if (dialogue.Ask())
             {
                 if (false == dialogue.IsDefault)

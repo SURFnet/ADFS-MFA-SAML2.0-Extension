@@ -16,15 +16,15 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Question
         /// <param name="line"></param>
         /// <param name="defaultChoice"></param>
         /// <returns>'y', 'n' or 'x'</returns>
-        public static char Ask(string line, char defaultChoice = '\0')
+        public static char Ask(string line, bool showHelpChar, char defaultChoice = '\0')
         {
             char c = '\0';
             ShowAndGetYesNo dialogue;
 
             if ( defaultChoice != '\0')
-                dialogue = new ShowAndGetYesNo(line, defaultChoice);
+                dialogue = new ShowAndGetYesNo(line, defaultChoice, showHelpChar);
             else
-                dialogue = new ShowAndGetYesNo(line);
+                dialogue = new ShowAndGetYesNo(line, showHelpChar);
 
             bool loop = true;
             while ( loop )

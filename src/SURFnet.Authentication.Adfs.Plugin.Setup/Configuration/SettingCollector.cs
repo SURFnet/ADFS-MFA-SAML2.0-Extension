@@ -109,12 +109,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
 
             // then if they are all there: Ask confirmation
             if ( AllMandatoryHaveValue(minimalSubset) )
-            {
-                var helpLines = new string[]
-                {
-                    "Help PlaceHolder #173374783"
-                };
-                
+            {                             
                 var introductionString = "*** Setup did find an existing CORRECT CONFIGURATION. With settings as follows: ";
                 if (!string.IsNullOrWhiteSpace(minimalSubset.FirstOrDefault()?.NewValue))
                 {
@@ -127,7 +122,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
                 QuestionIO.WriteLine();
                 QuestionIO.WriteLine();
 
-                switch (AskConfirmation(minimalSubset, introductionString, helpLines))
+                switch (AskConfirmation(minimalSubset, introductionString, false))
                 {
                     case 'y':
                         rc = 0;
@@ -237,7 +232,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
                     if (more == false)
                     {
                         // Ask for completion/confirmation.
-                        switch (AskConfirmation(uiSettings, "The (new) configuration settings are now as follows"))
+                        switch (AskConfirmation(uiSettings, "The (new) configuration settings are now as follows",true))
                         {
                             case 'y':
                                 // this terminates the loop: more is already false
@@ -307,7 +302,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
         {
             bool ok = false;
 
-            char resp = AskYesNo.Ask("Do you want to import a certificate");
+            char resp = AskYesNo.Ask("Do you want to import a certificate", true);
             if ('y' == resp)
             {
                 var pfxSelector = new CertImportPfx();
@@ -346,7 +341,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
         {
             bool yes = true;
 
-            switch ( AskYesNo.Ask("Do you want to continue with other settings?") )
+            switch ( AskYesNo.Ask("Do you want to continue with other settings?", true) )
             {
                 case 'y':
                     yes = true;
@@ -360,7 +355,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
             return yes;
         }       
 
-        char AskConfirmation(List<Setting> settings, string introduction, string[] helpLines = null)
+        char AskConfirmation(List<Setting> settings, string introduction, bool showHelpChar)
         {
             char rc = '\0';
 
@@ -377,43 +372,28 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
                 Question = "Do you want to continue with these settings?"
             };
 
-            var dialogue = new ShowListGetYesNo(options);
+            var dialogue = new ShowListGetYesNo(options, showHelpChar);
 
-            bool loop = true;
-            while (loop)
+
+            if (dialogue.Ask())
             {
-
-                if (dialogue.Ask())
+                // Yes or No
+                switch (dialogue.Value)
                 {
-                    // Yes or No
-                    switch (dialogue.Value)
-                    {
-                        case 'y':
-                        case 'n':
-                            rc = dialogue.Value;                          
-                            break;
+                    case 'y':
+                    case 'n':
+                        rc = dialogue.Value;
+                        break;
 
-                        default:
-                            LogService.WriteFatal("Bug Check! In SettingCollector.AskConfimation() ShowListGetYesNo returned: non yn.");                          
-                            break;
-                    }
-
-                    loop = false;
-                }
-                else
-                {
-                    if (dialogue.IsAbort)
-                    {
-                        rc = 'x';
-                        loop = false;
-                    }
-                    else if (dialogue.WantsDescription)
-                    {
-                        QuestionIO.WriteDescription(helpLines ?? new string[] { "---" } );
-                        QuestionIO.WriteLine(); 
-                    }
+                    default:
+                        LogService.WriteFatal("Bug Check! In SettingCollector.AskConfimation() ShowListGetYesNo returned: non yn.");
+                        break;
                 }
             }
+            else
+            {
+                rc = 'x';
+            }            
 
             return rc;
         }

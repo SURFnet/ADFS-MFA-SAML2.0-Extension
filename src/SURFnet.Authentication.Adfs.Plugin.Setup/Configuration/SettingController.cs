@@ -34,12 +34,12 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
             QuestionIO.WriteLine();
             string value = $"{Setting.DisplayName}: {TempValue}".PadLeft(35);
             QuestionIO.WriteValue(value);
-            return AnyControllerUtils.WhatAboutCurrent(out acceptCurrent, "                  Is this correct?");
+            return AnyControllerUtils.WhatAboutCurrent(out acceptCurrent, "                  Is this correct?", true);
         }
 
         bool WantToContinueWith(out bool acceptCurrent)
         {
-            return AnyControllerUtils.WhatAboutCurrent(out acceptCurrent, $"Do you want to continue with '{TempValue}'?");
+            return AnyControllerUtils.WhatAboutCurrent(out acceptCurrent, $"Do you want to continue with '{TempValue}'?", true);
         }
 
         /// <summary>

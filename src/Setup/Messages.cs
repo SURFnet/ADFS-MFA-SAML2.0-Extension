@@ -48,7 +48,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
             bool doit;
 
             LogService.Log.Warn(question);
-            if ('y' == AskYesNo.Ask(question))
+            if ('y' == AskYesNo.Ask(question,true))
             {
                 doit = true;
             }

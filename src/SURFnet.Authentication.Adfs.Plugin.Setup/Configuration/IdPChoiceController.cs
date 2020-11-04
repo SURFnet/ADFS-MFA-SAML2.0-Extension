@@ -15,8 +15,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
         /// </summary>
         /// <param name="idpEnvironments">IDP environments Dictionary</param>
         /// <param name="defaultIndex">index for default choice</param>
-        public IdPChoiceController(List<Dictionary<string, string>> idpEnvironments, int defaultIndex) :
-                    base(CreateOptionList(idpEnvironments), defaultIndex+1)  // ShowListGetDigit() is 1 based, index 0 based
+        public IdPChoiceController(List<Dictionary<string, string>> idpEnvironments, int defaultIndex, bool showHelpChar) :
+                    base(CreateOptionList(idpEnvironments), defaultIndex+1, showHelpChar)  // ShowListGetDigit() is 1 based, index 0 based
         {
         }
 
@@ -37,7 +37,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
                     // some valid choice
                     QuestionIO.WriteLine();
                     QuestionIO.WriteValue(OptionList.Options[ChoosenIndex]);
-                    if ( ! AnyControllerUtils.WhatAboutCurrent(out bool acceptCurrent, "                  Is this correct?") )
+                    if ( ! AnyControllerUtils.WhatAboutCurrent(out bool acceptCurrent, "                  Is this correct?", true) )
                     {
                         // abort
                         break;

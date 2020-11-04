@@ -36,7 +36,7 @@ namespace Ui4Cfg
 
 
             // Demo for IdP environment choice
-            IdPChoiceController idpchoice = new IdPChoiceController(IdPEnvironments, 0);
+            IdPChoiceController idpchoice = new IdPChoiceController(IdPEnvironments, 0, true);
             ok = idpchoice.Ask();
             if (ok)
             {
@@ -161,7 +161,7 @@ namespace Ui4Cfg
                 Question = "Select a SecondFactorOnly gateway environment"
             };
 
-            return new ShowListGetDigit(ol, 0);
+            return new ShowListGetDigit(ol, 0, true);
         }
 
         public static ShowListGetYesNo CreateSummaryDialogue(List<Setting> list)
@@ -179,7 +179,7 @@ namespace Ui4Cfg
                 Options = settingResult,
                 Question = "Do you want to continue with the above settings"
             };
-            ShowListGetYesNo dialogue = new ShowListGetYesNo(ol);
+            ShowListGetYesNo dialogue = new ShowListGetYesNo(ol, true);
 
             return dialogue;
         }

@@ -4,7 +4,7 @@
     {
         private readonly OptionList OptionList;
 
-        public ShowListGetYesNo(OptionList list) : base(list.Question, 'y')
+        public ShowListGetYesNo(OptionList list, bool showHelpChar) : base(list.Question, 'y', showHelpChar)
         {
             OptionList = list;
         }

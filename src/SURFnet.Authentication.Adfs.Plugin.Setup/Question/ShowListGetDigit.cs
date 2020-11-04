@@ -10,7 +10,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Question
     {
         protected readonly OptionList OptionList;
 
-        public ShowListGetDigit(OptionList list, int defaultChoice) : base(list.Question, 1, list.Options.Length, defaultChoice)
+        public ShowListGetDigit(OptionList list, int defaultChoice, bool showHelpChar) : 
+            base(list.Question, 1, list.Options.Length, defaultChoice, showHelpChar)
         {
             OptionList = list;
         }

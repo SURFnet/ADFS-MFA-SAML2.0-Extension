@@ -8,7 +8,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Question
 {
     public class IsThisCorrect : ShowAndGetChar
     {
-        public IsThisCorrect() : base("Is this correct?", "yn", 'y')
+        public IsThisCorrect(bool showHelpChar) : base("Is this correct?", "yn", 'y', showHelpChar)
         { 
         }
     }

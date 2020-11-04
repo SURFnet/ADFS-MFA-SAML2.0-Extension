@@ -28,7 +28,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
             QuestionIO.WriteLine("  Other servers in the farm must use the same certificate.");
             QuestionIO.WriteLine();
 
-            if ( 'y' == AskYesNo.Ask("    Do you want to export this certificate now as a '.pfx'") )
+            if ( 'y' == AskYesNo.Ask("    Do you want to export this certificate now as a '.pfx'",true) )
             {
                 // generate random pwd
                 string pwd = GetRandomPwd(12);
@@ -46,7 +46,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
                     QuestionIO.WriteLine("   Save it in a safe place.");
                     QuestionIO.WriteLine();
 
-                    while ('y' != AskYesNo.Ask("    Did you save it somewhere in a safe place")) { }
+                    while ('y' != AskYesNo.Ask("    Did you save it somewhere in a safe place",true)) { }
                 }
                 catch (Exception ex)
                 {

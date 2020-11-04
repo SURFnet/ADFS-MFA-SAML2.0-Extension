@@ -12,20 +12,22 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Question
 
         private char DefaultChar { get; set; }
 
-        public ShowAndGetChar(string question, string validChars) : base(CreateValidChoices(question,validChars))
+        public ShowAndGetChar(string question, string validChars, bool showHelpChar) : 
+            base(CreateValidChoices(question,validChars, showHelpChar))
         {
             ValidCharacters = validChars.ToLowerInvariant();
         }
-        public ShowAndGetChar(string question, string validChars, char defaultChar) : base(CreateValidChoices(question, validChars), char.ToLowerInvariant(defaultChar))
+        public ShowAndGetChar(string question, string validChars, char defaultChar, bool showHelpChar) : 
+            base(CreateValidChoices(question, validChars, showHelpChar), char.ToLowerInvariant(defaultChar))
         {
             ValidCharacters = validChars.ToLowerInvariant();
         }
 
-        private static string CreateValidChoices(string question, string validChars)
+        private static string CreateValidChoices(string question, string validChars, bool showHelpChar)
         {
-            return $"{question} ({validChars.ToLowerInvariant()}x?)";
+            var helpChar = showHelpChar ? "?" : string.Empty;
+            return $"{question} ({validChars.ToLowerInvariant()}x{helpChar})";
         }
-
 
         /// <summary>
         /// 

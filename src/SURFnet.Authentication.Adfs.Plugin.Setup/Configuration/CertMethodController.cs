@@ -22,7 +22,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
             Question = "How do you want to select a certificate"
         };
 
-        public CertMethodController() : base(CertOptions, 1)
+        public CertMethodController() : base(CertOptions, 1, true)
         {
         }
     }
