@@ -39,7 +39,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
 
         bool WantToContinueWith(out bool acceptCurrent)
         {
-            return AnyControllerUtils.WhatAboutCurrent(out acceptCurrent, $"Do you want to continue with '{TempValue}'?", true);
+            return AnyControllerUtils.WhatAboutCurrent(out acceptCurrent, $"Do you want to continue with '{TempValue}'?", Setting.HelpLines);
         }
 
         /// <summary>

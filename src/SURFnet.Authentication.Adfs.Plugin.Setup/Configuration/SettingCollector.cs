@@ -232,7 +232,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
                     if (more == false)
                     {
                         // Ask for completion/confirmation.
-                        switch (AskConfirmation(uiSettings, "The (new) configuration settings are now as follows",true))
+                        switch (AskConfirmation(uiSettings, "The (new) configuration settings are now as follows",false))
                         {
                             case 'y':
                                 // this terminates the loop: more is already false
