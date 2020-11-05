@@ -74,8 +74,12 @@ Building from Source
 * To make a release, run the SolutionItems/MakeRelease.cmd script. This script
   requires:
   * 7z.exe in "C:\Program Files\7-Zip\" (download from https://www.7-zip.org/)
+  Additionaly to codesign the zip (optional) you need:
   * signtool.exe from a Windows SDK (e.g. the Windows 10 SDK)
   * A code signing certificate in the certificate store
+  Run the script:
+  * Change to the SolutionItems directory
+  * Run "MakeRelease.cmd <version>"
 
 
 Resources
