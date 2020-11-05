@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.852
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30611.23
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Setup", "src\Setup\Setup.csproj", "{F099AD03-7546-4BBB-B259-EB7AF23B116A}"
 EndProject
@@ -22,6 +22,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UiSampler", "Test\UiSampler\UiSampler.csproj", "{9E5742F9-4233-411E-864D-2DFA176A1200}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ui4Cfg", "Test\Ui4Cfg\Ui4Cfg.csproj", "{B7F4146B-D0E1-437F-9755-52AFD2D9D1C0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SURFnet.Authentication.Adfs.Plugin.Extensions", "SURFnet.Authentication.Adfs.Plugin.Extensions\SURFnet.Authentication.Adfs.Plugin.Extensions.csproj", "{495E267D-BD15-4D4F-973B-523A17CB1D0F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -72,6 +74,12 @@ Global
 		{B7F4146B-D0E1-437F-9755-52AFD2D9D1C0}.Deploy|Any CPU.Build.0 = Debug|Any CPU
 		{B7F4146B-D0E1-437F-9755-52AFD2D9D1C0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B7F4146B-D0E1-437F-9755-52AFD2D9D1C0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{495E267D-BD15-4D4F-973B-523A17CB1D0F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{495E267D-BD15-4D4F-973B-523A17CB1D0F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{495E267D-BD15-4D4F-973B-523A17CB1D0F}.Deploy|Any CPU.ActiveCfg = Debug|Any CPU
+		{495E267D-BD15-4D4F-973B-523A17CB1D0F}.Deploy|Any CPU.Build.0 = Debug|Any CPU
+		{495E267D-BD15-4D4F-973B-523A17CB1D0F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{495E267D-BD15-4D4F-973B-523A17CB1D0F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

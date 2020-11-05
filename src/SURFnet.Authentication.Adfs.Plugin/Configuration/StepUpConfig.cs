@@ -88,6 +88,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Configuration
             try
             {
                 var adapterConfig = XDocument.Load(adapterCfgPath);
+
                 var root = adapterConfig.Descendants(XName.Get(AdapterElement)).FirstOrDefault();
                 if (root == null)
                 {

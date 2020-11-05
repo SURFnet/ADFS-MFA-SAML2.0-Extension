@@ -1,16 +1,15 @@
-﻿using SURFnet.Authentication.Adfs.Plugin.Setup.Assemblies;
-using SURFnet.Authentication.Adfs.Plugin.Setup.Common;
-using SURFnet.Authentication.Adfs.Plugin.Setup.Configuration;
-using SURFnet.Authentication.Adfs.Plugin.Setup.Models;
-using SURFnet.Authentication.Adfs.Plugin.Setup.Services;
-using SURFnet.Authentication.Adfs.Plugin.Setup.Util;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Xml;
 using System.Xml.Linq;
 
-
+using SURFnet.Authentication.Adfs.Plugin.Setup.Assemblies;
+using SURFnet.Authentication.Adfs.Plugin.Setup.Common;
+using SURFnet.Authentication.Adfs.Plugin.Setup.Configuration;
+using SURFnet.Authentication.Adfs.Plugin.Setup.Models;
+using SURFnet.Authentication.Adfs.Plugin.Setup.Services;
+using SURFnet.Authentication.Adfs.Plugin.Setup.Util;
 
 namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
 {
@@ -40,7 +39,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
         {
             LogService.Log.Info($"Reading Settings from '{ConfigFilename}' for '{ComponentName}'.");
 
-            int rc = ExctractAdapterConfig(settings);
+            int rc = ExtractAdapterConfig(settings);
             if (rc != 0)
             {
                 LogService.WriteFatal($"  Reading settings from '{ConfigFilename}' for '{ComponentName}' failed.");
@@ -71,7 +70,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
             return rc;
         }
 
-        private int ExctractAdapterConfig(List<Setting> settings)
+        private int ExtractAdapterConfig(List<Setting> settings)
         {
             int rc = 0;
             string foundvalue;
