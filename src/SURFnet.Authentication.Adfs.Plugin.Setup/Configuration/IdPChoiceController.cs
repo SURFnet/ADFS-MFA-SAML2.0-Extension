@@ -1,23 +1,23 @@
-﻿using SURFnet.Authentication.Adfs.Plugin.Setup.Models;
-using SURFnet.Authentication.Adfs.Plugin.Setup.Question;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
+using SURFnet.Authentication.Adfs.Plugin.Setup.Question;
 
 namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
 {
     public class IdPChoiceController : ShowListGetDigit
     {
+        private readonly string[] helpLines;
+
         /// <summary>
         /// Shows the list of IdPs and asks to choose and confirm.
         /// </summary>
         /// <param name="idpEnvironments">IDP environments Dictionary</param>
         /// <param name="defaultIndex">index for default choice</param>
-        public IdPChoiceController(List<Dictionary<string, string>> idpEnvironments, int defaultIndex, bool showHelpChar) :
-                    base(CreateOptionList(idpEnvironments), defaultIndex+1, showHelpChar)  // ShowListGetDigit() is 1 based, index 0 based
+        public IdPChoiceController(List<Dictionary<string, string>> idpEnvironments, int defaultIndex, string[] helpLines) :
+            base(CreateOptionList(idpEnvironments), defaultIndex+1, helpLines.Any())  // ShowListGetDigit() is 1 based, index 0 based
         {
+            this.helpLines = helpLines;
         }
 
         public override bool Ask()
@@ -29,8 +29,14 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
             {
                 if ( false == base.Ask() )
                 {
-                    // abort
-                    break;
+                    if(WantsDescription)
+                    {
+                        QuestionIO.WriteDescription(helpLines);
+                    }
+                    else
+                    {
+                        break;
+                    }     
                 }
                 else
                 {

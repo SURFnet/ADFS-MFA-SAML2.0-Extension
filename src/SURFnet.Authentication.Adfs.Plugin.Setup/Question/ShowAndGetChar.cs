@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq;
 
 namespace SURFnet.Authentication.Adfs.Plugin.Setup.Question
 {
@@ -12,15 +8,20 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Question
 
         private char DefaultChar { get; set; }
 
+        private readonly bool showHelpChar;
+
         public ShowAndGetChar(string question, string validChars, bool showHelpChar) : 
             base(CreateValidChoices(question,validChars, showHelpChar))
         {
-            ValidCharacters = validChars.ToLowerInvariant();
+            this.ValidCharacters = validChars.ToLowerInvariant();
+            this.showHelpChar = showHelpChar;
         }
+
         public ShowAndGetChar(string question, string validChars, char defaultChar, bool showHelpChar) : 
             base(CreateValidChoices(question, validChars, showHelpChar), char.ToLowerInvariant(defaultChar))
         {
-            ValidCharacters = validChars.ToLowerInvariant();
+            this.ValidCharacters = validChars.ToLowerInvariant();
+            this.showHelpChar = showHelpChar;
         }
 
         private static string CreateValidChoices(string question, string validChars, bool showHelpChar)
@@ -65,8 +66,12 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Question
                         break;
 
                     case '?':
-                        WantsDescription = true;
-                        ask = false;
+                        // Only set WantsDescription when showHelpChar is set 
+                        if (showHelpChar)
+                        {
+                            WantsDescription = true;
+                            ask = false;
+                        }                       
                         // rc remains false
                         break;
 

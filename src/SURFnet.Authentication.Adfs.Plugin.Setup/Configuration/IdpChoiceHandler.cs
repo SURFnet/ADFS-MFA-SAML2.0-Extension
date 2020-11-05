@@ -1,11 +1,8 @@
-﻿using SURFnet.Authentication.Adfs.Plugin.Setup.Models;
-using SURFnet.Authentication.Adfs.Plugin.Setup.Services;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Data.SqlTypes;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
+using SURFnet.Authentication.Adfs.Plugin.Setup.Models;
+using SURFnet.Authentication.Adfs.Plugin.Setup.Services;
 
 namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
 {
@@ -32,7 +29,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
             }
 
 
-            var dialogue = new IdPChoiceController(idpEnvironments, index, true);
+            var dialogue = new IdPChoiceController(idpEnvironments, index, setting.HelpLines);
             if (dialogue.Ask())
             {
                 if (false == dialogue.IsDefault)

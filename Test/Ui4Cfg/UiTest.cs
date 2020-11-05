@@ -36,7 +36,7 @@ namespace Ui4Cfg
 
 
             // Demo for IdP environment choice
-            IdPChoiceController idpchoice = new IdPChoiceController(IdPEnvironments, 0, true);
+            IdPChoiceController idpchoice = new IdPChoiceController(IdPEnvironments, 0, new string[] { "helpLines" });
             ok = idpchoice.Ask();
             if (ok)
             {
