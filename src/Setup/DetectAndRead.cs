@@ -1,12 +1,8 @@
-﻿using SURFnet.Authentication.Adfs.Plugin.Setup.Models;
-using SURFnet.Authentication.Adfs.Plugin.Setup.PS;
+﻿using System;
+
+using SURFnet.Authentication.Adfs.Plugin.Setup.Models;
 using SURFnet.Authentication.Adfs.Plugin.Setup.Services;
 using SURFnet.Authentication.Adfs.Plugin.Setup.Versions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SURFnet.Authentication.Adfs.Plugin.Setup
 {

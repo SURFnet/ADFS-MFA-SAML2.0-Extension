@@ -17,55 +17,53 @@ namespace SURFnet.Authentication.Adfs.Plugin.Helpers
         {   
             if(!File.Exists(adapterConfigurationPath))
             {
-                // config file does not exist
+                log.Fatal($"Configuration file {adapterConfigurationPath} is missing.");
+                return null;
             }
 
             var xmlConfiguration = XDocument.Load(adapterConfigurationPath);
-
-            if (xmlConfiguration.Elements().Count() != 1 || xmlConfiguration.FirstNode == null || xmlConfiguration.FirstNode.NodeType != XmlNodeType.Element)
+            if (xmlConfiguration.Elements().Count() != 1)
             {
-                // config file incorrect
+                log.Fatal($"Configuration file {adapterConfigurationPath} is incorrect, it containts multiple {AdapterConfiguration.AdapterElement}");
+                return null;
             }
 
-            var adapterConfigurationElements = ReadAdapterElement(xmlConfiguration.FirstNode as XElement);
-            if (adapterConfigurationElements != null)
+            try
             {
+                var adapterConfigurationElements = ReadAdapterElement(xmlConfiguration.FirstNode as XElement);
                 var iGetNameID = ResolveNameIDType.InstantitiateNameIDType(log, adapterConfigurationElements);
                 return iGetNameID;
             }
-            else
+            catch(Exception exp)
             {
-                // log
+                log.Fatal(exp.Message);
+                return null;
             }
-
-            return null;
         }
 
-
-        public static Dictionary<string, string> ReadAdapterElement(XElement xmlElement)
-        {
-            Dictionary<string, string> dict = null;
-
-            if (xmlElement == null) throw new ArgumentNullException(nameof(xmlElement));
-
-            if (xmlElement.Name.LocalName.Equals(AdapterConfiguration.AdapterElement, StringComparison.Ordinal))
+        private static Dictionary<string, string> ReadAdapterElement(XElement xmlElement)
+        {    
+            if (xmlElement != null && xmlElement.Name.LocalName.Equals(AdapterConfiguration.AdapterElement, StringComparison.Ordinal))
             {
                 // OK, correct element
                 if (xmlElement.HasAttributes)
                 {   
                     var attributes = xmlElement.Attributes();
-                    dict = attributes.ToDictionary(a => a.Name.LocalName, a => a.Value); 
+                    return attributes.ToDictionary(a => a.Name.LocalName, a => a.Value); 
+                }
+                else
+                {
+                    throw new ArgumentException($"XmlElement.LocalName is '{xmlElement.Name.LocalName}' but has no attributes.");
                 }
             }
             else
             {
                 throw new ArgumentException($"XmlElement.LocalName is '{xmlElement.Name.LocalName}' and should be should be: {AdapterConfiguration.AdapterElement}");
             }
-
-            return dict;
+           
         }
 
-        public static XmlDocument WriteAdapterDocument(Dictionary<string, string> dict)
+        private static XmlDocument WriteAdapterDocument(Dictionary<string, string> dict)
         {
             var doc = new XmlDocument();
             var adaptEl = doc.CreateElement(AdapterConfiguration.AdapterElement);

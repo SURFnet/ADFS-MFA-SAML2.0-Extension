@@ -37,12 +37,6 @@ namespace SURFnet.Authentication.Adfs.Plugin.Configuration
     public class StepUpConfig
     {
         /// <summary>
-        /// Each time an error occurs, store it here.
-        /// After Initialize() it will be available through the GetErrors() method.
-        /// </summary>
-        private static StringBuilder initErrors = new StringBuilder();
-
-        /// <summary>
         ///  the real configuration Secondton
         /// </summary>
         private static StepUpConfig current;
@@ -65,15 +59,6 @@ namespace SURFnet.Authentication.Adfs.Plugin.Configuration
         /// </summary>
         public static StepUpConfig Current => current;
 
-        /// <summary>
-        /// Gets the errors.
-        /// </summary>
-        /// <returns>The errors.</returns>
-        public static string GetErrors()
-        {
-            return initErrors.ToString();
-        }
-
         public static int ReadXmlConfig(ILog log)
         {
             // TODONOW: BUG! Definitions should be shared in Values class!!
@@ -85,42 +70,21 @@ namespace SURFnet.Authentication.Adfs.Plugin.Configuration
             var newcfg = new StepUpConfig();
             int rc = 0;
 
-            string adapterConfigurationPath = GetConfigFilepath(Values.AdapterCfgFilename);
+            string adapterConfigurationPath = GetConfigFilepath(Values.AdapterCfgFilename, log);
             if (adapterConfigurationPath == null)
                 return 1;   // was written!!
 
             try
             {
-                newcfg.GetNameID = AdapterXmlConfigurationyHelper.CreateGetNameIdFromFile(adapterConfigurationPath, log);
+                var getNameId = AdapterXmlConfigurationyHelper.CreateGetNameIdFromFile(adapterConfigurationPath, log);
 
-                //var dict = AdapterXmlDictionaryHelper.ReadAdapterElement(node as XmlElement);
-                //if (dict != null)
-                //{
-                //    try
-                //    {
-                //        var iGetNameID = ResolveNameIDType.InstantitiateNameIDType(Log, dict);
-                //        if (iGetNameID != null)
-                //        {
-                //            foreach (string name in Names)
-                //            {
-                //                try
-                //                {
-                //                    iGetNameID.DoIt(name);
-                //                }
-                //                catch (Exception ex)
-                //                {
-                //                    Console.WriteLine("BENG, threw where it shouldn't!!!");
-                //                    initErrors.AppendLine(ex.ToString());
-                //                }
-                //            }
-                //        }
-                //    }
-                //    catch (Exception ex)
-                //    {
-                //        initErrors.AppendLine(ex.ToString());
-                //    }
-                //}
+                if(getNameId == null)
+                {
+                    log.Fatal("Not able to create NameId Resolver"); 
+                    return -1;
+                }
 
+                newcfg.GetNameID = getNameId;
                 var configParamaters = newcfg.GetNameID.GetParameters(); 
 
                 //var root = adapterConfig.Descendants(XName.Get(AdapterElement)).FirstOrDefault();
@@ -134,15 +98,15 @@ namespace SURFnet.Authentication.Adfs.Plugin.Configuration
                 newcfg.SchacHomeOrganization = GetParameter(configParamaters, AdapterSchacHomeOrganization);
                 if (string.IsNullOrWhiteSpace(newcfg.SchacHomeOrganization))
                 {
-                    initErrors.AppendLine($"Cannot find '{AdapterSchacHomeOrganization}' attribute in {adapterConfigurationPath}");
+                    log.Fatal($"Cannot find '{AdapterSchacHomeOrganization}' attribute in {adapterConfigurationPath}");
                     rc--;
                 }
 
                 //newcfg.ActiveDirectoryUserIdAttribute = root?.Attribute(XName.Get(AdapterADAttribute))?.Value;
                 newcfg.ActiveDirectoryUserIdAttribute = GetParameter(configParamaters, AdapterADAttribute);
                 if (string.IsNullOrWhiteSpace(newcfg.ActiveDirectoryUserIdAttribute))
-                {
-                    initErrors.AppendLine($"Cannot find '{AdapterADAttribute}' attribute in {adapterConfigurationPath}");
+                {                    
+                    log.Fatal($"Cannot find '{AdapterADAttribute}' attribute in {adapterConfigurationPath}");
                     rc--;
                 }
 
@@ -150,7 +114,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Configuration
                 var tmp = GetParameter(configParamaters, AdapterMinimalLoa);
                 if (string.IsNullOrWhiteSpace(tmp))
                 {
-                    initErrors.AppendLine($"Cannot find '{AdapterMinimalLoa}' attribute in {adapterConfigurationPath}");
+                    log.Fatal($"Cannot find '{AdapterMinimalLoa}' attribute in {adapterConfigurationPath}");
                     rc--;
                 }
                 else
@@ -160,7 +124,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Configuration
             }
             catch (Exception ex)
             {
-                initErrors.AppendLine(ex.ToString());
+                log.Fatal(ex.ToString());
                 rc--;
             }
 
@@ -188,7 +152,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Configuration
             return null;
         }
 
-        public static string GetConfigFilepath(string filename)
+        private static string GetConfigFilepath(string filename, ILog log)
         {
             string rc = null;
             string filepath = null;
@@ -211,7 +175,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Configuration
 
             if ( rc == null )
             {
-                initErrors.AppendLine($"Failed to locate: {filename}");
+                log.Fatal("Failed to locate: {filename}");
             }
 
             return rc;

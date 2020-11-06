@@ -93,8 +93,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
                         RegistrationLog.WriteLine("Adapter parms loaded from small XML.");
                     }
                     else
-                    {
-                        RegistrationLog.WriteLine(StepUpConfig.GetErrors());
+                    {                       
                         mustThrow = true;
                     }
                 }
@@ -158,7 +157,6 @@ namespace SURFnet.Authentication.Adfs.Plugin
             {
                 if (StepUpConfig.ReadXmlConfig(LogService.Log) != 0)
                 {
-                    LogService.Log.Error(StepUpConfig.GetErrors());
                     throw new ApplicationException("Configuration error. See adapter log.");
                 }
 
