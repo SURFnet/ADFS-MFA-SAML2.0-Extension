@@ -1,11 +1,6 @@
-﻿using SURFnet.Authentication.Adfs.Plugin.Configuration;
-using SURFnet.Authentication.Adfs.Plugin.Services;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Security.Claims;
+
+using SURFnet.Authentication.Adfs.Plugin.Configuration;
 
 namespace SURFnet.Authentication.Adfs.Plugin.Repositories
 {

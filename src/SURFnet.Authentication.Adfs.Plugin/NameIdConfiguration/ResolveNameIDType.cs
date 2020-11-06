@@ -42,7 +42,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.NameIdConfiguration
             }
             else
             {
-                log.Fatal($"Missing '{AdapterConfiguration.NameIdAlgorithmAttribute}' in adapter configuration");
+                log.Info($"Missing '{AdapterConfiguration.NameIdAlgorithmAttribute}' in adapter configuration, use {AdapterConfiguration.UserIdFromADAttr} as default value.");
+                getNameID = new UserIDFromADAttr(log);
             }
 
             return getNameID;

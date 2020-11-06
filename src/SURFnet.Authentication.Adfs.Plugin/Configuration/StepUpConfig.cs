@@ -36,6 +36,9 @@ namespace SURFnet.Authentication.Adfs.Plugin.Configuration
     /// </summary>
     public class StepUpConfig
     {
+        const string AdapterMinimalLoa = "minimalLoa";
+        const string AdapterADAttribute = "activeDirectoryUserIdAttribute";
+
         /// <summary>
         ///  the real configuration Secondton
         /// </summary>
@@ -48,25 +51,20 @@ namespace SURFnet.Authentication.Adfs.Plugin.Configuration
         {
         }
 
-        public string SchacHomeOrganization { get; private set; }
-        public string ActiveDirectoryUserIdAttribute { get; private set; }
-        public Uri MinimalLoa { get; private set; }
         public IGetNameID GetNameID { get; private set; }
+
+        public Uri MinimalLoa { get; private set; }
+
+        public string ActiveDirectoryUserIdAttribute => GetNameID.GetParameters()[AdapterADAttribute];
 
         /// <summary>
         /// Returns the singleton with the StepUp configuration.
         /// If it returns null (which is fatal), then use GetErrors() for the error string(s).
         /// </summary>
         public static StepUpConfig Current => current;
-
+               
         public static int ReadXmlConfig(ILog log)
-        {
-            // TODONOW: BUG! Definitions should be shared in Values class!!
-            // const string AdapterElement = "SfoMfaExtension";
-            const string AdapterSchacHomeOrganization = "schacHomeOrganization";
-            const string AdapterADAttribute = "activeDirectoryUserIdAttribute";
-            const string AdapterMinimalLoa = "minimalLoa";
-
+        {  
             var newcfg = new StepUpConfig();
             int rc = 0;
 
@@ -85,33 +83,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Configuration
                 }
 
                 newcfg.GetNameID = getNameId;
-                var configParamaters = newcfg.GetNameID.GetParameters(); 
 
-                //var root = adapterConfig.Descendants(XName.Get(AdapterElement)).FirstOrDefault();
-                //if (root == null)
-                //{
-                //    initErrors.AppendLine($"Cannot find '{AdapterElement}' element in {adapterConfigurationPath}");
-                //    return 2;
-                //}
-
-                //newcfg.SchacHomeOrganization =  root?.Attribute(XName.Get(AdapterSchacHomeOrganization))?.Value;
-                newcfg.SchacHomeOrganization = GetParameter(configParamaters, AdapterSchacHomeOrganization);
-                if (string.IsNullOrWhiteSpace(newcfg.SchacHomeOrganization))
-                {
-                    log.Fatal($"Cannot find '{AdapterSchacHomeOrganization}' attribute in {adapterConfigurationPath}");
-                    rc--;
-                }
-
-                //newcfg.ActiveDirectoryUserIdAttribute = root?.Attribute(XName.Get(AdapterADAttribute))?.Value;
-                newcfg.ActiveDirectoryUserIdAttribute = GetParameter(configParamaters, AdapterADAttribute);
-                if (string.IsNullOrWhiteSpace(newcfg.ActiveDirectoryUserIdAttribute))
-                {                    
-                    log.Fatal($"Cannot find '{AdapterADAttribute}' attribute in {adapterConfigurationPath}");
-                    rc--;
-                }
-
-                //string tmp = root?.Attribute(XName.Get(AdapterMinimalLoa))?.Value;
-                var tmp = GetParameter(configParamaters, AdapterMinimalLoa);
+                var tmp = GetParameter(newcfg.GetNameID.GetParameters(), AdapterMinimalLoa);
                 if (string.IsNullOrWhiteSpace(tmp))
                 {
                     log.Fatal($"Cannot find '{AdapterMinimalLoa}' attribute in {adapterConfigurationPath}");

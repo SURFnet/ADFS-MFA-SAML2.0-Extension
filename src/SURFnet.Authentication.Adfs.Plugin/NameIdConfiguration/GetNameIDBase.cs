@@ -23,19 +23,6 @@ namespace SURFnet.Authentication.Adfs.Plugin.NameIdConfiguration
     {
         private Dictionary<string, string> parameters;
 
-        /// <summary>
-        /// Gets the name identifier based in the identity claim.
-        /// </summary>
-        /// <param name="userid">The userid.</param>
-        /// <returns>A name identifier.</returns>
-        public static string GetNameId(string userid)
-        {
-            var nameid = $"urn:collab:person:{StepUpConfig.Current.SchacHomeOrganization}:{userid}";
-
-            nameid = nameid.Replace('@', '_');
-            return nameid;
-        }
-
         public static readonly string NameIDPrefix = "urn:collab:person:";
 
         /// <summary>
