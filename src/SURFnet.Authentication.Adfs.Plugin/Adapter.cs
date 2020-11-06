@@ -223,34 +223,15 @@ namespace SURFnet.Authentication.Adfs.Plugin
 
                 // Log the identityClaim Value and Type that we received from AD FS.
                 LogService.Log.InfoFormat("Received MFA authentication request for ADFS user with identityClaim '{0}' ({1})", identityClaim.Value, identityClaim.Type);
-
-                string stepUpUid;
-                var tmpuser = new UserForStepup(identityClaim);
-                if (tmpuser.TryGetSfoUidValue())
-                {
-                    // OK, attribute was there.
-                    stepUpUid = tmpuser.SfoUid;
-                }
-                else
-                {
-                    // Ouch user is not configured for StepUp in AD
-                    if (tmpuser.ErrorMsg != null)
-                    {
-                        LogService.Log.Warn(tmpuser.ErrorMsg);  // low level error!
-                    }
-
-                    return new AuthFailedForm(false, "ERROR_0003", context.ContextId, context.ActivityId);
-                }
-               
-                var nameId = string.Empty;
-           
-                if (!StepUpConfig.Current.GetNameID.TryGetNameIDValue(identityClaim, out nameId))
+                                            
+                var stepupNameId = string.Empty;           
+                if (!StepUpConfig.Current.GetNameID.TryGetNameIDValue(identityClaim, out stepupNameId))
                 {
                     throw new NotSupportedException(); 
                 }
 
                 var requestId = $"_{context.ContextId}";
-                var authRequest = SamlService.CreateAuthnRequest(stepUpUid, requestId, httpListenerRequest.Url, nameId);
+                var authRequest = SamlService.CreateAuthnRequest(requestId, httpListenerRequest.Url, stepupNameId);
                 LogService.Log.DebugFormat("Signing AuthnRequest with id {0}", requestId);
                 var signedXml = this.cryptographicService.SignSamlRequest(authRequest);
                 var ssoUrl = Sustainsys.Saml2.Configuration.Options.FromConfiguration.IdentityProviders.Default.SingleSignOnServiceUrl;

@@ -37,7 +37,6 @@ namespace SURFnet.Authentication.Adfs.Plugin.Configuration
     public class StepUpConfig
     {
         const string AdapterMinimalLoa = "minimalLoa";
-        const string AdapterADAttribute = "activeDirectoryUserIdAttribute";
 
         /// <summary>
         ///  the real configuration Secondton
@@ -54,8 +53,6 @@ namespace SURFnet.Authentication.Adfs.Plugin.Configuration
         public IGetNameID GetNameID { get; private set; }
 
         public Uri MinimalLoa { get; private set; }
-
-        public string ActiveDirectoryUserIdAttribute => GetNameID.GetParameters()[AdapterADAttribute];
 
         /// <summary>
         /// Returns the singleton with the StepUp configuration.

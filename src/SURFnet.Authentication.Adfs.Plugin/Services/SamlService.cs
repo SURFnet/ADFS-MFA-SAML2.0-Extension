@@ -54,10 +54,10 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
         /// <returns>
         /// The authentication request.
         /// </returns>
-        public static Saml2AuthenticationSecondFactorRequest CreateAuthnRequest(string userid, string authnRequestId, Uri ascUri, string setupNameId)
+        public static Saml2AuthenticationSecondFactorRequest CreateAuthnRequest(string authnRequestId, Uri ascUri, string stepupNameId)
         {
-            var nameIdentifier = new Saml2NameIdentifier(setupNameId, new Uri("urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified"));
-            Log.DebugFormat("Creating AuthnRequest for NameID '{0}'", setupNameId);
+            var nameIdentifier = new Saml2NameIdentifier(stepupNameId, new Uri("urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified"));
+            Log.DebugFormat("Creating AuthnRequest for NameID '{0}'", stepupNameId);
 
             // This was testes in constructors!!!
             var samlConfiguration = Options.FromConfiguration;
@@ -83,7 +83,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
             };
             authnRequest.SetId(authnRequestId);
 
-            Log.DebugFormat("Created AuthnRequest for '{0}' with id '{1}'", userid, authnRequest.Id.Value);
+            Log.DebugFormat("Created AuthnRequest for '{0}' with id '{1}'", stepupNameId, authnRequest.Id.Value);
             return authnRequest;
         }
 
