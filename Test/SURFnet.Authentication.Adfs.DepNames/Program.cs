@@ -1,10 +1,7 @@
-﻿using SURFnet.Authentication.Adfs.Plugin.Setup.Assemblies;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
+using SURFnet.Authentication.Adfs.Plugin.Setup.Assemblies;
 
 namespace SURFnet.Authentication.Adfs.Plugin.Test.DepNames
 {

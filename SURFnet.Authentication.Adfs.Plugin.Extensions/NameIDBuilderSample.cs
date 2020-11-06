@@ -33,6 +33,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Extensions
 
         public override void Initialize(Dictionary<string, string> parameters)
         {
+            base.Initialize(parameters);
+
             bool mustThrow = false;
 
             if (false == parameters.TryGetValue(UidAttribute1, out UidAttribute1Name))

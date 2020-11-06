@@ -29,6 +29,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
     using SURFnet.Authentication.Adfs.Plugin.Configuration;
     using SURFnet.Authentication.Adfs.Plugin.Extensions;
     using SURFnet.Authentication.Adfs.Plugin.Models;
+    using SURFnet.Authentication.Adfs.Plugin.NameIdConfiguration;
     using SURFnet.Authentication.Adfs.Plugin.Repositories;
     using SURFnet.Authentication.Adfs.Plugin.Services;
     using SURFnet.Authentication.Adfs.Plugin.Setup.Common;
@@ -64,6 +65,9 @@ namespace SURFnet.Authentication.Adfs.Plugin
         /// </summary>
         private CryptographicService cryptographicService;
 
+
+        //private static IGetNameID getNameID;
+
         /// <summary>
         /// Initializes static members of the <see cref="Adapter"/> class.
         /// </summary>
@@ -84,7 +88,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
                     // we do want to read our own configuration before the Registration CmdLet reads our metadata
                     RegistrationLog.WriteLine(AdapterDir);
 
-                    if (StepUpConfig.ReadXmlConfig() == 0)
+                    if (StepUpConfig.ReadXmlConfig(LogService.Log) == 0)
                     {
                         RegistrationLog.WriteLine("Adapter parms loaded from small XML.");
                     }
@@ -152,7 +156,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
 
             try
             {
-                if (StepUpConfig.ReadXmlConfig() != 0)
+                if (StepUpConfig.ReadXmlConfig(LogService.Log) != 0)
                 {
                     LogService.Log.Error(StepUpConfig.GetErrors());
                     throw new ApplicationException("Configuration error. See adapter log.");
@@ -200,7 +204,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
         public bool IsAvailableForUser(Claim identityClaim, IAuthenticationContext context)
         {
             return true;
-        }
+        }      
 
         /// <summary>
         /// Begins the authentication.
@@ -239,9 +243,16 @@ namespace SURFnet.Authentication.Adfs.Plugin
 
                     return new AuthFailedForm(false, "ERROR_0003", context.ContextId, context.ActivityId);
                 }
+               
+                var nameId = string.Empty;
+           
+                if (!StepUpConfig.Current.GetNameID.TryGetNameIDValue(identityClaim, out nameId))
+                {
+                    throw new NotSupportedException(); 
+                }
 
                 var requestId = $"_{context.ContextId}";
-                var authRequest = SamlService.CreateAuthnRequest(stepUpUid, requestId, httpListenerRequest.Url);
+                var authRequest = SamlService.CreateAuthnRequest(stepUpUid, requestId, httpListenerRequest.Url, nameId);
                 LogService.Log.DebugFormat("Signing AuthnRequest with id {0}", requestId);
                 var signedXml = this.cryptographicService.SignSamlRequest(authRequest);
                 var ssoUrl = Sustainsys.Saml2.Configuration.Options.FromConfiguration.IdentityProviders.Default.SingleSignOnServiceUrl;

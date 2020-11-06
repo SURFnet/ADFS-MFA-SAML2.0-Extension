@@ -17,13 +17,17 @@
 namespace SURFnet.Authentication.Adfs.Plugin.Configuration
 {
     using System;
-    using System.Configuration;
+    using System.Collections.Generic;
     using System.IO;
+    using System.Linq;
     using System.Reflection;
     using System.Text;
-    using System.Linq;
-    using System.Xml.Linq;
     using System.Threading;
+
+    using log4net;
+
+    using SURFnet.Authentication.Adfs.Plugin.Helpers;
+    using SURFnet.Authentication.Adfs.Plugin.NameIdConfiguration;
     using SURFnet.Authentication.Adfs.Plugin.Setup.Common;
 
     /// <summary>
@@ -53,7 +57,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Configuration
         public string SchacHomeOrganization { get; private set; }
         public string ActiveDirectoryUserIdAttribute { get; private set; }
         public Uri MinimalLoa { get; private set; }
-
+        public IGetNameID GetNameID { get; private set; }
 
         /// <summary>
         /// Returns the singleton with the StepUp configuration.
@@ -70,10 +74,10 @@ namespace SURFnet.Authentication.Adfs.Plugin.Configuration
             return initErrors.ToString();
         }
 
-        public static int ReadXmlConfig()
+        public static int ReadXmlConfig(ILog log)
         {
             // TODONOW: BUG! Definitions should be shared in Values class!!
-            const string AdapterElement = "SfoMfaExtension";
+            // const string AdapterElement = "SfoMfaExtension";
             const string AdapterSchacHomeOrganization = "schacHomeOrganization";
             const string AdapterADAttribute = "activeDirectoryUserIdAttribute";
             const string AdapterMinimalLoa = "minimalLoa";
@@ -81,39 +85,72 @@ namespace SURFnet.Authentication.Adfs.Plugin.Configuration
             var newcfg = new StepUpConfig();
             int rc = 0;
 
-            string adapterCfgPath = GetConfigFilepath(Values.AdapterCfgFilename);
-            if (adapterCfgPath == null)
+            string adapterConfigurationPath = GetConfigFilepath(Values.AdapterCfgFilename);
+            if (adapterConfigurationPath == null)
                 return 1;   // was written!!
 
             try
             {
-                var adapterConfig = XDocument.Load(adapterCfgPath);
+                newcfg.GetNameID = AdapterXmlConfigurationyHelper.CreateGetNameIdFromFile(adapterConfigurationPath, log);
 
-                var root = adapterConfig.Descendants(XName.Get(AdapterElement)).FirstOrDefault();
-                if (root == null)
-                {
-                    initErrors.AppendLine($"Cannot find '{AdapterElement}' element in {adapterCfgPath}");
-                    return 2;
-                }
+                //var dict = AdapterXmlDictionaryHelper.ReadAdapterElement(node as XmlElement);
+                //if (dict != null)
+                //{
+                //    try
+                //    {
+                //        var iGetNameID = ResolveNameIDType.InstantitiateNameIDType(Log, dict);
+                //        if (iGetNameID != null)
+                //        {
+                //            foreach (string name in Names)
+                //            {
+                //                try
+                //                {
+                //                    iGetNameID.DoIt(name);
+                //                }
+                //                catch (Exception ex)
+                //                {
+                //                    Console.WriteLine("BENG, threw where it shouldn't!!!");
+                //                    initErrors.AppendLine(ex.ToString());
+                //                }
+                //            }
+                //        }
+                //    }
+                //    catch (Exception ex)
+                //    {
+                //        initErrors.AppendLine(ex.ToString());
+                //    }
+                //}
 
-                newcfg.SchacHomeOrganization = root?.Attribute(XName.Get(AdapterSchacHomeOrganization))?.Value;
+                var configParamaters = newcfg.GetNameID.GetParameters(); 
+
+                //var root = adapterConfig.Descendants(XName.Get(AdapterElement)).FirstOrDefault();
+                //if (root == null)
+                //{
+                //    initErrors.AppendLine($"Cannot find '{AdapterElement}' element in {adapterConfigurationPath}");
+                //    return 2;
+                //}
+
+                //newcfg.SchacHomeOrganization =  root?.Attribute(XName.Get(AdapterSchacHomeOrganization))?.Value;
+                newcfg.SchacHomeOrganization = GetParameter(configParamaters, AdapterSchacHomeOrganization);
                 if (string.IsNullOrWhiteSpace(newcfg.SchacHomeOrganization))
                 {
-                    initErrors.AppendLine($"Cannot find '{AdapterSchacHomeOrganization}' attribute in {adapterCfgPath}");
+                    initErrors.AppendLine($"Cannot find '{AdapterSchacHomeOrganization}' attribute in {adapterConfigurationPath}");
                     rc--;
                 }
 
-                newcfg.ActiveDirectoryUserIdAttribute = root?.Attribute(XName.Get(AdapterADAttribute))?.Value;
+                //newcfg.ActiveDirectoryUserIdAttribute = root?.Attribute(XName.Get(AdapterADAttribute))?.Value;
+                newcfg.ActiveDirectoryUserIdAttribute = GetParameter(configParamaters, AdapterADAttribute);
                 if (string.IsNullOrWhiteSpace(newcfg.ActiveDirectoryUserIdAttribute))
                 {
-                    initErrors.AppendLine($"Cannot find '{AdapterADAttribute}' attribute in {adapterCfgPath}");
+                    initErrors.AppendLine($"Cannot find '{AdapterADAttribute}' attribute in {adapterConfigurationPath}");
                     rc--;
                 }
 
-                string tmp = root?.Attribute(XName.Get(AdapterMinimalLoa))?.Value;
+                //string tmp = root?.Attribute(XName.Get(AdapterMinimalLoa))?.Value;
+                var tmp = GetParameter(configParamaters, AdapterMinimalLoa);
                 if (string.IsNullOrWhiteSpace(tmp))
                 {
-                    initErrors.AppendLine($"Cannot find '{AdapterMinimalLoa}' attribute in {adapterCfgPath}");
+                    initErrors.AppendLine($"Cannot find '{AdapterMinimalLoa}' attribute in {adapterConfigurationPath}");
                     rc--;
                 }
                 else
@@ -137,6 +174,18 @@ namespace SURFnet.Authentication.Adfs.Plugin.Configuration
             }
 
             return rc;
+        }
+
+        private static string GetParameter(IDictionary<string, string> parameters, string key)
+        {
+            var foundParameter = parameters.FirstOrDefault(x => x.Key.Equals(key, StringComparison.OrdinalIgnoreCase)); 
+        
+            if(foundParameter.Key != null)
+            {
+                return foundParameter.Value;
+            }
+
+            return null;
         }
 
         public static string GetConfigFilepath(string filename)

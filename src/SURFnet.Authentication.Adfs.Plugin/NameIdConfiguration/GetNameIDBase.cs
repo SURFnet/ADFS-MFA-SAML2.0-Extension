@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.DirectoryServices;
 using System.DirectoryServices.AccountManagement;
 using System.Security.Claims;
 using System.Text;
 
 using log4net;
+
+using SURFnet.Authentication.Adfs.Plugin.Configuration;
 
 namespace SURFnet.Authentication.Adfs.Plugin.NameIdConfiguration
 {
@@ -18,6 +21,21 @@ namespace SURFnet.Authentication.Adfs.Plugin.NameIdConfiguration
     /// </summary>
     public abstract class GetNameIDBase : IGetNameID
     {
+        private Dictionary<string, string> parameters;
+
+        /// <summary>
+        /// Gets the name identifier based in the identity claim.
+        /// </summary>
+        /// <param name="userid">The userid.</param>
+        /// <returns>A name identifier.</returns>
+        public static string GetNameId(string userid)
+        {
+            var nameid = $"urn:collab:person:{StepUpConfig.Current.SchacHomeOrganization}:{userid}";
+
+            nameid = nameid.Replace('@', '_');
+            return nameid;
+        }
+
         public static readonly string NameIDPrefix = "urn:collab:person:";
 
         /// <summary>
@@ -38,8 +56,18 @@ namespace SURFnet.Authentication.Adfs.Plugin.NameIdConfiguration
         /// Initializer, see IGetNameID doc. Must save your own parameters from the configuration. Do throw on error.
         /// </summary>
         /// <param name="parameters"></param>
-        public abstract void Initialize(Dictionary<string, string> parameters);
+        public virtual void Initialize(Dictionary<string, string> parameters)
+        {
+            this.parameters = parameters; 
+        }
 
+        /// <summary>
+        /// Returns the parameters used for Initialization
+        /// </summary>
+        public IDictionary<string, string> GetParameters()
+        {
+            return parameters;
+        }
 
         /// <summary>
         /// Must return the NameID for the SAML2 AuthnRequest to the SFO gateway.

@@ -1,13 +1,10 @@
-﻿using SURFnet.Authentication.Adfs.Plugin.Setup.Assemblies;
-using SURFnet.Authentication.Adfs.Plugin.Setup.Common;
-using SURFnet.Authentication.Adfs.Plugin.Setup.Configuration;
-using SURFnet.Authentication.Adfs.Plugin.Setup.Services;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
+using SURFnet.Authentication.Adfs.Plugin.Setup.Assemblies;
+using SURFnet.Authentication.Adfs.Plugin.Setup.Common;
+using SURFnet.Authentication.Adfs.Plugin.Setup.Services;
 
 namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
 {

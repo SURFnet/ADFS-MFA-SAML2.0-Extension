@@ -22,6 +22,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.NameIdConfiguration
 
         public override void Initialize(Dictionary<string, string> parameters)
         {
+            base.Initialize(parameters);
+
             bool mustThrow = false;
 
             if (false == parameters.TryGetValue(ShoXmlAttributeName, out _activeDirectoryShoAttribute))

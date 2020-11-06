@@ -1,0 +1,6 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<SfoMfaExtension 
+  NameIdAlgorithm="UserIdAndShoFromADAttr"
+  minimalLoa="http://test.surfconext.nl/assurance/sfo-level2"
+  activeDirectoryShoAttribute="department"
+  activeDirectoryUserIdAttribute="employeeNumber" />

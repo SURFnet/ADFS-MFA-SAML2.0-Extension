@@ -43,5 +43,10 @@ namespace SURFnet.Authentication.Adfs.Plugin.NameIdConfiguration
         /// <param name="nameID">Output value for NameID</param>
         /// <returns>True, success. False: cannot build a NameID for this user.</returns>
         bool TryGetNameIDValue(Claim identityClaim, out string nameID);
+
+        /// <summary>
+        /// Returns the parameters used for Initialization
+        /// </summary>
+        IDictionary<string, string> GetParameters();
     }
 }

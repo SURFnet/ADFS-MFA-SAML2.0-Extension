@@ -25,6 +25,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ui4Cfg", "Test\Ui4Cfg\Ui4Cf
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SURFnet.Authentication.Adfs.Plugin.Extensions", "SURFnet.Authentication.Adfs.Plugin.Extensions\SURFnet.Authentication.Adfs.Plugin.Extensions.csproj", "{495E267D-BD15-4D4F-973B-523A17CB1D0F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SURFnet.Authentication.Adfs.Plugin.Test", "SURFnet.Authentication.Adfs.Plugin.Test\SURFnet.Authentication.Adfs.Plugin.Test.csproj", "{B0308356-431E-4C0C-8E15-DEE2BB16C0B0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -80,6 +82,12 @@ Global
 		{495E267D-BD15-4D4F-973B-523A17CB1D0F}.Deploy|Any CPU.Build.0 = Debug|Any CPU
 		{495E267D-BD15-4D4F-973B-523A17CB1D0F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{495E267D-BD15-4D4F-973B-523A17CB1D0F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B0308356-431E-4C0C-8E15-DEE2BB16C0B0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B0308356-431E-4C0C-8E15-DEE2BB16C0B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B0308356-431E-4C0C-8E15-DEE2BB16C0B0}.Deploy|Any CPU.ActiveCfg = Debug|Any CPU
+		{B0308356-431E-4C0C-8E15-DEE2BB16C0B0}.Deploy|Any CPU.Build.0 = Debug|Any CPU
+		{B0308356-431E-4C0C-8E15-DEE2BB16C0B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B0308356-431E-4C0C-8E15-DEE2BB16C0B0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

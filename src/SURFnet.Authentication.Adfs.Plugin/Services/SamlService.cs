@@ -54,12 +54,10 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
         /// <returns>
         /// The authentication request.
         /// </returns>
-        public static Saml2AuthenticationSecondFactorRequest CreateAuthnRequest(string userid, string authnRequestId, Uri ascUri)
+        public static Saml2AuthenticationSecondFactorRequest CreateAuthnRequest(string userid, string authnRequestId, Uri ascUri, string setupNameId)
         {
-            var stepupNameId = GetNameId(userid);  // TODO: This code should move up to the adapter, should not be in SAML code
-
-            var nameIdentifier = new Saml2NameIdentifier(stepupNameId, new Uri("urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified"));
-            Log.DebugFormat("Creating AuthnRequest for NameID '{0}'", stepupNameId);
+            var nameIdentifier = new Saml2NameIdentifier(setupNameId, new Uri("urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified"));
+            Log.DebugFormat("Creating AuthnRequest for NameID '{0}'", setupNameId);
 
             // This was testes in constructors!!!
             var samlConfiguration = Options.FromConfiguration;
@@ -141,19 +139,6 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
             }
 
             return providers[0];
-        }
-
-        /// <summary>
-        /// Gets the name identifier based in the identity claim.
-        /// </summary>
-        /// <param name="userid">The userid.</param>
-        /// <returns>A name identifier.</returns>
-        private static string GetNameId(string userid)
-        {
-            var nameid = $"urn:collab:person:{StepUpConfig.Current.SchacHomeOrganization}:{userid}";
-
-            nameid = nameid.Replace('@', '_');
-            return nameid;
         }
     }
 }
