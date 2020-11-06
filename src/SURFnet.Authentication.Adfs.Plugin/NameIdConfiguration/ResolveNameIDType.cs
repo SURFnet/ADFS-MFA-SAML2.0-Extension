@@ -57,30 +57,38 @@ namespace SURFnet.Authentication.Adfs.Plugin.NameIdConfiguration
                 try
                 {
                     var classType = Type.GetType(typename);   // can produce a ton of exceptions!
-                    try
+
+                    if (classType == null)
                     {
-                        var instance = Activator.CreateInstance(
-                                        classType, // the type
-                                        BindingFlags.Public | BindingFlags.Instance,
-                                        null,
-                                        new object[] { log },
-                                        CultureInfo.InvariantCulture);
-                        if (instance == null)
+                        log.Fatal($"Adapter configuration, class '{typename}' not found");
+                    }
+                    else
+                    {
+                        try
                         {
-                            log.Fatal($"CreateInstance for '{typename}' returned null");
-                        }
-                        else
-                        {
-                            getNameID = instance as IGetNameID;
-                            if (getNameID == null)
+                            var instance = Activator.CreateInstance(
+                                            classType, // the type
+                                            BindingFlags.Public | BindingFlags.Instance,
+                                            null,
+                                            new object[] { log },
+                                            CultureInfo.InvariantCulture);
+                            if (instance == null)
                             {
-                                log.Fatal($"Cast to 'IGetNameID' of '{typename}' failed");
+                                log.Fatal($"CreateInstance for '{typename}' returned null");
+                            }
+                            else
+                            {
+                                getNameID = instance as IGetNameID;
+                                if (getNameID == null)
+                                {
+                                    log.Fatal($"Cast to 'IGetNameID' of '{typename}' failed");
+                                }
                             }
                         }
-                    }
-                    catch (Exception ex)
-                    {
-                        log.Fatal($"for '{typename}' threw:\r\n" + ex.ToString());
+                        catch (Exception ex)
+                        {
+                            log.Fatal($"for '{typename}' threw:\r\n" + ex.ToString());
+                        }
                     }
                 }
                 catch (Exception ex)
