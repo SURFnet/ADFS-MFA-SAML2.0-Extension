@@ -322,9 +322,9 @@ namespace SURFnet.Authentication.Adfs.Plugin
                         {
                             loa = authClaim.Value;
 
-                            if (!Metadata.AuthenticationMethods.Any(method => method.Equals(loa, StringComparison.OrdinalIgnoreCase)))
+                            if (!Metadata.AuthenticationMethods.Any(method => method.Equals(loa, StringComparison.Ordinal)))
                             {
-                                LogService.Log.FatalFormat("Loa '{0}' from the authentication claim is unknown.", loa);
+                                LogService.Log.FatalFormat("The AuthnContextClassRef '{0}' in the SAML Response is unknown", loa);
                                 return new AuthFailedForm(false, Values.DefaultVerificationFailedResourcerId, context.ContextId, context.ActivityId);
                             }
                         }
@@ -378,7 +378,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
                 var nameIDFromContext = expectedNameIDObject as string;
                 if (!string.IsNullOrEmpty(nameIDFromContext) && nameIDFromContext.Equals(receivedNameId, StringComparison.OrdinalIgnoreCase))
                 {
-                    LogService.Log.InfoFormat("NameID '{0}' matches expected from AuthenticationContext.", nameIDFromContext);
+                    LogService.Log.DebugFormat("The Subject NameID '{0}' in the SAML Response matches what was requested.", nameIDFromContext);
                     return null;
                 }
 
@@ -386,7 +386,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
             }
             else
             {
-                LogService.Log.FatalFormat("NameID not found in AuthenticationContext.");
+                LogService.Log.FatalFormat("Subject NameID not found in SAML Response.");
             }
 
             return new AuthFailedForm(false, Values.DefaultVerificationFailedResourcerId, context.ContextId, context.ActivityId);
