@@ -376,13 +376,13 @@ namespace SURFnet.Authentication.Adfs.Plugin
             if (context.Data.TryGetValue(AuthenticationContextNameID, out object expectedNameIDObject))
             {
                 var nameIDFromContext = expectedNameIDObject as string;
-                if (!string.IsNullOrEmpty(nameIDFromContext) && nameIDFromContext.Equals(receivedNameId, StringComparison.OrdinalIgnoreCase))
+                if (!string.IsNullOrEmpty(nameIDFromContext) && nameIDFromContext.Equals(receivedNameId, StringComparison.Ordinal))
                 {
                     LogService.Log.DebugFormat("The Subject NameID '{0}' in the SAML Response matches what was requested.", nameIDFromContext);
                     return null;
                 }
 
-                LogService.Log.FatalFormat("Received NameID '{0}' does not match the expected '{1}'.", receivedNameId, nameIDFromContext);
+                LogService.Log.FatalFormat("Received Subject NameID '{0}' does not match the expected '{1}'.", receivedNameId, nameIDFromContext);
             }
             else
             {
