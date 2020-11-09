@@ -19,8 +19,10 @@ namespace SURFnet.Authentication.Adfs.Plugin
     using System;
     using System.Configuration;
     using System.IO;
+    using System.Linq;
     using System.Net;
     using System.Reflection;
+    using System.Runtime.InteropServices;
     using System.Security.Claims;
 
     using Microsoft.IdentityModel.Tokens.Saml2;
@@ -29,8 +31,6 @@ namespace SURFnet.Authentication.Adfs.Plugin
     using SURFnet.Authentication.Adfs.Plugin.Configuration;
     using SURFnet.Authentication.Adfs.Plugin.Extensions;
     using SURFnet.Authentication.Adfs.Plugin.Models;
-    using SURFnet.Authentication.Adfs.Plugin.NameIdConfiguration;
-    using SURFnet.Authentication.Adfs.Plugin.Repositories;
     using SURFnet.Authentication.Adfs.Plugin.Services;
     using SURFnet.Authentication.Adfs.Plugin.Setup.Common;
     using SURFnet.Authentication.Adfs.Plugin.Setup.Common.Exceptions;
@@ -43,6 +43,8 @@ namespace SURFnet.Authentication.Adfs.Plugin
     /// <seealso cref="IAuthenticationAdapter" />
     public class Adapter : IAuthenticationAdapter
     {
+        private const string AuthenticationContextNameID = "NameID";
+
         /// <summary>
         /// If running under ADFS, then the real ADFS directory.
         /// At registration time: wherever the adapter is.
@@ -64,9 +66,6 @@ namespace SURFnet.Authentication.Adfs.Plugin
         /// The cryptographic service.
         /// </summary>
         private CryptographicService cryptographicService;
-
-
-        //private static IGetNameID getNameID;
 
         /// <summary>
         /// Initializes static members of the <see cref="Adapter"/> class.
@@ -224,14 +223,14 @@ namespace SURFnet.Authentication.Adfs.Plugin
                 // Log the identityClaim Value and Type that we received from AD FS.
                 LogService.Log.InfoFormat("Received MFA authentication request for ADFS user with identityClaim '{0}' ({1})", identityClaim.Value, identityClaim.Type);
                                             
-                var stepupNameId = string.Empty;           
-                if (!StepUpConfig.Current.GetNameID.TryGetNameIDValue(identityClaim, out stepupNameId))
+                var stepupNameID = string.Empty;           
+                if (!StepUpConfig.Current.GetNameID.TryGetNameIDValue(identityClaim, out stepupNameID))
                 {
                     throw new NotSupportedException(); 
                 }
 
                 var requestId = $"_{context.ContextId}";
-                var authRequest = SamlService.CreateAuthnRequest(requestId, httpListenerRequest.Url, stepupNameId);
+                var authRequest = SamlService.CreateAuthnRequest(requestId, httpListenerRequest.Url, stepupNameID);
                 LogService.Log.DebugFormat("Signing AuthnRequest with id {0}", requestId);
                 var signedXml = this.cryptographicService.SignSamlRequest(authRequest);
                 var ssoUrl = Sustainsys.Saml2.Configuration.Options.FromConfiguration.IdentityProviders.Default.SingleSignOnServiceUrl;
@@ -242,6 +241,9 @@ namespace SURFnet.Authentication.Adfs.Plugin
                 // These informations allows the authentication in the plugin to be correlated with the authentication on the Stepup-Gateway
                 // TODO: Fix to real full uid when NameID is loadable. Now it incorrectly happens in the SamlService.
                 LogService.Log.InfoFormat("Forwarding SAML SFO AuthnRequest with ID '{0}' for Stepup NameID '{1}' to '{2}'", requestId, authRequest.Subject.NameId.Value, ssoUrl);
+
+                // Store stepupNameID for verification in TryEndAuthentication
+                context.Data.Add(AuthenticationContextNameID, stepupNameID);  
 
                 return new AuthForm(ssoUrl, signedXml);
             }
@@ -278,38 +280,53 @@ namespace SURFnet.Authentication.Adfs.Plugin
         public IAdapterPresentation TryEndAuthentication(IAuthenticationContext context, IProofData proofData, HttpListenerRequest request, out Claim[] claims)
         {
             var requestId = $"_{ context.ContextId}";
+            
             LogService.PrepareCorrelatedLogger(context.ContextId, context.ActivityId);
             LogService.Log.Debug("Enter TryEndAuthentication");
             LogService.Log.DebugFormat("context.Lcid={0}", context.Lcid);
 
             LogService.Log.DebugLogDictionary(context.Data, "context.Data");
             LogService.Log.DebugLogDictionary(proofData.Properties, "proofData.Properties");
-
+           
             claims = null;
             try
             {
                 var response = SecondFactorAuthResponse.Deserialize(proofData, context);
                 LogService.Log.DebugFormat("Received response for request. Expected request ID='{0}'", requestId);
+
                 var samlResponse = new Saml2Response(response.SamlResponse, new Saml2Id(requestId));
                 if (samlResponse.Status != Saml2StatusCode.Success)
                 {
                     return new AuthFailedForm(false, Values.DefaultVerificationFailedResourcerId, context.ContextId, context.ActivityId);
-                }
-
+                }              
+               
                 string loa = string.Empty;
                 string nameID = null;
-                var ci = SamlService.VerifyResponseAndGetClaimsIdentity(samlResponse);
-                if ( ci != null )
-                {
-                    nameID = ci.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-                    Claim authClaim = ci.FindFirst(ClaimTypes.AuthenticationMethod);
-                    if (authClaim != null )
+                var claimsIdentity = SamlService.VerifyResponseAndGetClaimsIdentity(samlResponse);
+                if (claimsIdentity != null)
+                {
+                    nameID = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+                    var validateNameIDResult = ValidateNameID(context, nameID);
+                    if (validateNameIDResult != null)
+                    {
+                        return validateNameIDResult;
+                    }
+
+                    var authClaim = claimsIdentity.FindFirst(ClaimTypes.AuthenticationMethod);
+                    if (authClaim != null)
                     {
                         claims = new[] { authClaim };
-                        if ( authClaim.Value != null )
+                        if (authClaim.Value != null)
                         {
                             loa = authClaim.Value;
+
+                            if (!Metadata.AuthenticationMethods.Any(method => method.Equals(loa, StringComparison.OrdinalIgnoreCase)))
+                            {
+                                LogService.Log.FatalFormat("Loa '{0}' from the authentication claim is unknown.", loa);
+                                return new AuthFailedForm(false, Values.DefaultVerificationFailedResourcerId, context.ContextId, context.ActivityId);
+                            }
                         }
                     }
                     else
@@ -345,6 +362,34 @@ namespace SURFnet.Authentication.Adfs.Plugin
                 LogService.Log.FatalFormat("Error while processing the SAML response. Details: {0}", ex.Message);
                 return new AuthFailedForm(false, Values.DefaultErrorMessageResourcerId, context.ContextId, context.ActivityId);
             }
+        }
+
+        /// <summary>
+        /// Validates the name identifier.
+        /// Return null if validation is OK, otherwise a <see cref="AuthFailedForm"/> is returned.
+        /// </summary>
+        /// <param name="context">The context</param>
+        /// <param name="receivedNameId">The received name identifier.</param>
+        /// <returns></returns>
+        private static IAdapterPresentation ValidateNameID(IAuthenticationContext context, string receivedNameId)
+        {
+            if (context.Data.TryGetValue(AuthenticationContextNameID, out object expectedNameIDObject))
+            {
+                var nameIDFromContext = expectedNameIDObject as string;
+                if (!string.IsNullOrEmpty(nameIDFromContext) && nameIDFromContext.Equals(receivedNameId, StringComparison.OrdinalIgnoreCase))
+                {
+                    LogService.Log.InfoFormat("NameID '{0}' matches expected from AuthenticationContext.", nameIDFromContext);
+                    return null;
+                }
+
+                LogService.Log.FatalFormat("Received NameID '{0}' does not match the expected '{1}'.", receivedNameId, nameIDFromContext);
+            }
+            else
+            {
+                LogService.Log.FatalFormat("NameID not found in AuthenticationContext.");
+            }
+
+            return new AuthFailedForm(false, Values.DefaultVerificationFailedResourcerId, context.ContextId, context.ActivityId);
         }
 
         /// <summary>
