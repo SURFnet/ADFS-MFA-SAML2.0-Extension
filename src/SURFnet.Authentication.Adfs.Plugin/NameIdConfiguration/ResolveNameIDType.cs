@@ -22,7 +22,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.NameIdConfiguration
 
                 else if (algorihtm.Equals(AdapterConfiguration.UserIdAndShoFromADAttr, StringComparison.Ordinal))
                 {
-                    getNameID = new UserIdAndShoFromADAttr(log);
+                    getNameID = new UserIdAndShoFromADAttr(log);                    
                 }
 
                 else if (algorihtm.Equals(AdapterConfiguration.NameIDFromType, StringComparison.Ordinal))
@@ -46,13 +46,14 @@ namespace SURFnet.Authentication.Adfs.Plugin.NameIdConfiguration
                 getNameID = new UserIDFromADAttr(log);
             }
 
+            getNameID.Initialize(paramaters);
             return getNameID;
         }
 
-        private static IGetNameID CreateNameIDFromType(ILog log, Dictionary<string, string> dict, IGetNameID getNameID)
+        private static IGetNameID CreateNameIDFromType(ILog log, Dictionary<string, string> parameters, IGetNameID getNameID)
         {
             // dynamic loading
-            if (dict.TryGetValue(AdapterConfiguration.GetNameIDTypeNameAttribute, out string typename))
+            if (parameters.TryGetValue(AdapterConfiguration.GetNameIDTypeNameAttribute, out string typename))
             {
                 try
                 {

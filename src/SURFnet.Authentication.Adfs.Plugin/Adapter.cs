@@ -87,7 +87,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
                     // we do want to read our own configuration before the Registration CmdLet reads our metadata
                     RegistrationLog.WriteLine(AdapterDir);
 
-                    if (StepUpConfig.ReadXmlConfig(LogService.Log) == 0)
+                    if (StepUpConfig.ReadXmlConfig(RegistrationLog.ILogWrapper) == 0)
                     {
                         RegistrationLog.WriteLine("Adapter parms loaded from small XML.");
                     }

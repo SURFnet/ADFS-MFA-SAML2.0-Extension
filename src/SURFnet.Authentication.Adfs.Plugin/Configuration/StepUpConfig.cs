@@ -112,11 +112,14 @@ namespace SURFnet.Authentication.Adfs.Plugin.Configuration
 
         private static string GetParameter(IDictionary<string, string> parameters, string key)
         {
-            var foundParameter = parameters.FirstOrDefault(x => x.Key.Equals(key, StringComparison.OrdinalIgnoreCase)); 
-        
-            if(foundParameter.Key != null)
+            if (parameters != null)
             {
-                return foundParameter.Value;
+                var foundParameter = parameters.FirstOrDefault(x => x.Key.Equals(key, StringComparison.OrdinalIgnoreCase));
+
+                if (foundParameter.Key != null)
+                {
+                    return foundParameter.Value;
+                }
             }
 
             return null;

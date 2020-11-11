@@ -36,6 +36,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
         /// </summary>
         public static readonly bool IsRegistration;
 
+        public static RegistrationILogWrapper ILogWrapper; 
+
         /// <summary>
         /// Some expected thingies.
         /// Normal behavior is to call the static construction on its first use.
@@ -44,6 +46,11 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
         /// </summary>
         static RegistrationLog()
         {
+            if (ILogWrapper == null)
+            {
+                ILogWrapper = new RegistrationILogWrapper();
+            }
+
             var host = Assembly.GetEntryAssembly();
             if (host?.Location.Contains("Microsoft.IdentityServer.ServiceHost") ?? false)
             {
