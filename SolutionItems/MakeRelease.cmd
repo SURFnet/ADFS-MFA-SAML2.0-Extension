@@ -1,20 +1,38 @@
-@if [%1] == [] (
-  @echo Missing parameter.
-  @echo.
-  @echo Usage: MakeRelease.cmd ^<version^>
-  @echo.
-  goto :error
+@rem Get the root directory of the project
+@pushd %~dp0\..
+@set root_dir=%CD%
+@popd
+
+@set build=Release
+@if [%1] == [-debug] (
+  @echo Enabled debug release
+  @set build=Debug
+  @shift
 )
 
-@rem Get the root directory of the project
-pushd %~dp0\..
-set root_dir=%CD%
-popd
+@if [%1] == [] (
+  @echo Missing parameter: version
+  @echo.
+  @echo Usage: MakeRelease.cmd [-debug] ^<version^>
+  @echo.
+  @echo Create a SetupPackage for release to customers from the VisualStudio build of the solution. 
+  @echo Optionally signs the build.
+  @echo.
+  @echo ^<version^>   String describing the released version, this becomes part of the SteupPackage 
+  @echo             name and directory. It has no effect on the files included in the SetupPackage.
+  @echo.
+  @echo -debug      Make a debug release. This incudes the assemblies from the debug build instead
+  @echo             of the release build. By default a release build is created.
+  goto :error
+)
 
 SET version=%1
 
 mkdir %root_dir%\release
-SET release=%root_dir%\release\SetupPackage-%version%
+set release=%root_dir%\release\SetupPackage-%version%
+if [%build%] == [Debug] (
+	set release=%root_dir%\release\SetupPackage-debug-%version%
+)
 
 @if exist %release%\ (
   @echo Deleting %release%
@@ -28,38 +46,38 @@ mkdir %release%\config || goto :error
 mkdir %release%\extensions || goto :error
    
 @echo Copying files   
-copy %root_dir%\src\Setup\bin\Release\log4net.dll %release% || goto :error
-copy %root_dir%\src\Setup\bin\Release\Newtonsoft.Json.dll %release% || goto :error
-copy %root_dir%\src\Setup\bin\Release\Setup.exe %release% || goto :error
-copy %root_dir%\src\Setup\bin\Release\Setup.exe.config %release% || goto :error
-copy %root_dir%\src\Setup\bin\Release\Setup.log4net %release% || goto :error
-copy %root_dir%\src\Setup\bin\Release\SURFnet.Authentication.Adfs.Plugin.Setup.dll %release% || goto :error
-copy %root_dir%\src\Setup\bin\Release\SURFnet.Authentication.Adfs.Plugin.Setup.dll.config %release% || goto :error
+copy %root_dir%\src\Setup\bin\%build%\log4net.dll %release% || goto :error
+copy %root_dir%\src\Setup\bin\%build%\Newtonsoft.Json.dll %release% || goto :error
+copy %root_dir%\src\Setup\bin\%build%\Setup.exe %release% || goto :error
+copy %root_dir%\src\Setup\bin\%build%\Setup.exe.config %release% || goto :error
+copy %root_dir%\src\Setup\bin\%build%\Setup.log4net %release% || goto :error
+copy %root_dir%\src\Setup\bin\%build%\SURFnet.Authentication.Adfs.Plugin.Setup.dll %release% || goto :error
+copy %root_dir%\src\Setup\bin\%build%\SURFnet.Authentication.Adfs.Plugin.Setup.dll.config %release% || goto :error
 
-copy %root_dir%\src\Setup\bin\Release\config\gateway.pilot.stepup.surfconext.nl.xml %release%\config || goto :error
-copy %root_dir%\src\Setup\bin\Release\config\sa-gw.surfconext.nl.xml %release%\config || goto :error
-copy %root_dir%\src\Setup\bin\Release\config\sa-gw.test.surfconext.nl.xml %release%\config || goto :error
-copy %root_dir%\src\Setup\bin\Release\config\SURFnet.Authentication.ADFS.MFA.Plugin.Environments.json %release%\config || goto :error
+copy %root_dir%\src\Setup\bin\%build%\config\gateway.pilot.stepup.surfconext.nl.xml %release%\config || goto :error
+copy %root_dir%\src\Setup\bin\%build%\config\sa-gw.surfconext.nl.xml %release%\config || goto :error
+copy %root_dir%\src\Setup\bin\%build%\config\sa-gw.test.surfconext.nl.xml %release%\config || goto :error
+copy %root_dir%\src\Setup\bin\%build%\config\SURFnet.Authentication.ADFS.MFA.Plugin.Environments.json %release%\config || goto :error
 
-copy %root_dir%\src\SURFnet.Authentication.Adfs.Plugin\bin\Release\log4net.dll %release%\dist || goto :error
-copy %root_dir%\src\SURFnet.Authentication.Adfs.Plugin\bin\Release\Microsoft.IdentityModel.Logging.dll %release%\dist || goto :error
-copy %root_dir%\src\SURFnet.Authentication.Adfs.Plugin\bin\Release\Microsoft.IdentityModel.Protocols.dll %release%\dist || goto :error
-copy %root_dir%\src\SURFnet.Authentication.Adfs.Plugin\bin\Release\Microsoft.IdentityModel.Tokens.dll %release%\dist || goto :error
-copy %root_dir%\src\SURFnet.Authentication.Adfs.Plugin\bin\Release\Microsoft.IdentityModel.Tokens.Saml.dll %release%\dist || goto :error
-copy %root_dir%\src\SURFnet.Authentication.Adfs.Plugin\bin\Release\Microsoft.IdentityModel.Xml.dll %release%\dist || goto :error
-copy %root_dir%\src\SURFnet.Authentication.Adfs.Plugin\bin\Release\Newtonsoft.Json.dll %release%\dist || goto :error
-copy %root_dir%\src\SURFnet.Authentication.Adfs.Plugin\bin\Release\SURFnet.Authentication.ADFS.MFA.Plugin.log4net %release%\dist || goto :error
-copy %root_dir%\src\SURFnet.Authentication.Adfs.Plugin\bin\Release\SURFnet.Authentication.Adfs.Plugin.dll %release%\dist || goto :error
-copy %root_dir%\src\SURFnet.Authentication.Adfs.Plugin\bin\Release\SURFnet.Authentication.Adfs.Plugin.dll.config %release%\dist || goto :error
-copy %root_dir%\src\SURFnet.Authentication.Adfs.Plugin\bin\Release\Sustainsys.Saml2.dll %release%\dist || goto :error
-copy %root_dir%\src\SURFnet.Authentication.Adfs.Plugin\bin\Release\System.Configuration.ConfigurationManager.dll %release%\dist || goto :error
-copy %root_dir%\src\SURFnet.Authentication.Adfs.Plugin\bin\Release\System.Security.AccessControl.dll %release%\dist || goto :error
-copy %root_dir%\src\SURFnet.Authentication.Adfs.Plugin\bin\Release\System.Security.Cryptography.Xml.dll %release%\dist || goto :error
-copy %root_dir%\src\SURFnet.Authentication.Adfs.Plugin\bin\Release\System.Security.Permissions.dll %release%\dist || goto :error
-copy %root_dir%\src\SURFnet.Authentication.Adfs.Plugin\bin\Release\System.Security.Principal.Windows.dll %release%\dist || goto :error
-copy %root_dir%\src\SURFnet.Authentication.Adfs.Plugin\bin\Release\System.ValueTuple.dll %release%\dist || goto :error
+copy %root_dir%\src\SURFnet.Authentication.Adfs.Plugin\bin\%build%\log4net.dll %release%\dist || goto :error
+copy %root_dir%\src\SURFnet.Authentication.Adfs.Plugin\bin\%build%\Microsoft.IdentityModel.Logging.dll %release%\dist || goto :error
+copy %root_dir%\src\SURFnet.Authentication.Adfs.Plugin\bin\%build%\Microsoft.IdentityModel.Protocols.dll %release%\dist || goto :error
+copy %root_dir%\src\SURFnet.Authentication.Adfs.Plugin\bin\%build%\Microsoft.IdentityModel.Tokens.dll %release%\dist || goto :error
+copy %root_dir%\src\SURFnet.Authentication.Adfs.Plugin\bin\%build%\Microsoft.IdentityModel.Tokens.Saml.dll %release%\dist || goto :error
+copy %root_dir%\src\SURFnet.Authentication.Adfs.Plugin\bin\%build%\Microsoft.IdentityModel.Xml.dll %release%\dist || goto :error
+copy %root_dir%\src\SURFnet.Authentication.Adfs.Plugin\bin\%build%\Newtonsoft.Json.dll %release%\dist || goto :error
+copy %root_dir%\src\SURFnet.Authentication.Adfs.Plugin\bin\%build%\SURFnet.Authentication.ADFS.MFA.Plugin.log4net %release%\dist || goto :error
+copy %root_dir%\src\SURFnet.Authentication.Adfs.Plugin\bin\%build%\SURFnet.Authentication.Adfs.Plugin.dll %release%\dist || goto :error
+copy %root_dir%\src\SURFnet.Authentication.Adfs.Plugin\bin\%build%\SURFnet.Authentication.Adfs.Plugin.dll.config %release%\dist || goto :error
+copy %root_dir%\src\SURFnet.Authentication.Adfs.Plugin\bin\%build%\Sustainsys.Saml2.dll %release%\dist || goto :error
+copy %root_dir%\src\SURFnet.Authentication.Adfs.Plugin\bin\%build%\System.Configuration.ConfigurationManager.dll %release%\dist || goto :error
+copy %root_dir%\src\SURFnet.Authentication.Adfs.Plugin\bin\%build%\System.Security.AccessControl.dll %release%\dist || goto :error
+copy %root_dir%\src\SURFnet.Authentication.Adfs.Plugin\bin\%build%\System.Security.Cryptography.Xml.dll %release%\dist || goto :error
+copy %root_dir%\src\SURFnet.Authentication.Adfs.Plugin\bin\%build%\System.Security.Permissions.dll %release%\dist || goto :error
+copy %root_dir%\src\SURFnet.Authentication.Adfs.Plugin\bin\%build%\System.Security.Principal.Windows.dll %release%\dist || goto :error
+copy %root_dir%\src\SURFnet.Authentication.Adfs.Plugin\bin\%build%\System.ValueTuple.dll %release%\dist || goto :error
 
-copy %root_dir%\src\SURFnet.Authentication.Adfs.Plugin.Extensions.Samples\bin\Release\SURFnet.Authentication.Adfs.Plugin.Extensions.Samples.dll %release%\extensions || goto :error
+copy %root_dir%\src\SURFnet.Authentication.Adfs.Plugin.Extensions.Samples\bin\%build%\SURFnet.Authentication.Adfs.Plugin.Extensions.Samples.dll %release%\extensions || goto :error
 
 copy %root_dir%\CHANGELOG %release% || goto :error
 copy %root_dir%\LICENSE %release% || goto :error
