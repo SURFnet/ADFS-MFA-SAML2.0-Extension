@@ -12,11 +12,11 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
     ///  - A Base because Uninstall for V1.0.1.0 is remove from GAC.
     ///    The GAC version will derive and override the Uninstall().
     /// </summary>
-    public class Log4netV2_0_8Component : StepupComponent
+    public class Log4netV2_0_12Component : StepupComponent
     {
-        public Log4netV2_0_8Component(string componentname) : base(componentname)
+        public Log4netV2_0_12Component(string componentname) : base(componentname)
         {
-            Assemblies = ComponentAssemblies.Log4Net2_0_8AssemblySpec;
+            Assemblies = ComponentAssemblies.Log4Net2_0_12AssemblySpec;
             ConfigFilename = Values.Log4netCfgFilename;
         }
 

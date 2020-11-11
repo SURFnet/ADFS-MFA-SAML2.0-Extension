@@ -132,8 +132,10 @@
     <Compile Include="Versions\ComponentAssemblies.cs" />
     <Compile Include="Versions\CurrentPublicTokenKey.cs" />
     <Compile Include="Versions\Kentorv0_21_Component.cs" />
+    <Compile Include="Versions\Log4netV2_0_12Component.cs" />
     <Compile Include="Versions\Log4netV2_0_8GAC.cs" />
     <Compile Include="Versions\Log4netV2_0_8Component.cs" />
+    <Compile Include="Versions\Sustainsys2_7Deps_2_0_4.cs" />
     <Compile Include="Versions\Sustainsys2_7Deps.cs" />
     <Compile Include="Versions\Sustainsys2_7MdComponent.cs" />
     <Compile Include="Versions\Sustainsys2_xComponent.cs" />

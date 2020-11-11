@@ -1,10 +1,6 @@
-﻿using SURFnet.Authentication.Adfs.Plugin.Setup.Assemblies;
-using SURFnet.Authentication.Adfs.Plugin.Setup.Configuration;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System;
+
+using SURFnet.Authentication.Adfs.Plugin.Setup.Assemblies;
 
 namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
 {
@@ -41,6 +37,17 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
                 AssemblyVersion = new Version("2.0.8.0"),
                 ProductVersion = new Version("2.0.8.0"),
                 FileVersion = new Version("2.0.8.0")
+            }
+        };
+
+        static public readonly AssemblySpec[] Log4Net2_0_12AssemblySpec = new AssemblySpec[]
+        {
+            new AssemblySpec(SetupConstants.Log4netFilename)
+            {
+                AssemblyFullName = "log4net, Version=2.0.12.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a",
+                AssemblyVersion = new Version("2.0.12.0"),
+                ProductVersion = new Version("0.0.0.0"),
+                FileVersion = new Version("2.0.12.0")
             }
         };
 

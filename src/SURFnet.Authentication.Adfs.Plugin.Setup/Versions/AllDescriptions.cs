@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
+﻿namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
 {
     /// <summary>
     /// Do remember to update the pointer at teh bottom and update Heuristics!!
@@ -50,8 +44,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
 
         static public readonly VersionDescription V2_0_4_0 = new VersionDescription(V2Components.V2_0_4Adapter)
         {
-            Components = V2Components.V2_0Components,
-            ExtraAssemblies = Sustainsys2_7Deps.Sustainsys2_7_Extras
+            Components = V2Components.V2_0_4Components,
+            ExtraAssemblies = Sustainsys2_7Deps_2_0_4.Sustainsys2_7_Extras
         };
 
         // Do not forget to update his to the newest!! :-)
