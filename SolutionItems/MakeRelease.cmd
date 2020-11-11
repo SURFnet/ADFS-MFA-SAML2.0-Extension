@@ -14,7 +14,7 @@ popd
 SET version=%1
 
 mkdir %root_dir%\release
-SET release=%root_dir%\SetupPackage-%version%
+SET release=%root_dir%\release\SetupPackage-%version%
 
 @if exist %release%\ (
   @echo Deleting %release%
