@@ -16,21 +16,21 @@
   @echo Usage: MakeRelease.cmd [-debug] ^<version^>
   @echo.
   @echo Create a SetupPackage for release to customers from the VisualStudio build of the solution. 
-  @echo Optionally signs the build.
+  @echo Optionally signs the release.
   @echo.
-  @echo ^<version^>   String describing the released version, this becomes part of the SteupPackage 
+  @echo ^<version^>   String describing the released version, this becomes part of the SetupPackage 
   @echo             name and directory. It has no effect on the files included in the SetupPackage.
   @echo.
-  @echo -debug      Make a debug release. This incudes the assemblies from the debug build instead
-  @echo             of the release build. By default a release build is created.
+  @echo -debug      Make a debug release. This includes files from bin/Debug instead of from the
+  @echo             bin/Release directories. By default a release build is created.
   goto :error
 )
 
-SET version=%1
+@set version=%1
 
 mkdir %root_dir%\release
-set release=%root_dir%\release\SetupPackage-%version%
-if [%build%] == [Debug] (
+@set release=%root_dir%\release\SetupPackage-%version%
+@if [%build%] == [Debug] (
 	set release=%root_dir%\release\SetupPackage-debug-%version%
 )
 
