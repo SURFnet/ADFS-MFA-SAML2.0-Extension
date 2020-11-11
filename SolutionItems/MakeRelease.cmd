@@ -1,9 +1,9 @@
-@IF [%1] == [] (
-    @echo Missing parameter.
-	@echo.
-	@echo Usage: MakeRelease.cmd ^<version^>
-	@echo.
-	goto :error
+@if [%1] == [] (
+  @echo Missing parameter.
+  @echo.
+  @echo Usage: MakeRelease.cmd ^<version^>
+  @echo.
+  goto :error
 )
 
 @rem Get the root directory of the project
