@@ -7,9 +7,9 @@ using log4net;
 
 using SURFnet.Authentication.Adfs.Plugin.NameIdConfiguration;
 
-namespace SURFnet.Authentication.Adfs.Plugin.Extensions
+namespace SURFnet.Authentication.Adfs.Plugin.Extensions.Samples
 {
-    public class NameIDBuilderSample : GetNameIDBase
+    public class NameIDBuilder : GetNameIDBase
     {
         public const string UidAttribute1 = "UidAttribute1";
         public const string Domain1 = "Domain1";
@@ -27,7 +27,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Extensions
 
         private const string MissingParm = "IGetNameID.Initialize() missing parameter: ";
 
-        public NameIDBuilderSample(ILog log) : base(log)
+        public NameIDBuilder(ILog log) : base(log)
         {
         }
 

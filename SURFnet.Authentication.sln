@@ -23,9 +23,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UiSampler", "Test\UiSampler
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ui4Cfg", "Test\Ui4Cfg\Ui4Cfg.csproj", "{B7F4146B-D0E1-437F-9755-52AFD2D9D1C0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SURFnet.Authentication.Adfs.Plugin.Extensions", "SURFnet.Authentication.Adfs.Plugin.Extensions\SURFnet.Authentication.Adfs.Plugin.Extensions.csproj", "{495E267D-BD15-4D4F-973B-523A17CB1D0F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SURFnet.Authentication.Adfs.Plugin.Extensions.Samples", "src\SURFnet.Authentication.Adfs.Plugin.Extensions.Samples\SURFnet.Authentication.Adfs.Plugin.Extensions.Samples.csproj", "{495E267D-BD15-4D4F-973B-523A17CB1D0F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SURFnet.Authentication.Adfs.Plugin.Test", "SURFnet.Authentication.Adfs.Plugin.Test\SURFnet.Authentication.Adfs.Plugin.Test.csproj", "{B0308356-431E-4C0C-8E15-DEE2BB16C0B0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SURFnet.Authentication.Adfs.Plugin.Test", "test\SURFnet.Authentication.Adfs.Plugin.Test\SURFnet.Authentication.Adfs.Plugin.Test.csproj", "{B0308356-431E-4C0C-8E15-DEE2BB16C0B0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

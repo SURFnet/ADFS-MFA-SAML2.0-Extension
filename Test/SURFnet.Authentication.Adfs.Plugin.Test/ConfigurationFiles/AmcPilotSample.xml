@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <SfoMfaExtension minimalLoa="http://pilot.surfconext.nl/assurance/sfo-level2"
                  NameIdAlgorithm="NameIDFromType"
-                 GetNameIDTypeName="SURFnet.Authentication.Adfs.Plugin.Extensions.NameIDBuilderSample, SURFnet.Authentication.Adfs.Plugin.Extensions, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+                 GetNameIDTypeName="SURFnet.Authentication.Adfs.Plugin.Extensions.Samples.NameIDBuilder, SURFnet.Authentication.Adfs.Plugin.Extensions.Samples, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
                  UidAttribute1="employeeNumber"
                  Domain1="D2012"
                  Sho1="amc.nl"

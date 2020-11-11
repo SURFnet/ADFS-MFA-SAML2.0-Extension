@@ -7,8 +7,8 @@
     <ProjectGuid>{495E267D-BD15-4D4F-973B-523A17CB1D0F}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SURFnet.Authentication.Adfs.Plugin.Extensions</RootNamespace>
-    <AssemblyName>SURFnet.Authentication.Adfs.Plugin.Extensions</AssemblyName>
+    <RootNamespace>SURFnet.Authentication.Adfs.Plugin.Extensions.Samples</RootNamespace>
+    <AssemblyName>SURFnet.Authentication.Adfs.Plugin.Extensions.Samples</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
@@ -47,14 +47,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="NameIDBuilderSample.cs" />
+    <Compile Include="NameIDBuilder.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\src\SURFnet.Authentication.Adfs.Plugin\SURFnet.Authentication.Adfs.Plugin.csproj">
+    <ProjectReference Include="..\SURFnet.Authentication.Adfs.Plugin\SURFnet.Authentication.Adfs.Plugin.csproj">
       <Project>{7f165692-9e1e-4231-b3bf-3e3aed44b11a}</Project>
       <Name>SURFnet.Authentication.Adfs.Plugin</Name>
     </ProjectReference>

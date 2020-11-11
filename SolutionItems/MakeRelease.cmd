@@ -20,6 +20,7 @@ SET release=..\release\SetupPackage-%version%
 mkdir %release% || goto :error
 mkdir %release%\dist || goto :error
 mkdir %release%\config || goto :error
+mkdir %release%\extensions || goto :error
    
 @echo Copying files   
 copy ..\src\Setup\bin\Release\log4net.dll %release% || goto :error
@@ -52,6 +53,8 @@ copy ..\src\SURFnet.Authentication.Adfs.Plugin\bin\Release\System.Security.Crypt
 copy ..\src\SURFnet.Authentication.Adfs.Plugin\bin\Release\System.Security.Permissions.dll %release%\dist || goto :error
 copy ..\src\SURFnet.Authentication.Adfs.Plugin\bin\Release\System.Security.Principal.Windows.dll %release%\dist || goto :error
 copy ..\src\SURFnet.Authentication.Adfs.Plugin\bin\Release\System.ValueTuple.dll %release%\dist || goto :error
+
+copy ..\src\SURFnet.Authentication.Adfs.Plugin.Extensions.Samples\bin\Release\SURFnet.Authentication.Adfs.Plugin.Extensions.Samples.dll %release%\extensions || goto :error
 
 copy ..\CHANGELOG %release% || goto :error
 copy ..\LICENSE %release% || goto :error
