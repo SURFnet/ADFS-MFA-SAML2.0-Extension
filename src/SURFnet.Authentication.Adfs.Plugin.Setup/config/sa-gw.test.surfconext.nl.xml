@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<md:EntityDescriptor xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata" xmlns:mdui="urn:oasis:names:tc:SAML:metadata:ui" ID="idm140061565472720" entityID="https://sa-gw.test.surfconext.nl/second-factor-only/metadata">
+<md:EntityDescriptor xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata"
+    xmlns:mdui="urn:oasis:names:tc:SAML:metadata:ui" ID="idm139886486044880"
+    entityID="https://sa-gw.test.surfconext.nl/second-factor-only/metadata">
   <md:IDPSSODescriptor protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
     <md:Extensions>
       <mdui:UIInfo>
@@ -21,16 +23,8 @@
         </ds:X509Data>
       </ds:KeyInfo>
     </md:KeyDescriptor>
-    <md:KeyDescriptor xmlns:ds="http://www.w3.org/2000/09/xmldsig#" use="signing">
-      <ds:KeyInfo>
-        <ds:X509Data>
-          <ds:X509Certificate>
-            MIIC6jCCAdICCQCWUmXBRox3ZDANBgkqhkiG9w0BAQsFADA3MRkwFwYDVQQDDBBHYXRld2F5IFNBTUwgSWRQMRowGAYDVQQKDBFTVVJGc2VjdXJlSUQgVEVTVDAeFw0xODA4MDEwODA2MjdaFw0yMzA3MzEwODA2MjdaMDcxGTAXBgNVBAMMEEdhdGV3YXkgU0FNTCBJZFAxGjAYBgNVBAoMEVNVUkZzZWN1cmVJRCBURVNUMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA3okLxR7J2re6j7/rLjEYLc7iWiELcypmFLvL9BmCYqYZ80Pn+SR9LPUOXcplFUt6LYh/NOK5JMT0P6o0OTUP1P4zEMzLEl0wSJ1jBcu88yNppJoUn/TEgXMGNB1DW8jlVvzcgNSsJjxuw2Fj6J/6D+b77+7PhNMagbnfBEFStz0RBv7JOBdzuEC71wVxlGXB7C1Y8ZF3AwZgIp0jOVdiMub9i6neaKV9ZBLSv+azkT8BtAauMdKBpBxC+KxUFV9ccHKFnF2YOTLQ3CJNNGyQTtCJVI82fggraKnl+by2elV3+Dmzc0iqMcAdECasSS+2E8iOqw+3Qss+RgtS7QvCdQIDAQABMA0GCSqGSIb3DQEBCwUAA4IBAQCq/j+uXLvYDHhL7c/Y3+oj25+ur2UtZ/uSBqZIIqGlAzlCEL/zdgDI8XmePaRLtc2hYWUH4bD5Iu8HqxrMPrdBkG/5cjbMmlhU5uV3EX7S+m89k9vrok9+7B+uynCkMIdA/1Uif2btfEQi9hevvyP/1vvyoHqftym+ivIOyvELJNIgdTUaqvcJy//QvkmpvSpgTvlzHSVgKkSmMoBhTmevu7lQUGYSk/Mt53Zd3WmZhev+emS/MTKwV39JkZg7aykIRqXGVe/yTlttW/zaV9WtSIzNZfaKqASraAaClKgv8lsTjWFv88HZrsP/UuEseIWh4NjOo5HHvHYgqN/atX3t
-          </ds:X509Certificate>
-        </ds:X509Data>
-      </ds:KeyInfo>
-    </md:KeyDescriptor>
-    <md:SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="https://sa-gw.test.surfconext.nl/second-factor-only/single-sign-on"/>
+    <md:SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect"
+        Location="https://sa-gw.test.surfconext.nl/second-factor-only/single-sign-on"/>
   </md:IDPSSODescriptor>
   <md:Organization>
     <md:OrganizationName xml:lang="en">SURFnet BV</md:OrganizationName>
