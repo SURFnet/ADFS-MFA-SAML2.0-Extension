@@ -61,12 +61,12 @@ copy %root_dir%\src\SURFnet.Authentication.Adfs.Plugin\bin\Release\System.ValueT
 
 copy %root_dir%\src\SURFnet.Authentication.Adfs.Plugin.Extensions.Samples\bin\Release\SURFnet.Authentication.Adfs.Plugin.Extensions.Samples.dll %release%\extensions || goto :error
 
-copy %root_dir\%CHANGELOG %release% || goto :error
-copy %root_dir\%LICENSE %release% || goto :error
-copy %root_dir\%NOTICE %release% || goto :error
-copy %root_dir\%INSTALL %release% || goto :error
-copy %root_dir\%UPGRADE %release% || goto :error
-copy %root_dir\%KNOWN_ISSUES %release% || goto :error
+copy %root_dir%\CHANGELOG %release% || goto :error
+copy %root_dir%\LICENSE %release% || goto :error
+copy %root_dir%\NOTICE %release% || goto :error
+copy %root_dir%\INSTALL %release% || goto :error
+copy %root_dir%\UPGRADE %release% || goto :error
+copy %root_dir%\KNOWN_ISSUES %release% || goto :error
 
 @set sign=0
 @choice /m "Sign release?" /c YN
