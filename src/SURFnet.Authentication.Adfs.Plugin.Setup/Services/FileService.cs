@@ -76,7 +76,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
         /// It is backupyyMMddHHmmss (set by static constructor)
         /// Physically created on disk when first written through this class.
         /// </summary>
-        private static string BackupFolder { get; }
+        public static string BackupFolder { get; }
         private static bool backupInitialized = false;
 
 

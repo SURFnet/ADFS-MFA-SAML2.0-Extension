@@ -196,8 +196,9 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
         {
             if (ConfigFilename != null)
             {
-                LogService.Log.Debug($" Backup: '{ConfigFilename}'");
+                LogService.Log.Debug($" Backup: '{ConfigFilename}'");                
                 int rc = FileService.Copy2BackupAndDelete(ConfigFilename, ConfigFileDirectory, false);
+                Console.WriteLine($"Backup of '{ConfigFilename}' made to '{FileService.BackupFolder}'.");
                 return rc;                
             }
             return 0;
