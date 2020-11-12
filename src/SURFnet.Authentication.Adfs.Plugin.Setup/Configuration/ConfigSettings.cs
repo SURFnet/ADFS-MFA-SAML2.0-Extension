@@ -134,6 +134,9 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
         public const string IdPEntityId = "IdPentityId";
         public const string MinimalLoa = "MinimalLoa";
         public const string IdPMdFilename = "IdPMdFilename";
+        public const string NameIdAlgorithm = "NameIdAlgorithm";
+        public const string NameIdAlgorithmDefaultValue = "UserIdFromADAttr";
+
         //public const string IdPMdLocation = "IdPMdLocation";  // not yet. Just on disk
 
         public readonly static Setting IdPEntityID = new Setting(IdPEntityId)
@@ -163,6 +166,12 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
                 "selected as part of the environment.",
                 "Example: http://example.com/assurance/sfo-level2"
             }
+        };
+
+        public readonly static Setting NameIdAlgorithmSetting = new Setting(NameIdAlgorithm)
+        {
+            DisplayName = "NameIdAlgorithm",
+            IsMandatory = true,
         };
 
         public readonly static Setting IdPMetadataFilename = new Setting(IdPMdFilename, IdPEntityId)

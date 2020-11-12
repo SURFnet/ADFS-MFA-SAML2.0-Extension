@@ -98,25 +98,34 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
             // Check if all required settings are there.
             // Make a list of mandatory (as specified by target version.
             // But skip the ones with a parent, because the will come from somewhere else.
-            List<Setting> minimalSubset = new List<Setting>();
-            foreach ( Setting setting in foundSettings )
+            var minimalSubset = foundSettings.Where(setting => setting.Parent == null && setting.IsMandatory).ToList();
+
+            if (!NameIdAlgorithmSettingIsDefault(minimalSubset))
             {
-                if ( setting.Parent == null && setting.IsMandatory )
+                QuestionIO.WriteLine("*** WARNING: Your current installation uses a NameIDAlgorithm configuration that is not supported");
+                QuestionIO.WriteLine("*** by this setup program. If you continue, your current configuration will be overwritten..");
+                QuestionIO.WriteLine();
+
+                var result = AskYesNo.Ask("Do you want to continue?", false);
+                switch(result)
                 {
-                    minimalSubset.Add(setting);
+                    case 'y':
+                        break;
+                    default:
+                        return -2;
                 }
             }
 
             // then if they are all there: Ask confirmation
             if ( AllMandatoryHaveValue(minimalSubset) )
-            {                             
+            {
                 var introductionString = "*** Setup did find an existing CORRECT CONFIGURATION. With settings as follows: ";
                 if (!string.IsNullOrWhiteSpace(minimalSubset.FirstOrDefault()?.NewValue))
                 {
                     var configPath = FileService.OurDirCombine(FileDirectory.Config, SetupConstants.UsedSettingsFilename);
                     introductionString =
                         $"*** Setup did find a settings file from a previous installation at '{configPath}'. You can safely remove this file if you don't want to use the settings below: ";
-                }
+                }               
 
                 // Ask for quick GO confirmation.
                 QuestionIO.WriteLine();
@@ -134,7 +143,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
 
                     case 'x':
                         rc = -2;
-                        break;                   
+                        break;
 
                     default:
                         rc = -1;
@@ -146,6 +155,19 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
             }
 
             return rc;
+        }
+
+        private static bool NameIdAlgorithmSettingIsDefault(List<Setting> minimalSubset)
+        {           
+            var nameIdAlgorithmSetting = minimalSubset.FirstOrDefault(setting => setting.InternalName.Equals(ConfigSettings.NameIdAlgorithm));
+
+            if (nameIdAlgorithmSetting != null)
+            {
+                return nameIdAlgorithmSetting.Value.Equals(ConfigSettings.NameIdAlgorithmDefaultValue, StringComparison.Ordinal);  
+            }
+
+            // if missing we assume the default setting
+            return true;
         }
 
         bool AllMandatoryHaveValue(List<Setting> settings)

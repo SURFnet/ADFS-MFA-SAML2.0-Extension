@@ -18,7 +18,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Models
 {
     using System;
     using System.Collections.Generic;
-    using System.Text;
+
     using SURFnet.Authentication.Adfs.Plugin.Setup.Services;
 
     /// <summary>
@@ -62,6 +62,18 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Models
                     SettingDict[parent].ChildrenNames.Add(kvp.Value.InternalName);
                 }
             }
+        }
+
+        /// <summary>
+        /// Determines whether [has setting by name] [the specified internalname].
+        /// </summary>
+        /// <param name="internalname">The internalname.</param>
+        /// <returns>
+        ///   <c>true</c> if [has setting by name] [the specified internalname]; otherwise, <c>false</c>.
+        /// </returns>
+        public static bool HasSettingByName(string internalname)
+        {
+            return SettingDict.ContainsKey(internalname);
         }
 
         /// <summary>
@@ -164,6 +176,11 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Models
         /// and let the Admin confirm each setting. This one is true if confirmed.
         /// </summary>
         public bool IsConfirmed { get; set; }
+
+        /// <summary>
+        /// True if settings is extra for custom NameIdAlgorithm      
+        /// </summary>
+        public bool IsExtraForNameIdNameIdAlgorithm { get; set; }
 
         /// <summary>
         /// Some settings (like IDP settings) depend on another setting.

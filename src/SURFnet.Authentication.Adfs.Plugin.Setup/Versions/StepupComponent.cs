@@ -192,6 +192,17 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
             return rc;
         }
 
+        public int BackupConfigurationFile()
+        {
+            if (ConfigFilename != null)
+            {
+                LogService.Log.Debug($" Backup: '{ConfigFilename}'");
+                int rc = FileService.Copy2BackupAndDelete(ConfigFilename, ConfigFileDirectory, false);
+                return rc;                
+            }
+            return 0;
+        }
+
         public override string ToString()
         {
             return ComponentName;

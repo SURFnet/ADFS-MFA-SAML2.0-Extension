@@ -17,12 +17,9 @@
 namespace SURFnet.Authentication.Adfs.Plugin.Setup
 {
     using System;
-    using System.Collections.Generic;
-    using System.ServiceProcess;
-    using log4net;
+
     using SURFnet.Authentication.Adfs.Plugin.Setup.Configuration;
     using SURFnet.Authentication.Adfs.Plugin.Setup.Models;
-    using SURFnet.Authentication.Adfs.Plugin.Setup.PS;
     using SURFnet.Authentication.Adfs.Plugin.Setup.Question;
     using SURFnet.Authentication.Adfs.Plugin.Setup.Services;
     using SURFnet.Authentication.Adfs.Plugin.Setup.Util;
@@ -44,6 +41,10 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
         [STAThread]
         public static int Main(string[] args)
         {
+#if DEBUG
+            AskYesNo.Ask("Attach remote debugger and press: y, n or x", false);
+#endif
+
             SetupState setupstate = new SetupState();
 
             int rc = PrepareForSetup(args, setupstate);
@@ -182,8 +183,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
             {
                 Console.WriteLine("Reconfiguration started.");
 
-                rc = AdapterMaintenance.ReConfigure(AllDescriptions.ThisVersion,
-                                    setupstate.FoundSettings);
+                rc = AdapterMaintenance.ReConfigure(AllDescriptions.ThisVersion, setupstate.FoundSettings);
                 if (rc == 0)
                 {
                     Console.WriteLine("Reconfigure successful.");

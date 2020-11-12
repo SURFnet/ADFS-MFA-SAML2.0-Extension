@@ -202,7 +202,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
         /// </summary>
         /// <param name="filename"></param>
         /// <returns></returns>
-        public static int Copy2BackupAndDelete(string filename, FileDirectory filedirectory = FileDirectory.AdfsDir)
+        public static int Copy2BackupAndDelete(string filename, FileDirectory filedirectory = FileDirectory.AdfsDir, bool deleteFile = true)
         {
             if (string.IsNullOrWhiteSpace(filename)) ThrowOnNullFilename("CopyFromAdfsDirToBackupAndDelete()");
 
@@ -220,7 +220,10 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
                 try
                 {
                     // Delete src
-                    File.Delete(srcpath);
+                    if (deleteFile)
+                    {
+                        File.Delete(srcpath);
+                    }
                     rc = 0;
                 }
                 catch (Exception ex2)

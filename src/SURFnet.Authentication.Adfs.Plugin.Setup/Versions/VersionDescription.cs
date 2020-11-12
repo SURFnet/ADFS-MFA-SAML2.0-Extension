@@ -200,24 +200,27 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
         {
             int rc = 0;
 
-            rc = Adapter.InstallCfgOnly();
-            if ( rc==0 )
+            rc = Adapter.BackupConfigurationFile();
+            if (rc == 0)
             {
-                // OK, then now components
-                if (Components != null && Components.Length > 0)
+                rc = Adapter.InstallCfgOnly();
+                if (rc == 0)
                 {
-                    foreach (var component in Components)
+                    // OK, then now components
+                    if (Components != null && Components.Length > 0)
                     {
-                        var tmprc = component.InstallCfgOnly();
-                        if (0 != tmprc)
+                        foreach (var component in Components)
                         {
-                            rc = tmprc; // error message was already written
-                            break; // stop Installing
+                            var tmprc = component.InstallCfgOnly();
+                            if (0 != tmprc)
+                            {
+                                rc = tmprc; // error message was already written
+                                break; // stop Installing
+                            }
                         }
                     }
                 }
             }
-
 
             return rc;
         }
