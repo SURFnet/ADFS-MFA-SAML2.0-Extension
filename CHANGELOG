@@ -1,3 +1,23 @@
+Version 2.0.4
+* Plugin 
+- Add support for customising the way the NameID is calculated. 
+  Added a NameIdAlgorithm configuration setting to SURFnet.Authentication.ADFS.Plugin.config.xml
+  that specified the algorithm that is used to. See the included README.md for details.
+  (https://www.pivotaltracker.com/story/show/172918855)
+- Verify the NameID and LOA returned from the SFO gateway as a defense in depth measure
+  (https://www.pivotaltracker.com/story/show/173368068)
+
+* Setup
+- Fix: Error when upgrading from 2.0.2
+  (https://www.pivotaltracker.com/story/show/173584407)
+- Fix: Help texts are not displayed
+  (https://www.pivotaltracker.com/story/show/173374702)
+- Fixed a few situations where "x/y/n/?" did not have the
+  expected result.
+- Update the included metadata of the SURFsecureID test and productions environments.
+  Removed the old signing certificates.
+
+
 Version 2.0.3
 * Plugin
 - Add log messages at INFO level (the default log level) that log authentication related

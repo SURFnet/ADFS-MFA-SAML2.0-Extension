@@ -74,12 +74,77 @@ Building from Source
 * To make a release, run the SolutionItems/MakeRelease.cmd script. This script
   requires:
   * 7z.exe in "C:\Program Files\7-Zip\" (download from https://www.7-zip.org/)
-  Additionaly to codesign the zip (optional) you need:
+  Additionally to codesign the zip (optional) you need:
   * signtool.exe from a Windows SDK (e.g. the Windows 10 SDK)
   * A code signing certificate in the certificate store
   Run the script:
   * Change to the SolutionItems directory
   * Run "MakeRelease.cmd <version>"
+
+Custom NameID Algorithm
+=======================
+
+Since version 2.0.4 of the plugin it is possible to customise the algorithm used to
+calculate the NameID of the user. The NameID is the identifier of the user at the
+Stepup-Gateway.
+
+The "NameIDAlgorithm" parameter in the "SURFnet.Authentication.ADFS.Plugin.config.xml" 
+configuration file in the \Windows\ADFS directory selects the NameIDAlgorithm that is used.
+The default NameIDAlgorithm is "UserIdFromADAttr", this is the algorithm that is used
+in earlier version of the plugin. Two new NameIDAlgorithm types were added:
+
+1. UserIdAndShoFromADAttr - This algorithm reads the values of both the uid and the 
+   schacHomeOrganization from AD. 
+2. NameIDFromType - This algorithm loads a .NET assembly with a NameIDBuilder and allows
+   anyone to add a new NameID algorithm without having to recompile the plugin.
+   See the SURFnet.Authentication.Adfs.Plugin.Extensions.Samples project for a sample
+   of such a plugin. A prebuild version of this sample is included in the extensions 
+   directory of the SetupPackage.
+
+Configuration
+-------------
+
+Setup currently only supports the default UserIdFromADAttr algorithm. If setup detects that
+another NameIDAlgorithm is being used, it displays a warning that the current configuration
+is not supported. Setup will attempt to and should leave an existing configuration intact 
+and creates a backup of any files it removes or replaces. This way setup can still be used
+to upgrade or reconfigure the other plugin settings.
+
+Configuration of another NameIDAlgorithm must be done by editing the 
+"SURFnet.Authentication.ADFS.Plugin.config.xml" configuration file manually.
+
+The UserIdAndShoFromADAttr algorithm requires one additional parameter 
+"activeDirectoryShoAttribute" that specifies the attribute in AD from which to read
+the value to use for schacHomeOrganization. Example configuration:
+
+<?xml version="1.0" encoding="utf-8" ?>
+<SfoMfaExtension 
+  NameIdAlgorithm="UserIdAndShoFromADAttr"
+  minimalLoa="http://test.surfconext.nl/assurance/sfo-level2"
+  activeDirectoryShoAttribute="department"
+  activeDirectoryUserIdAttribute="employeeNumber" />
+
+The NameIDFromType algorithm requires one additional parameter GetNameIDTypeName
+with the .NET TypeName of the class to load. This class must implement the 
+SURFnet.Authentication.Adfs.Plugin.NameIdConfiguration.IGetNameID interface.
+See the SURFnet.Authentication.Adfs.Plugin.Extensions.Samples examples project
+for an example of such a plugin. The example is included in the SetupPackage.
+The use the example copy SURFnet.Authentication.Adfs.Plugin.Extensions.Samples.dll
+from the extensions directory in the setup package to the C:\Windows\ADFS directory.
+Next update the "SURFnet.Authentication.ADFS.Plugin.config.xml confiugration file
+to load the example plugin. E.g.:
+
+<?xml version="1.0" encoding="utf-8" ?>
+<SfoMfaExtension minimalLoa="http://pilot.surfconext.nl/assurance/sfo-level2"
+                 NameIdAlgorithm="NameIDFromType"
+                 GetNameIDTypeName="SURFnet.Authentication.Adfs.Plugin.Extensions.Samples.NameIDBuilder, SURFnet.Authentication.Adfs.Plugin.Extensions.Samples, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+                 UidAttribute1="employeeNumber"
+                 Domain1="D2012"
+                 Sho1="institution-a.example.com"
+                 UidAttribute2="sAMAccountName"
+                 Domain2="D2019"
+                 Sho2="institution-b.example.com">
+</SfoMfaExtension>
 
 
 Resources
