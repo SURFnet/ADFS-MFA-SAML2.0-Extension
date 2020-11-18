@@ -141,6 +141,7 @@ from the extensions directory in the SetupPackage to the `C:\Windows\ADFS` direc
 Next update the `SURFnet.Authentication.ADFS.Plugin.config.xml` configuration file
 to load the example extension. E.g.:
 
+```
 <?xml version="1.0" encoding="utf-8" ?>
 <SfoMfaExtension 
   minimalLoa="http://pilot.surfconext.nl/assurance/sfo-level2"
@@ -153,7 +154,7 @@ to load the example extension. E.g.:
   Domain2="D2019"
   Sho2="institution-b.example.com">
 </SfoMfaExtension>
-
+```
 
 Resources
 =========
