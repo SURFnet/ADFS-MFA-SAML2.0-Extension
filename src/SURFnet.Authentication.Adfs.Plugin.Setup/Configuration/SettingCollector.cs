@@ -69,11 +69,16 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
             {
                 //  0 = Ok, -1 = No, -2 = Exit,
                 rc = AskCurrentOK(fullist);
+                var walkThroughRc = WalkThroughSettings();
 
-                if (rc == -1 && 0 != WalkThroughSettings())
+                if (rc == -1 && walkThroughRc != 0)
                 {
                     rc = -3;
                     QuestionIO.WriteError("The configuration settings were not properly specified.");
+                }
+                else
+                {
+                    rc = 0;
                 }
             }
 
