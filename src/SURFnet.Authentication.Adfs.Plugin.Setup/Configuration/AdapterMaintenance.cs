@@ -124,6 +124,19 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
             return rc;
         }
 
+        public static int Register(VersionDescription desc)
+        {
+            int rc = 0;
+
+            if (false == AdfsPSService.RegisterAdapter(desc.Adapter) )
+            {
+                LogService.WriteFatal("Adapter registration FAILED.");
+                rc = -1;
+            }
+
+            return rc;
+        }
+
         public static int ReConfigure(VersionDescription desc, List<Setting> settings)
         {
             int rc = -1;

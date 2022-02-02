@@ -56,8 +56,12 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
 
             try
             {
+                if (0 != (setupstate.mode & SetupFlags.Register) )
+                {
+                    rc = Register(setupstate);
+                }
                 /**** CHECKING ONLY ****/
-                if (setupstate.mode == SetupFlags.Check)
+                else if (setupstate.mode == SetupFlags.Check)
                 {
                     rc = RulesAndChecks.ExtraChecks(setupstate);
                 }
@@ -150,6 +154,22 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
             else
             {
                 Messages.SayAllSeemsOK();
+            }
+
+            return rc;
+        }
+
+        // Perform the registration step of the plugin only
+        private static int Register(SetupState setupstate)
+        {
+            int rc = 0;
+
+            LogService.Log.Info("Register adapter with ADFS.");
+
+            rc = AdapterMaintenance.Register(AllDescriptions.ThisVersion);
+            if (rc == 0)
+            {
+                Console.WriteLine("Adapter registration successful.");
             }
 
             return rc;
@@ -508,6 +528,29 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
             {
                 // main advance in single place, per option optional extra advance
                 string arg = args[i++];
+
+                // Add a hidden "/register" option
+                // This option calls AdfsPSService.RegisterAdapter only. This will invoke powershell cmdlets to:
+                // - Register the adapter with ADFS
+                // - Add the adapter the the global authentication policy in ADFS
+                // For this action to succeed:
+                // - The "SURFnet.Authentication.ADFS.Plugin.config.xml" of the adapter must
+                // be copied to the dist directory in the SetupPackage. The adapter reads the "minimalLoa" attribute
+                // from this configuration file and uses it to create the adapter metadata that is read by the 
+                // "Register-AdfsAuthenticationProvider" cmdlet
+                // - The ADFS server must be running
+                // - The adapter must not be present in the global authentication policy
+                // - The adapter must not be registered in ADFS
+                //
+                // After registration the ADFS server must be restarted
+
+                if (arg == "/register")
+                {
+                    // Only register the plugin
+                    setupstate.mode |= SetupFlags.Register;
+                    LogService.Log.Info("Plugin registration requested");
+                    break;
+                }
 
                 if ( arg[0] == '-' )
                 {

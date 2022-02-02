@@ -14,6 +14,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
         Reconfigure = 0x4,
         Fix = 0x8,           // experimental
         Uninstall = 0x10,
-        Install = 0x20
+        Install = 0x20,
+        Register = 0x40
     }
 }
