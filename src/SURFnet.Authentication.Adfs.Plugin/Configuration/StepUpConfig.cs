@@ -23,6 +23,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Configuration
     using System.Reflection;
     using System.Text;
     using System.Threading;
+    using System.Runtime.InteropServices;
 
     using log4net;
 
@@ -59,23 +60,34 @@ namespace SURFnet.Authentication.Adfs.Plugin.Configuration
         /// If it returns null (which is fatal), then use GetErrors() for the error string(s).
         /// </summary>
         public static StepUpConfig Current => current;
-               
+
+        [DllImport("kernel32.dll", CharSet = CharSet.Auto)] public static extern void OutputDebugString(string message);
+
+        // Return
+        // 1: file not found
+        // 0: ok
+        // <0: error
         public static int ReadXmlConfig(ILog log)
-        {  
+        {
+            OutputDebugString("Enter StepUpConfig::ReadXmlConfig()");
             var newcfg = new StepUpConfig();
             int rc = 0;
 
             string adapterConfigurationPath = GetConfigFilepath(Values.AdapterCfgFilename, log);
             if (adapterConfigurationPath == null)
+            {
+                OutputDebugString("Leave StepUpConfig::ReadXmlConfig() - return 1");
                 return 1;   // was written!!
+            }
 
             try
             {
+                OutputDebugString("Reading NameID Resolver configuration");
                 var getNameId = AdapterXmlConfigurationyHelper.CreateGetNameIdFromFile(adapterConfigurationPath, log);
 
                 if(getNameId == null)
                 {
-                    log.Fatal("Not able to create NameId Resolver"); 
+                    log.Fatal("Not able to create NameId Resolver");
                     return -1;
                 }
 
@@ -85,7 +97,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Configuration
                 if (string.IsNullOrWhiteSpace(tmp))
                 {
                     log.Fatal($"Cannot find '{AdapterMinimalLoa}' attribute in {adapterConfigurationPath}");
-                    rc--;
+                    rc--;   // rc=-1
                 }
                 else
                 {
@@ -95,7 +107,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Configuration
             catch (Exception ex)
             {
                 log.Fatal(ex.ToString());
-                rc--;
+                rc--;   // rc=-1
             }
 
             if ( rc == 0 )
@@ -106,6 +118,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Configuration
                     //  mmmmm, the log should work....... Would it be the Registry value????
                 }
             }
+
+            OutputDebugString("Leave StepUpConfig::ReadXmlConfig() - rc=" + rc);
 
             return rc;
         }
@@ -127,29 +141,39 @@ namespace SURFnet.Authentication.Adfs.Plugin.Configuration
 
         private static string GetConfigFilepath(string filename, ILog log)
         {
+            OutputDebugString("Enter StepUpConfig::GetConfigFilepath()");
+
             string rc = null;
             string filepath = null;
 
             var AdapterDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             filepath = Path.Combine(AdapterDir, filename);
+            OutputDebugString("filepath = " + filepath);
             if ( File.Exists(filepath) )
             {
+                OutputDebugString("file exists");
                 rc = filepath;
             }
             else
             {
+                OutputDebugString("file not found");
                 // TODONOW: BUG!! This is a shared directory name. Should come from Values class!
                 filepath = Path.GetFullPath(Path.Combine(AdapterDir, "..\\output", filename));
+                OutputDebugString("filepath = " + filepath);
                 if (File.Exists(filepath))
                 {
+                    OutputDebugString("file exists");
                     rc = filepath;
                 }
             }
 
             if ( rc == null )
             {
+                OutputDebugString("file not found");
                 log.Fatal("Failed to locate: {filename}");
             }
+
+            OutputDebugString("Leave StepUpConfig::GetConfigFilepath()");
 
             return rc;
         }

@@ -20,6 +20,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
     using System.Diagnostics;
     using System.IO;
     using System.Reflection;
+    using System.Runtime.InteropServices;
 
     /// <summary>
     /// Class RegistrationLog.
@@ -36,7 +37,9 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
         /// </summary>
         public static readonly bool IsRegistration;
 
-        public static RegistrationILogWrapper ILogWrapper; 
+        public static RegistrationILogWrapper ILogWrapper;
+
+        [DllImport("kernel32.dll", CharSet = CharSet.Auto)] public static extern void OutputDebugString(string message);
 
         /// <summary>
         /// Some expected thingies.
@@ -46,21 +49,29 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
         /// </summary>
         static RegistrationLog()
         {
+            OutputDebugString("Enter RegistrationLog:RegistrationLog()");
             if (ILogWrapper == null)
             {
+                OutputDebugString("Initialising ILogWrapper");
                 ILogWrapper = new RegistrationILogWrapper();
+                OutputDebugString("Initialised ILogWrapper");
             }
-
+            
             var host = Assembly.GetEntryAssembly();
+            OutputDebugString("host = " + host);
             if (host?.Location.Contains("Microsoft.IdentityServer.ServiceHost") ?? false)
             {
+                OutputDebugString("IsRegistration = false");
                 IsRegistration = false;
             }
             else
             {
+                OutputDebugString("IsRegistration = true");
                 IsRegistration = true;
                 LogRegistrationDebugInfo();
             }
+
+            OutputDebugString("Leave RegistrationLog:RegistrationLog()");
         }
 
         /// <summary>
@@ -68,10 +79,13 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
         /// </summary>
         private static void LogRegistrationDebugInfo()
         {
+            OutputDebugString("Enter RegistrationLog:LogRegistrationDebugInfo()");
             var utcnow = DateTime.UtcNow;
             // TODO: Decide on a proper location!
             var logName = Path.Combine(Adapter.AdapterDir, "StepUp.RegistrationLog.txt");
 
+
+            OutputDebugString("logName = " + logName);
             var x = new FileStream(logName, FileMode.Create, FileAccess.Write, FileShare.Read);
             fs = new StreamWriter(x);
 
@@ -88,7 +102,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
             var fileversion = assemblyVersion.FileVersion;
             WriteLine($"FileVersion: {fileversion}");
 
-            fs.Flush();
+            OutputDebugString("Leave RegistrationLog:LogRegistrationDebugInfo()");
         }
 
         /// <summary>
@@ -97,6 +111,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
         /// <param name="s">The s.</param>
         public static void WriteLine(string s)
         {
+            OutputDebugString("RegistrationLog::WriteLine(): " + s);
             fs?.WriteLine(s);
         }
 
@@ -106,6 +121,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
         /// <param name="s">The s.</param>
         public static void Write(string s)
         {
+            OutputDebugString("RegistrationLog::Write(): " + s);
             fs?.Write(s);
         }
 
