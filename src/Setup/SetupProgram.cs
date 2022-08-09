@@ -1,10 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="SetupProgram.cs" company="Winvision bv">
-//   Copyright (c) Winvision bv. All rights reserved.
-// </copyright>
-// --------------------------------------------------------------------------------------------------------------------
-
-using System;
+﻿using System;
 
 using SURFnet.Authentication.Adfs.Plugin.Setup.Common;
 using SURFnet.Authentication.Adfs.Plugin.Setup.Configuration;
@@ -46,22 +40,18 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
 
             try
             {
-                /**** CHECKING ONLY ****/
-                if (setupstate.mode == SetupFlags.Check) // Checking only
+                if (setupstate.mode == SetupFlags.Check)
                 {
                     rc = RulesAndChecks.ExtraChecks(setupstate);
                 }
-                ///**** FIX ****/
                 //else if (0 != (setupstate.mode & SetupFlags.Fix))
                 //{
                 //    rc = Fix(setupstate);
                 //}
-                /**** UN-INSTALL ****/
                 else if (0 != (setupstate.mode & SetupFlags.Uninstall))
                 {
                     rc = Uninstall(setupstate);
                 }
-                /**** INSTALL,  several different install scenarios  ****/
                 else if (0 != (setupstate.mode & SetupFlags.Install))
                 {
                     // only this version, because the configuration writers are absent for older versions
@@ -87,14 +77,12 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                         rc = InstallOnInstalled(setupstate);
                     }
                 }
-                /**** RECONFIGURE ****/
                 else if (0 != (setupstate.mode & SetupFlags.Reconfigure))
                 {
                     rc = Reconfigure(setupstate);
                 }
                 else
                 {
-                    /**** BUG ****/
                     LogService.WriteFatal("Unknown setup mode! A programming error!");
                     rc = 8;
                 }
