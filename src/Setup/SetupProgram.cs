@@ -1,36 +1,26 @@
-﻿/*
-* Copyright 2017 SURFnet bv, The Netherlands
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-* http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="SetupProgram.cs" company="Winvision bv">
+//   Copyright (c) Winvision bv. All rights reserved.
+// </copyright>
+// --------------------------------------------------------------------------------------------------------------------
+
+using System;
+
+using SURFnet.Authentication.Adfs.Plugin.Setup.Common;
+using SURFnet.Authentication.Adfs.Plugin.Setup.Configuration;
+using SURFnet.Authentication.Adfs.Plugin.Setup.Models;
+using SURFnet.Authentication.Adfs.Plugin.Setup.Question;
+using SURFnet.Authentication.Adfs.Plugin.Setup.Services;
+using SURFnet.Authentication.Adfs.Plugin.Setup.Util;
+using SURFnet.Authentication.Adfs.Plugin.Setup.Versions;
 
 namespace SURFnet.Authentication.Adfs.Plugin.Setup
 {
-    using System;
-
-    using SURFnet.Authentication.Adfs.Plugin.Setup.Configuration;
-    using SURFnet.Authentication.Adfs.Plugin.Setup.Models;
-    using SURFnet.Authentication.Adfs.Plugin.Setup.Question;
-    using SURFnet.Authentication.Adfs.Plugin.Setup.Services;
-    using SURFnet.Authentication.Adfs.Plugin.Setup.Util;
-    using SURFnet.Authentication.Adfs.Plugin.Setup.Versions;
-
     /// <summary>
     /// Class Program.
     /// </summary>
     public static class SetupProgram
     {
-
         /// <summary>
         /// Defines the entry point of the application.
         /// </summary>
@@ -45,9 +35,9 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
             AskYesNo.Ask("Attach remote debugger and press: y, n or x", false);
 #endif
 
-            SetupState setupstate = new SetupState();
+            var setupstate = new SetupState();
 
-            int rc = PrepareForSetup(args, setupstate);
+            var rc = PrepareForSetup(args, setupstate);
             if (rc != 0)
             {
                 WaitForEnter();
@@ -57,7 +47,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
             try
             {
                 /**** CHECKING ONLY ****/
-                if (setupstate.mode == SetupFlags.Check)
+                if (setupstate.mode == SetupFlags.Check) // Checking only
                 {
                     rc = RulesAndChecks.ExtraChecks(setupstate);
                 }
@@ -67,12 +57,12 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                 //    rc = Fix(setupstate);
                 //}
                 /**** UN-INSTALL ****/
-                else if ( 0 != (setupstate.mode & SetupFlags.Uninstall) )
+                else if (0 != (setupstate.mode & SetupFlags.Uninstall))
                 {
                     rc = Uninstall(setupstate);
                 }
                 /**** INSTALL,  several different install scenarios  ****/
-                else if (0 != (setupstate.mode & SetupFlags.Install) )
+                else if (0 != (setupstate.mode & SetupFlags.Install))
                 {
                     // only this version, because the configuration writers are absent for older versions
                     LogService.Log.Info("Start an installation.");
@@ -116,14 +106,16 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
             }
 
             if (rc != 0)
+            {
                 WaitForEnter();
+            }
 
             return rc;
-        }  // Main()
+        } // Main()
 
         private static int Uninstall(SetupState setupstate)
         {
-            int rc = 0;
+            var rc = 0;
 
             if (setupstate.DetectedVersion.Major == 0)
             {
@@ -157,7 +149,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
 
         private static int Reconfigure(SetupState setupstate)
         {
-            int rc = 0;
+            var rc = 0;
 
             LogService.Log.Info("Reconfigure.");
             if (setupstate.DetectedVersion.Major == 0)
@@ -193,7 +185,6 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
             return rc;
         }
 
-
         /// <summary>
         /// Not called. Left for possible future real fix things.
         /// </summary>
@@ -201,7 +192,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
         /// <returns>0 if OK</returns>
         private static int Fix(SetupState setupstate)
         {
-            int rc = 0;
+            var rc = 0;
 
             // TODONOW: Real logic after decisions.
             if (setupstate.DetectedVersion.Major != 0)
@@ -214,9 +205,11 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                         if (setupstate.AdfsConfig.SyncProps.IsPrimary)
                         {
                             Console.WriteLine("Tempting fixing registration.");
-                            bool x = AdfsPSService.RegisterAdapter(setupstate.InstalledVersionDescription.Adapter);
+                            var x = AdfsPSService.RegisterAdapter(setupstate.InstalledVersionDescription.Adapter);
                             if (false == x)
+                            {
                                 rc = 8;
+                            }
                         }
                     }
                 }
@@ -229,23 +222,25 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
             return rc;
         }
 
-        static void WaitForEnter()
+        private static void WaitForEnter()
         {
             Console.Write("Hit 'Enter' to exit.");
             Console.ReadLine();
         }
 
-        static int GreenFieldInstallation(SetupState setupstate)
+        private static int GreenFieldInstallation(SetupState setupstate)
         {
-            int rc = 0;
+            var rc = 0;
 
             LogService.Log.Info("Green field installation");
             EnsureEventLog.Create();
-            if ((setupstate.RegisteredVersionInAdfs.Major == 0) && (!setupstate.IsPrimaryComputer))
+            if ((setupstate.RegisteredVersionInAdfs.Major == 0)
+                && (!setupstate.IsPrimaryComputer))
             {
                 rc = Messages.EndWarning("First installation *must* be on a primary server of the ADFS farm.");
             }
-            else if (false == Messages.DoYouWantTO($"Install version {AllDescriptions.ThisVersion.DistributionVersion}"))
+            else if (false
+                     == Messages.DoYouWantTO($"Install version {AllDescriptions.ThisVersion.DistributionVersion}"))
             {
                 rc = 4;
             }
@@ -271,7 +266,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                         if (rc == 0)
                         {
                             Console.WriteLine("Registration Successful.");
-                            Console.WriteLine("Adapter registration name: "+ SURFnet.Authentication.Adfs.Plugin.Setup.Common.Values.AdapterRegistrationName);
+                            Console.WriteLine("Adapter registration name: " + Values.AdapterRegistrationName);
                         }
                     }
 
@@ -281,7 +276,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                         {
                             Console.WriteLine();
                             Console.WriteLine("Installation was successful. However, restarting ADFS Failed.");
-                            Console.WriteLine("Please check the ADFS EventLog and also the MFA extension EventLog 'AD FS plugin'");
+                            Console.WriteLine(
+                                "Please check the ADFS EventLog and also the MFA extension EventLog 'AD FS plugin'");
                             rc = 8;
                         }
                         else
@@ -295,16 +291,17 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
             return rc;
         }
 
-        static int UpgradeToThisVersion(SetupState setupstate)
+        private static int UpgradeToThisVersion(SetupState setupstate)
         {
-            int rc = 0;
+            var rc = 0;
 
             //
             // UPGRADE to this version
             //
             LogService.Log.Info("Upgrade installation");
             EnsureEventLog.Create();
-            if ((false == setupstate.IsPrimaryComputer) && (setupstate.RegisteredVersionInAdfs.Major == 0))
+            if ((false == setupstate.IsPrimaryComputer)
+                && (setupstate.RegisteredVersionInAdfs.Major == 0))
             {
                 // On Secondary, nothing in ADFS and old version.....
                 // Nope, too weird
@@ -315,7 +312,10 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                 Console.WriteLine();
                 rc = 4;
             }
-            if (Messages.DoYouWantTO($"Upgrade from {setupstate.DetectedVersion} to version {AllDescriptions.ThisVersion.DistributionVersion}"))
+
+            if (Messages.DoYouWantTO(
+                $"Upgrade from {setupstate.DetectedVersion} to version {AllDescriptions.ThisVersion.DistributionVersion}")
+            )
             {
                 LogService.Log.Info("Starting Upgrade");
 
@@ -342,15 +342,18 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                     }
                 }
 
-                if ( rc==0 )
+                if (rc == 0)
                 {
                     // now:  stop; upgrade; install; start
                     if (0 != AdfsServer.StopAdFsService())
                     {
                         rc = 8;
                     }
-                    else if (0 != AdapterMaintenance.Upgrade(setupstate.InstalledVersionDescription,
-                                AllDescriptions.ThisVersion, setupstate.FoundSettings))
+                    else if (0
+                             != AdapterMaintenance.Upgrade(
+                                 setupstate.InstalledVersionDescription,
+                                 AllDescriptions.ThisVersion,
+                                 setupstate.FoundSettings))
                     {
                         Console.WriteLine();
                         LogService.WriteFatal("Upgrade to new adapter failed!");
@@ -361,7 +364,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                         rc = 8;
                         Console.WriteLine();
                         Console.WriteLine("The upgrade was successful. However, starting ADFS Failed.");
-                        Console.WriteLine("Please check the ADFS EventLog and also MFA extension EventLog 'AD FS plugin'");
+                        Console.WriteLine(
+                            "Please check the ADFS EventLog and also MFA extension EventLog 'AD FS plugin'");
                     }
                     else
                     {
@@ -377,23 +381,27 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
             return rc;
         }
 
-        static int InstallOnInstalled(SetupState setupstate)
+        private static int InstallOnInstalled(SetupState setupstate)
         {
-            int rc = 0;
+            var rc = 0;
 
             LogService.Log.Info("Already this version on disk.");
             EnsureEventLog.Create();
             if (!setupstate.IsPrimaryComputer)
             {
                 Console.WriteLine();
-                Console.WriteLine($"On a Secondary ADFS server with {setupstate.SetupProgramVersion} already installed.");
+                Console.WriteLine(
+                    $"On a Secondary ADFS server with {setupstate.SetupProgramVersion} already installed.");
                 Console.WriteLine("There is nothing to do/install.");
                 Console.WriteLine();
                 rc = 4;
             }
             else if (setupstate.AdfsConfig.RegisteredAdapterVersion != AllDescriptions.ThisVersion.DistributionVersion)
             {
-                if (false == Messages.DoYouWantTO($"Upgrade ADFS REGISTRATION from {setupstate.AdfsConfig.RegisteredAdapterVersion} to version {AllDescriptions.ThisVersion.DistributionVersion}"))
+                if (false
+                    == Messages.DoYouWantTO(
+                        $"Upgrade ADFS REGISTRATION from {setupstate.AdfsConfig.RegisteredAdapterVersion} to version {AllDescriptions.ThisVersion.DistributionVersion}")
+                )
                 {
                     rc = 4;
                 }
@@ -407,29 +415,31 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                     rc = 8;
                 }
                 else
+                {
                     Messages.SayAllSeemsOK();
+                }
             }
             else
             {
                 Console.WriteLine();
-                Console.WriteLine("Setup didn't make any changes, because the software is already installed and up to date.");
+                Console.WriteLine(
+                    "Setup didn't make any changes, because the software is already installed and up to date.");
                 Console.WriteLine("Use Setup.exe with the '-r' (reconfigure) flag to change the configuration.");
             }
 
             return rc;
         }
 
-
         /// <summary>
         /// Initializes the setup program reads environment files, checks if ADFS is
         /// installed on the machine, if the adapter is registered in the farm etc.
-        /// Logs and Warns if anything is wrong. 
+        /// Logs and Warns if anything is wrong.
         /// </summary>
         /// <param name="args">returns 0 if OK</param>
         /// <returns></returns>
         private static int PrepareForSetup(string[] args, SetupState setupstate)
         {
-            int rc = 0;
+            var rc = 0;
 
             Console.WriteLine(setupstate.SetupProgramVersion.VersionToString("Setup program version"));
 
@@ -442,9 +452,12 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
             }
 
             if (0 != SetupIO.InitializeLog4net())
+            {
                 return 8;
+            }
 
-            if ( args.Length == 0 || 0!=(rc=ParseOptions(args, setupstate)) )
+            if (args.Length == 0
+                || 0 != (rc = ParseOptions(args, setupstate)))
             {
                 Help();
                 return 4;
@@ -458,7 +471,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                 FileService.InitFileService();
 
                 var IdPEnvironments = setupstate.IdPEnvironments = ConfigurationFileService.LoadIdPDefaults();
-                if ( IdPEnvironments==null || IdPEnvironments.Count<3)
+                if (IdPEnvironments == null
+                    || IdPEnvironments.Count < 3)
                 {
                     // Darn, no error check at low level?
                     throw new ApplicationException("Error reading the SFO server (IdP) environment descriptions.");
@@ -469,7 +483,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                     Console.WriteLine("Stopping after attempted Version detection.");
                     Console.WriteLine("Check the logfile of the setup program for diagnostics.");
                 }
-                else if ( 0!=DetectAndRead.TryAndDetectAdfs(setupstate) )
+                else if (0 != DetectAndRead.TryAndDetectAdfs(setupstate))
                 {
                     LogService.Log.Warn("Something failed in ADFS detection");
                     rc = 8;
@@ -481,7 +495,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                     if (setupstate.AdfsConfig.SyncProps.IsPrimary)
                     {
                         // then we have a hostname.
-                        ConfigSettings.SPEntityID.DefaultValue = $"http://{setupstate.AdfsConfig.AdfsProps.HostName}/stepup-mfa";
+                        ConfigSettings.SPEntityID.DefaultValue =
+                            $"http://{setupstate.AdfsConfig.AdfsProps.HostName}/stepup-mfa";
                     }
                     else
                     {
@@ -496,29 +511,32 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                 LogService.WriteFatalException("Fatal failure in Setup preparation.", ex);
                 rc = 8;
             }
+
             return rc;
         }
 
         private static int ParseOptions(string[] args, SetupState setupstate)
         {
-            int rc = 0;
+            var rc = 0;
 
-            int i = 0;
-            while ( i < args.Length && rc==0)
+            var i = 0;
+            while (i < args.Length
+                   && rc == 0)
             {
                 // main advance in single place, per option optional extra advance
-                string arg = args[i++];
+                var arg = args[i++];
 
-                if ( arg[0] == '-' )
+                if (arg[0] == '-')
                 {
                     // option
-                    if ( arg.Length != 2 )
+                    if (arg.Length != 2)
                     {
                         Console.WriteLine($"Invalid option length ({arg.Length}): {arg}");
                         rc = 4;
                     }
                     else
-                        switch ( char.ToLower(arg[1]) )
+                    {
+                        switch (char.ToLower(arg[1]))
                         {
                             case '?':
                             case 'h':
@@ -550,7 +568,10 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                                     setupstate.mode |= SetupFlags.Install;
                                 }
                                 else
+                                {
                                     rc = 4;
+                                }
+
                                 break;
 
                             case 'r':
@@ -561,7 +582,10 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                                     setupstate.mode |= SetupFlags.Reconfigure;
                                 }
                                 else
+                                {
                                     rc = 4;
+                                }
+
                                 break;
 
                             case 'x':
@@ -572,7 +596,10 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                                     setupstate.mode |= SetupFlags.Uninstall;
                                 }
                                 else
+                                {
                                     rc = 4;
+                                }
+
                                 break;
 
                             default:
@@ -580,11 +607,12 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                                 rc = 4;
                                 break;
                         }
+                    }
                 }
                 else
                 {
                     // not an option. Not '-'
-                    Console.WriteLine("Ignoring: "+arg);
+                    Console.WriteLine("Ignoring: " + arg);
                     rc = 4;
                 }
             }
@@ -594,9 +622,9 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
 
         private static bool SetupModeOK(SetupFlags mode)
         {
-            bool rc = true;
+            var rc = true;
 
-            if ( 0 != (mode & (~SetupFlags.Check)) )
+            if (0 != (mode & (~SetupFlags.Check)))
             {
                 Console.WriteLine("Cannot combine Setup mode flags");
                 rc = false;
@@ -608,10 +636,13 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
         private static void Help()
         {
             Console.WriteLine("Setup program for ADFS MFA Stepup Extension.");
-            Console.WriteLine("   Adds the Second Factor Only MFA extension '" + SURFnet.Authentication.Adfs.Plugin.Setup.Common.Values.AdapterRegistrationName+"' to an ADFS server.");
+            Console.WriteLine(
+                "   Adds the Second Factor Only MFA extension '"
+                + Values.AdapterRegistrationName
+                + "' to an ADFS server.");
             Console.WriteLine(" -? -h  This help");
             Console.WriteLine(" -c     Check/Analyze existing installation only");
-//            Console.WriteLine(" -f     Fix (experimental)");
+            //            Console.WriteLine(" -f     Fix (experimental)");
             Console.WriteLine(" -i     Install (including automatic upgrade)");
             Console.WriteLine(" -r     Reconfigure existing installation");
             Console.WriteLine(" -x     Uninstall");
