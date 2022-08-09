@@ -1,9 +1,4 @@
 ﻿using SURFnet.Authentication.Adfs.Plugin.Setup.Services;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SURFnet.Authentication.Adfs.Plugin.Setup.Question
 {
@@ -18,16 +13,20 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Question
         /// <returns>'y', 'n' or 'x'</returns>
         public static char Ask(string line, bool showHelpChar, char defaultChoice = '\0')
         {
-            char c = '\0';
+            var c = '\0';
             ShowAndGetYesNo dialogue;
 
-            if ( defaultChoice != '\0')
+            if (defaultChoice != '\0')
+            {
                 dialogue = new ShowAndGetYesNo(line, defaultChoice, showHelpChar);
+            }
             else
+            {
                 dialogue = new ShowAndGetYesNo(line, showHelpChar);
+            }
 
-            bool loop = true;
-            while ( loop )
+            var loop = true;
+            while (loop)
             {
                 if (dialogue.Ask())
                 {
@@ -47,12 +46,13 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Question
                 }
                 else
                 {
-                    if ( ! dialogue.WantsDescription )
+                    if (!dialogue.WantsDescription)
                     {
                         // abort
                         c = 'x';
                         loop = false;
                     }
+
                     // else: loop on '?'
                 }
             }
