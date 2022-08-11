@@ -37,7 +37,6 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
     /// </summary>
     public class ConfigurationFileService
     {
-
         /// <summary>
         /// NO LONGER used!!!
         /// TODO: Left here for the checker. Maybe want to put it somewhere else.
@@ -96,10 +95,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
             document.Save(path);
         }
 
-
-        public static int SaveXmlDocumentConfiguration(XmlDocument document, string filename)
+        public static bool SaveXmlDocumentConfiguration(XmlDocument document, string filename)
         {
-            int rc = 0;
             var path = FileService.CombineToCfgOutputPath(filename);
 
             try
@@ -109,12 +106,11 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
             catch (Exception ex)
             {
                 LogService.WriteFatalException("Failed save a generated configuration file: " + path, ex);
-                rc = 1;
+                return false;
             }
 
-            return rc;
+            return true;
         }
-
 
         /// <summary>
         /// Loads the default StepUp configuration.
@@ -202,7 +198,6 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
 
             return rc;
         }
-
 
         /// <summary>
         /// Saves the Registration data to config directory.

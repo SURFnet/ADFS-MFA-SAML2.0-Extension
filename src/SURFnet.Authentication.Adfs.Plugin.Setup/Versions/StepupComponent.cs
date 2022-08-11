@@ -19,8 +19,11 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
         // TODO: Adapters already derive. Maybe more like that? This should be the maximal commonality.
 
         public string ComponentName { get; private set; }
+
         public AssemblySpec[] Assemblies { get; set; }
-        public string ConfigFilename { get; set; }   // probably safest to set this in the constructor of specifc derived class.
+
+        public string ConfigFilename { get; set; } // probably safest to set this in the constructor of specifc derived class.
+
         public readonly FileDirectory ConfigFileDirectory = FileDirectory.AdfsDir; // never in GAC, nor other places
 
         public string[] ConfigParameters { get; protected set; }
@@ -29,7 +32,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
 
         public StepupComponent(string componentname)
         {
-            ComponentName = componentname;
+            this.ComponentName = componentname;
         }
 
         /// <summary>
@@ -40,8 +43,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
         {
             int rc = 0; // assume OK
 
-            LogService.Log.Debug($"Verifying: '{ComponentName}'.");
-            foreach ( var spec in Assemblies )
+            LogService.Log.Debug($"Verifying: '{this.ComponentName}'.");
+            foreach ( var spec in this.Assemblies )
             {
                 int tmprc;
                 LogService.Log.Debug("Verifying: " + spec.InternalName);
@@ -54,15 +57,15 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
                 }
             }
 
-            if ( null!=ConfigFilename )
+            if ( null!= this.ConfigFilename )
             {
-                string tmp = FileService.OurDirCombine(ConfigFileDirectory, ConfigFilename);
-                LogService.Log.Debug($"Checking Configuration of: '{ComponentName}', File: {tmp}");
+                string tmp = FileService.OurDirCombine(this.ConfigFileDirectory, this.ConfigFilename);
+                LogService.Log.Debug($"Checking Configuration of: '{this.ComponentName}', File: {tmp}");
                 if (!File.Exists(tmp))
                 {
                     // ugh, no configuration file!
                     if (rc==0) rc = -1;
-                    LogService.Log.Fatal($"Configuration file '{tmp}' missing in component: '{ComponentName}'.");
+                    LogService.Log.Fatal($"Configuration file '{tmp}' missing in component: '{this.ComponentName}'.");
                 }
             }
 
@@ -78,11 +81,11 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
         {
             int rc = 0; ;
 
-            if ( ConfigFilename != null )
+            if (this.ConfigFilename != null )
             {
                 rc = -1;
-                LogService.Log.Fatal($"BUG! Stepup component '{ComponentName}' with a configuration filename, but no reader!");
-                throw new NotImplementedException($"Whoops! Stepup component '{ComponentName}' with a configuration filename, but no reader!");
+                LogService.Log.Fatal($"BUG! Stepup component '{this.ComponentName}' with a configuration filename, but no reader!");
+                throw new NotImplementedException($"Whoops! Stepup component '{this.ComponentName}' with a configuration filename, but no reader!");
             }
 
             return rc;
@@ -92,10 +95,10 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
         {
             int rc = 0;
 
-            if ( ConfigParameters!=null && ConfigParameters.Length>0 )
+            if (this.ConfigParameters!=null && this.ConfigParameters.Length>0 )
             {
-                LogService.Log.Info($"Reporting Required Settings for '{ComponentName}'");
-                foreach ( string name in ConfigParameters )
+                LogService.Log.Info($"Reporting Required Settings for '{this.ComponentName}'");
+                foreach ( string name in this.ConfigParameters )
                 {
                     LogService.Log.Info($"   requires: {name}.");
                     Setting setting = Setting.GetSettingByName(name);
@@ -107,84 +110,89 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
             return rc;
         }
 
-        public virtual int WriteConfiguration(List<Setting> settings)
+        public virtual bool WriteConfiguration(List<Setting> settings)
         {
-            if (ConfigFilename != null)
+            if (this.ConfigFilename != null)
             {
-                throw new NotImplementedException($"Whoops! Stepup component '{ComponentName}' with a configuration filename, but no writer!");
+                throw new NotImplementedException($"Whoops! Stepup component '{this.ComponentName}' with a configuration filename, but no writer!");
             }
 
             LogService.Log.Info("    StepupComponent base.WriteConfiguration() no cfg.");
 
-            return 0;
+            return true;
         }
 
         public virtual int Install()
         {
-            int rc = 0;  // assume ok
+            LogService.Log.Debug($"Install: '{this.ComponentName}'");
 
-            LogService.Log.Debug($"Install: '{ComponentName}'");
-
-            if ( 0 == (rc=InstallCfgOnly()) )
+            if (!this.InstallCfgOnly())
             {
-                // Copy assemblies
-                if (Assemblies != null)
-                {
-                    // Only if configuration was successfully copied.
-                    foreach (var spec in Assemblies)
-                    {
-                        string src = FileService.OurDirCombine(FileDirectory.Dist, spec.InternalName);
-                        if (spec.CopyToTarget(src) != 0)
-                            rc = -1;
-                    }
-                }
+                return -1;
             }
 
-            return rc;
-        }
-
-        public virtual int InstallCfgOnly()
-        {
-            int rc = 0;
-
-            // Copy configuration form output directory to ADFS directory
-            if (ConfigFilename != null)
+            // Copy assemblies
+            if (this.Assemblies == null)
             {
-                string src = FileService.OurDirCombine(FileDirectory.Output, ConfigFilename);
-                string dest = FileService.OurDirCombine(ConfigFileDirectory, ConfigFilename);
-                try
+                return 0;
+            }
+
+            // Only if configuration was successfully copied.
+            var rc = 0;
+            foreach (var spec in this.Assemblies)
+            {
+                var src = FileService.OurDirCombine(FileDirectory.Dist, spec.InternalName);
+                if (spec.CopyToTarget(src) != 0)
                 {
-                    LogService.Log.Info("Copy configuration file to destination: "+ ConfigFilename);
-                    File.Copy(src, dest, true); // force overwrite
-                }
-                catch (Exception ex)
-                {
-                    string error = $"Failed to copy configuration of '{ComponentName}' ConfigurationFile: {ConfigFilename} to target {dest}.";
-                    LogService.WriteFatalException(error, ex);
                     rc = -1;
                 }
             }
 
             return rc;
+        }
+
+        public virtual bool InstallCfgOnly()
+        {
+            // Copy configuration form output directory to ADFS directory
+            if (this.ConfigFilename == null)
+            {
+                return true;
+            }
+
+            var src = FileService.OurDirCombine(FileDirectory.Output, this.ConfigFilename);
+            var dest = FileService.OurDirCombine(this.ConfigFileDirectory, this.ConfigFilename);
+            try
+            {
+                LogService.Log.Info("Copy configuration file to destination: "+ this.ConfigFilename);
+                File.Copy(src, dest, true); // force overwrite
+            }
+            catch (Exception ex)
+            {
+                var error = $"Failed to copy configuration of '{this.ComponentName}' ConfigurationFile: {this.ConfigFilename} to target {dest}.";
+                LogService.WriteFatalException(error, ex);
+                return false;
+            }
+
+            return true;
         }
 
         public virtual int UnInstall()
         {
             int rc = 0; // assume OK
 
-            LogService.Log.Debug($"UnInstall: '{ComponentName}'");
+            LogService.Log.Debug($"UnInstall: '{this.ComponentName}'");
 
             // Delete assemblies
-            foreach (var spec in Assemblies)
+            foreach (var spec in this.Assemblies)
             {
                 if (spec.BackupAndDelete() != 0)
                     rc = -1;
             }
 
             // Delete Configuration file
-            if ( null != ConfigFilename )
+            if ( null != this.ConfigFilename )
             {
-                int tmprc = FileService.Copy2BackupAndDelete(ConfigFilename, ConfigFileDirectory);
+                int tmprc = FileService.Copy2BackupAndDelete(this.ConfigFilename, this.ConfigFileDirectory);
                 if (tmprc != 0)
                     rc = tmprc;
             }
@@ -192,21 +200,22 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
             return rc;
         }
 
-        public int BackupConfigurationFile()
+        public bool BackupConfigurationFile()
         {
-            if (ConfigFilename != null)
+            if (this.ConfigFilename == null)
             {
-                LogService.Log.Debug($" Backup: '{ConfigFilename}'");                
-                int rc = FileService.Copy2BackupAndDelete(ConfigFilename, ConfigFileDirectory, false);
-                Console.WriteLine($"Backup of '{ConfigFilename}' made to '{FileService.BackupFolder}'.");
-                return rc;                
+                return true;
             }
-            return 0;
+
+            LogService.Log.Debug($" Backup: '{this.ConfigFilename}'");
+            var rc = FileService.Copy2BackupAndDelete(this.ConfigFilename, this.ConfigFileDirectory, false);
+            Console.WriteLine($"Backup of '{this.ConfigFilename}' made to '{FileService.BackupFolder}'.");
+            return rc == 0;
         }
 
         public override string ToString()
         {
-            return ComponentName;
+            return this.ComponentName;
         }
     }
 }

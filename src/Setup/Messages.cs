@@ -23,13 +23,13 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
             return false;
         }
 
-        public static int EndWarning(string msg)
+        public static ReturnOptions EndWarning(string msg)
         {
             LogService.Log.Warn("EndWarning: " + msg);
             Console.WriteLine();
             Console.WriteLine(msg);
 
-            return 4;
+            return ReturnOptions.Failure;
         }
 
         public static void SayAllSeemsOK()

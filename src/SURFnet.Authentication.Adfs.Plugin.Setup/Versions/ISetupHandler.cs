@@ -1,9 +1,5 @@
 ﻿using SURFnet.Authentication.Adfs.Plugin.Setup.Models;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
 {
@@ -63,8 +59,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
         /// Install() will later copy them to the TargetDirectory.
         /// </summary>
         /// <param name="settings">The global settings list (all).</param>
-        /// <returns>0 if OK</returns>
-        int WriteConfiguration(List<Setting> settings);
+        /// <returns>true if OK</returns>
+        bool WriteConfiguration(List<Setting> settings);
 
         /// <summary>
         /// Copies all files from the distribution and configuration directories
@@ -75,7 +71,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
         /// <returns>0 if OK</returns>
         int Install();
 
-        int InstallCfgOnly();
+        bool InstallCfgOnly();
 
         /// <summary>
         /// After configuration was saved (in backup and/or inside the setup program),

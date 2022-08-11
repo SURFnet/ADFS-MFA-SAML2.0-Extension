@@ -31,11 +31,17 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
 
         // TODONOW: BUG! Values are independently used in adapter. Shoudld go to "Values.cs" class!
         protected const string AdapterElement = "SfoMfaExtension";
+
         protected const string AdapterSchacHomeOrganization = "schacHomeOrganization";
+
         protected const string AdapterADAttribute = "activeDirectoryUserIdAttribute";
-        protected const string AdapterSPSigner1 = "sPSigningCertificate";    // TODONOW: remove!!
+
+        protected const string AdapterSPSigner1 = "sPSigningCertificate"; // TODONOW: remove!!
+
         protected const string AdapterMinimalLoa = "minimalLoa";
-        protected const string AdapterSFOEndpoint = "secondFactorEndPoint";  // TODONOW: remove!!
+
+        protected const string AdapterSFOEndpoint = "secondFactorEndPoint"; // TODONOW: remove!!
+
         protected const string AdapterNameIdAlgorithm = "NameIdAlgorithm";
 
         public override int ReadConfiguration(List<Setting> settings)
@@ -51,9 +57,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
             return rc;
         }
 
-        public override int WriteConfiguration(List<Setting> allsettings)
+        public override bool WriteConfiguration(List<Setting> allsettings)
         {
-            int rc = 0;
             LogService.Log.Info($"Writing Settings of '{ComponentName}' to '{ConfigFilename}'.");
 
             XmlDocument doc = new XmlDocument();
@@ -82,9 +87,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
 
             doc.AppendChild(cfgElement);
 
-            rc = ConfigurationFileService.SaveXmlDocumentConfiguration(doc, Values.AdapterCfgFilename);
-
-            return rc;
+            return ConfigurationFileService.SaveXmlDocumentConfiguration(doc, Values.AdapterCfgFilename);
         }
 
         private int ExtractAdapterConfig(List<Setting> settings)
