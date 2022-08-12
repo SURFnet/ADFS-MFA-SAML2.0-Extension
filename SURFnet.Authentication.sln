@@ -27,6 +27,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SURFnet.Authentication.Adfs
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SURFnet.Authentication.Adfs.Plugin.Test", "test\SURFnet.Authentication.Adfs.Plugin.Test\SURFnet.Authentication.Adfs.Plugin.Test.csproj", "{B0308356-431E-4C0C-8E15-DEE2BB16C0B0}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DevTooling", "DevTooling", "{97EBA88D-8A52-4FCB-BB55-541B88BC07D2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -91,6 +93,10 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{9E5742F9-4233-411E-864D-2DFA176A1200} = {97EBA88D-8A52-4FCB-BB55-541B88BC07D2}
+		{B7F4146B-D0E1-437F-9755-52AFD2D9D1C0} = {97EBA88D-8A52-4FCB-BB55-541B88BC07D2}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {5F45013D-A94D-4F59-972C-29624081AD6F}
