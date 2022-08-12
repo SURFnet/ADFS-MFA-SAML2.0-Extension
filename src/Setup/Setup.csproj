@@ -63,6 +63,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReturnOptions.cs" />
     <Compile Include="SettingsChecker.cs" />
+    <Compile Include="SetupActions.cs" />
+    <Compile Include="SetupInstallationActions.cs" />
     <Compile Include="SetupIO.cs" />
     <Compile Include="SetupOptions.cs" />
     <Compile Include="SetupProgram.cs" />
