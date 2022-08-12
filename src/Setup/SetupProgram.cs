@@ -1,5 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Threading.Tasks;
+
+using CommandLine;
+using CommandLine.Text;
 
 using SURFnet.Authentication.Adfs.Plugin.Setup.Common;
 using SURFnet.Authentication.Adfs.Plugin.Setup.Configuration;
@@ -27,53 +30,64 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
         public static int Main(string[] args)
         {
 #if DEBUG
-            AskYesNo.Ask("Attach remote debugger and press: y, n or x", false);
+            Console.Write("Attach remote debugger and press any key to continue...");
+            Console.ReadLine();
 #endif
 
             var setupstate = new SetupState();
+            // var response = PrepareForSetup(setupstate); // TODO: Move this inside the methods
+            // if (response == ReturnOptions.Success)
+            // {
+                var response = Parser.Default.ParseArguments<SetupOptions>(args)
+                    .MapResult(
+                        options => ParseOptions(setupstate, options),
+                        _ => ReturnOptions.Failure);
+            // }
 
-            var rc = PrepareForSetup(args, setupstate);
-            if (rc == ReturnOptions.Success)
+            Console.WriteLine("Result: {0}", response);
+            Console.Write("Hit any key to exit.");
+            Console.ReadLine();
+            return (int)response;
+        }
+
+        private static ReturnOptions ParseOptions(SetupState state, SetupOptions opts)
+        {
+            try
             {
-                try
+                if (opts.Check)
                 {
-                    if (setupstate.mode == SetupFlags.Check)
-                    {
-                        return RulesAndChecks.ExtraChecks(setupstate);
-                    }
-
-                    if (setupstate.mode.HasFlag(SetupFlags.Uninstall))
-                    {
-                        return (int)Uninstall(setupstate);
-                    }
-
-                    if (setupstate.mode.HasFlag(SetupFlags.Install))
-                    {
-                        return (int)Install(setupstate);
-                    }
-
-                    if (setupstate.mode.HasFlag(SetupFlags.Reconfigure))
-                    {
-                        return (int)Reconfigure(setupstate);
-                    }
-
-                    LogService.WriteFatal("Unknown setup mode! A programming error!");
-                    return (int)ReturnOptions.FatalFailure;
+                    // TODO: This can also be a check before one of the following methods is called, but this option alone is also allowed
+                    RulesAndChecks.ExtraChecks(state);
+                    return ReturnOptions.Success;
                 }
-                catch (Exception ex)
+
+                if (opts.Install)
                 {
-                    LogService.WriteFatalException("LastResort catch(). Caught in Main()", ex);
-                    return (int)ReturnOptions.ExtremeFailure;
+                    return Install(state);
+                }
+
+                if (opts.Uninstall)
+                {
+                    return Uninstall(state);
+                }
+
+                if (opts.Reconfigure)
+                {
+                    return Reconfigure(state);
                 }
             }
+            catch (Exception ex)
+            {
+                LogService.WriteFatalException("LastResort catch(). Caught in Main()", ex);
+                return ReturnOptions.ExtremeFailure;
+            }
 
-            Console.Write("Hit 'Enter' to exit.");
-            Console.ReadLine();
-            return (int)ReturnOptions.Success;
+            return ReturnOptions.Failure; // This should not be a possible state, one of the options is required
         }
 
         private static ReturnOptions Install(SetupState setupstate)
         {
+            return ReturnOptions.Success;
             // only this version, because the configuration writers are absent for older versions
             LogService.Log.Info("Start an installation.");
             if (0 != SettingsChecker.VerifySettingsComplete(setupstate, AllDescriptions.ThisVersion))
@@ -354,7 +368,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
             return ReturnOptions.Success;
         }
 
-        private static ReturnOptions PrepareForSetup(IReadOnlyList<string> args, SetupState setupstate)
+        private static ReturnOptions PrepareForSetup(SetupState setupstate)
         {
             Console.WriteLine(setupstate.SetupProgramVersion.VersionToString("Setup program version"));
 
@@ -369,13 +383,6 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
             if (0 != SetupIO.InitializeLog4net())
             {
                 return ReturnOptions.FatalFailure;
-            }
-
-            var rc = ParseOptions(args, setupstate);
-            if (rc != ReturnOptions.Success)
-            {
-                Help();
-                return ReturnOptions.Failure;
             }
 
             LogService.Log.Info("Setup program version: " + setupstate.SetupProgramVersion);
@@ -420,107 +427,6 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
             }
 
             return ReturnOptions.Success;
-        }
-
-        private static ReturnOptions ParseOptions(IReadOnlyList<string> args, SetupState setupstate)
-        {
-            if (args.Count == 0)
-            {
-                Console.WriteLine("No arguments supplied");
-                return ReturnOptions.Failure;
-            }
-
-            var i = 0;
-            while (i < args.Count)
-            {
-                // main advance in single place, per option optional extra advance
-                var arg = args[i++];
-
-                if (arg[0] != '-')
-                {
-                    Console.WriteLine("Ignoring: " + arg);
-                    return ReturnOptions.Failure;
-                }
-
-                if (arg.Length != 2)
-                {
-                    Console.WriteLine($"Invalid option length ({arg.Length}): {arg}");
-                    return ReturnOptions.Failure;
-                }
-
-                switch (char.ToLower(arg[1]))
-                {
-                    case '?':
-                    case 'h':
-                        return ReturnOptions.Failure;
-
-                    case 'c':
-                        // Check/analyze the current installation
-                        setupstate.mode |= SetupFlags.Check;
-                        LogService.Log.Info("Check flag");
-                        break;
-
-                    case 'i':
-                        // Install
-                        if (SetupModeOK(setupstate.mode))
-                        {
-                            LogService.Log.Info("Install flag");
-                            setupstate.mode |= SetupFlags.Install;
-                        }
-                        else
-                        {
-                            return ReturnOptions.Failure;
-                        }
-
-                        break;
-
-                    case 'r':
-                        // (Re)configure
-                        if (SetupModeOK(setupstate.mode))
-                        {
-                            LogService.Log.Info("Reconfigure flag");
-                            setupstate.mode |= SetupFlags.Reconfigure;
-                        }
-                        else
-                        {
-                            return ReturnOptions.Failure;
-                        }
-
-                        break;
-
-                    case 'x':
-                        // Uninstall
-                        if (SetupModeOK(setupstate.mode))
-                        {
-                            LogService.Log.Info("Uninstall flag");
-                            setupstate.mode |= SetupFlags.Uninstall;
-                        }
-                        else
-                        {
-                            return ReturnOptions.Failure;
-                        }
-
-                        break;
-
-                    default:
-                        Console.WriteLine($"Invalid option: {arg}");
-                        return ReturnOptions.Failure;
-                }
-            }
-
-            return ReturnOptions.Success;
-        }
-
-        private static bool SetupModeOK(SetupFlags mode)
-        {
-            // Check if the flags are empty or only the Check flag is present
-            if ((mode & ~SetupFlags.Check) == 0)
-            {
-                return true;
-            }
-
-            Console.WriteLine("Cannot combine Setup mode flags");
-            return false;
         }
 
         private static void Help()

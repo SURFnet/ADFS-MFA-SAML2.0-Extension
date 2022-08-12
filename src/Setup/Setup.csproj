@@ -39,6 +39,9 @@
     <AssemblyOriginatorKeyFile>..\..\SolutionItems\SURFnet.Authentication.Adfs.Plugin.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="CommandLine, Version=2.9.1.0, Culture=neutral, PublicKeyToken=5a870481e358d379, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\CommandLineParser.2.9.1\lib\net461\CommandLine.dll</HintPath>
+    </Reference>
     <Reference Include="log4net, Version=2.0.12.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
       <HintPath>..\..\packages\log4net.2.0.12\lib\net45\log4net.dll</HintPath>
     </Reference>
@@ -61,6 +64,7 @@
     <Compile Include="ReturnOptions.cs" />
     <Compile Include="SettingsChecker.cs" />
     <Compile Include="SetupIO.cs" />
+    <Compile Include="SetupOptions.cs" />
     <Compile Include="SetupProgram.cs" />
     <Compile Include="RulesAndChecks.cs" />
     <Compile Include="SetupState.cs" />

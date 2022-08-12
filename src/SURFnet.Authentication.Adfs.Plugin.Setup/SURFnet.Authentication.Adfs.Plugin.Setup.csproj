@@ -124,7 +124,6 @@
     <Compile Include="Services\ConfigurationFileService.cs" />
     <Compile Include="Services\FileService.cs" />
     <Compile Include="Services\LogService.cs" />
-    <Compile Include="SetupFlags.cs" />
     <Compile Include="Configuration\ConfigSettings.cs" />
     <Compile Include="Util\UAC.cs" />
     <Compile Include="Util\XmlUtil.cs" />
