@@ -84,7 +84,6 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
 
         public static bool CanInstall(Version version)
         {
-
             return Messages.DoYouWantTO($"Do you want to install version: {version}");
         }
 
