@@ -38,7 +38,7 @@ Installation and upgrading
 ==========================
 
 * See the included [INSTALL](INSTALL.md) file for installation instructions
-* See the included [UPGRADE](UPGRADE) file for upgrade instructions
+* See the included [UPGRADE](UPGRADE.md) file for upgrade instructions
 
 
 Known issues and troubleshooting
