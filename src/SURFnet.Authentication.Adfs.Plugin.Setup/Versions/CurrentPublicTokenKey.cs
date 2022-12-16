@@ -7,7 +7,7 @@
     public static class CurrentPublicTokenKey
     {
 #if DEBUG
-        public const string PublicTokenKey = "3F3ECD9D2F3457F7";
+        public const string PublicTokenKey = "47882A64C781ECE6";
 #else
         public const string PublicTokenKey = "5A7C03A5AB19FEC3";
 #endif
