@@ -46,6 +46,7 @@ mkdir %release%\config || goto :error
 mkdir %release%\extensions || goto :error
    
 @echo Copying files   
+copy %root_dir%\src\Setup\bin\%build%\CommandLine.dll %release% || goto :error
 copy %root_dir%\src\Setup\bin\%build%\log4net.dll %release% || goto :error
 copy %root_dir%\src\Setup\bin\%build%\Newtonsoft.Json.dll %release% || goto :error
 copy %root_dir%\src\Setup\bin\%build%\Setup.exe %release% || goto :error
