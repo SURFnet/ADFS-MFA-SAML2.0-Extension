@@ -88,8 +88,7 @@ using SURFnet.Authentication.Adfs.Plugin.NameIdConfiguration;
                     // we do want to read our own configuration before the Registration CmdLet reads our metadata
                     RegistrationLog.WriteLine(AdapterDir);
 
-                    // todo jvt check 2nd config file here?
-                    if (StepUpConfig.ReadXmlConfig(RegistrationLog.ILogWrapper) == 0)
+    if (StepUpConfig.ReadXmlConfig(RegistrationLog.ILogWrapper) == 0)
                     {
                         RegistrationLog.WriteLine("Adapter parms loaded from small XML.");
                     }
@@ -156,7 +155,6 @@ using SURFnet.Authentication.Adfs.Plugin.NameIdConfiguration;
 
             try
             {
-                // todo jvt check 2nd config file here?
                 if (StepUpConfig.ReadXmlConfig(LogService.Log) != 0)
                 {
                     throw new ApplicationException("Configuration error. See adapter log.");
@@ -225,10 +223,6 @@ using SURFnet.Authentication.Adfs.Plugin.NameIdConfiguration;
 
                 // Log the identityClaim Value and Type that we received from AD FS.
                 LogService.Log.InfoFormat("Received MFA authentication request for ADFS user with identityClaim '{0}' ({1})", identityClaim.Value, identityClaim.Type);
-
-                //todo jvt get user / group >> https://stackoverflow.com/questions/24610956/how-to-get-user-groups-from-on-premise-adfs-claims
-                //todo jvt getMetadData?? 
-                //todo jvt var claims = identityClaim.Subject.Claims                                
 
                 if (!StepUpConfig.Current.GetNameID.TryGetNameIDValue(identityClaim, out NameIDValueResult nameIDValueResult))
                 {

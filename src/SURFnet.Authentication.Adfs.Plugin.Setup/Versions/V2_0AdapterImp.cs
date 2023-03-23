@@ -90,7 +90,6 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
             return ConfigurationFileService.SaveXmlDocumentConfiguration(doc, Values.AdapterCfgFilename);
         }
 
-        // todo jvt read configfile
         private int ExtractAdapterConfig(List<Setting> settings)
         {
             int rc = 0;
