@@ -78,7 +78,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
                 DestinationUrl = Options.FromConfiguration.IdentityProviders.Default.SingleSignOnServiceUrl,
                 AssertionConsumerServiceUrl = ascUri,
                 Issuer = spConfiguration.EntityId,
-                RequestedAuthnContext = new Saml2RequestedAuthnContext(StepUpConfig.Current.MinimalLoa, AuthnContextComparisonType.Minimum),
+                RequestedAuthnContext = new Saml2RequestedAuthnContext(StepUpConfig.Current.minimalLoa, AuthnContextComparisonType.Minimum),
                 Subject = new Saml2Subject(nameIdentifier),
             };
             authnRequest.SetId(authnRequestId);

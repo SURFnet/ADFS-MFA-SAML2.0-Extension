@@ -43,6 +43,10 @@ namespace SURFnet.Authentication.Adfs.Plugin.Configuration
         /// </summary>
         private static StepUpConfig current;
 
+        private Uri minimalLoa; // jvt make dynamic
+
+        private Dictionary<string, Uri> userGroupLoaMapping;
+
         /// <summary>
         /// Prevents a default instance of the <see cref="StepUpConfig"/> class from being created.
         /// </summary>
@@ -52,14 +56,26 @@ namespace SURFnet.Authentication.Adfs.Plugin.Configuration
 
         public IGetNameID GetNameID { get; private set; }
 
-        public Uri MinimalLoa { get; private set; }
+        public Uri GetMinimalLoa(IEnumerable<string> userGroups)
+        {
+            foreach(var userGroup in userGroups)
+            {
+                if(userGroupLoaMapping.TryGetValue(userGroup, out Uri configuredLoa))
+                {
+                    return configuredLoa;
+                }
+            }
+
+            return minimalLoa;
+        }
 
         /// <summary>
         /// Returns the singleton with the StepUp configuration.
         /// If it returns null (which is fatal), then use GetErrors() for the error string(s).
         /// </summary>
         public static StepUpConfig Current => current;
-               
+
+        //todo jvt read config >> also 2nd config file
         public static int ReadXmlConfig(ILog log)
         {  
             var newcfg = new StepUpConfig();
@@ -89,7 +105,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Configuration
                 }
                 else
                 {
-                    newcfg.MinimalLoa = new Uri(tmp);
+                    newcfg.minimalLoa = new Uri(tmp);
                 }
             }
             catch (Exception ex)

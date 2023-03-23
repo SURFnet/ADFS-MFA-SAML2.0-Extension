@@ -87,6 +87,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
                     // we do want to read our own configuration before the Registration CmdLet reads our metadata
                     RegistrationLog.WriteLine(AdapterDir);
 
+                    // todo jvt check 2nd config file here?
                     if (StepUpConfig.ReadXmlConfig(RegistrationLog.ILogWrapper) == 0)
                     {
                         RegistrationLog.WriteLine("Adapter parms loaded from small XML.");
@@ -154,6 +155,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
 
             try
             {
+                // todo jvt check 2nd config file here?
                 if (StepUpConfig.ReadXmlConfig(LogService.Log) != 0)
                 {
                     throw new ApplicationException("Configuration error. See adapter log.");
@@ -222,7 +224,12 @@ namespace SURFnet.Authentication.Adfs.Plugin
 
                 // Log the identityClaim Value and Type that we received from AD FS.
                 LogService.Log.InfoFormat("Received MFA authentication request for ADFS user with identityClaim '{0}' ({1})", identityClaim.Value, identityClaim.Type);
-                                            
+
+                //todo jvt get user / group >> https://stackoverflow.com/questions/24610956/how-to-get-user-groups-from-on-premise-adfs-claims
+                //todo jvt getMetadData?? 
+                //todo jvt var claims = identityClaim.Subject.Claims
+
+
                 var stepupNameID = string.Empty;           
                 if (!StepUpConfig.Current.GetNameID.TryGetNameIDValue(identityClaim, out stepupNameID))
                 {
@@ -297,6 +304,11 @@ namespace SURFnet.Authentication.Adfs.Plugin
                 var samlResponse = new Saml2Response(response.SamlResponse, new Saml2Id(requestId));
                 if (samlResponse.Status != Saml2StatusCode.Success)
                 {
+                    //todo jvt: display message to the user https://www.pivotaltracker.com/n/projects/1950415
+
+                    //todo jvt: log event log
+                    //todo jvt: display status messsage to the user (optional? how?)
+
                     return new AuthFailedForm(false, Values.DefaultVerificationFailedResourcerId, context.ContextId, context.ActivityId);
                 }              
                

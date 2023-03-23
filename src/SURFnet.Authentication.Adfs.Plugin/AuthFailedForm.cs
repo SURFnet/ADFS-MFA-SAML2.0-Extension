@@ -77,7 +77,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
                 message = Resources.GetLabel(lcid, Values.DefaultErrorMessageResourcerId, this.contextId, this.activityId);
             }
             
-            var builder = new StringBuilder(Resources.GetForm("AuthFailedForm"));
+            var builder = new StringBuilder(Resources.GetForm("AuthFailedForm")); //todo jvt, where does this come from?
             builder.Replace("{message}", message);
             builder.Replace("{AuthFailedFormTitle}", Resources.GetLabel(lcid, "AuthFailedFormTitle"));
             return builder.ToString();

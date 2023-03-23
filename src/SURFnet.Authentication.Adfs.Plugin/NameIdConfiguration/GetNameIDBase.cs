@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.DirectoryServices;
 using System.DirectoryServices.AccountManagement;
+using System.Linq;
 using System.Security.Claims;
 using System.Text;
 
@@ -93,12 +94,12 @@ namespace SURFnet.Authentication.Adfs.Plugin.NameIdConfiguration
 
             nameID = null;
 
-            DirectoryEntry de = GetAttributes(identityClaim);
-            if (de != null)
+            var userAttributes = GetAttributes(identityClaim);
+            if (userAttributes.UserObject != null)
             {
                 try
                 {
-                    string tmp = ComposeNameID(identityClaim, de);
+                    string tmp = ComposeNameID(identityClaim, userAttributes.UserObject);
                     if (tmp != null)
                     {
                         ok = true;
@@ -111,7 +112,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.NameIdConfiguration
                 }
                 finally
                 {
-                    de.Dispose();
+                    userAttributes.Dispose();
                 }
             }
 
@@ -124,9 +125,10 @@ namespace SURFnet.Authentication.Adfs.Plugin.NameIdConfiguration
         /// </summary>
         /// <param name="claim"></param>
         /// <returns>null on error</returns>
-        public DirectoryEntry GetAttributes(Claim claim)
+        public ADUserAttributes GetAttributes(Claim claim)
         {
-            DirectoryEntry rc = null;
+            DirectoryEntry userObject = null;
+            var userGroups = new List<GroupPrincipal>();
 
             string[] parts = claim.Value.Split('\\');
             if (parts.Length != 2)
@@ -145,6 +147,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.NameIdConfiguration
                     try
                     {
                         var currentUser = UserPrincipal.FindByIdentity(ctx, sAMAccountName);
+
                         if (null != currentUser)
                         {
                             DirectoryEntry de = currentUser.GetUnderlyingObject() as DirectoryEntry;
@@ -153,7 +156,18 @@ namespace SURFnet.Authentication.Adfs.Plugin.NameIdConfiguration
                                 Log.Error($"GetUnderlyingObject() on '{claim.Value}' returns null for : '{claim.Value}'.");
                             }
                             else
-                                rc = de;
+                            {
+                                userObject = de;
+
+                                try
+                                {
+                                    userGroups = currentUser.GetGroups().OfType<GroupPrincipal>().ToList();
+                                }
+                                catch (Exception ex)
+                                {                                    
+                                    Log.Error($"Failed to retriece groups for user '{userObject.Name}' Ex: {ex.Message}");
+                                }
+                            }
                         }
                         else
                         {
@@ -179,7 +193,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.NameIdConfiguration
                 }
             }
 
-            return rc;
+            return new ADUserAttributes(userObject, userGroups);
         }
     }
 }

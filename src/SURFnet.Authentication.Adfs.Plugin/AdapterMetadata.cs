@@ -49,14 +49,15 @@ namespace SURFnet.Authentication.Adfs.Plugin
         /// </summary>
         static AdapterMetadata()
         {
-            Uri minimalLoa = null;
-            minimalLoa = StepUpConfig.Current?.MinimalLoa;  // new method
+            var minimalLoa = StepUpConfig.Current?.minimalLoa;  // new method
 
             if (null != minimalLoa)
             {
                 // yep, must overwrite
+                // todo jvt add sfo-level15 here
                 authenticationMethods = new string[]
                     {
+                    $"http://{minimalLoa.Host}/assurance/sfo-level1.5",
                     $"http://{minimalLoa.Host}/assurance/sfo-level2",
                     $"http://{minimalLoa.Host}/assurance/sfo-level3"
                     };
@@ -92,7 +93,8 @@ namespace SURFnet.Authentication.Adfs.Plugin
         /// </summary>
         private static readonly string[] authenticationMethods =
         {
-            // Default to current production at Regisration time
+            // Default to current production at Registration time
+            "http://surfconext.nl/assurance/sfo-level1.5",
             "http://surfconext.nl/assurance/sfo-level2",
             "http://surfconext.nl/assurance/sfo-level3"
 
