@@ -1,0 +1,6 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<SfoMfaExtension
+  NameIdAlgorithm="UserIdFromADAttr"
+  schacHomeOrganization="institution-b.nl"
+  activeDirectoryUserIdAttribute="employeeNumber"
+  minimalLoa="http://test.surfconext.nl/assurance/sfo-level2" />

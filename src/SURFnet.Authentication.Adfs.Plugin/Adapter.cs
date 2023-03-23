@@ -31,6 +31,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
     using SURFnet.Authentication.Adfs.Plugin.Configuration;
     using SURFnet.Authentication.Adfs.Plugin.Extensions;
     using SURFnet.Authentication.Adfs.Plugin.Models;
+using SURFnet.Authentication.Adfs.Plugin.NameIdConfiguration;
     using SURFnet.Authentication.Adfs.Plugin.Services;
     using SURFnet.Authentication.Adfs.Plugin.Setup.Common;
     using SURFnet.Authentication.Adfs.Plugin.Setup.Common.Exceptions;
@@ -227,17 +228,15 @@ namespace SURFnet.Authentication.Adfs.Plugin
 
                 //todo jvt get user / group >> https://stackoverflow.com/questions/24610956/how-to-get-user-groups-from-on-premise-adfs-claims
                 //todo jvt getMetadData?? 
-                //todo jvt var claims = identityClaim.Subject.Claims
+                //todo jvt var claims = identityClaim.Subject.Claims                                
 
-
-                var stepupNameID = string.Empty;           
-                if (!StepUpConfig.Current.GetNameID.TryGetNameIDValue(identityClaim, out stepupNameID))
+                if (!StepUpConfig.Current.GetNameID.TryGetNameIDValue(identityClaim, out NameIDValueResult nameIDValueResult))
                 {
                     throw new NotSupportedException(); 
                 }
 
                 var requestId = $"_{context.ContextId}";
-                var authRequest = SamlService.CreateAuthnRequest(requestId, httpListenerRequest.Url, stepupNameID);
+                var authRequest = SamlService.CreateAuthnRequest(requestId, httpListenerRequest.Url, nameIDValueResult);
                 LogService.Log.DebugFormat("Signing AuthnRequest with id {0}", requestId);
                 var signedXml = this.cryptographicService.SignSamlRequest(authRequest);
                 var ssoUrl = Sustainsys.Saml2.Configuration.Options.FromConfiguration.IdentityProviders.Default.SingleSignOnServiceUrl;
@@ -250,7 +249,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
                 LogService.Log.InfoFormat("Forwarding SAML SFO AuthnRequest with ID '{0}' for Stepup NameID '{1}' to '{2}'", requestId, authRequest.Subject.NameId.Value, ssoUrl);
 
                 // Store stepupNameID for verification in TryEndAuthentication
-                context.Data.Add(AuthenticationContextNameID, stepupNameID);  
+                context.Data.Add(AuthenticationContextNameID, nameIDValueResult.NameID);  
 
                 return new AuthForm(ssoUrl, signedXml);
             }

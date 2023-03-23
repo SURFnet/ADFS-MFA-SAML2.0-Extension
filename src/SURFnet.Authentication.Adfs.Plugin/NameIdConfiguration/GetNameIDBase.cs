@@ -3,11 +3,15 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.DirectoryServices;
 using System.DirectoryServices.AccountManagement;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Security.Claims;
 using System.Text;
 
 using log4net;
+
+using Newtonsoft.Json;
 
 using SURFnet.Authentication.Adfs.Plugin.Configuration;
 
@@ -24,7 +28,13 @@ namespace SURFnet.Authentication.Adfs.Plugin.NameIdConfiguration
     {
         private Dictionary<string, string> parameters;
 
-        public static readonly string NameIDPrefix = "urn:collab:person:";
+        private static readonly string NameIDPrefix = "urn:collab:person:";
+
+        private static readonly string DynamicLoaFileAttributeName = "dynamicLoaFile";
+
+        private static string dynamicLoaFile;
+
+        private Dictionary<string, Uri> dynamicLoaGroups;
 
         /// <summary>
         /// The log4net iterface to log errors. See log4net documentation.
@@ -46,7 +56,29 @@ namespace SURFnet.Authentication.Adfs.Plugin.NameIdConfiguration
         /// <param name="parameters"></param>
         public virtual void Initialize(Dictionary<string, string> parameters)
         {
-            this.parameters = parameters; 
+            this.parameters = parameters;
+
+            if (parameters.TryGetValue(DynamicLoaFileAttributeName, out dynamicLoaFile))
+            {
+                Log.Info($"Configure dynamic Loa from file {dynamicLoaFile}");
+
+                try
+                {
+                    var baseDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                    var dynamicLoaFilePath = Path.Combine(baseDirectory, dynamicLoaFile);
+                    var dynamicLoaParsed = JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText(dynamicLoaFilePath));
+
+                    dynamicLoaGroups = dynamicLoaParsed.ToDictionary(x => x.Key, x => new Uri(x.Value));
+                }
+                catch (Exception exception)
+                {
+                    Log.Error($"Failed to initialize dynamic Loa from file {dynamicLoaFile}", exception);
+                }
+            }
+            else
+            {
+                dynamicLoaGroups = new Dictionary<string, Uri>();
+            }
         }
 
         /// <summary>
@@ -88,22 +120,26 @@ namespace SURFnet.Authentication.Adfs.Plugin.NameIdConfiguration
             return sb.ToString();
         }
 
-        public virtual bool TryGetNameIDValue(Claim identityClaim, out string nameID)
+        /// <inheritdoc/>
+        public bool TryGetMinimalLoa(string groupName, out Uri configuredLoa)
         {
-            bool ok = false;
+            return dynamicLoaGroups.TryGetValue(groupName, out configuredLoa);
+        }
 
-            nameID = null;
-
+        /// <inheritdoc/>
+        public virtual bool TryGetNameIDValue(Claim identityClaim, out NameIDValueResult nameIDValueResult)
+        {   
             var userAttributes = GetAttributes(identityClaim);
             if (userAttributes.UserObject != null)
             {
                 try
                 {
-                    string tmp = ComposeNameID(identityClaim, userAttributes.UserObject);
-                    if (tmp != null)
+                    string nameId = ComposeNameID(identityClaim, userAttributes.UserObject);
+                    if (nameId != null)
                     {
-                        ok = true;
-                        nameID = tmp;
+                        var userGroupNames = userAttributes.UserGroups.Select(g => g.Name);
+                        nameIDValueResult = new NameIDValueResult(nameId, userAttributes.UserObject.Username, userGroupNames);
+                        return true;
                     }
                 }
                 catch (Exception ex)
@@ -116,7 +152,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.NameIdConfiguration
                 }
             }
 
-            return ok;
+            nameIDValueResult = NameIDValueResult.CreateEmpty();
+            return false;
         }
 
         /// <summary>

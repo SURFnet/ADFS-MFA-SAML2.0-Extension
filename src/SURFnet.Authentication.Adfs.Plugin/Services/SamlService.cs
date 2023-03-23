@@ -17,6 +17,7 @@
 namespace SURFnet.Authentication.Adfs.Plugin.Services
 {
     using System;
+    using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using System.Linq;
     using System.Security.Claims;
@@ -28,7 +29,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
     using Microsoft.IdentityModel.Tokens.Saml2;
 
     using Models;
-
+using SURFnet.Authentication.Adfs.Plugin.NameIdConfiguration;
     using SURFnet.Authentication.Adfs.Plugin.Setup.Common.Exceptions;
 
     using Sustainsys.Saml2;
@@ -54,10 +55,10 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
         /// <returns>
         /// The authentication request.
         /// </returns>
-        public static Saml2AuthenticationSecondFactorRequest CreateAuthnRequest(string authnRequestId, Uri ascUri, string stepupNameId)
+        public static Saml2AuthenticationSecondFactorRequest CreateAuthnRequest(string authnRequestId, Uri ascUri, NameIDValueResult nameIDValue)
         {
-            var nameIdentifier = new Saml2NameIdentifier(stepupNameId, new Uri("urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified"));
-            Log.DebugFormat("Creating AuthnRequest for NameID '{0}'", stepupNameId);
+            var nameIdentifier = new Saml2NameIdentifier(nameIDValue.NameID, new Uri("urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified"));
+            Log.DebugFormat("Creating AuthnRequest for NameID '{0}'", nameIDValue.NameID);
 
             // This was testes in constructors!!!
             var samlConfiguration = Options.FromConfiguration;
@@ -73,17 +74,20 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
                 throw new InvalidConfigurationException("ERROR_0002", "The service provider section of the SAML configuration could not be loaded");
             }
 
+            var minimalLoa = StepUpConfig.Current.GetMinimalLoa(nameIDValue.UserName, nameIDValue.UserGroups, Log); 
+
             var authnRequest = new Saml2AuthenticationSecondFactorRequest
             {
                 DestinationUrl = Options.FromConfiguration.IdentityProviders.Default.SingleSignOnServiceUrl,
                 AssertionConsumerServiceUrl = ascUri,
-                Issuer = spConfiguration.EntityId,
-                RequestedAuthnContext = new Saml2RequestedAuthnContext(StepUpConfig.Current.minimalLoa, AuthnContextComparisonType.Minimum),
+                Issuer = spConfiguration.EntityId,               
+
+                RequestedAuthnContext = new Saml2RequestedAuthnContext(minimalLoa, AuthnContextComparisonType.Minimum),
                 Subject = new Saml2Subject(nameIdentifier),
             };
             authnRequest.SetId(authnRequestId);
 
-            Log.DebugFormat("Created AuthnRequest for '{0}' with id '{1}'", stepupNameId, authnRequest.Id.Value);
+            Log.DebugFormat("Created AuthnRequest for '{0}' with id '{1}'", nameIDValue.NameID, authnRequest.Id.Value);
             return authnRequest;
         }
 

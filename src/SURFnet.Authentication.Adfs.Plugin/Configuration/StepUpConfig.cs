@@ -28,6 +28,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Configuration
 
     using SURFnet.Authentication.Adfs.Plugin.Helpers;
     using SURFnet.Authentication.Adfs.Plugin.NameIdConfiguration;
+    using SURFnet.Authentication.Adfs.Plugin.Services;
     using SURFnet.Authentication.Adfs.Plugin.Setup.Common;
 
     /// <summary>
@@ -36,6 +37,11 @@ namespace SURFnet.Authentication.Adfs.Plugin.Configuration
     /// </summary>
     public class StepUpConfig
     {
+        /// <summary>
+        /// Used for logging.
+        /// </summary>
+        private static readonly ILog Log = LogManager.GetLogger("SAML Service");
+
         const string AdapterMinimalLoa = "minimalLoa";
 
         /// <summary>
@@ -43,9 +49,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Configuration
         /// </summary>
         private static StepUpConfig current;
 
-        private Uri minimalLoa; // jvt make dynamic
+        private Uri minimalLoa; 
 
-        private Dictionary<string, Uri> userGroupLoaMapping;
 
         /// <summary>
         /// Prevents a default instance of the <see cref="StepUpConfig"/> class from being created.
@@ -56,16 +61,28 @@ namespace SURFnet.Authentication.Adfs.Plugin.Configuration
 
         public IGetNameID GetNameID { get; private set; }
 
-        public Uri GetMinimalLoa(IEnumerable<string> userGroups)
+        public Uri GetMinimalLoa()
         {
-            foreach(var userGroup in userGroups)
+            return minimalLoa;
+        }
+
+        /// <summary>
+        /// Returns the first matched configured MinimalLoa for the one of the usergroups otherwise false
+        /// </summary>
+        /// <param name="userGroups">the user groups for the user</param>
+        /// <returns>The <see cref="Uri"/>Minimal Loa</returns>
+        public Uri GetMinimalLoa(string userName, IEnumerable<string> userGroups, ILog log)
+        {
+            foreach (var userGroup in userGroups)
             {
-                if(userGroupLoaMapping.TryGetValue(userGroup, out Uri configuredLoa))
+                if (GetNameID.TryGetMinimalLoa(userGroup, out Uri configuredLoa))
                 {
+                    log.Info($"Authenticating at '{configuredLoa.AbsoluteUri}' because user '{userName}' is a member of group '{userGroup}'");
                     return configuredLoa;
                 }
             }
 
+            log.Info($"Authenticating at the default '{minimalLoa.AbsoluteUri}' because user '{userName}' is not a member of any group");
             return minimalLoa;
         }
 

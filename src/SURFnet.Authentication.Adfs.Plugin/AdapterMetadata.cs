@@ -49,7 +49,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
         /// </summary>
         static AdapterMetadata()
         {
-            var minimalLoa = StepUpConfig.Current?.minimalLoa;  // new method
+            var minimalLoa = StepUpConfig.Current?.GetMinimalLoa();
 
             if (null != minimalLoa)
             {
