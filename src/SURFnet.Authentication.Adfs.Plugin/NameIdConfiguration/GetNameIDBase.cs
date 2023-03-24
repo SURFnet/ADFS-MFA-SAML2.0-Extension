@@ -1,8 +1,4 @@
-﻿using log4net;
-
-using Newtonsoft.Json;
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.DirectoryServices;
 using System.DirectoryServices.AccountManagement;
@@ -12,18 +8,25 @@ using System.Reflection;
 using System.Security.Claims;
 using System.Text;
 
+using log4net;
+
+using Newtonsoft.Json;
+
 namespace SURFnet.Authentication.Adfs.Plugin.NameIdConfiguration
 {
     /// <summary>
     /// Derive and implement:
     ///   - Initialize, to save your parameters from the configuration file.
     ///   - ComposeNameID, to select attributes and call BuildNameID(...).
-    ///   
+    /// 
     /// See comments below and in IGetNameID.
     /// </summary>
     public abstract class GetNameIDBase : IGetNameID
     {
-        private Dictionary<string, string> parameters;
+        /// <summary>
+        /// The log4net iterface to log errors. See log4net documentation.
+        /// </summary>
+        protected readonly ILog Log;
 
         private static readonly string NameIDPrefix = "urn:collab:person:";
 
@@ -31,12 +34,9 @@ namespace SURFnet.Authentication.Adfs.Plugin.NameIdConfiguration
 
         private static string dynamicLoaFile;
 
-        private Dictionary<string, Uri> dynamicLoaGroups;
+        private Dictionary<string, string> parameters;
 
-        /// <summary>
-        /// The log4net iterface to log errors. See log4net documentation.
-        /// </summary>
-        protected readonly ILog Log;
+        private Dictionary<string, Uri> dynamicLoaGroups;
 
         /// <summary>
         /// Constructor with log4net insertion.
@@ -44,7 +44,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.NameIdConfiguration
         /// <param name="log">log4net interface. See log4net docu.</param>
         public GetNameIDBase(ILog log)
         {
-            Log = log;
+            this.Log = log;
         }
 
         /// <summary>
@@ -57,24 +57,27 @@ namespace SURFnet.Authentication.Adfs.Plugin.NameIdConfiguration
 
             if (parameters.TryGetValue(DynamicLoaFileAttributeName, out dynamicLoaFile))
             {
-                Log.Info($"Configure dynamic Loa from file {dynamicLoaFile}");
+                this.Log.Info($"Configure dynamic Loa from file {dynamicLoaFile}");
 
                 try
                 {
-                    var baseDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                    var baseDirectory = Path.GetDirectoryName(
+                        Assembly.GetExecutingAssembly()
+                                .Location);
                     var dynamicLoaFilePath = Path.Combine(baseDirectory, dynamicLoaFile);
-                    var dynamicLoaParsed = JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText(dynamicLoaFilePath));
+                    var dynamicLoaParsed =
+                        JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText(dynamicLoaFilePath));
 
-                    dynamicLoaGroups = dynamicLoaParsed.ToDictionary(x => x.Key, x => new Uri(x.Value));
+                    this.dynamicLoaGroups = dynamicLoaParsed.ToDictionary(x => x.Key, x => new Uri(x.Value));
                 }
                 catch (Exception exception)
                 {
-                    Log.Error($"Failed to initialize dynamic Loa from file {dynamicLoaFile}", exception);
+                    this.Log.Error($"Failed to initialize dynamic Loa from file {dynamicLoaFile}", exception);
                 }
             }
             else
             {
-                dynamicLoaGroups = new Dictionary<string, Uri>();
+                this.dynamicLoaGroups = new Dictionary<string, Uri>();
             }
         }
 
@@ -83,7 +86,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.NameIdConfiguration
         /// </summary>
         public IDictionary<string, string> GetParameters()
         {
-            return parameters;
+            return this.parameters;
         }
 
         /// <summary>
@@ -107,7 +110,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.NameIdConfiguration
         /// <returns>Properly formatted NameID</returns>
         protected string BuildNameID(string sho, string uid)
         {
-            StringBuilder sb = new StringBuilder();
+            var sb = new StringBuilder();
             sb.Append(NameIDPrefix);
             sb.Append(sho);
             sb.Append(':');
@@ -117,30 +120,33 @@ namespace SURFnet.Authentication.Adfs.Plugin.NameIdConfiguration
             return sb.ToString();
         }
 
-        /// <inheritdoc/>
+        /// <inheritdoc />
         public bool TryGetMinimalLoa(string groupName, out Uri configuredLoa)
         {
-            return dynamicLoaGroups.TryGetValue(groupName, out configuredLoa);
+            return this.dynamicLoaGroups.TryGetValue(groupName, out configuredLoa);
         }
 
-        /// <inheritdoc/>
+        /// <inheritdoc />
         public virtual bool TryGetNameIDValue(Claim identityClaim, out NameIDValueResult nameIDValueResult)
-        {   
-            var userAttributes = GetAttributes(identityClaim);
+        {
+            var userAttributes = this.GetAttributes(identityClaim);
             if (userAttributes.UserObject != null)
             {
                 try
                 {
-                    string nameId = ComposeNameID(identityClaim, userAttributes.UserObject);
+                    var nameId = this.ComposeNameID(identityClaim, userAttributes.UserObject);
                     if (nameId != null)
                     {
-                        nameIDValueResult = new NameIDValueResult(nameId, userAttributes.UserObject.Name, userAttributes.UserGroups);
+                        nameIDValueResult = new NameIDValueResult(
+                            nameId,
+                            userAttributes.UserObject.Name,
+                            userAttributes.UserGroups);
                         return true;
                     }
                 }
                 catch (Exception ex)
                 {
-                    Log.Error(ex.ToString());
+                    this.Log.Error(ex.ToString());
                 }
                 finally
                 {
@@ -163,15 +169,15 @@ namespace SURFnet.Authentication.Adfs.Plugin.NameIdConfiguration
             DirectoryEntry userObject = null;
             var userGroups = new List<string>();
 
-            string[] parts = claim.Value.Split('\\');
+            var parts = claim.Value.Split('\\');
             if (parts.Length != 2)
             {
-                Log.Error($"Invalid WindowsAccountname: ${claim.Value}");
+                this.Log.Error($"Invalid WindowsAccountname: ${claim.Value}");
             }
             else
             {
-                string domain = parts[0];
-                string sAMAccountName = parts[1];
+                var domain = parts[0];
+                var sAMAccountName = parts[1];
 
                 PrincipalContext ctx = null;
                 try
@@ -183,10 +189,11 @@ namespace SURFnet.Authentication.Adfs.Plugin.NameIdConfiguration
 
                         if (null != currentUser)
                         {
-                            DirectoryEntry de = currentUser.GetUnderlyingObject() as DirectoryEntry;
+                            var de = currentUser.GetUnderlyingObject() as DirectoryEntry;
                             if (de == null)
                             {
-                                Log.Error($"GetUnderlyingObject() on '{claim.Value}' returns null for : '{claim.Value}'.");
+                                this.Log.Error(
+                                    $"GetUnderlyingObject() on '{claim.Value}' returns null for : '{claim.Value}'.");
                             }
                             else
                             {
@@ -194,28 +201,32 @@ namespace SURFnet.Authentication.Adfs.Plugin.NameIdConfiguration
 
                                 try
                                 {
-                                    userGroups = currentUser.GetGroups().OfType<GroupPrincipal>().Select(g => g.Name).ToList();
+                                    userGroups = currentUser.GetGroups()
+                                                            .OfType<GroupPrincipal>()
+                                                            .Select(g => g.Name)
+                                                            .ToList();
                                 }
                                 catch (Exception ex)
-                                {                                    
-                                    Log.Error($"Failed to retriece groups for user '{userObject.Name}' Ex: {ex.Message}");
+                                {
+                                    this.Log.Error(
+                                        $"Failed to retriece groups for user '{userObject.Name}' Ex: {ex.Message}");
                                 }
                             }
                         }
                         else
                         {
-                            Log.Error("FindByIdentity() returned null for: " + claim.Value);
+                            this.Log.Error("FindByIdentity() returned null for: " + claim.Value);
                         }
                     }
                     catch (Exception ex)
                     {
                         // really weird! ADFS had found the account!!
-                        Log.Error($"FindByIdentity({claim.Value}) failed. Ex: {ex.Message}");
+                        this.Log.Error($"FindByIdentity({claim.Value}) failed. Ex: {ex.Message}");
                     }
                 }
                 catch (Exception ex)
                 {
-                    Log.Error($"Could not get PrincipalContext for: '{claim.Value}'. Ex: {ex.Message}");
+                    this.Log.Error($"Could not get PrincipalContext for: '{claim.Value}'. Ex: {ex.Message}");
                 }
                 finally
                 {
