@@ -1,9 +1,4 @@
 ﻿using SURFnet.Authentication.Adfs.Plugin.Setup.Services;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SURFnet.Authentication.Adfs.Plugin.Setup.Question
 {
@@ -11,23 +6,18 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Question
     {
         /// <summary>
         /// Straight blocking Yes/No call.
-        /// TODO: Bit of a kludge to get rid of the '?'
         /// </summary>
-        /// <param name="line"></param>
-        /// <param name="defaultChoice"></param>
         /// <returns>'y', 'n' or 'x'</returns>
         public static char Ask(string line, bool showHelpChar, char defaultChoice = '\0')
         {
-            char c = '\0';
-            ShowAndGetYesNo dialogue;
+            var c = '\0';
 
-            if ( defaultChoice != '\0')
-                dialogue = new ShowAndGetYesNo(line, defaultChoice, showHelpChar);
-            else
-                dialogue = new ShowAndGetYesNo(line, showHelpChar);
+            var dialogue = defaultChoice != '\0'
+                ? new ShowAndGetYesNo(line, defaultChoice, showHelpChar)
+                : new ShowAndGetYesNo(line, showHelpChar);
 
-            bool loop = true;
-            while ( loop )
+            var loop = true;
+            while (loop)
             {
                 if (dialogue.Ask())
                 {
@@ -47,12 +37,16 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Question
                 }
                 else
                 {
-                    if ( ! dialogue.WantsDescription )
+                    if (dialogue.WantsDescription)
                     {
-                        // abort
-                        c = 'x';
-                        loop = false;
+                        continue;
                     }
+
+                    // abort
+                    c = 'x';
+                    loop = false;
+
+                    // TODO: Bit of a kludge to get rid of the '?'
                     // else: loop on '?'
                 }
             }

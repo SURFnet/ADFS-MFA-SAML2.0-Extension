@@ -4,6 +4,20 @@
 @popd
 
 @set build=Release
+@set sign=0
+
+@if [%1] == [-debug] (
+  @echo Enabled debug release
+  @set build=Debug
+  @shift
+)
+
+@if [%1] == [-sign] (
+  @echo Enabled signing release
+  @set sign=1
+  @shift
+)
+
 @if [%1] == [-debug] (
   @echo Enabled debug release
   @set build=Debug
@@ -13,7 +27,7 @@
 @if [%1] == [] (
   @echo Missing parameter: version
   @echo.
-  @echo Usage: MakeRelease.cmd [-debug] ^<version^>
+  @echo Usage: MakeRelease.cmd [-debug] [-sign] ^<version^>
   @echo.
   @echo Create a SetupPackage for release to customers from the VisualStudio build of the solution. 
   @echo Optionally signs the release.
@@ -23,6 +37,8 @@
   @echo.
   @echo -debug      Make a debug release. This includes files from bin/Debug instead of from the
   @echo             bin/Release directories. By default a release build is created.
+  @echo.
+  @echo -sign       Signs the release.
   goto :error
 )
 
@@ -46,6 +62,7 @@ mkdir %release%\config || goto :error
 mkdir %release%\extensions || goto :error
    
 @echo Copying files   
+copy %root_dir%\src\Setup\bin\%build%\CommandLine.dll %release% || goto :error
 copy %root_dir%\src\Setup\bin\%build%\log4net.dll %release% || goto :error
 copy %root_dir%\src\Setup\bin\%build%\Newtonsoft.Json.dll %release% || goto :error
 copy %root_dir%\src\Setup\bin\%build%\Setup.exe %release% || goto :error
@@ -86,9 +103,10 @@ copy %root_dir%\INSTALL %release% || goto :error
 copy %root_dir%\UPGRADE %release% || goto :error
 copy %root_dir%\KNOWN_ISSUES %release% || goto :error
 
-@set sign=0
-@choice /m "Sign release?" /c YN
- @if "%errorlevel%" == "1" set sign=1
+@if "%sign%" == "0" (
+	@choice /m "Sign release?" /c YN
+	@if "%errorlevel%" == "1" set sign=1
+)
 
 @if "%sign%" == "1" (
   @echo Signing Setup.exe

@@ -31,10 +31,10 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
     public static class AdfsServer
     {
         private const int DefaultRetries = 29;
+
         private const int DefaultSleepMs = 1000;
+
         private const string DefaultAdfsSvcName = "adfssrv";
-
-
 
         /// <summary>
         /// Gets the ADFS service controller.
@@ -55,7 +55,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
 
             try
             {
-                ServiceController tmpController = new ServiceController("adfssrv");
+                var tmpController = new ServiceController("adfssrv");
 
                 var status = tmpController.Status; // trigger exception if not on machine.
                 if ( status != ServiceControllerStatus.Running )
@@ -96,10 +96,10 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
             // then my AssemblySpec!! Looking at the exact values it is some ADFS madness??
             // So we take the Product version which looks like less nonsense. Or is it my bug? (PL)
 
-            Version rc = V0Assemblies.AssemblyNullVersion;
+            var rc = V0Assemblies.AssemblyNullVersion;
 
-            string adfsPath = FileService.OurDirCombine(FileDirectory.AdfsDir, SetupConstants.AdfsFilename);
-            AssemblySpec adfsAssembly = AssemblySpec.GetAssemblySpec(adfsPath);
+            var adfsPath = FileService.OurDirCombine(FileDirectory.AdfsDir, SetupConstants.AdfsFilename);
+            var adfsAssembly = AssemblySpec.GetAssemblySpec(adfsPath);
             if ( adfsAssembly!=null )
             {
                 LogService.Log.Info($"ADFS FileVersion: {adfsAssembly.FileVersion.ToString()}");
@@ -112,20 +112,15 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
             return rc;
         }
 
-        public static int StopAdfsIfRunning()
+        public static bool StopAdfsIfRunning()
         {
-            int rc = 0;
-
-            if (IsAdfsRunning())
+            if (!IsAdfsRunning() || 0 == StopAdFsService())
             {
-                if (0 != StopAdFsService())
-                {
-                    LogService.WriteFatal("Failed to stop ADFS service.");
-                    rc = 1;
-                }
+                return true;
             }
 
-            return rc;
+            LogService.WriteFatal("Failed to stop ADFS service.");
+            return false;
         }
 
         ///
@@ -139,7 +134,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
         /// before we stop waiting for the action result.
         /// </summary>
         private static int MaxRetries = DefaultRetries;
-        
+
         /// <summary>
         /// The sleep time in ms between retries.
         /// </summary>
@@ -168,10 +163,10 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                     LogService.Log.Info("Registry says --- ADFS svc account: " + accountName as string);
 
                 string result = null;
-                string query = $"select * from Win32_Service where name like '{DefaultAdfsSvcName}'";
+                var query = $"select * from Win32_Service where name like '{DefaultAdfsSvcName}'";
 
-                ManagementObjectSearcher windowsServicesSearcher = new ManagementObjectSearcher("root\\cimv2", query);
-                ManagementObjectCollection objectCollection = windowsServicesSearcher.Get();
+                var windowsServicesSearcher = new ManagementObjectSearcher("root\\cimv2", query);
+                var objectCollection = windowsServicesSearcher.Get();
 
                 if ( (objectCollection!=null)  && (objectCollection.Count>0) )
                 {
@@ -226,7 +221,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
         public static int StartAdFsService()
         {
             Console.Write("Starting ADFS service");
-            int rc = StartAdFsServiceInternal();
+            var rc = StartAdFsServiceInternal();
             Console.WriteLine();
             Console.WriteLine("Started ADFS service");
             return rc;
@@ -237,9 +232,9 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
         /// </summary>
         private static int StartAdFsServiceInternal()
         {
-            int rc = -1;
-            bool more = true;
-            int retriesLeft = MaxRetries;
+            var rc = -1;
+            var more = true;
+            var retriesLeft = MaxRetries;
             LogService.Log.Info("Starting ADFS service.");
 
             try
@@ -252,7 +247,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                     {
                         case ServiceControllerStatus.Paused:
                         case ServiceControllerStatus.Stopped:
-                            SvcController.Start();  // must wait? do not thinks so...
+                            SvcController.Start(); // must wait? do not thinks so...
                             Console.Write(".");
                             break;
 
@@ -269,14 +264,16 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                     }
 
                     // print once it 3 polls
-                    if (more && (--retriesLeft > 0))
+                    if (!more || (--retriesLeft <= 0))
                     {
-                        if (0 == (retriesLeft % 3))
-                        {
-                            Console.Write(".");
-                        }
+                        continue;
                     }
-                } // timeout loop
+
+                    if (0 == (retriesLeft % 3))
+                    {
+                        Console.Write(".");
+                    }
+                }
             }
             catch (Exception ex)
             {
@@ -284,13 +281,13 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                 rc = -2;
             }
 
-            if (rc == -1 && retriesLeft <= 0)
+            if (rc != -1 || retriesLeft > 0)
             {
-                LogService.Log.Error("Start ADFS Service timeout.");
-                rc = 1; // timeout
+                return rc;
             }
 
-            return rc;
+            LogService.Log.Error("Start ADFS Service timeout.");
+            return 1; // timeout
         }
 
         /// <summary>
@@ -306,7 +303,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
             }
 
             Console.Write("Stopping ADFS service");
-            int rc = StopAdFsServiceInternal();
+            var rc = StopAdFsServiceInternal();
             Console.WriteLine();
             if ( rc == 0 )
             {
@@ -327,17 +324,15 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
             return rc;
         }
 
-
-
         /// <summary>
         /// Tries to get the service into the Stopped state.
         /// </summary>
         /// <returns>0 if OK</returns>
         private static int StopAdFsServiceInternal()
         {
-            int rc = -1;
-            bool more = true;
-            int retriesLeft = MaxRetries;
+            var rc = -1;
+            var more = true;
+            var retriesLeft = MaxRetries;
             LogService.Log.Info("Stopping ADFS service.");
 
             try
@@ -394,7 +389,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
         public static int RestartAdFsService()
         {
             LogService.Log.Info("Restarting ADFS");
-            int rc = StopAdFsService();
+            var rc = StopAdFsService();
             if ( rc == 0 )
             {
                 rc = StartAdFsService();
@@ -404,7 +399,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
 
         public static bool IsAdfsRunning()
         {
-            bool rc = false;
+            var rc = false;
 
             try
             {

@@ -20,24 +20,23 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
     {
         /// TODO: better with Constructor(x,y,z) and private setters?
         ///   Yes, for DistributionVersion consistency too.
-
         public VersionDescription(AdapterComponent adapter)
         {
             DistributionVersion = adapter.AdapterSpec.FileVersion; // take property from adapter!
             Adapter = adapter;
         }
 
-        public Version DistributionVersion { get; private set; }   // The FileVersion of the Adapter.
+        public Version DistributionVersion { get; private set; } // The FileVersion of the Adapter.
+
         public AdapterComponent Adapter { get; private set; }
-        public StepupComponent[] Components { get; set; }  // Dependencies for Adapter
+
+        public StepupComponent[] Components { get; set; } // Dependencies for Adapter
 
         // This is somewhat dubious:
         // A single list of extra assemblies is OK for now.
         // But better to give each assembly a guid and list dependencies per component.
         // But that is more work now and less work later....
         public AssemblySpec[] ExtraAssemblies { get; set; } // Dependencies of dependencies
-
-
 
         //
         // ISetupHandler
@@ -159,70 +158,60 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
         /// </summary>
         /// <param name="settings">All settings for all components.</param>
         /// <returns>0 on success.</returns>
-        public virtual int WriteConfiguration(List<Setting> settings)
+        public virtual bool WriteConfiguration(List<Setting> settings)
         {
-            int rc = 0;
+            LogService.Log.Info($"VersionDescription.WriteConfiguration() for version: {this.DistributionVersion}");
 
-            LogService.Log.Info($"VersionDescription.WriteConfiguration() for version: {DistributionVersion}");
-
-            if (Components != null && Components.Length > 0)
+            if (this.Components != null && this.Components.Length > 0)
             {
                 LogService.Log.Info($"Start writing Components settings.");
-                foreach (var component in Components)
+                foreach (var component in this.Components)
                 {
                     LogService.Log.Info($"  Writing settings for '{component.ComponentName}'");
-                    if (0 != component.WriteConfiguration(settings))
+                    if (!component.WriteConfiguration(settings))
                     {
                         // Stop on first error
                         LogService.Log.Info($"  Writing settings for '{component.ComponentName}' failed.");
-                        rc = -1;
-                        break;
+                        return false;
                     }
-                    else
-                    {
-                        LogService.Log.Info($"  Writing settings for '{component.ComponentName}' OK.");
-                    }
+
+                    LogService.Log.Info($"  Writing settings for '{component.ComponentName}' OK.");
                 }
             }
 
-            if (rc == 0)
-            {
-                if (0 != Adapter.WriteConfiguration(settings))
-                {
-                    rc = -1;
-                }
-            }
-
-            return rc;
+            return this.Adapter.WriteConfiguration(settings);
         }
 
-        public virtual int InstallCfgOnly()
+        public virtual bool InstallCfgOnly()
         {
-            int rc = 0;
-
-            rc = Adapter.BackupConfigurationFile();
-            if (rc == 0)
+            if (!this.Adapter.BackupConfigurationFile())
             {
-                rc = Adapter.InstallCfgOnly();
-                if (rc == 0)
-                {
-                    // OK, then now components
-                    if (Components != null && Components.Length > 0)
-                    {
-                        foreach (var component in Components)
-                        {
-                            var tmprc = component.InstallCfgOnly();
-                            if (0 != tmprc)
-                            {
-                                rc = tmprc; // error message was already written
-                                break; // stop Installing
-                            }
-                        }
-                    }
-                }
+                return false;
             }
 
-            return rc;
+            if (!this.Adapter.InstallCfgOnly())
+            {
+                return false;
+            }
+
+            // OK, then now components
+            if (this.Components == null || this.Components.Length <= 0)
+            {
+                return true;
+            }
+
+            foreach (var component in this.Components)
+            {
+                var tmprc = component.InstallCfgOnly();
+                if (tmprc)
+                {
+                    continue;
+                }
+
+                return false; // error message was already written
+            }
+
+            return true;
         }
 
         public virtual int Install()

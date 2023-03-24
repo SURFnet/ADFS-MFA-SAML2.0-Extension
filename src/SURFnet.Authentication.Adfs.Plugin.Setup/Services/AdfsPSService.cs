@@ -21,6 +21,7 @@
     public static class AdfsPSService
     {
         private static readonly string adapterName = Values.AdapterRegistrationName;
+
         private static readonly Version Version1000 = new Version(1, 0, 0, 0);
 
         /// Some awful global state.....
@@ -34,8 +35,6 @@
 #endif
         ;
 
-
-
         public static string GetAdfsHostname
         {
             get
@@ -46,7 +45,6 @@
                     throw new ApplicationException("Program BUG!! No hostname on secondary!!");
             }
         }
-
 
         /// <summary>
         /// Called very early during setup.
@@ -119,7 +117,6 @@
 
             return rc;
         }
-
 
         /// <summary>
         /// Registers the ADFS MFA extension and adds it to the
@@ -254,7 +251,6 @@
 
             return ok;
         }
-
 
         static void ListCurrentProvidersInPolicy(IList<string> providers)
         {

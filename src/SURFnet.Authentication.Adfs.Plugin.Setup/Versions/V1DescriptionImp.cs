@@ -27,17 +27,22 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
 
         // bunch of const definitions for the ConfigReader() and -Writer()
         private const string V1Name_SecondFactorEndpoint = "SecondFactorEndpoint";
+
         private const string V1Name_SpSigningCertificate = "SpSigningCertificate";
+
         private const string V1Name_MinimalLoa = "MinimalLoa";
+
         private const string V1Name_schacHomeOrganization = "schacHomeOrganization";
+
         private const string V1Name_ActiveDirectoryUserIdAttribute = "ActiveDirectoryUserIdAttribute";
 
         private const string V1SettingsSectionName = "SURFnet.Authentication.Adfs.Plugin.Properties.Settings";
+
         private const string V1KentorSectionName = "kentor.authServices";
+
         private const string V1AllApplicationSettings = "applicationSettings";
 
         private const string V1Attrib_EntityId = "entityId";
-
 
         //
         // ISetupHandler overrides.
@@ -138,10 +143,10 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
             return 0;
         }
 
-        public override int WriteConfiguration(List<Setting> settings)
+        public override bool WriteConfiguration(List<Setting> settings)
         {
             Console.WriteLine("This setup program will not write version 1.0.1.0 configuration files!");
-            return -1; // No we will never install 1.0.1.0
+            return false; // No we will never install 1.0.1.0
         }
 
         public override int Install()

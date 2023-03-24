@@ -31,12 +31,12 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
             return 0;
         }
 
-        public override int WriteConfiguration(List<Setting> settings)
+        public override bool WriteConfiguration(List<Setting> settings)
         {
             // copy from distfolder to configuration output directory
             FileService.CopyFromDistToOutput(ConfigFilename);
 
-            return 0;
+            return true;
         }
 
         public override int Install()

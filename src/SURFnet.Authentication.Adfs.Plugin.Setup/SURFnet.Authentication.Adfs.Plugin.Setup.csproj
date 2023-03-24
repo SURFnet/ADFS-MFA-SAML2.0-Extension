@@ -8,7 +8,7 @@
     <OutputType>Library</OutputType>
     <RootNamespace>SURFnet.Authentication.Adfs.Plugin.Setup</RootNamespace>
     <AssemblyName>SURFnet.Authentication.Adfs.Plugin.Setup</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
@@ -124,7 +124,6 @@
     <Compile Include="Services\ConfigurationFileService.cs" />
     <Compile Include="Services\FileService.cs" />
     <Compile Include="Services\LogService.cs" />
-    <Compile Include="SetupFlags.cs" />
     <Compile Include="Configuration\ConfigSettings.cs" />
     <Compile Include="Util\UAC.cs" />
     <Compile Include="Util\XmlUtil.cs" />

@@ -19,25 +19,36 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
     {
         // Element names
         protected const string CfgElementName = "configuration";
+
         protected const string CfgSectionsElementName = "configSections";
+
         protected const string SectionElement = "section";
+
         protected const string SustainsysSaml2Section = "sustainsys.saml2";
+
         protected const string NaemIDPolicy = "nameIdPolicy";
+
         protected const string IdentityProviders = "identityProviders";
+
         protected const string IdPSigningCert = "signingCertificate";
+
         protected const string SPCerts = "serviceCertificates";
 
         // Attributes
         protected const string nameAttribute = "name";
+
         protected const string typeAttribute = "type";
+
         protected const string returnUrl = "returnUrl";
+
         public const string EntityId = "entityId";
+
         public const string CertFindValue = "findValue";
+
         public const string MdLocationAttribute = "metadataLocation";
 
         // attributeValues
         protected const string cfgParserName = "Sustainsys.Saml2.Configuration.SustainsysSaml2Section";
-
 
         public Sustainsys2_xComponent(string name) : base(name)
         {
@@ -60,10 +71,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
             return rc;
         }
 
-        public override int WriteConfiguration(List<Setting> allsettings)
+        public override bool WriteConfiguration(List<Setting> allsettings)
         {
-            int rc = 0;
-
             XmlDocument doc = new XmlDocument();
             var decl = doc.CreateXmlDeclaration("1.0", "utf-8", null);
             doc.AppendChild(decl);
@@ -103,12 +112,9 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
                             Setting.GetSettingByName(ConfigSettings.IdPMdFilename).Value);
             sustainElement.AppendChild(idps);
 
-            rc = ConfigurationFileService.SaveXmlDocumentConfiguration(doc, ConfigFilename);
+            return ConfigurationFileService.SaveXmlDocumentConfiguration(doc, ConfigFilename);
             //doc.Save("out.xml");
-
-            return rc;
         }
-
 
         void AddSpCert(XmlElement svcCerts, string thumbprint)
         {

@@ -1,34 +1,21 @@
-﻿using SURFnet.Authentication.Adfs.Plugin.Setup.Common;
+﻿using System;
+
+using SURFnet.Authentication.Adfs.Plugin.Setup.Common;
 using SURFnet.Authentication.Adfs.Plugin.Setup.Configuration;
-using SURFnet.Authentication.Adfs.Plugin.Setup.Models;
 using SURFnet.Authentication.Adfs.Plugin.Setup.Question;
 using SURFnet.Authentication.Adfs.Plugin.Setup.Services;
 using SURFnet.Authentication.Adfs.Plugin.Setup.Versions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SURFnet.Authentication.Adfs.Plugin.Setup
 {
     public static class RulesAndChecks
     {
-        public static object RegistryService { get; private set; }
-
-        /// <summary>
-        /// Decides if this setup program can and should uninstall.
-        /// Writes messages and ask questions.
-        /// At the end asks if "sure".
-        /// </summary>
-        /// <param name="setupstate"></param>
-        /// <returns></returns>
-        public static bool CanUNinstall(SetupState setupstate)
+        public static bool CanUninstall(SetupState setupstate)
         {
-            bool doit = false;
+            var doit = false;
 
             // Everything else was OK now last confirmation question (if actually needed)
-            if ( setupstate.RegisteredVersionInAdfs.Major == 0)
+            if (setupstate.RegisteredVersionInAdfs.Major == 0)
             {
                 if (Messages.DoYouWantTO($"Do you really want to UNINSTALL version: {setupstate.DetectedVersion}?"))
                 {
@@ -38,22 +25,29 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
             else
             {
                 // Some registration in ADFS configuration.
-                if ( setupstate.AdfsConfig.SyncProps.IsPrimary )
+                if (setupstate.IsPrimaryComputer)
                 {
                     // primary
                     Console.WriteLine("*******");
-                    Console.WriteLine("  Primary computer in the farm with an MFA registration in the ADFS configuration.");
-                    Console.WriteLine("  Not removing this MFA registration from ADFS will produce messages in the EventLog.");
+                    Console.WriteLine(
+                        "  Primary computer in the farm with an MFA registration in the ADFS configuration.");
+                    Console.WriteLine(
+                        "  Not removing this MFA registration from ADFS will produce messages in the EventLog.");
                     Console.WriteLine();
-                    if ( Messages.DoYouWantTO("Unregister the SFO MFA extension configuration for all servers in the farm?") )
+                    if (Messages.DoYouWantTO(
+                        "Unregister the SFO MFA extension configuration for all servers in the farm?"))
                     {
                         doit = true;
-                        if ( AdfsPSService.UnregisterAdapter() )
+                        if (AdfsPSService.UnregisterAdapter())
                         {
                             setupstate.AdfsConfig.RegisteredAdapterVersion = V0Assemblies.AssemblyNullVersion;
-                            Console.WriteLine("\"Unregister\" successful, the ADFS EventLog should no longer show loading this ('" + SURFnet.Authentication.Adfs.Plugin.Setup.Common.Values.AdapterRegistrationName + "') adapter.");
+                            Console.WriteLine(
+                                "\"Unregister\" successful, the ADFS EventLog should no longer show loading this ('"
+                                + Values.AdapterRegistrationName
+                                + "') adapter.");
                             Console.WriteLine();
-                            if ( ! Messages.DoYouWantTO($"Continue with Uninstall version {setupstate.InstalledVersionDescription}") )
+                            if (!Messages.DoYouWantTO(
+                                $"Continue with Uninstall version {setupstate.InstalledVersionDescription}"))
                             {
                                 // abandon as the admin said
                                 doit = false;
@@ -82,39 +76,26 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
             return doit;
         }
 
-        public static bool CanInstall(Version version)
+        public static void ExtraChecks(SetupState setupstate)
         {
-
-            return Messages.DoYouWantTO($"Do you want to install version: {version}");
-        }
-
-        public static int ExtraChecks(SetupState setupstate)
-        {
-            int rc = 0;
-
-            if ( setupstate.DetectedVersion.Major == 0 )
+            if (setupstate.DetectedVersion.Major != 0)
             {
-                // Nothing on disk
-                WarnPrimaryFirst(setupstate);
-            }
-            else
-            {
-                if ( ! EnsureEventLog.Exists )
+                if (!EnsureEventLog.Exists)
                 {
                     // No EventLog for Adapter
                     LogService.Log.Warn("ExtraChecks() detected missing EventLog.");
-                    if ( 'y' == AskYesNo.Ask("Missing EventLog, create it", true, 'y') )
+                    if ('y' == AskYesNo.Ask("Missing EventLog, create it", true, 'y'))
                     {
                         EnsureEventLog.Create();
                     }
                 }
 
-                // something on disk
                 Console.WriteLine();
                 Console.WriteLine("Current Settings:");
-                if (setupstate.FoundSettings != null && setupstate.FoundSettings.Count > 0)
+                if (setupstate.FoundSettings != null
+                    && setupstate.FoundSettings.Count > 0)
                 {
-                    foreach (Setting setting in setupstate.FoundSettings)
+                    foreach (var setting in setupstate.FoundSettings)
                     {
                         Console.WriteLine(setting.ToString());
                     }
@@ -123,26 +104,21 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                 {
                     Console.WriteLine("     None");
                 }
-
-                    WarnPrimaryFirst(setupstate);
             }
+
+            WarnPrimaryFirst(setupstate);
 
             Console.WriteLine();
-            Console.WriteLine("Checked the installation: did not find any blocking errors.");
-
-            return rc;
+            Console.WriteLine("Checked the installation.");
         }
 
-        public static void WarnPrimaryFirst(SetupState setupstate)
+        private static void WarnPrimaryFirst(SetupState setupstate)
         {
-            if (setupstate.RegisteredVersionInAdfs < setupstate.SetupProgramVersion)
+            if (setupstate.RegisteredVersionInAdfs < setupstate.SetupProgramVersion
+                && !setupstate.IsPrimaryComputer)
             {
-                if (!setupstate.IsPrimaryComputer)
-                {
-                    LogService.WriteWarning("You should first upgrade/install on a primary computer of the ADFS farm.");
-                }
+                LogService.WriteWarning("You should first upgrade/install on a primary computer of the ADFS farm.");
             }
         }
-
     }
 }
