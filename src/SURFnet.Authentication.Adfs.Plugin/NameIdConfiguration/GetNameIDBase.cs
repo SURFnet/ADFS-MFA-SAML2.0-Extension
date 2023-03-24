@@ -68,7 +68,11 @@ namespace SURFnet.Authentication.Adfs.Plugin.NameIdConfiguration
                     var dynamicLoaParsed =
                         JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText(dynamicLoaFilePath));
 
-                    this.dynamicLoaGroups = dynamicLoaParsed.ToDictionary(x => x.Key, x => new Uri(x.Value));
+                    this.dynamicLoaGroups = new Dictionary<string, Uri>(
+                        dynamicLoaParsed.ToDictionary(
+                            x => x.Key,
+                            x => new Uri(x.Value),
+                            StringComparer.OrdinalIgnoreCase));
                 }
                 catch (Exception exception)
                 {
