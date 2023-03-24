@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using System.Net.PeerToPeer;
+using System.Linq;
 
 namespace SURFnet.Authentication.Adfs.Plugin.NameIdConfiguration
 {
@@ -21,19 +21,19 @@ namespace SURFnet.Authentication.Adfs.Plugin.NameIdConfiguration
         public readonly IEnumerable<string> UserGroups;
 
         public NameIDValueResult(string nameID, string userName, IEnumerable<string> userGroups)
-        {   
-            NameID = nameID;
-            UserName = userName;
-            UserGroups = userGroups;
+        {
+            this.NameID = nameID;
+            this.UserName = userName;
+            this.UserGroups = new List<string>(userGroups.ToList());
         }
 
         private NameIDValueResult()
-        {          
+        {
         }
 
         public static NameIDValueResult CreateEmpty()
         {
-            return new NameIDValueResult();           
+            return new NameIDValueResult();
         }
     }
 }

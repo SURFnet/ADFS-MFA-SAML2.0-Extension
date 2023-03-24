@@ -1,10 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="AdapterMetadata.cs" company="Winvision bv">
-//   Copyright (c) Winvision bv. All rights reserved.
-// </copyright>
-// --------------------------------------------------------------------------------------------------------------------
-
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 
@@ -39,7 +33,8 @@ namespace SURFnet.Authentication.Adfs.Plugin
         private static readonly string[] authenticationMethods =
         {
             // Default to current production at Registration time
-            "http://surfconext.nl/assurance/sfo-level1.5", "http://surfconext.nl/assurance/sfo-level2",
+            "http://surfconext.nl/assurance/sfo-level1.5", 
+            "http://surfconext.nl/assurance/sfo-level2",
             "http://surfconext.nl/assurance/sfo-level3"
         };
 

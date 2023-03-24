@@ -1,6 +1,9 @@
-﻿using System;
+﻿using log4net;
+
+using Newtonsoft.Json;
+
+using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.DirectoryServices;
 using System.DirectoryServices.AccountManagement;
 using System.IO;
@@ -8,12 +11,6 @@ using System.Linq;
 using System.Reflection;
 using System.Security.Claims;
 using System.Text;
-
-using log4net;
-
-using Newtonsoft.Json;
-
-using SURFnet.Authentication.Adfs.Plugin.Configuration;
 
 namespace SURFnet.Authentication.Adfs.Plugin.NameIdConfiguration
 {
@@ -137,8 +134,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.NameIdConfiguration
                     string nameId = ComposeNameID(identityClaim, userAttributes.UserObject);
                     if (nameId != null)
                     {
-                        var userGroupNames = userAttributes.UserGroups.Select(g => g.Name);
-                        nameIDValueResult = new NameIDValueResult(nameId, userAttributes.UserObject.Username, userGroupNames);
+                        nameIDValueResult = new NameIDValueResult(nameId, userAttributes.UserObject.Name, userAttributes.UserGroups);
                         return true;
                     }
                 }
@@ -165,7 +161,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.NameIdConfiguration
         public ADUserAttributes GetAttributes(Claim claim)
         {
             DirectoryEntry userObject = null;
-            var userGroups = new List<GroupPrincipal>();
+            var userGroups = new List<string>();
 
             string[] parts = claim.Value.Split('\\');
             if (parts.Length != 2)
@@ -198,7 +194,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.NameIdConfiguration
 
                                 try
                                 {
-                                    userGroups = currentUser.GetGroups().OfType<GroupPrincipal>().ToList();
+                                    userGroups = currentUser.GetGroups().OfType<GroupPrincipal>().Select(g => g.Name).ToList();
                                 }
                                 catch (Exception ex)
                                 {                                    

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.DirectoryServices;
-using System.DirectoryServices.AccountManagement;
 
 namespace SURFnet.Authentication.Adfs.Plugin.NameIdConfiguration
 {
@@ -9,41 +8,37 @@ namespace SURFnet.Authentication.Adfs.Plugin.NameIdConfiguration
     {
         private bool isDisposed;
 
+        public ADUserAttributes(DirectoryEntry userObject, IList<string> userGroups)
+        {
+            this.UserObject = userObject;
+            this.UserGroups = userGroups;
+        }
+
         public DirectoryEntry UserObject { get; private set; }
 
-        public IList<GroupPrincipal> UserGroups { get; private set; }
-
-        public ADUserAttributes(DirectoryEntry userObject, IList<GroupPrincipal> userGroups)
-        {
-            UserObject = userObject;
-            UserGroups = userGroups;
-        }
+        public readonly IList<string> UserGroups;
 
         public void Dispose()
         {
-            Dispose(true);
+            this.Dispose(true);
             GC.SuppressFinalize(this);
         }
 
         protected virtual void Dispose(bool disposing)
         {
-            if (isDisposed) return;
+            if (this.isDisposed)
+            {
+                return;
+            }
 
             if (disposing)
             {
-                UserObject.Dispose();
-                UserObject = null;
-                
-                foreach (var group in UserGroups)
-                {
-                    group.Dispose();
-                }
-
-                UserGroups.Clear();
+                this.UserObject.Dispose();
+                this.UserObject = null;
+                this.UserGroups.Clear();
             }
 
-            isDisposed = true;
+            this.isDisposed = true;
         }
-
     }
 }

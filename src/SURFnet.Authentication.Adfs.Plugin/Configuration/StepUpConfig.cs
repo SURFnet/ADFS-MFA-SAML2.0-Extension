@@ -1,10 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="StepUpConfig.cs" company="Winvision bv">
-//   Copyright (c) Winvision bv. All rights reserved.
-// </copyright>
-// --------------------------------------------------------------------------------------------------------------------
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -64,7 +58,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Configuration
             {
                 return 1; // was written!!
             }
-            jvt
+
             try
             {
                 var getNameId = AdapterXmlConfigurationyHelper.CreateGetNameIdFromFile(adapterConfigurationPath, log);
