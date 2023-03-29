@@ -18,8 +18,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
             var rc = 0;
 
             // Update ADFS registration if required.
-            LogService.Log.Info($"UpdateRegistration from {registeredVerion} to {AllDescriptions.ThisVersion.DistributionVersion}");
-            if (registeredVerion != AllDescriptions.ThisVersion.DistributionVersion)
+            LogService.Log.Info($"UpdateRegistration from {registeredVerion} to {VersionDescriptions.ThisVersion.DistributionVersion}");
+            if (registeredVerion != VersionDescriptions.ThisVersion.DistributionVersion)
             {
                 // need to register
                 if (registeredVerion.Major != 0 && !AdfsPSService.UnregisterAdapter())
@@ -35,7 +35,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
                     return rc;
                 }
 
-                if (!AdfsPSService.RegisterAdapter(AllDescriptions.ThisVersion.Adapter))
+                if (!AdfsPSService.RegisterAdapter(VersionDescriptions.ThisVersion.Adapter))
                 {
                     rc = 8;
                 }

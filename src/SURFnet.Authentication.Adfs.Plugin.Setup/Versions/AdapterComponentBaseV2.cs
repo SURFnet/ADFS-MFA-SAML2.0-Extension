@@ -15,9 +15,9 @@ using SURFnet.Authentication.Adfs.Plugin.Setup.Util;
 
 namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
 {
-    public class V2_0AdapterImp : AdapterComponent
+    public class AdapterComponentBaseV2 : AdapterComponentBase
     {
-        public V2_0AdapterImp(AssemblySpec adapterAssembly) : base(adapterAssembly)
+        public AdapterComponentBaseV2(AssemblySpec adapterAssembly) : base(adapterAssembly)
         {
             ConfigParameters = new string[]
             {

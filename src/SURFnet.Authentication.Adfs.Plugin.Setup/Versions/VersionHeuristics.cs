@@ -24,7 +24,6 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
 
         public bool VerifyIsOK { get; private set; } = false;
 
-
         /// <summary>
         /// Looks for adapters and returns an out Version
         /// Looks in ADFS directory, nor in GAC.
@@ -35,43 +34,19 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
         /// <returns>false on fatal errors</returns>
         public bool Probe(out Version found)
         {
-            bool ok = true;       // Only lower level fatal failures will change it to false.
+            var ok = true;       // Only lower level fatal failures will change it to false.
             Description = null;
             VerifyIsOK = false;
 
             if ( TryFindAdapter(out found) )
             {
-                if (found == AllDescriptions.ThisVersion.DistributionVersion)
+                if (found == VersionDescriptions.V2_0_4_0.DistributionVersion)
                 {
-                    Description = AllDescriptions.ThisVersion;
+                    Description = VersionDescriptions.V2_0_4_0;
                 }
-                else if (found == AllDescriptions.V2_0_1_0.DistributionVersion)
+                else if (found == VersionDescriptions.V2_1_0_0.DistributionVersion)
                 {
-                    Description = AllDescriptions.V2_0_1_0;
-                }
-                else if (found == AllDescriptions.V2_0_0_0.DistributionVersion)
-                {
-                    Description = AllDescriptions.V2_0_0_0;
-                }
-                else if (found == AllDescriptions.V1_0_1_0.DistributionVersion)
-                {
-                    Description = AllDescriptions.V1_0_1_0;
-                }
-                else if (found == AllDescriptions.V1_0_0_0.DistributionVersion)
-                {
-                    Description = AllDescriptions.V1_0_0_0;
-                }
-                else if (found == AllDescriptions.V2_0_2_0.DistributionVersion)
-                {
-                    Description = AllDescriptions.V2_0_2_0;
-                }
-                else if (found == AllDescriptions.V2_0_3_0.DistributionVersion)
-                {
-                    Description = AllDescriptions.V2_0_3_0;
-                }
-                else if (found == AllDescriptions.V2_0_4_0.DistributionVersion)
-                {
-                    Description = AllDescriptions.V2_0_4_0;
+                    Description = VersionDescriptions.V2_1_0_0;
                 }
 
                 if (found.Major != 0)
@@ -115,31 +90,31 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
             return ok;
         }
 
-
         /// <summary>
         /// Looks in ADFS directory and GAC to see if there are Adapter assemblies.
         /// </summary>
         /// <param name="versionfound">will hold a valid version, 0.0.0.0 if nothing detected</param>
         /// <returns>true normally, false: multiple adapters found or something fatal throws.</returns>
-        bool TryFindAdapter(out Version versionfound)
+        private bool TryFindAdapter(out Version versionfound)
         {
-            bool rc = true;
-            List<AssemblySpec> adapters = new List<AssemblySpec>(1);  // assume there is only one.
-            versionfound = V0Assemblies.AssemblyNullVersion;          // Assume: not found.
+            var result = true;
+            var adapters = new List<AssemblySpec>(); 
+            versionfound = Constants.AssemblyNullVersion;
 
             LogService.Log.Info("VersionHeuristics: Try find adapters in GAC and ADFS directory.");
 
-            if (TryGetAdapterAssembly(FileDirectory.AdfsDir, Values.AdapterFilename, out AssemblySpec tmpSpec))
+            // look in ADFS directory
+            if (TryGetAdapterAssembly(FileDirectory.AdfsDir, Values.AdapterFilename, out var asssemblyFromAdfsDirectory))
             {
-                // Found one in ADFS directory
-                adapters.Add(tmpSpec);
-                LogService.Log.Info($"Found in ADFS directory: {tmpSpec.FileVersion}");
+                adapters.Add(asssemblyFromAdfsDirectory);
+                LogService.Log.Info($"Found in ADFS directory: {asssemblyFromAdfsDirectory.FileVersion}");
             }
 
-            if (TryGetAdapterAssembly(FileDirectory.GAC, Values.AdapterFilename, out tmpSpec))
+            // look in gac
+            if (TryGetAdapterAssembly(FileDirectory.GAC, Values.AdapterFilename, out var asssemblyFromGac))
             {
-                adapters.Add(tmpSpec);
-                LogService.Log.Info($"Found in GAC: {tmpSpec.FileVersion}");
+                adapters.Add(asssemblyFromGac);
+                LogService.Log.Info($"Found in GAC: {asssemblyFromGac.FileVersion}");
             }
 
             if ( adapters.Count==1 )
@@ -149,12 +124,13 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
             else if (adapters.Count>1)
             {
                 // found multiple versions, that is fatal!!
-                rc = false;
+                result = false;
                 LogService.WriteFatal("VersionHeuristics: Found multiple adapters!");
                 foreach ( var adapter in adapters )
                 {
                     LogService.WriteFatal($"    {adapter.FilePath}");
                 }
+
                 LogService.WriteFatal("This is a fatal problem. Please report this (with the Setup log file).");
                 LogService.WriteFatal("  Probably renaming the one in the ADFS directory and then");
                 LogService.WriteFatal("  running 'setup -x' will properly remove the one in the GAC.");
@@ -166,23 +142,19 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
                 LogService.Log.Info("No Adapter found, reporting NullVersion");
             }
 
-            return rc;
+            return result;
         }
 
-        bool TryGetAdapterAssembly(FileDirectory direnum, string filename, out AssemblySpec spec)
+        bool TryGetAdapterAssembly(FileDirectory direnum, string filename, out AssemblySpec asssemblySpec)
         {
-            bool rc = false;
-            SearchOption searchoption;
+            asssemblySpec = null;
 
-            spec = null;
-            string directory = FileService.Enum2Directory(direnum);
-            if (direnum == FileDirectory.GAC)
-                searchoption = SearchOption.AllDirectories;
-            else
-                searchoption = SearchOption.TopDirectoryOnly;
+            var searchoption = direnum == FileDirectory.GAC ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly;
+            var directory = FileService.Enum2Directory(direnum);
 
             LogService.Log.Info($"  Look for '{filename}' in {directory}");
-            string[] found = AssemblyList.GetAssemblies(directory, filename, searchoption);
+            var found = AssemblyList.GetAssemblies(directory, filename, searchoption);
+
             if ( found != null )
             {
                 // seems there is something
@@ -197,13 +169,14 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
                     var tmp = AssemblySpec.GetAssemblySpec(found[0]);
                     if ( tmp != null )
                     {
-                        spec = tmp;
+                        asssemblySpec = tmp;
                     }
                     else
                     {
                         LogService.Log.Debug($"  TryGetAdapterAssembly: AssemblySpec.GetAssemblySpec failed");
                     }
-                    rc = true;
+
+                    return true;
                 }
                 else
                 {
@@ -229,7 +202,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
                 }
             }
 
-            return rc;
+            return false;
         }
     }
 }

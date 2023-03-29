@@ -1,13 +1,9 @@
-﻿using SURFnet.Authentication.Adfs.Plugin.Setup.Assemblies;
-using SURFnet.Authentication.Adfs.Plugin.Setup.Configuration;
+﻿using System;
+using System.Collections.Generic;
+
+using SURFnet.Authentication.Adfs.Plugin.Setup.Assemblies;
 using SURFnet.Authentication.Adfs.Plugin.Setup.Models;
 using SURFnet.Authentication.Adfs.Plugin.Setup.Services;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
 {
@@ -19,16 +15,16 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
     public class VersionDescription : ISetupHandler
     {
         /// TODO: better with Constructor(x,y,z) and private setters?
-        ///   Yes, for DistributionVersion consistency too.
-        public VersionDescription(AdapterComponent adapter)
+        /// Yes, for DistributionVersion consistency too.
+        public VersionDescription(AdapterComponentBase adapter)
         {
-            DistributionVersion = adapter.AdapterSpec.FileVersion; // take property from adapter!
-            Adapter = adapter;
+            this.DistributionVersion = adapter.AdapterSpec.FileVersion; // take property from adapter!
+            this.Adapter = adapter;
         }
 
-        public Version DistributionVersion { get; private set; } // The FileVersion of the Adapter.
+        public Version DistributionVersion { get; } // The FileVersion of the Adapter.
 
-        public AdapterComponent Adapter { get; private set; }
+        public AdapterComponentBase Adapter { get; }
 
         public StepupComponent[] Components { get; set; } // Dependencies for Adapter
 
@@ -43,37 +39,41 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
         //
         public virtual int Verify()
         {
-            int rc = 0;
+            var rc = 0;
             int tmprc;
 
             LogService.Log.Info($"Checking Adapter:");
-            tmprc = Adapter.Verify();
+            tmprc = this.Adapter.Verify();
             if (tmprc != 0)
             {
-                LogService.Log.Fatal($"  Verify() on '{Adapter.ComponentName}' failed!");
+                LogService.Log.Fatal($"  Verify() on '{this.Adapter.ComponentName}' failed!");
                 rc = tmprc;
             }
 
-            if (Components != null && Components.Length > 0)
+            if (this.Components != null
+                && this.Components.Length > 0)
             {
                 LogService.Log.Info($"Checking Components:");
-                foreach (var cspec in Components)
+                foreach (var cspec in this.Components)
                 {
                     LogService.Log.Info($"Checking: '{cspec.ComponentName}'");
                     tmprc = cspec.Verify();
-                    if (tmprc != 0 )
+                    if (tmprc != 0)
                     {
                         LogService.Log.Fatal($"  Verify() on '{cspec.ComponentName}' failed!");
                         if (rc == 0)
+                        {
                             rc = tmprc;
+                        }
                     }
                 }
             }
 
-            if (ExtraAssemblies != null && ExtraAssemblies.Length > 0)
+            if (this.ExtraAssemblies != null
+                && this.ExtraAssemblies.Length > 0)
             {
                 LogService.Log.Info($"Checking ExtraAssemblies");
-                foreach (var aspec in ExtraAssemblies)
+                foreach (var aspec in this.ExtraAssemblies)
                 {
                     LogService.Log.Info($"Checking: '{aspec.InternalName}', version: {aspec.FileVersion}");
                     tmprc = aspec.Verify(aspec.FilePath);
@@ -81,7 +81,9 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
                     {
                         LogService.Log.Fatal($"  Verify() on '{aspec.InternalName}' failed!");
                         if (rc == 0)
+                        {
                             rc = tmprc;
+                        }
                     }
                 }
             }
@@ -97,23 +99,25 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
         /// <returns>Null on failure. Otherwise: All settings for all components.</returns>
         public virtual int ReadConfiguration(List<Setting> settings)
         {
-            int rc = 0;
+            var rc = 0;
 
-            LogService.Log.Info($"VersionDescription.ReadConfiguration() for version: {DistributionVersion}");
+            LogService.Log.Info($"VersionDescription.ReadConfiguration() for version: {this.DistributionVersion}");
 
-            LogService.Log.Info($"  Read Adapter configuration of '{Adapter.ComponentName}'");
-            if (0 != Adapter.ReadConfiguration(settings))
+            LogService.Log.Info($"  Read Adapter configuration of '{this.Adapter.ComponentName}'");
+            if (0 != this.Adapter.ReadConfiguration(settings))
             {
-                LogService.Log.Fatal($"  Reading Adapter '{Adapter.ComponentName}' configuration failed FileVersion: {Adapter.AdapterSpec.FileVersion}");
+                LogService.Log.Fatal(
+                    $"  Reading Adapter '{this.Adapter.ComponentName}' configuration failed FileVersion: {this.Adapter.AdapterSpec.FileVersion}");
                 rc = -1;
             }
 
-            if (Components != null && Components.Length > 0)
+            if (this.Components != null
+                && this.Components.Length > 0)
             {
-                foreach (var component in Components)
+                foreach (var component in this.Components)
                 {
                     LogService.Log.Info($"  Read configuration of '{component.ComponentName}'");
-                    int tmprc = component.ReadConfiguration(settings);
+                    var tmprc = component.ReadConfiguration(settings);
                     if (tmprc != 0)
                     {
                         LogService.Log.Fatal($"  Reading configuration failed for '{component.ComponentName}'");
@@ -132,17 +136,19 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
         /// <returns>0 if OK, otherwise fatal</returns>
         public virtual int SpecifyRequiredSettings(List<Setting> settings)
         {
-            int rc = 0;
+            var rc = 0;
 
-            LogService.Log.Info($"VersionDescription.SpecifyRequiredSettings() for version: {DistributionVersion}");
+            LogService.Log.Info(
+                $"VersionDescription.SpecifyRequiredSettings() for version: {this.DistributionVersion}");
             LogService.Log.Debug($"# of Settings on entry: {settings.Count}");
 
-            Adapter.SpecifyRequiredSettings(settings);
-            LogService.Log.Debug($"# of Settings after '{Adapter.ComponentName}': {settings.Count}");
+            this.Adapter.SpecifyRequiredSettings(settings);
+            LogService.Log.Debug($"# of Settings after '{this.Adapter.ComponentName}': {settings.Count}");
 
-            if ( Components!=null && Components.Length>0 )
+            if (this.Components != null
+                && this.Components.Length > 0)
             {
-                foreach (var component in Components )
+                foreach (var component in this.Components)
                 {
                     component.SpecifyRequiredSettings(settings);
                     LogService.Log.Debug($"Total # of Settings after '{component.ComponentName}': {settings.Count}");
@@ -162,7 +168,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
         {
             LogService.Log.Info($"VersionDescription.WriteConfiguration() for version: {this.DistributionVersion}");
 
-            if (this.Components != null && this.Components.Length > 0)
+            if (this.Components != null
+                && this.Components.Length > 0)
             {
                 LogService.Log.Info($"Start writing Components settings.");
                 foreach (var component in this.Components)
@@ -195,7 +202,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
             }
 
             // OK, then now components
-            if (this.Components == null || this.Components.Length <= 0)
+            if (this.Components == null
+                || this.Components.Length <= 0)
             {
                 return true;
             }
@@ -216,43 +224,47 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
 
         public virtual int Install()
         {
-            int rc = 0;
+            var rc = 0;
 
-            LogService.Log.Info($"VersionDescription.Install() for version: {DistributionVersion}");
+            LogService.Log.Info($"VersionDescription.Install() for version: {this.DistributionVersion}");
 
             // First extra assemblies
-            if ( ExtraAssemblies!=null && ExtraAssemblies.Length>0 )
+            if (this.ExtraAssemblies != null
+                && this.ExtraAssemblies.Length > 0)
             {
-                foreach ( var assembly in ExtraAssemblies )
+                foreach (var assembly in this.ExtraAssemblies)
                 {
-                    string srcpath = FileService.OurDirCombine(FileDirectory.Dist, assembly.InternalName);
-                    int tmprc = assembly.CopyToTarget(srcpath);
+                    var srcpath = FileService.OurDirCombine(FileDirectory.Dist, assembly.InternalName);
+                    var tmprc = assembly.CopyToTarget(srcpath);
                     if (0 != tmprc)
                     {
                         rc = tmprc; // error message was already written
-                        break; // stop copying.
+                        break;      // stop copying.
                     }
                 }
             }
 
             // Then dependencies, if still OK.
-            if ( rc==0 && Components!=null && Components.Length>0 )
+            if (rc == 0
+                && this.Components != null
+                && this.Components.Length > 0)
             {
-                foreach( var component in Components )
+                foreach (var component in this.Components)
                 {
-                    int tmprc = component.Install();
+                    var tmprc = component.Install();
                     if (0 != tmprc)
                     {
                         rc = tmprc; // error message was already written
-                        break; // stop Installing
+                        break;      // stop Installing
                     }
                 }
             }
 
             // Adapter last
-            if ( rc==0 && Adapter!=null )
+            if (rc == 0
+                && this.Adapter != null)
             {
-                rc = Adapter.Install();
+                rc = this.Adapter.Install();
             }
 
             return rc;
@@ -260,22 +272,24 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
 
         public virtual int UnInstall()
         {
-            int rc = 0;
+            var rc = 0;
 
-            LogService.Log.Info($"VersionDescription.Uninstall() for version: {DistributionVersion}");
+            LogService.Log.Info($"VersionDescription.Uninstall() for version: {this.DistributionVersion}");
 
             // start with adapter
-            if ( Adapter!=null )
+            if (this.Adapter != null)
             {
-                rc = Adapter.UnInstall();
+                rc = this.Adapter.UnInstall();
             }
 
             // then dependencies
-            if ( rc==0 && Components!=null && Components.Length>0 )
+            if (rc == 0
+                && this.Components != null
+                && this.Components.Length > 0)
             {
-                foreach( var component in Components )
+                foreach (var component in this.Components)
                 {
-                    int tmprc = component.UnInstall();
+                    var tmprc = component.UnInstall();
                     if (0 != tmprc)
                     {
                         rc = tmprc; // error message was already written
@@ -285,11 +299,12 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
             }
 
             // and last the extra assemblies
-            if (ExtraAssemblies != null && ExtraAssemblies.Length > 0)
+            if (this.ExtraAssemblies != null
+                && this.ExtraAssemblies.Length > 0)
             {
-                foreach (var assembly in ExtraAssemblies)
+                foreach (var assembly in this.ExtraAssemblies)
                 {
-                    int tmprc = assembly.BackupAndDelete();
+                    var tmprc = assembly.BackupAndDelete();
                     if (0 != tmprc)
                     {
                         rc = tmprc; // error message was already written
@@ -303,7 +318,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
 
         public override string ToString()
         {
-            return DistributionVersion.ToString();
+            return this.DistributionVersion.ToString();
         }
     }
 }

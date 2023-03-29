@@ -297,6 +297,18 @@ namespace SURFnet.Authentication.Adfs.Plugin
                 var samlResponse = new Saml2Response(response.SamlResponse, new Saml2Id(requestId));
                 if (samlResponse.Status != Saml2StatusCode.Success)
                 {
+
+                    // samlResponse.Status == Saml2StatusCode.Requester
+
+                    // samlResponse.SecondLevelStatus.
+
+                    // samlResponse.
+
+                    //todo jvt: display message to the user https://www.pivotaltracker.com/n/projects/1950415
+
+                    //todo jvt: log event log
+                    //todo jvt: display status messsage to the user (optional? how?)
+
                     return new AuthFailedForm(false, Values.DefaultVerificationFailedResourcerId, context.ContextId, context.ActivityId);
                 }              
                

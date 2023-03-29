@@ -34,7 +34,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
         public Version DetectedVersion =>
             null != this.InstalledVersionDescription
                 ? this.InstalledVersionDescription.DistributionVersion
-                : this.adapterOnly ?? V0Assemblies.AssemblyNullVersion;
+                : this.adapterOnly ?? Constants.AssemblyNullVersion;
 
         public Version RegisteredVersionInAdfs => this.AdfsConfig.RegisteredAdapterVersion;
 

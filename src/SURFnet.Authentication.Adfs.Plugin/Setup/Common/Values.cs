@@ -21,12 +21,12 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Common
         /// <summary>
         /// The file version for all (by referencing THIS value).
         /// </summary>
-        public const string FileVersion = "2.0.4.0";
+        public const string FileVersion = "2.1.0.0";
 
         /// <summary>
         /// The product version for all (by referencing THIS value).
         /// </summary>
-        public const string ProductVersion = "2.0.4.0";
+        public const string ProductVersion = "2.1.0.0";
 
         /// <summary>
         /// Used as -Name parameter in registration. First part of AdminName.
@@ -34,9 +34,10 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Common
         public const string AdapterRegistrationName = "ADFS.SCSA";
 
         public const string AdapterName = "SURFnet.Authentication.ADFS.Plugin";
-        public const string AdapterFilename = AdapterName + ".dll";
-        public const string AdapterCfgFilename = AdapterName + ".config.xml";
 
+        public const string AdapterFilename = AdapterName + ".dll";
+
+        public const string AdapterCfgFilename = AdapterName + ".config.xml";
 
         public const string Log4netCfgFilename = "SURFnet.Authentication.ADFS.MFA.Plugin.log4net";
 

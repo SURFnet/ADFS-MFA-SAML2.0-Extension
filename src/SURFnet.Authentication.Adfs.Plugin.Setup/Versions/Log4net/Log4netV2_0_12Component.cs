@@ -4,7 +4,7 @@ using SURFnet.Authentication.Adfs.Plugin.Setup.Common;
 using SURFnet.Authentication.Adfs.Plugin.Setup.Models;
 using SURFnet.Authentication.Adfs.Plugin.Setup.Services;
 
-namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
+namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions.Log4net
 {
     /// <summary>
     /// Class to deal specifically with log4net, which is different.
@@ -14,10 +14,11 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
     /// </summary>
     public class Log4netV2_0_12Component : StepupComponent
     {
-        public Log4netV2_0_12Component(string componentname) : base(componentname)
+        public Log4netV2_0_12Component(string componentname)
+            : base(componentname)
         {
-            Assemblies = ComponentAssemblies.Log4Net2_0_12AssemblySpec;
-            ConfigFilename = Values.Log4netCfgFilename;
+            this.Assemblies = ComponentAssemblies.Log4Net2_0_12AssemblySpec;
+            this.ConfigFilename = Values.Log4netCfgFilename;
         }
 
         /// <summary>
@@ -34,7 +35,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
         public override bool WriteConfiguration(List<Setting> settings)
         {
             // copy from distfolder to configuration output directory
-            FileService.CopyFromDistToOutput(ConfigFilename);
+            FileService.CopyFromDistToOutput(this.ConfigFilename);
 
             return true;
         }
