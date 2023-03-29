@@ -72,10 +72,10 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
 
                 if (rc == -1)
                 {
-                    var walkThroughRc = WalkThroughSettings();
-                    if (walkThroughRc != 0)
+                    rc = WalkThroughSettings();
+
+                    if (rc != 0)
                     {
-                        rc = -3;
                         QuestionIO.WriteError("The configuration settings were not properly specified.");
                     }
                 }
@@ -87,7 +87,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Configuration
             }
 
             return rc;
-        }    
+        }
 
         /// <summary>
         /// Quick just doit Question.
