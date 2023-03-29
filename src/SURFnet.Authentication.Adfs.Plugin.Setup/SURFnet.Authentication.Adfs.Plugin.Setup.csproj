@@ -150,9 +150,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="config\gateway.pilot.stepup.surfconext.nl.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Include="config\sa-gw.surfconext.nl.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
