@@ -99,8 +99,8 @@ copy %root_dir%\src\SURFnet.Authentication.Adfs.Plugin.Extensions.Samples\bin\%b
 copy %root_dir%\CHANGELOG %release% || goto :error
 copy %root_dir%\LICENSE %release% || goto :error
 copy %root_dir%\NOTICE %release% || goto :error
-copy %root_dir%\INSTALL %release% || goto :error
-copy %root_dir%\UPGRADE %release% || goto :error
+copy %root_dir%\INSTALL.md %release% || goto :error
+copy %root_dir%\UPGRADE.md %release% || goto :error
 copy %root_dir%\KNOWN_ISSUES %release% || goto :error
 
 @if "%sign%" == "0" (
