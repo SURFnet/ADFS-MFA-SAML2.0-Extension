@@ -127,28 +127,18 @@
     <Compile Include="Configuration\ConfigSettings.cs" />
     <Compile Include="Util\UAC.cs" />
     <Compile Include="Util\XmlUtil.cs" />
-    <Compile Include="Versions\AdapterComponent.cs" />
+    <Compile Include="Versions\AdapterComponentBase.cs" />
     <Compile Include="Versions\ComponentAssemblies.cs" />
     <Compile Include="Versions\CurrentPublicTokenKey.cs" />
-    <Compile Include="Versions\Kentorv0_21_Component.cs" />
-    <Compile Include="Versions\Log4netV2_0_12Component.cs" />
-    <Compile Include="Versions\Log4netV2_0_8GAC.cs" />
-    <Compile Include="Versions\Log4netV2_0_8Component.cs" />
-    <Compile Include="Versions\Sustainsys2_7Deps_2_0_4.cs" />
-    <Compile Include="Versions\Sustainsys2_7Deps.cs" />
-    <Compile Include="Versions\Sustainsys2_7MdComponent.cs" />
-    <Compile Include="Versions\Sustainsys2_xComponent.cs" />
-    <Compile Include="Versions\V0Assemblies.cs" />
-    <Compile Include="Versions\V1AdapterImp.cs" />
-    <Compile Include="Versions\V1Components.cs" />
+    <Compile Include="Versions\Log4net\Log4netV2_0_12Component.cs" />
+    <Compile Include="Versions\Sustainsys\SustainsysDependencies.cs" />
+    <Compile Include="Versions\Sustainsys\Sustainsys2_7Component.cs" />
+    <Compile Include="Versions\Sustainsys\SustainsysBaseComponent.cs" />
+    <Compile Include="Versions\Constants.cs" />
     <Compile Include="Versions\ISetupHandler.cs" />
-    <Compile Include="Versions\V2_0AdapterImp.cs" />
-    <Compile Include="Versions\AllDescriptions.cs" />
-    <Compile Include="Versions\V2Components.cs" />
-    <Compile Include="Versions\V1DescriptionImp.cs" />
+    <Compile Include="Versions\AdapterComponentV2.cs" />
+    <Compile Include="Versions\VersionDescriptions.cs" />
     <Compile Include="Versions\StepupComponent.cs" />
-    <Compile Include="Versions\V1Assemblies.cs" />
-    <Compile Include="Versions\V2Assemblies.cs" />
     <Compile Include="Versions\VersionDescription.cs" />
     <Compile Include="Versions\VersionHeuristics.cs" />
   </ItemGroup>
@@ -160,9 +150,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="config\gateway.pilot.stepup.surfconext.nl.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Include="config\sa-gw.surfconext.nl.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -170,5 +157,6 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

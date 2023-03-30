@@ -1,23 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Xml;
-using System.Xml.Linq;
-
-using SURFnet.Authentication.Adfs.Plugin.Setup.Assemblies;
+﻿using SURFnet.Authentication.Adfs.Plugin.Setup.Assemblies;
 using SURFnet.Authentication.Adfs.Plugin.Setup.Common;
 using SURFnet.Authentication.Adfs.Plugin.Setup.Configuration;
 using SURFnet.Authentication.Adfs.Plugin.Setup.Models;
 using SURFnet.Authentication.Adfs.Plugin.Setup.Services;
 using SURFnet.Authentication.Adfs.Plugin.Setup.Util;
 
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Xml;
+using System.Xml.Linq;
+
 namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
 {
-    public class V2_0AdapterImp : AdapterComponent
+    public class AdapterComponentV2 : AdapterComponentBase
     {
-        public V2_0AdapterImp(AssemblySpec adapterAssembly) : base(adapterAssembly)
+        public AdapterComponentV2(AssemblySpec adapterAssembly) : base(adapterAssembly)
         {
             ConfigParameters = new string[]
             {

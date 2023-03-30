@@ -96,7 +96,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
             // then my AssemblySpec!! Looking at the exact values it is some ADFS madness??
             // So we take the Product version which looks like less nonsense. Or is it my bug? (PL)
 
-            var rc = V0Assemblies.AssemblyNullVersion;
+            var rc = Constants.AssemblyNullVersion;
 
             var adfsPath = FileService.OurDirCombine(FileDirectory.AdfsDir, SetupConstants.AdfsFilename);
             var adfsAssembly = AssemblySpec.GetAssemblySpec(adfsPath);

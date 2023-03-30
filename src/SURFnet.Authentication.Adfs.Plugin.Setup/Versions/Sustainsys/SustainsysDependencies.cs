@@ -1,36 +1,40 @@
-using SURFnet.Authentication.Adfs.Plugin.Setup.Assemblies;
 using System;
 
-namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
+using SURFnet.Authentication.Adfs.Plugin.Setup.Assemblies;
+
+namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions.Sustainsys
 {
-    public class Sustainsys2_7Deps_2_0_4
+    public class SustainsysDependencies
     {
-        static public readonly AssemblySpec[] Sustainsys2_7_Extras = new AssemblySpec[]
-        {
+        public static readonly AssemblySpec[] Version_2_7 = {
             new AssemblySpec("Microsoft.IdentityModel.Logging.dll")
             {
-                AssemblyFullName = "Microsoft.IdentityModel.Logging, Version=5.2.4.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35",
+                AssemblyFullName =
+                    "Microsoft.IdentityModel.Logging, Version=5.2.4.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35",
                 AssemblyVersion = new Version("5.2.4.0"),
                 ProductVersion = new Version("0.0.0.0"),
                 FileVersion = new Version("5.2.4.50619")
             },
             new AssemblySpec("Microsoft.IdentityModel.Protocols.dll")
             {
-                AssemblyFullName = "Microsoft.IdentityModel.Protocols, Version=5.2.4.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35",
+                AssemblyFullName =
+                    "Microsoft.IdentityModel.Protocols, Version=5.2.4.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35",
                 AssemblyVersion = new Version("5.2.4.0"),
                 ProductVersion = new Version("0.0.0.0"),
                 FileVersion = new Version("5.2.4.50619")
             },
             new AssemblySpec("Microsoft.IdentityModel.Tokens.dll")
             {
-                AssemblyFullName = "Microsoft.IdentityModel.Tokens, Version=5.2.4.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35",
+                AssemblyFullName =
+                    "Microsoft.IdentityModel.Tokens, Version=5.2.4.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35",
                 AssemblyVersion = new Version("5.2.4.0"),
                 ProductVersion = new Version("0.0.0.0"),
                 FileVersion = new Version("5.2.4.50619")
             },
             new AssemblySpec("Microsoft.IdentityModel.Tokens.Saml.dll")
             {
-                AssemblyFullName = "Microsoft.IdentityModel.Tokens.Saml, Version=5.2.4.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35",
+                AssemblyFullName =
+                    "Microsoft.IdentityModel.Tokens.Saml, Version=5.2.4.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35",
                 AssemblyVersion = new Version("5.2.4.0"),
                 ProductVersion = new Version("0.0.0.0"),
                 FileVersion = new Version("5.2.4.50619")
@@ -38,49 +42,56 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
             new AssemblySpec("Microsoft.IdentityModel.Xml.dll")
             {
                 InternalName = "Microsoft.IdentityModel.Xml.dll",
-                AssemblyFullName = "Microsoft.IdentityModel.Xml, Version=5.2.4.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35",
+                AssemblyFullName =
+                    "Microsoft.IdentityModel.Xml, Version=5.2.4.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35",
                 AssemblyVersion = new Version("5.2.4.0"),
                 ProductVersion = new Version("0.0.0.0"),
                 FileVersion = new Version("5.2.4.50619")
             },
             new AssemblySpec("System.Configuration.ConfigurationManager.dll")
             {
-                AssemblyFullName = "System.Configuration.ConfigurationManager, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51",
+                AssemblyFullName =
+                    "System.Configuration.ConfigurationManager, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51",
                 AssemblyVersion = new Version("4.0.3.0"),
                 ProductVersion = new Version("3.1.0.0"),
                 FileVersion = new Version("4.700.19.56404")
             },
             new AssemblySpec("System.Security.AccessControl.dll")
             {
-                AssemblyFullName = "System.Security.AccessControl, Version=4.1.3.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a",
+                AssemblyFullName =
+                    "System.Security.AccessControl, Version=4.1.3.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a",
                 AssemblyVersion = new Version("4.1.3.0"),
                 ProductVersion = new Version("3.1.0.0"),
                 FileVersion = new Version("4.700.19.56404")
             },
             new AssemblySpec("System.Security.Cryptography.Xml.dll")
             {
-                AssemblyFullName = "System.Security.Cryptography.Xml, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51",
+                AssemblyFullName =
+                    "System.Security.Cryptography.Xml, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51",
                 AssemblyVersion = new Version("4.0.3.0"),
                 ProductVersion = new Version("3.1.0.0"),
                 FileVersion = new Version("4.700.19.56404")
             },
             new AssemblySpec("System.Security.Permissions.dll")
             {
-                AssemblyFullName = "System.Security.Permissions, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51",
+                AssemblyFullName =
+                    "System.Security.Permissions, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51",
                 AssemblyVersion = new Version("4.0.3.0"),
                 ProductVersion = new Version("3.1.0.0"),
                 FileVersion = new Version("4.700.19.56404")
             },
             new AssemblySpec("System.Security.Principal.Windows.dll")
             {
-                AssemblyFullName = "System.Security.Principal.Windows, Version=4.1.3.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a",
+                AssemblyFullName =
+                    "System.Security.Principal.Windows, Version=4.1.3.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a",
                 AssemblyVersion = new Version("4.1.3.0"),
                 ProductVersion = new Version("3.1.0.0"),
                 FileVersion = new Version("4.700.19.56404")
             },
             new AssemblySpec("System.ValueTuple.dll")
             {
-                AssemblyFullName = "System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51",
+                AssemblyFullName =
+                    "System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51",
                 AssemblyVersion = new Version("4.0.3.0"),
                 ProductVersion = new Version("0.0.0.0"),
                 FileVersion = new Version("4.6.26515.6")

@@ -14,24 +14,23 @@
 * limitations under the License.
 */
 
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Xml;
+using System.Xml.Linq;
+
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+
+using SURFnet.Authentication.Adfs.Plugin.Setup.Models;
+using SURFnet.Authentication.Adfs.Plugin.Setup.Question;
+
+using Formatting = Newtonsoft.Json.Formatting;
+
 namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
 {
-    using System;
-    using System.Collections.Generic;
-    using System.IO;
-    using System.Linq;
-    using System.Security.Cryptography.X509Certificates;
-    using System.Text;
-    using System.Xml;
-    using System.Xml.Linq;
-    using Newtonsoft.Json;
-    using Newtonsoft.Json.Linq;
-
-    using SURFnet.Authentication.Adfs.Plugin.Setup.Common;
-    using SURFnet.Authentication.Adfs.Plugin.Setup.Configuration;
-    using SURFnet.Authentication.Adfs.Plugin.Setup.Models;
-    using SURFnet.Authentication.Adfs.Plugin.Setup.Question;
-
     /// <summary>
     /// Class ConfigurationFileService.
     /// </summary>
@@ -49,17 +48,18 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
         /// <returns></returns>
         public static bool ReplaceInXmlCfgFile(string filename, string[] settings, List<Setting> allsettings)
         {
-            bool ok = true;
+            var ok = true;
 
             var contents = FileService.LoadCfgSrcFileFromDist(filename);
 
-            foreach (string parameter in settings)
+            foreach (var parameter in settings)
             {
                 // Double check, mainly for development. Settings checker has already done this.
-                Setting setting = allsettings.Find(s => s.InternalName.Equals(parameter));
+                var setting = allsettings.Find(s => s.InternalName.Equals(parameter));
                 if (setting == null)
                 {
-                    LogService.WriteFatal($"Missing setting with InternalName: '{parameter}' in allSettings for {filename}.");
+                    LogService.WriteFatal(
+                        $"Missing setting with InternalName: '{parameter}' in allSettings for {filename}.");
                     ok = false;
                 }
                 else if (string.IsNullOrWhiteSpace(setting.Value))
@@ -69,8 +69,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
                 }
                 else
                 {
-                    string percented = $"%{setting.InternalName}%";
-                    if ( contents.IndexOf(setting.InternalName) > 0)
+                    var percented = $"%{setting.InternalName}%";
+                    if (contents.IndexOf(setting.InternalName) > 0)
                     {
                         // yes is there
                         contents = contents.Replace(percented, setting.Value);
@@ -84,7 +84,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
             }
 
             var document = XDocument.Parse(contents); // wow soliciting exception....
-            ConfigurationFileService.SaveXmlConfigurationFile(document, filename);
+            SaveXmlConfigurationFile(document, filename);
 
             return ok;
         }
@@ -124,14 +124,18 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
 
             var path = FileService.OurDirCombine(FileDirectory.Config, SetupConstants.IdPEnvironmentsFilename);
             if (!File.Exists(path))
+            {
+                LogService.WriteFatal($"File '{path}' is missing.");
                 return null;
+            }
 
             var fileContents = File.ReadAllText(path);
             var array = JArray.Parse(fileContents);
             var result = new List<Dictionary<string, string>>();
             foreach (var item in array)
             {
-                var dict = item.Children<JProperty>().ToDictionary(child => child.Name, child => child.Value.Value<string>());
+                var dict = item.Children<JProperty>()
+                               .ToDictionary(child => child.Name, child => child.Value.Value<string>());
 
                 result.Add(dict);
             }
@@ -147,12 +151,12 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
         /// file versions of the adapter.
         /// </summary>
         /// <returns>Dictionary with key as in Setting.InternalName, data is value for Setting</returns>
-        public static Dictionary<string,string> LoadUsedSettings()
+        public static Dictionary<string, string> LoadUsedSettings()
         {
             Dictionary<string, string> dict = null;
 
             var path = FileService.OurDirCombine(FileDirectory.Config, SetupConstants.UsedSettingsFilename);
-            if ( File.Exists(path) )
+            if (File.Exists(path))
             {
                 var fileContents = File.ReadAllText(path);
                 dict = JsonConvert.DeserializeObject<Dictionary<string, string>>(fileContents);
@@ -167,24 +171,26 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
         }
 
         /// <summary>
-        /// To write Dictionary<InternalName,Value> to disk.
+        /// To write Dictionary<InternalName, Value> to disk.
         /// </summary>
         /// <param name="dict"></param>
         /// <returns></returns>
-        public static int WriteUsedSettings(Dictionary<string,string> dict)
+        public static int WriteUsedSettings(Dictionary<string, string> dict)
         {
-            int rc = 0;
+            var rc = 0;
 
-            string json = JsonConvert.SerializeObject(dict, Newtonsoft.Json.Formatting.Indented);
+            var json = JsonConvert.SerializeObject(dict, Formatting.Indented);
 
             var path = FileService.OurDirCombine(FileDirectory.Config, SetupConstants.UsedSettingsFilename);
             try
             {
                 File.WriteAllText(path, json);
                 Console.WriteLine();
-                Console.WriteLine("*** Wrote your configuration choices to disk for use with the other servers in this farm ***");
+                Console.WriteLine(
+                    "*** Wrote your configuration choices to disk for use with the other servers in this farm ***");
                 Console.WriteLine($"Location: '{path}'");
-                Console.WriteLine("All servers in the same farm must use the same configuration. When present, Setup.exe will read the");
+                Console.WriteLine(
+                    "All servers in the same farm must use the same configuration. When present, Setup.exe will read the");
                 Console.WriteLine("configuration from this file and use it during install/upgrade or reconfiguration.");
                 Console.WriteLine("The file contents are version specific.");
                 Console.WriteLine("You can safely remove this file, then you have to specify all settings manually.");
@@ -220,7 +226,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
             }
             catch (Exception ex)
             {
-                LogService.WriteWarning("Writing Registration data failed: "+ex.Message);
+                LogService.WriteWarning("Writing Registration data failed: " + ex.Message);
             }
         }
     }

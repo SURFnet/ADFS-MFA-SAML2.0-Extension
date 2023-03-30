@@ -40,7 +40,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                         doit = true;
                         if (AdfsPSService.UnregisterAdapter())
                         {
-                            setupstate.AdfsConfig.RegisteredAdapterVersion = V0Assemblies.AssemblyNullVersion;
+                            setupstate.AdfsConfig.RegisteredAdapterVersion = Constants.AssemblyNullVersion;
                             Console.WriteLine(
                                 "\"Unregister\" successful, the ADFS EventLog should no longer show loading this ('"
                                 + Values.AdapterRegistrationName

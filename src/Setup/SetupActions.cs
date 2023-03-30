@@ -12,7 +12,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
         {
             // only this version, because the configuration writers are absent for older versions
             LogService.Log.Info("Start an installation.");
-            if (0 != SettingsChecker.VerifySettingsComplete(setupstate, AllDescriptions.ThisVersion))
+            if (0 != SettingsChecker.VerifySettingsComplete(setupstate, VersionDescriptions.ThisVersion))
             {
                 // SETTING PROBLEM
                 return ReturnOptions.FatalFailure;
@@ -24,7 +24,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                 return SetupInstallationActions.GreenFieldInstallation(setupstate);
             }
 
-            if (setupstate.DetectedVersion < AllDescriptions.ThisVersion.DistributionVersion)
+            if (setupstate.DetectedVersion < VersionDescriptions.ThisVersion.DistributionVersion)
             {
                 // UPGRADE to this version scenario
                 return SetupInstallationActions.UpgradeToThisVersion(setupstate);
@@ -92,7 +92,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                 return ReturnOptions.Failure;
             }
 
-            if (0 != SettingsChecker.VerifySettingsComplete(setupstate, AllDescriptions.ThisVersion))
+            if (0 != SettingsChecker.VerifySettingsComplete(setupstate, VersionDescriptions.ThisVersion))
             {
                 // SETTING PROBLEM
                 LogService.Log.Info("Setting problem!!");
@@ -101,7 +101,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
 
             Console.WriteLine("Reconfiguration started.");
 
-            var rc = AdapterMaintenance.ReConfigure(AllDescriptions.ThisVersion, setupstate.FoundSettings);
+            var rc = AdapterMaintenance.ReConfigure(VersionDescriptions.ThisVersion, setupstate.FoundSettings);
             if (rc != 0)
             {
                 return (ReturnOptions)rc;

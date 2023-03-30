@@ -20,14 +20,14 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                 return Messages.EndWarning("First installation *must* be on a primary server of the ADFS farm.");
             }
 
-            if (!Messages.DoYouWantTO($"Install version {AllDescriptions.ThisVersion.DistributionVersion}"))
+            if (!Messages.DoYouWantTO($"Install version {VersionDescriptions.ThisVersion.DistributionVersion}"))
             {
                 return ReturnOptions.Failure;
             }
 
             // real green field install
             LogService.Log.Info("Calling AdapterMaintenance.Install()");
-            if (!AdapterMaintenance.Install(AllDescriptions.ThisVersion, setupstate.FoundSettings))
+            if (!AdapterMaintenance.Install(VersionDescriptions.ThisVersion, setupstate.FoundSettings))
             {
                 Console.WriteLine();
                 Console.WriteLine("Installation failed.");
@@ -86,7 +86,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
             }
 
             if (Messages.DoYouWantTO(
-                $"Upgrade from {setupstate.DetectedVersion} to version {AllDescriptions.ThisVersion.DistributionVersion}")
+                $"Upgrade from {setupstate.DetectedVersion} to version {VersionDescriptions.ThisVersion.DistributionVersion}")
             )
             {
                 LogService.Log.Info("Starting Upgrade");
@@ -96,7 +96,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                     LogService.Log.Info("Write registration and other cfg");
 
                     // primary: Update ADFS registration and write Registration data
-                    if (!AllDescriptions.ThisVersion.WriteConfiguration(setupstate.FoundSettings))
+                    if (!VersionDescriptions.ThisVersion.WriteConfiguration(setupstate.FoundSettings))
                     {
                         Console.WriteLine();
                         Console.WriteLine("Preparing new configuration failed.  Aborting Upgrade.");
@@ -121,7 +121,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
 
                 if (!AdapterMaintenance.Upgrade(
                     setupstate.InstalledVersionDescription,
-                    AllDescriptions.ThisVersion,
+                    VersionDescriptions.ThisVersion,
                     setupstate.FoundSettings))
                 {
                     Console.WriteLine();
@@ -162,11 +162,11 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                 return ReturnOptions.Failure;
             }
 
-            if (setupstate.AdfsConfig.RegisteredAdapterVersion != AllDescriptions.ThisVersion.DistributionVersion)
+            if (setupstate.AdfsConfig.RegisteredAdapterVersion != VersionDescriptions.ThisVersion.DistributionVersion)
             {
                 if (false
                     == Messages.DoYouWantTO(
-                        $"Upgrade ADFS REGISTRATION from {setupstate.AdfsConfig.RegisteredAdapterVersion} to version {AllDescriptions.ThisVersion.DistributionVersion}")
+                        $"Upgrade ADFS REGISTRATION from {setupstate.AdfsConfig.RegisteredAdapterVersion} to version {VersionDescriptions.ThisVersion.DistributionVersion}")
                 )
                 {
                     return ReturnOptions.Failure;

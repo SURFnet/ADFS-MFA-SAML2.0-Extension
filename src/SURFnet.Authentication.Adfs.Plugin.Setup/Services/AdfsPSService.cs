@@ -124,7 +124,7 @@
         /// </summary>
         /// <param name="spec">spec of Adapter</param>
         /// <returns>true if no errors.</returns>
-        public static bool RegisterAdapter(AdapterComponent adapter)
+        public static bool RegisterAdapter(AdapterComponentBase adapter)
         {
             //var adapterName = Values.AdapterRegistrationName;
             bool ok = true;

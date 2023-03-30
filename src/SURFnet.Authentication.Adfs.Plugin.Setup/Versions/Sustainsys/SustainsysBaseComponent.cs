@@ -1,21 +1,19 @@
-﻿using SURFnet.Authentication.Adfs.Plugin.Setup.Configuration;
+﻿using System;
+using System.Collections.Generic;
+using System.Xml;
+
+using SURFnet.Authentication.Adfs.Plugin.Setup.Configuration;
 using SURFnet.Authentication.Adfs.Plugin.Setup.Models;
 using SURFnet.Authentication.Adfs.Plugin.Setup.Services;
 using SURFnet.Authentication.Adfs.Plugin.Setup.Util;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml;
 
-namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
+namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions.Sustainsys
 {
     /// <summary>
     /// This class in not 100% required in 2.0.0.0. But it was there whene there were
     /// several 2.x versions. Might be very useful later if we need more 2.0 versions.
     /// </summary>
-    public abstract class Sustainsys2_xComponent : StepupComponent
+    public abstract class SustainsysBaseComponent : StepupComponent
     {
         // Element names
         protected const string CfgElementName = "configuration";
@@ -50,22 +48,22 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
         // attributeValues
         protected const string cfgParserName = "Sustainsys.Saml2.Configuration.SustainsysSaml2Section";
 
-        public Sustainsys2_xComponent(string name) : base(name)
+        protected SustainsysBaseComponent(string name) : base(name)
         {
-            ConfigFilename = SetupConstants.SustainCfgFilename;
+            this.ConfigFilename = SetupConstants.SustainCfgFilename;
         }
 
         public override int ReadConfiguration(List<Setting> settings)
         {
             int rc;
-            if (ConfigParameters == null) throw new ApplicationException("ConfigParameters cannot be null");
+            if (this.ConfigParameters == null) throw new ApplicationException("ConfigParameters cannot be null");
 
-            LogService.Log.Info($"Reading Settings from '{ConfigFilename}' for '{ComponentName}'.");
+            LogService.Log.Info($"Reading Settings from '{this.ConfigFilename}' for '{this.ComponentName}'.");
 
-            rc = ExctractSustainsysConfig(settings);
+            rc = this.ExctractSustainsysConfig(settings);
             if (rc != 0)
             {
-                LogService.WriteFatal($"  Reading settings from '{ConfigFilename}' for '{ComponentName}' failed.");
+                LogService.WriteFatal($"  Reading settings from '{this.ConfigFilename}' for '{this.ComponentName}' failed.");
             }
 
             return rc;
@@ -85,7 +83,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
 
             // configSections/section
             var section = doc.CreateElement(SectionElement);  // <section/>
-            XmlUtil.AddAttribute(section, typeAttribute, cfgParserName + ", " + Assemblies[0].AssemblyFullName); // type=
+            XmlUtil.AddAttribute(section, typeAttribute, cfgParserName + ", " + this.Assemblies[0].AssemblyFullName); // type=
             XmlUtil.AddAttribute(section, nameAttribute, SustainsysSaml2Section);   // name=
             cfgSections.AppendChild(section);
 
@@ -98,7 +96,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
             // sustainsys.saml2/serviceCertitifcates
             var svcCerts = doc.CreateElement(SPCerts);
             sustainElement.AppendChild(svcCerts);
-            AddSpCert(svcCerts, Setting.GetSettingByName(ConfigSettings.SPSignThumb1).Value);
+            this.AddSpCert(svcCerts, Setting.GetSettingByName(ConfigSettings.SPSignThumb1).Value);
 
             // sustainsys.saml2/nameIdPolicy
             var nameIDPol = doc.CreateElement(NaemIDPolicy);
@@ -108,11 +106,11 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
 
             // sustainsys.saml2/identityProviders
             var idps = doc.CreateElement(IdentityProviders);
-            AddIdP(idps, Setting.GetSettingByName(ConfigSettings.IdPEntityId).Value,
-                            Setting.GetSettingByName(ConfigSettings.IdPMdFilename).Value);
+            this.AddIdP(idps, Setting.GetSettingByName(ConfigSettings.IdPEntityId).Value,
+                        Setting.GetSettingByName(ConfigSettings.IdPMdFilename).Value);
             sustainElement.AppendChild(idps);
 
-            return ConfigurationFileService.SaveXmlDocumentConfiguration(doc, ConfigFilename);
+            return ConfigurationFileService.SaveXmlDocumentConfiguration(doc, this.ConfigFilename);
             //doc.Save("out.xml");
         }
 
