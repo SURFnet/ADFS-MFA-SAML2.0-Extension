@@ -41,7 +41,7 @@
 mkdir %root_dir%\release
 @set release=%root_dir%\release\SetupPackage-%version%
 @if [%build%] == [Debug] (
-	set release=%root_dir%\debug\SetupPackage-debug-%version%
+	set release=%root_dir%\release\SetupPackage-debug-%version%
 )
 
 @if exist %release%\ (
