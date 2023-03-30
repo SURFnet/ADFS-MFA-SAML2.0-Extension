@@ -18,12 +18,6 @@
   @shift
 )
 
-@if [%1] == [-debug] (
-  @echo Enabled debug release
-  @set build=Debug
-  @shift
-)
-
 @if [%1] == [] (
   @echo Missing parameter: version
   @echo.
@@ -47,7 +41,7 @@
 mkdir %root_dir%\release
 @set release=%root_dir%\release\SetupPackage-%version%
 @if [%build%] == [Debug] (
-	set release=%root_dir%\release\SetupPackage-debug-%version%
+	set release=%root_dir%\debug\SetupPackage-debug-%version%
 )
 
 @if exist %release%\ (
@@ -71,7 +65,6 @@ copy %root_dir%\src\Setup\bin\%build%\Setup.log4net %release% || goto :error
 copy %root_dir%\src\Setup\bin\%build%\SURFnet.Authentication.Adfs.Plugin.Setup.dll %release% || goto :error
 copy %root_dir%\src\Setup\bin\%build%\SURFnet.Authentication.Adfs.Plugin.Setup.dll.config %release% || goto :error
 
-copy %root_dir%\src\Setup\bin\%build%\config\gateway.pilot.stepup.surfconext.nl.xml %release%\config || goto :error
 copy %root_dir%\src\Setup\bin\%build%\config\sa-gw.surfconext.nl.xml %release%\config || goto :error
 copy %root_dir%\src\Setup\bin\%build%\config\sa-gw.test.surfconext.nl.xml %release%\config || goto :error
 copy %root_dir%\src\Setup\bin\%build%\config\SURFnet.Authentication.ADFS.MFA.Plugin.Environments.json %release%\config || goto :error

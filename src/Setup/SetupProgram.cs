@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 using CommandLine;
@@ -110,7 +111,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                 FileService.InitFileService();
 
                 var idPEnvironments = state.IdPEnvironments = ConfigurationFileService.LoadIdPDefaults();
-                if (idPEnvironments == null || idPEnvironments.Count < 3)
+                if (idPEnvironments == null || idPEnvironments.Any())
                 {
                     // Darn, no error check at low level?
                     throw new ApplicationException("Error reading the SFO server (IdP) environment descriptions.");

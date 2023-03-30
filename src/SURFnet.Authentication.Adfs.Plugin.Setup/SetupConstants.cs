@@ -24,33 +24,40 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
     public static class SetupConstants
     {
         public const string SetupFileVersion = Values.FileVersion;
+
         public const string SetupProductVersion = Values.ProductVersion;
 
         public const string IdPEnvironmentsFilename = "SURFnet.Authentication.ADFS.MFA.Plugin.Environments.json";
+
         public const string UsedSettingsFilename = "UsedSettings.json";
 
         public const string AdfsFilename = "Microsoft.IdentityServer.Servicehost.exe";
-        public const string AdfsCfgFilename = AdfsFilename+".config";
+
+        public const string AdfsCfgFilename = AdfsFilename + ".config";
 
         public const string SustainsysName = "Sustainsys.Saml2";
+
         public const string SustainsysFilename = SustainsysName + ".dll";
+
         public const string SustainCfgFilename = SustainsysFilename + ".config";
 
         public const string Log4netFilename = "log4net.dll";
 
         public const string SPCertPfxFilename = "SP-SFO-Extension {0}.pfx";
+
         public const string RegistrationDataFilename = "MfaRegistrationData.txt";
 
         // extra property names in JSON file. Not really a setting. The rest is in: .
         public const string IdPEnvironmentType = "Name";
-        public const string IdPProdTypeValue = "Production";
 
+        public const string IdPProdTypeValue = "Production";
 
         // TODO: Look if we can do something common for all adapter? 
         public static class XmlElementName
         {
-            public const string AdapterCfgSection = "SURFnet.Authentication.Adfs.StepUp"; // TODO: was actually shared with plugin assembly
+            public const string
+                AdapterCfgSection =
+                    "SURFnet.Authentication.Adfs.StepUp"; // TODO: was actually shared with plugin assembly
         }
-
     }
 }
