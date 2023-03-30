@@ -92,7 +92,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
                         RegistrationLog.WriteLine("Adapter parms loaded from small XML.");
                     }
                     else
-                    {                       
+                    {
                         mustThrow = true;
                     }
                 }
@@ -201,7 +201,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
         public bool IsAvailableForUser(Claim identityClaim, IAuthenticationContext context)
         {
             return true;
-        }      
+        }
 
         /// <summary>
         /// Begins the authentication.
@@ -222,11 +222,11 @@ namespace SURFnet.Authentication.Adfs.Plugin
 
                 // Log the identityClaim Value and Type that we received from AD FS.
                 LogService.Log.InfoFormat("Received MFA authentication request for ADFS user with identityClaim '{0}' ({1})", identityClaim.Value, identityClaim.Type);
-                                            
-                var stepupNameID = string.Empty;           
+
+                var stepupNameID = string.Empty;
                 if (!StepUpConfig.Current.GetNameID.TryGetNameIDValue(identityClaim, out stepupNameID))
                 {
-                    throw new NotSupportedException(); 
+                    throw new NotSupportedException();
                 }
 
                 var requestId = $"_{context.ContextId}";
@@ -243,7 +243,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
                 LogService.Log.InfoFormat("Forwarding SAML SFO AuthnRequest with ID '{0}' for Stepup NameID '{1}' to '{2}'", requestId, authRequest.Subject.NameId.Value, ssoUrl);
 
                 // Store stepupNameID for verification in TryEndAuthentication
-                context.Data.Add(AuthenticationContextNameID, stepupNameID);  
+                context.Data.Add(AuthenticationContextNameID, stepupNameID);
 
                 return new AuthForm(ssoUrl, signedXml);
             }
@@ -263,7 +263,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
             catch (Exception ex)
             {
                 LogService.Log.FatalFormat("Unexpected error while initiating authentication: {0}", ex);
-                return new AuthFailedForm(false, Values.DefaultErrorMessageResourcerId, context.ContextId, context.ActivityId);
+                return new AuthFailedForm(false, ErrorMessageValues.DefaultErrorMessageResourcerId, context.ContextId, context.ActivityId);
             }
         }
 
@@ -280,14 +280,14 @@ namespace SURFnet.Authentication.Adfs.Plugin
         public IAdapterPresentation TryEndAuthentication(IAuthenticationContext context, IProofData proofData, HttpListenerRequest request, out Claim[] claims)
         {
             var requestId = $"_{ context.ContextId}";
-            
+
             LogService.PrepareCorrelatedLogger(context.ContextId, context.ActivityId);
             LogService.Log.Debug("Enter TryEndAuthentication");
             LogService.Log.DebugFormat("context.Lcid={0}", context.Lcid);
 
             LogService.Log.DebugLogDictionary(context.Data, "context.Data");
             LogService.Log.DebugLogDictionary(proofData.Properties, "proofData.Properties");
-           
+
             claims = null;
             try
             {
@@ -297,9 +297,18 @@ namespace SURFnet.Authentication.Adfs.Plugin
                 var samlResponse = new Saml2Response(response.SamlResponse, new Saml2Id(requestId));
                 if (samlResponse.Status != Saml2StatusCode.Success)
                 {
-                    return new AuthFailedForm(false, Values.DefaultVerificationFailedResourcerId, context.ContextId, context.ActivityId);
-                }              
-               
+
+
+                    // samlResponse.Status == Saml2StatusCode.Requester
+                    // samlResponse.SecondLevelStatus.
+                    // samlResponse.
+                    //todo jvt: display message to the user https://www.pivotaltracker.com/n/projects/1950415
+                    //todo jvt: log event log
+                    //todo jvt: display status messsage to the user (optional? how?)
+
+                    return new AuthFailedForm(false, ErrorMessageValues.DefaultVerificationFailedResourcerId, context.ContextId, context.ActivityId);
+                }
+
                 string loa = string.Empty;
                 string nameID = null;
 
@@ -325,7 +334,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
                             if (!Metadata.AuthenticationMethods.Any(method => method.Equals(loa, StringComparison.Ordinal)))
                             {
                                 LogService.Log.FatalFormat("The AuthnContextClassRef '{0}' in the SAML Response is unknown", loa);
-                                return new AuthFailedForm(false, Values.DefaultVerificationFailedResourcerId, context.ContextId, context.ActivityId);
+                                return new AuthFailedForm(false, ErrorMessageValues.DefaultVerificationFailedResourcerId, context.ContextId, context.ActivityId);
                             }
                         }
                     }
@@ -360,7 +369,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
             catch (Exception ex)
             {
                 LogService.Log.FatalFormat("Error while processing the SAML response. Details: {0}", ex.Message);
-                return new AuthFailedForm(false, Values.DefaultErrorMessageResourcerId, context.ContextId, context.ActivityId);
+                return new AuthFailedForm(false, ErrorMessageValues.DefaultErrorMessageResourcerId, context.ContextId, context.ActivityId);
             }
         }
 
@@ -389,7 +398,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
                 LogService.Log.FatalFormat("Subject NameID not found in SAML Response.");
             }
 
-            return new AuthFailedForm(false, Values.DefaultVerificationFailedResourcerId, context.ContextId, context.ActivityId);
+            return new AuthFailedForm(false, ErrorMessageValues.DefaultVerificationFailedResourcerId, context.ContextId, context.ActivityId);
         }
 
         /// <summary>
@@ -413,7 +422,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
         {
             LogService.PrepareCorrelatedLogger(ex.Context.ContextId, ex.Context.ActivityId);
             LogService.Log.ErrorFormat("Error occurred: {0}", ex);
-            return new AuthFailedForm(false, Values.DefaultErrorMessageResourcerId, ex.Context.ContextId, ex.Context.ActivityId);
+            return new AuthFailedForm(false, ErrorMessageValues.DefaultErrorMessageResourcerId, ex.Context.ContextId, ex.Context.ActivityId);
         }
 
         /// <summary>

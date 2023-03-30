@@ -23,10 +23,6 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
     /// </summary>
     public static class SetupConstants
     {
-        public const string SetupFileVersion = Values.FileVersion;
-
-        public const string SetupProductVersion = Values.ProductVersion;
-
         public const string IdPEnvironmentsFilename = "SURFnet.Authentication.ADFS.MFA.Plugin.Environments.json";
 
         public const string UsedSettingsFilename = "UsedSettings.json";

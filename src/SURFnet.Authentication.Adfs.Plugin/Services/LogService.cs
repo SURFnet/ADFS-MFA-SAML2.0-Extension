@@ -14,18 +14,21 @@
 * limitations under the License.
 */
 
-using System;
-using System.Text;
 using log4net;
-using log4net.Core;
-using log4net.Repository.Hierarchy;
-using log4net.Util;
-using Microsoft.IdentityServer.Web.Authentication.External;
-using SURFnet.Authentication.Adfs.Plugin.Setup.Common;
-using SURFnet.Authentication.Adfs.Plugin.Configuration;
-using System.Reflection;
-using System.IO;
 using log4net.Config;
+
+using Microsoft.IdentityServer.Web.Authentication.External;
+
+using SURFnet.Authentication.Adfs.Plugin.Configuration;
+
+using System;
+using System.IO;
+using System.Reflection;
+using System.Text;
+
+using SURFnet.Authentication.Adfs.Plugin.Setup.Common;
+
+using Constants = SURFnet.Authentication.Adfs.Plugin.Setup.Common.Constants;
 
 namespace SURFnet.Authentication.Adfs.Plugin.Services
 {
@@ -56,7 +59,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
                     if (Log == null)
                     {
                         string dir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-                        string cfgfilepath = Path.Combine(dir, Values.Log4netCfgFilename);
+                        string cfgfilepath = Path.Combine(dir, Constants.Log4netCfgFilename);
                         FileInfo fi = new FileInfo(cfgfilepath);
                         XmlConfigurator.ConfigureAndWatch(fi);
 
@@ -102,8 +105,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
         public static void LogCurrentConfiguration(IAuthenticationAdapterMetadata metadata)
         {
             var sb = new StringBuilder();
-            sb.AppendLine($"Product version: {Values.ProductVersion}");
-            sb.AppendLine($"File version: {Values.FileVersion}");
+            sb.AppendLine($"Product version: {Constants.ProductVersion}");
+            sb.AppendLine($"File version: {Constants.FileVersion}");
             sb.AppendLine("Current plugin configuration");
 
             // Log all parameters

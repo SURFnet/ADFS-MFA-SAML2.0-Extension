@@ -72,9 +72,12 @@ namespace SURFnet.Authentication.Adfs.Plugin
         public string GetFormHtml(int lcid)
         {
             var message = Resources.GetLabel(lcid, this.messageResourceId, this.contextId, this.activityId);
+
+            //  public readonly static int defaultLcid = new CultureInfo("en-us").LCID;
+
             if (string.IsNullOrWhiteSpace(message))
             {
-                message = Resources.GetLabel(lcid, Values.DefaultErrorMessageResourcerId, this.contextId, this.activityId);
+                message = Resources.GetLabel(lcid, ErrorMessageValues.DefaultErrorMessageResourcerId, this.contextId, this.activityId);
             }
             
             var builder = new StringBuilder(Resources.GetForm("AuthFailedForm"));

@@ -1,9 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-
-using SURFnet.Authentication.Adfs.Plugin.Setup.Common;
+﻿using SURFnet.Authentication.Adfs.Plugin.Setup.Common;
 using SURFnet.Authentication.Adfs.Plugin.Setup.Models;
 using SURFnet.Authentication.Adfs.Plugin.Setup.Versions;
+
+using System;
+using System.Collections.Generic;
+
 
 namespace SURFnet.Authentication.Adfs.Plugin.Setup
 {
@@ -11,7 +12,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
     {
         public SetupState()
         {
-            this.SetupProgramVersion = new Version(Values.FileVersion);
+            this.SetupProgramVersion = new Version(VersionConstants.FileVersion);
             this.AdfsConfig = new AdfsConfiguration();
             this.FoundSettings = new List<Setting>();
         }
@@ -34,7 +35,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
         public Version DetectedVersion =>
             null != this.InstalledVersionDescription
                 ? this.InstalledVersionDescription.DistributionVersion
-                : this.adapterOnly ?? Constants.AssemblyNullVersion;
+                : this.adapterOnly ?? VersionConstants.AssemblyNullVersion;
 
         public Version RegisteredVersionInAdfs => this.AdfsConfig.RegisteredAdapterVersion;
 

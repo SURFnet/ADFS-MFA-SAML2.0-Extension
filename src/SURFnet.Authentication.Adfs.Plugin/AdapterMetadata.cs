@@ -16,15 +16,14 @@
 
 namespace SURFnet.Authentication.Adfs.Plugin
 {
+    using Microsoft.IdentityServer.Web.Authentication.External;
+
+    using SURFnet.Authentication.Adfs.Plugin.Configuration;
+
+    using System;
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using System.Globalization;
-
-    using Microsoft.IdentityServer.Web.Authentication.External;
-
-    using SURFnet.Authentication.Adfs.Plugin.Setup.Common;
-    using SURFnet.Authentication.Adfs.Plugin.Configuration;
-    using System;
 
     /// <summary>
     /// The adapter metadata.
@@ -125,7 +124,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
         /// Returns the name of the provider that will be shown in the AD FS management UI (not visible to end users).
         /// </summary>
         /// <value>The name of the admin.</value>
-        public string AdminName => $"ADFS.SCSA {Values.FileVersion}";  // PLUgh: 
+        public string AdminName => $"ADFS.SCSA {Setup.Common.Constants.FileVersion}";  // PLUgh: 
 
         /// <summary>
         /// Gets an array indicating which languages are supported by the provider. AD FS uses this information

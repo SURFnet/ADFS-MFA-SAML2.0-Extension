@@ -138,10 +138,11 @@
     <Compile Include="Services\RegistrationILogWrapper.cs" />
     <Compile Include="Services\RegistrationLog.cs" />
     <Compile Include="Services\SamlService.cs" />
+    <Compile Include="Setup\Common\ErrorMessageValues.cs" />
     <Compile Include="Setup\Common\Exceptions\InvalidConfigurationException.cs" />
     <Compile Include="Setup\Common\Exceptions\StepUpExceptions.cs" />
     <Compile Include="Setup\Common\Exceptions\SurfNetException.cs" />
-    <Compile Include="Setup\Common\Values.cs" />
+    <Compile Include="Setup\Common\Constants.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config">

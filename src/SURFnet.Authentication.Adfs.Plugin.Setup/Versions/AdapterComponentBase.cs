@@ -25,7 +25,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
                 assembly
             };
             this.TypeName = $"{AdapterClassName}, {assembly.AssemblyFullName}";
-            this.ConfigFilename = Values.AdapterCfgFilename;
+            this.ConfigFilename = Common.Constants.AdapterCfgFilename;
         }
 
         public AssemblySpec AdapterSpec => this.Assemblies[0];

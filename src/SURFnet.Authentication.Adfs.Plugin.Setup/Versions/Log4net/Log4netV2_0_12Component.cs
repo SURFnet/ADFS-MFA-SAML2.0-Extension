@@ -18,7 +18,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions.Log4net
             : base(componentname)
         {
             this.Assemblies = ComponentAssemblies.Log4Net2_0_12AssemblySpec;
-            this.ConfigFilename = Values.Log4netCfgFilename;
+            this.ConfigFilename = Common.Constants.Log4netCfgFilename;
         }
 
         /// <summary>
