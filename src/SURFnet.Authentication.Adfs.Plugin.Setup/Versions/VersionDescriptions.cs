@@ -34,9 +34,9 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
 
         #region VersionAdapters
 
-        private static readonly AdapterComponentBase V2_0_4Adapter = new AdapterComponentBaseV2(Adapter_2_0_4Spec);
+        private static readonly AdapterComponentBase V2_0_4Adapter = new AdapterComponentV2(Adapter_2_0_4Spec);
 
-        private static readonly AdapterComponentBase V2_1_0Adapter = new AdapterComponentBaseV2(Adapter_2_1_0Spec);
+        private static readonly AdapterComponentBase V2_1_0Adapter = new AdapterComponentV2(Adapter_2_1_0Spec);
 
         #endregion
 

@@ -136,7 +136,7 @@
     <Compile Include="Versions\Sustainsys\SustainsysBaseComponent.cs" />
     <Compile Include="Versions\Constants.cs" />
     <Compile Include="Versions\ISetupHandler.cs" />
-    <Compile Include="Versions\AdapterComponentBaseV2.cs" />
+    <Compile Include="Versions\AdapterComponentV2.cs" />
     <Compile Include="Versions\VersionDescriptions.cs" />
     <Compile Include="Versions\StepupComponent.cs" />
     <Compile Include="Versions\VersionDescription.cs" />
