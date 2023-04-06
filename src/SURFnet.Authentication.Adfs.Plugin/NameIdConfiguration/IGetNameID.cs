@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Security.Claims;
 
 namespace SURFnet.Authentication.Adfs.Plugin.NameIdConfiguration
@@ -40,9 +41,17 @@ namespace SURFnet.Authentication.Adfs.Plugin.NameIdConfiguration
         /// Do log the error for the ADFS Admin. Never, ever throw!
         /// </summary>
         /// <param name="identityClaim">Identity claim</param>
-        /// <param name="nameID">Output value for NameID</param>
-        /// <returns>True, success. False: cannot build a NameID for this user.</returns>
-        bool TryGetNameIDValue(Claim identityClaim, out string nameID);
+        /// <returns>a <see cref="NameIDValueResult"/> result which indicates wheter retrieval was successful
+        /// If successful NameID and UserGroups are included </returns>
+        bool TryGetNameIDValue(Claim identityClaim, out NameIDValueResult nameIDValueResult);
+
+        /// <summary>
+        /// Returns the first matched configuredLoa otherwise false
+        /// </summary>
+        /// <param name="groupName">Name of the group.</param>
+        /// <param name="configuredLoa">The configured loa.</param>
+        /// <returns></returns>
+        bool TryGetMinimalLoa(string groupName, out Uri configuredLoa);
 
         /// <summary>
         /// Returns the parameters used for Initialization

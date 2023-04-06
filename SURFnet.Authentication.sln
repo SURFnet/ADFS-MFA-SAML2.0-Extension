@@ -25,6 +25,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SURFnet.Authentication.Adfs.Plugin.Extensions.Samples", "src\SURFnet.Authentication.Adfs.Plugin.Extensions.Samples\SURFnet.Authentication.Adfs.Plugin.Extensions.Samples.csproj", "{495E267D-BD15-4D4F-973B-523A17CB1D0F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SURFnet.Authentication.Adfs.Plugin.Test", "test\SURFnet.Authentication.Adfs.Plugin.Test\SURFnet.Authentication.Adfs.Plugin.Test.csproj", "{B0308356-431E-4C0C-8E15-DEE2BB16C0B0}"
+	ProjectSection(ProjectDependencies) = postProject
+		{F099AD03-7546-4BBB-B259-EB7AF23B116A} = {F099AD03-7546-4BBB-B259-EB7AF23B116A}
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DevTooling", "DevTooling", "{97EBA88D-8A52-4FCB-BB55-541B88BC07D2}"
 EndProject

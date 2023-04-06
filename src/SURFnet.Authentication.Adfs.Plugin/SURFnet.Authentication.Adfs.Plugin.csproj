@@ -125,8 +125,10 @@
     <Compile Include="Extensions\LogExtensions.cs" />
     <Compile Include="Models\Saml2AuthenticationSecondFactorRequest.cs" />
     <Compile Include="Models\SecondFactorAuthResponse.cs" />
+    <Compile Include="NameIdConfiguration\ADUserAttributes.cs" />
     <Compile Include="NameIdConfiguration\GetNameIDBase.cs" />
     <Compile Include="NameIdConfiguration\IGetNameID.cs" />
+    <Compile Include="NameIdConfiguration\NameIDValueResult.cs" />
     <Compile Include="NameIdConfiguration\ResolveNameIDType.cs" />
     <Compile Include="NameIdConfiguration\UserIdAndShoFromADAttr.cs" />
     <Compile Include="NameIdConfiguration\UserIDFromADAttr.cs" />

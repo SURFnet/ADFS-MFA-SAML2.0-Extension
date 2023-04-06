@@ -1,21 +1,4 @@
-﻿/*
-* Copyright 2017 SURFnet bv, The Netherlands
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-* http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
-
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 
@@ -37,7 +20,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
     /// 
     /// However we do change this based on the configuration, which we do read from special places.
     /// </summary>
-    /// <seealso cref="IAuthenticationAdapterMetadata" />
+    /// <seealso cref="Microsoft.IdentityServer.Web.Authentication.External.IAuthenticationAdapterMetadata" />
     public class AdapterMetadata : IAuthenticationAdapterMetadata
     {
         /// <summary>
@@ -50,8 +33,9 @@ namespace SURFnet.Authentication.Adfs.Plugin
         /// </summary>
         private static readonly string[] authenticationMethods =
         {
-            // Default to current production at Regisration time
-            "http://surfconext.nl/assurance/sfo-level2", "http://surfconext.nl/assurance/sfo-level3"
+            // Default to current production at Registration time
+            "http://surfconext.nl/assurance/sfo-level1.5", "http://surfconext.nl/assurance/sfo-level2",
+            "http://surfconext.nl/assurance/sfo-level3"
         };
 
         /// <summary>
@@ -105,14 +89,15 @@ namespace SURFnet.Authentication.Adfs.Plugin
         /// </summary>
         static AdapterMetadata()
         {
-            Uri minimalLoa = null;
-            minimalLoa = StepUpConfig.Current?.MinimalLoa; // new method
+            var minimalLoa = StepUpConfig.Current?.GetMinimalLoa();
 
             if (null != minimalLoa)
             {
                 // yep, must overwrite
+
                 authenticationMethods = new string[]
                 {
+                    $"http://{minimalLoa.Host}/assurance/sfo-level1.5",
                     $"http://{minimalLoa.Host}/assurance/sfo-level2", $"http://{minimalLoa.Host}/assurance/sfo-level3"
                 };
             }
@@ -165,6 +150,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
         /// Returns the name of the provider that will be shown in the AD FS management UI (not visible to end users).
         /// </summary>
         /// <value>The name of the admin.</value>
+
         public string AdminName => $"ADFS.SCSA {Constants.FileVersion}"; // PLUgh: 
 
         /// <summary>
