@@ -1,31 +1,14 @@
-﻿/*
-* Copyright 2017 SURFnet bv, The Netherlands
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-* http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+﻿using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
+
+using Microsoft.IdentityServer.Web.Authentication.External;
+
+using SURFnet.Authentication.Adfs.Plugin.Configuration;
+using SURFnet.Authentication.Adfs.Plugin.Setup.Common;
 
 namespace SURFnet.Authentication.Adfs.Plugin
 {
-    using System.Collections.Generic;
-    using System.Diagnostics.CodeAnalysis;
-    using System.Globalization;
-
-    using Microsoft.IdentityServer.Web.Authentication.External;
-
-    using SURFnet.Authentication.Adfs.Plugin.Setup.Common;
-    using SURFnet.Authentication.Adfs.Plugin.Configuration;
-    using System;
-
     /// <summary>
     /// The adapter metadata.
     /// This data must be valid at Registration time. The Registration CmdLet will ask for
@@ -45,30 +28,87 @@ namespace SURFnet.Authentication.Adfs.Plugin
         private static readonly AdapterMetadata instance = new AdapterMetadata();
 
         /// <summary>
-        /// Initializes static members of the <see cref="AdapterMetadata"/> class.
+        /// Statically initializing the allowed authentication methods so they do not get created for every instance.
+        /// </summary>
+        private static readonly string[] authenticationMethods =
+        {
+            // Default to current production at Registration time
+            "http://surfconext.nl/assurance/sfo-level1.5", 
+            "http://surfconext.nl/assurance/sfo-level2",
+            "http://surfconext.nl/assurance/sfo-level3"
+        };
+
+        /// <summary>
+        /// Statically initializing the identity claims so they do not get created for every instance.
+        /// </summary>
+        private static readonly string[] identityClaims =
+        {
+            "http://schemas.microsoft.com/ws/2008/06/identity/claims/windowsaccountname"
+        };
+
+        /// <summary>
+        /// Statically initializing the available LCIDs so they do not get created for every instance.
+        /// </summary>
+        private static readonly int[] availableLcids =
+        {
+            new CultureInfo("en-us").LCID, new CultureInfo("nl-nl").LCID
+        };
+
+        /// <summary>
+        /// Statically initializing the descriptions so they do not get created for every instance.
+        /// </summary>
+        private static readonly Dictionary<int, string> descriptions = new Dictionary<int, string>
+        {
+            {
+                new CultureInfo("en-us").LCID,
+                "SURFNet Second Factor Authentication will ask for extra credentials" /*Resources.GetLabel(1033, "Description")*/
+            },
+            {
+                new CultureInfo("nl-nl").LCID,
+                "SURFNet Tweede Factor Authenticatie zal om extra authenticatie middelen vragen." /*Resources.GetLabel(1043, "Description")*/
+            }
+        };
+
+        /// <summary>
+        /// Statically initializing the friendly names so they do not get created for every instance.
+        /// </summary>
+        private static readonly Dictionary<int, string> friendlyNames = new Dictionary<int, string>
+        {
+            {
+                new CultureInfo("en-us").LCID,
+                "SURFNet Second Factor Authentication" /*Resources.GetLabel(1033, "FriendlyName")*/
+            },
+            {
+                new CultureInfo("nl-nl").LCID,
+                "SURFNet Tweede Factor Authenticatie" /*Resources.GetLabel(1043, "FriendlyName")*/
+            }
+        };
+
+        /// <summary>
+        /// Initializes static members of the <see cref="AdapterMetadata" /> class.
         /// </summary>
         static AdapterMetadata()
         {
-            Uri minimalLoa = null;
-            minimalLoa = StepUpConfig.Current?.MinimalLoa;  // new method
+            var minimalLoa = StepUpConfig.Current?.GetMinimalLoa();
 
             if (null != minimalLoa)
             {
                 // yep, must overwrite
+
                 authenticationMethods = new string[]
-                    {
+                {
+                    $"http://{minimalLoa.Host}/assurance/sfo-level1.5",
                     $"http://{minimalLoa.Host}/assurance/sfo-level2",
                     $"http://{minimalLoa.Host}/assurance/sfo-level3"
-                    };
-
+                };
             }
             // else: remains at production default.
         }
 
         /// <summary>
-        /// Prevents a default instance of the <see cref="AdapterMetadata"/> class from being created.
+        /// Prevents a default instance of the <see cref="AdapterMetadata" /> class from being created.
         /// </summary>
-        private AdapterMetadata()// hide constructor from the world
+        private AdapterMetadata() // hide constructor from the world
         {
         }
 
@@ -85,18 +125,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
         /// one of the methods listed in this property, the authentication attempt will fail.
         /// </summary>
         /// <value>The allowed authentication methods.</value>
-        public string[] AuthenticationMethods => AdapterMetadata.authenticationMethods;
-
-        /// <summary>
-        /// Statically initializing the allowed authentication methods so they do not get created for every instance.
-        /// </summary>
-        private static readonly string[] authenticationMethods =
-        {
-            // Default to current production at Regisration time
-            "http://surfconext.nl/assurance/sfo-level2",
-            "http://surfconext.nl/assurance/sfo-level3"
-
-        };
+        public string[] AuthenticationMethods => authenticationMethods;
 
         /// <summary>
         /// Returns an array indicating the type of claim that that the adapter uses to identify the user being authenticated.
@@ -108,39 +137,28 @@ namespace SURFnet.Authentication.Adfs.Plugin
         /// "http://schemas.microsoft.com/ws/2008/06/identity/claims/primarysid"
         /// </summary>
         /// <value>The identity claims.</value>
-        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1629:DocumentationTextMustEndWithAPeriod",
+        [SuppressMessage(
+            "StyleCop.CSharp.DocumentationRules",
+            "SA1629:DocumentationTextMustEndWithAPeriod",
             Justification = "Reviewed. Suppression is OK here.")]
-        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly",
+        [SuppressMessage(
+            "StyleCop.CSharp.DocumentationRules",
+            "SA1650:ElementDocumentationMustBeSpelledCorrectly",
             Justification = "Reviewed. Suppression is OK here.")]
-        public string[] IdentityClaims => AdapterMetadata.identityClaims;
-
-        /// <summary>
-        /// Statically initializing the identity claims so they do not get created for every instance.
-        /// </summary>
-        private static readonly string[] identityClaims = {
-            "http://schemas.microsoft.com/ws/2008/06/identity/claims/windowsaccountname"
-        };
+        public string[] IdentityClaims => identityClaims;
 
         /// <summary>
         /// Returns the name of the provider that will be shown in the AD FS management UI (not visible to end users).
         /// </summary>
         /// <value>The name of the admin.</value>
-        public string AdminName => $"ADFS.SCSA {Values.FileVersion}";  // PLUgh: 
+        public string AdminName => $"ADFS.SCSA {Values.FileVersion}"; // PLUgh: 
 
         /// <summary>
         /// Gets an array indicating which languages are supported by the provider. AD FS uses this information
         /// to determine the best language\locale to display to the user.
         /// </summary>
         /// <value>The available LCIDs.</value>
-        public int[] AvailableLcids => AdapterMetadata.availableLcids;
-
-        /// <summary>
-        /// Statically initializing the available LCIDs so they do not get created for every instance.
-        /// </summary>
-        private static readonly int[] availableLcids = {
-            new CultureInfo("en-us").LCID,
-            new CultureInfo("nl-nl").LCID
-        };
+        public int[] AvailableLcids => availableLcids;
 
         /// <summary>
         /// Gets a Dictionary containing the set of localized descriptions (hover over help) of the provider, indexed by LCID.
@@ -148,18 +166,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
         /// secondary authentication provider available.
         /// </summary>
         /// <value>The descriptions.</value>
-        public Dictionary<int, string> Descriptions => AdapterMetadata.descriptions;
-
-        /// <summary>
-        /// Statically initializing the descriptions so they do not get created for every instance.
-        /// </summary>
-        private static readonly Dictionary<int, string> descriptions = new Dictionary<int, string>
-        {
-            { new CultureInfo("en-us").LCID,
-                "SURFNet Second Factor Authentication will ask for extra credentials" /*Resources.GetLabel(1033, "Description")*/ },
-            { new CultureInfo("nl-nl").LCID,
-                "SURFNet Tweede Factor Authenticatie zal om extra authenticatie middelen vragen." /*Resources.GetLabel(1043, "Description")*/ }
-        };
+        public Dictionary<int, string> Descriptions => descriptions;
 
         /// <summary>
         /// Gets a Dictionary containing the set of localized friendly names of the provider, indexed by LCID.
@@ -167,16 +174,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
         /// one secondary authentication provider available.
         /// </summary>
         /// <value>The friendly names.</value>
-        public Dictionary<int, string> FriendlyNames => AdapterMetadata.friendlyNames;
-
-        /// <summary>
-        /// Statically initializing the friendly names so they do not get created for every instance.
-        /// </summary>
-        private static readonly Dictionary<int, string> friendlyNames = new Dictionary<int, string>
-        {
-            { new CultureInfo("en-us").LCID, "SURFNet Second Factor Authentication" /*Resources.GetLabel(1033, "FriendlyName")*/ },
-            { new CultureInfo("nl-nl").LCID, "SURFNet Tweede Factor Authenticatie" /*Resources.GetLabel(1043, "FriendlyName")*/ }
-        };
+        public Dictionary<int, string> FriendlyNames => friendlyNames;
 
         /// <summary>
         /// Gets an indication whether or not the Authentication Adapter requires an Identity Claim or not.

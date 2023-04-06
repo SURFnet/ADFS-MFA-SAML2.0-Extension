@@ -31,6 +31,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
     using SURFnet.Authentication.Adfs.Plugin.Configuration;
     using SURFnet.Authentication.Adfs.Plugin.Extensions;
     using SURFnet.Authentication.Adfs.Plugin.Models;
+using SURFnet.Authentication.Adfs.Plugin.NameIdConfiguration;
     using SURFnet.Authentication.Adfs.Plugin.Services;
     using SURFnet.Authentication.Adfs.Plugin.Setup.Common;
     using SURFnet.Authentication.Adfs.Plugin.Setup.Common.Exceptions;
@@ -87,7 +88,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
                     // we do want to read our own configuration before the Registration CmdLet reads our metadata
                     RegistrationLog.WriteLine(AdapterDir);
 
-                    if (StepUpConfig.ReadXmlConfig(RegistrationLog.ILogWrapper) == 0)
+    if (StepUpConfig.ReadXmlConfig(RegistrationLog.ILogWrapper) == 0)
                     {
                         RegistrationLog.WriteLine("Adapter parms loaded from small XML.");
                     }
@@ -222,15 +223,14 @@ namespace SURFnet.Authentication.Adfs.Plugin
 
                 // Log the identityClaim Value and Type that we received from AD FS.
                 LogService.Log.InfoFormat("Received MFA authentication request for ADFS user with identityClaim '{0}' ({1})", identityClaim.Value, identityClaim.Type);
-                                            
-                var stepupNameID = string.Empty;           
-                if (!StepUpConfig.Current.GetNameID.TryGetNameIDValue(identityClaim, out stepupNameID))
+
+                if (!StepUpConfig.Current.GetNameID.TryGetNameIDValue(identityClaim, out NameIDValueResult nameIDValueResult))
                 {
                     throw new NotSupportedException(); 
                 }
 
                 var requestId = $"_{context.ContextId}";
-                var authRequest = SamlService.CreateAuthnRequest(requestId, httpListenerRequest.Url, stepupNameID);
+                var authRequest = SamlService.CreateAuthnRequest(requestId, httpListenerRequest.Url, nameIDValueResult);
                 LogService.Log.DebugFormat("Signing AuthnRequest with id {0}", requestId);
                 var signedXml = this.cryptographicService.SignSamlRequest(authRequest);
                 var ssoUrl = Sustainsys.Saml2.Configuration.Options.FromConfiguration.IdentityProviders.Default.SingleSignOnServiceUrl;
@@ -243,7 +243,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
                 LogService.Log.InfoFormat("Forwarding SAML SFO AuthnRequest with ID '{0}' for Stepup NameID '{1}' to '{2}'", requestId, authRequest.Subject.NameId.Value, ssoUrl);
 
                 // Store stepupNameID for verification in TryEndAuthentication
-                context.Data.Add(AuthenticationContextNameID, stepupNameID);  
+                context.Data.Add(AuthenticationContextNameID, nameIDValueResult.NameID);  
 
                 return new AuthForm(ssoUrl, signedXml);
             }
@@ -297,6 +297,11 @@ namespace SURFnet.Authentication.Adfs.Plugin
                 var samlResponse = new Saml2Response(response.SamlResponse, new Saml2Id(requestId));
                 if (samlResponse.Status != Saml2StatusCode.Success)
                 {
+                    //todo jvt: display message to the user https://www.pivotaltracker.com/n/projects/1950415
+
+                    //todo jvt: log event log
+                    //todo jvt: display status messsage to the user (optional? how?)
+
                     return new AuthFailedForm(false, Values.DefaultVerificationFailedResourcerId, context.ContextId, context.ActivityId);
                 }              
                

@@ -21,8 +21,6 @@ namespace SURFnet.Authentication.Adfs.Plugin.Test
             var getNameId = AdapterXmlConfigurationyHelper.CreateGetNameIdFromFile(adapterConfigurationPath, Log);            
 
             Assert.IsNotNull(getNameId);
-
-            //Test_TryGetNameIDValue(getNameId, "ToDo");
         }
 
         [TestMethod]
@@ -43,24 +41,6 @@ namespace SURFnet.Authentication.Adfs.Plugin.Test
             var getNameId = AdapterXmlConfigurationyHelper.CreateGetNameIdFromFile(adapterConfigurationPath, Log);
 
             Assert.IsNotNull(getNameId);
-        }
-    
-        private void Test_TryGetNameIDValue(IGetNameID getNameId, string expectedName)
-        {
-            var domain = System.Environment.UserDomainName;
-            var userName = System.Environment.UserName;
-            var domainUserName = string.Format(@"{0}\{1}", domain, userName);
-            var claim = new Claim(ClaimTypes.WindowsAccountName, domainUserName);
-
-            string nameId = null;
-            if (getNameId.TryGetNameIDValue(claim, out nameId))
-            {
-                Assert.AreEqual(expectedName, nameId);
-            }
-            else
-            {
-                Assert.Fail("NameId could not be resolved");
-            }
         }
     }
 }
