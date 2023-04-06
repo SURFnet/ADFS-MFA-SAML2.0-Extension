@@ -14,29 +14,30 @@
 * limitations under the License.
 */
 
+using System;
+using System.Configuration;
+using System.IO;
+using System.Linq;
+using System.Net;
+using System.Reflection;
+using System.Security.Claims;
+
+using Microsoft.IdentityModel.Tokens.Saml2;
+using Microsoft.IdentityServer.Web.Authentication.External;
+
+using SURFnet.Authentication.Adfs.Plugin.Configuration;
+using SURFnet.Authentication.Adfs.Plugin.Extensions;
+using SURFnet.Authentication.Adfs.Plugin.Forms;
+using SURFnet.Authentication.Adfs.Plugin.Models;
+using SURFnet.Authentication.Adfs.Plugin.Services;
+using SURFnet.Authentication.Adfs.Plugin.Setup.Common;
+using SURFnet.Authentication.Adfs.Plugin.Setup.Common.Exceptions;
+
+using Sustainsys.Saml2.Configuration;
+using Sustainsys.Saml2.Saml2P;
+
 namespace SURFnet.Authentication.Adfs.Plugin
 {
-    using System;
-    using System.Configuration;
-    using System.IO;
-    using System.Linq;
-    using System.Net;
-    using System.Reflection;
-    using System.Runtime.InteropServices;
-    using System.Security.Claims;
-
-    using Microsoft.IdentityModel.Tokens.Saml2;
-    using Microsoft.IdentityServer.Web.Authentication.External;
-
-    using SURFnet.Authentication.Adfs.Plugin.Configuration;
-    using SURFnet.Authentication.Adfs.Plugin.Extensions;
-    using SURFnet.Authentication.Adfs.Plugin.Models;
-    using SURFnet.Authentication.Adfs.Plugin.Services;
-    using SURFnet.Authentication.Adfs.Plugin.Setup.Common;
-    using SURFnet.Authentication.Adfs.Plugin.Setup.Common.Exceptions;
-
-    using Sustainsys.Saml2.Saml2P;
-
     /// <summary>
     /// The ADFS MFA Adapter.
     /// </summary>
@@ -50,7 +51,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
         /// At registration time: wherever the adapter is.
         /// This determines where the Registration log will be!
         /// </summary>
-        internal static readonly string AdapterDir;  // if running under ADFS, then
+        internal static readonly string AdapterDir; // if running under ADFS, then
 
         /// <summary>
         /// Lock for initializing the sustain system.
@@ -68,13 +69,14 @@ namespace SURFnet.Authentication.Adfs.Plugin
         private CryptographicService cryptographicService;
 
         /// <summary>
-        /// Initializes static members of the <see cref="Adapter"/> class.
+        /// Initializes static members of the <see cref="Adapter" /> class.
         /// </summary>
         static Adapter()
         {
             // While testing and debugging, assume that everything is in the same directory as the adapter.
             // Which is also true in the ADFS AppDomain, in our current deployment.
-            var myassemblyname = Assembly.GetExecutingAssembly().Location;
+            var myassemblyname = Assembly.GetExecutingAssembly()
+                                         .Location;
             AdapterDir = Path.GetDirectoryName(myassemblyname);
 
             if (RegistrationLog.IsRegistration)
@@ -118,7 +120,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Adapter"/> class.
+        /// Initializes a new instance of the <see cref="Adapter" /> class.
         /// Does nothing at registration time. Initializes a cert in normal operation.
         /// </summary>
         public Adapter()
@@ -171,6 +173,84 @@ namespace SURFnet.Authentication.Adfs.Plugin
         }
 
         /// <summary>
+        /// Validates the name identifier.
+        /// Return null if validation is OK, otherwise a <see cref="AuthFailedForm" /> is returned.
+        /// </summary>
+        /// <param name="context">The context</param>
+        /// <param name="receivedNameId">The received name identifier.</param>
+        /// <returns></returns>
+        private static IAdapterPresentation ValidateNameID(IAuthenticationContext context, string receivedNameId)
+        {
+            if (context.Data.TryGetValue(AuthenticationContextNameID, out var expectedNameIDObject))
+            {
+                var nameIDFromContext = expectedNameIDObject as string;
+                if (!string.IsNullOrEmpty(nameIDFromContext)
+                    && nameIDFromContext.Equals(receivedNameId, StringComparison.Ordinal))
+                {
+                    LogService.Log.DebugFormat(
+                        "The Subject NameID '{0}' in the SAML Response matches what was requested.",
+                        nameIDFromContext);
+                    return null;
+                }
+
+                LogService.Log.FatalFormat(
+                    "Received Subject NameID '{0}' does not match the expected '{1}'.",
+                    receivedNameId,
+                    nameIDFromContext);
+            }
+            else
+            {
+                LogService.Log.FatalFormat("Subject NameID not found in SAML Response.");
+            }
+
+            return new AuthFailedForm(
+                false,
+                ErrorMessageValues.DefaultVerificationFailedResourcerId,
+                context.ContextId,
+                context.ActivityId);
+        }
+
+        /// <summary>
+        /// Configures the sustainsys once per ADFS server.
+        /// </summary>
+        private static void ConfigureSustainsys()
+        {
+            if (sustainSysConfigured == false)
+            {
+                lock (SustainsysLock)
+                {
+                    if (sustainSysConfigured == false)
+                    {
+                        InitializeSustainSys();
+                        sustainSysConfigured = true; // set to true, even on errors otherwise it will wrap the EventLog.
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Initializes the sustain system.
+        /// </summary>
+        private static void InitializeSustainSys()
+        {
+            try
+            {
+                var exePathSustainsys = Path.Combine(AdapterDir, "Sustainsys.Saml2.dll");
+                var configuration = ConfigurationManager.OpenExeConfiguration(exePathSustainsys);
+                SustainsysSaml2Section.Configuration = configuration;
+
+                // Call now to provoke/localize/isolate parsing errors.
+                var unused = Options.FromConfiguration.IdentityProviders.Default;
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidConfigurationException(
+                    "Accessing Sustainsys configuration failed. Caught in Adapter!",
+                    ex);
+            }
+        }
+
+        /// <summary>
         /// Called when the authentication pipeline is loaded.
         /// </summary>
         /// <param name="configData">The configuration data.</param>
@@ -212,7 +292,10 @@ namespace SURFnet.Authentication.Adfs.Plugin
         /// <returns>
         /// A presentation form.
         /// </returns>
-        public IAdapterPresentation BeginAuthentication(Claim identityClaim, HttpListenerRequest httpListenerRequest, IAuthenticationContext context)
+        public IAdapterPresentation BeginAuthentication(
+            Claim identityClaim,
+            HttpListenerRequest httpListenerRequest,
+            IAuthenticationContext context)
         {
             try
             {
@@ -221,7 +304,10 @@ namespace SURFnet.Authentication.Adfs.Plugin
                 LogService.Log.DebugFormat("context.Lcid={0}", context.Lcid);
 
                 // Log the identityClaim Value and Type that we received from AD FS.
-                LogService.Log.InfoFormat("Received MFA authentication request for ADFS user with identityClaim '{0}' ({1})", identityClaim.Value, identityClaim.Type);
+                LogService.Log.InfoFormat(
+                    "Received MFA authentication request for ADFS user with identityClaim '{0}' ({1})",
+                    identityClaim.Value,
+                    identityClaim.Type);
 
                 var stepupNameID = string.Empty;
                 if (!StepUpConfig.Current.GetNameID.TryGetNameIDValue(identityClaim, out stepupNameID))
@@ -233,14 +319,18 @@ namespace SURFnet.Authentication.Adfs.Plugin
                 var authRequest = SamlService.CreateAuthnRequest(requestId, httpListenerRequest.Url, stepupNameID);
                 LogService.Log.DebugFormat("Signing AuthnRequest with id {0}", requestId);
                 var signedXml = this.cryptographicService.SignSamlRequest(authRequest);
-                var ssoUrl = Sustainsys.Saml2.Configuration.Options.FromConfiguration.IdentityProviders.Default.SingleSignOnServiceUrl;
+                var ssoUrl = Options.FromConfiguration.IdentityProviders.Default.SingleSignOnServiceUrl;
 
                 // Log the SAML RequestID (which is the ADFS ContextId), the Subject NameID and the Destination of the SAML AuthnRequest at INFO level
                 // - The Stepup-Gateway application logs contain the RequestID (SARI) and the stepup-Gateway authentication log contains the NameID
                 // - The ssoUrl identifies the Stepup-Gateway to which the request is sent.
                 // These informations allows the authentication in the plugin to be correlated with the authentication on the Stepup-Gateway
                 // TODO: Fix to real full uid when NameID is loadable. Now it incorrectly happens in the SamlService.
-                LogService.Log.InfoFormat("Forwarding SAML SFO AuthnRequest with ID '{0}' for Stepup NameID '{1}' to '{2}'", requestId, authRequest.Subject.NameId.Value, ssoUrl);
+                LogService.Log.InfoFormat(
+                    "Forwarding SAML SFO AuthnRequest with ID '{0}' for Stepup NameID '{1}' to '{2}'",
+                    requestId,
+                    authRequest.Subject.NameId.Value,
+                    ssoUrl);
 
                 // Store stepupNameID for verification in TryEndAuthentication
                 context.Data.Add(AuthenticationContextNameID, stepupNameID);
@@ -263,7 +353,11 @@ namespace SURFnet.Authentication.Adfs.Plugin
             catch (Exception ex)
             {
                 LogService.Log.FatalFormat("Unexpected error while initiating authentication: {0}", ex);
-                return new AuthFailedForm(false, ErrorMessageValues.DefaultErrorMessageResourcerId, context.ContextId, context.ActivityId);
+                return new AuthFailedForm(
+                    false,
+                    ErrorMessageValues.DefaultErrorMessageResourcerId,
+                    context.ContextId,
+                    context.ActivityId);
             }
         }
 
@@ -277,9 +371,13 @@ namespace SURFnet.Authentication.Adfs.Plugin
         /// <returns>
         /// A form if the the validation fails or claims if the validation succeeds.
         /// </returns>
-        public IAdapterPresentation TryEndAuthentication(IAuthenticationContext context, IProofData proofData, HttpListenerRequest request, out Claim[] claims)
+        public IAdapterPresentation TryEndAuthentication(
+            IAuthenticationContext context,
+            IProofData proofData,
+            HttpListenerRequest request,
+            out Claim[] claims)
         {
-            var requestId = $"_{ context.ContextId}";
+            var requestId = $"_{context.ContextId}";
 
             LogService.PrepareCorrelatedLogger(context.ContextId, context.ActivityId);
             LogService.Log.Debug("Enter TryEndAuthentication");
@@ -297,25 +395,24 @@ namespace SURFnet.Authentication.Adfs.Plugin
                 var samlResponse = new Saml2Response(response.SamlResponse, new Saml2Id(requestId));
                 if (samlResponse.Status != Saml2StatusCode.Success)
                 {
+                    LogService.Log.FatalFormat(
+                        "Saml authentication failed. ContextId '{0}', ActivityId '{1}', Status '{2}', StatusMessage '{3}', SecondLevelStatus '{4}'",
+                        context.ContextId,
+                        context.ActivityId,
+                        samlResponse.Status,
+                        samlResponse.StatusMessage,
+                        samlResponse.SecondLevelStatus);
 
-
-                    // samlResponse.Status == Saml2StatusCode.Requester
-                    // samlResponse.SecondLevelStatus.
-                    // samlResponse.
-                    //todo jvt: display message to the user https://www.pivotaltracker.com/n/projects/1950415
-                    //todo jvt: log event log
-                    //todo jvt: display status messsage to the user (optional? how?)
-
-                    return new AuthFailedForm(false, ErrorMessageValues.DefaultVerificationFailedResourcerId, context.ContextId, context.ActivityId);
+                    return new SamlAuthFailedForm(samlResponse, context.ContextId, context.ActivityId);
                 }
 
-                string loa = string.Empty;
-                string nameID = null;
+                var loa = string.Empty;
 
                 var claimsIdentity = SamlService.VerifyResponseAndGetClaimsIdentity(samlResponse);
                 if (claimsIdentity != null)
                 {
-                    nameID = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                    var nameID = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier)
+                                               ?.Value;
 
                     var validateNameIDResult = ValidateNameID(context, nameID);
                     if (validateNameIDResult != null)
@@ -326,15 +423,25 @@ namespace SURFnet.Authentication.Adfs.Plugin
                     var authClaim = claimsIdentity.FindFirst(ClaimTypes.AuthenticationMethod);
                     if (authClaim != null)
                     {
-                        claims = new[] { authClaim };
+                        claims = new[]
+                        {
+                            authClaim
+                        };
                         if (authClaim.Value != null)
                         {
                             loa = authClaim.Value;
 
-                            if (!Metadata.AuthenticationMethods.Any(method => method.Equals(loa, StringComparison.Ordinal)))
+                            if (!this.Metadata.AuthenticationMethods.Any(
+                                    method => method.Equals(loa, StringComparison.Ordinal)))
                             {
-                                LogService.Log.FatalFormat("The AuthnContextClassRef '{0}' in the SAML Response is unknown", loa);
-                                return new AuthFailedForm(false, ErrorMessageValues.DefaultVerificationFailedResourcerId, context.ContextId, context.ActivityId);
+                                LogService.Log.FatalFormat(
+                                    "The AuthnContextClassRef '{0}' in the SAML Response is unknown",
+                                    loa);
+                                return new AuthFailedForm(
+                                    false,
+                                    ErrorMessageValues.DefaultVerificationFailedResourcerId,
+                                    context.ContextId,
+                                    context.ActivityId);
                             }
                         }
                     }
@@ -343,7 +450,12 @@ namespace SURFnet.Authentication.Adfs.Plugin
                         claims = Array.Empty<Claim>();
                     }
 
-                    claims = authClaim == null ? Array.Empty<Claim>() : new[] { authClaim };
+                    claims = authClaim == null
+                                 ? Array.Empty<Claim>()
+                                 : new[]
+                                 {
+                                     authClaim
+                                 };
                     foreach (var claim in claims)
                     {
                         LogService.Log.DebugFormat(
@@ -358,10 +470,11 @@ namespace SURFnet.Authentication.Adfs.Plugin
                         }
                     }
 
-                    LogService.Log.InfoFormat("Successfully processed response for request with id '{0}', NameID '{1}', LOA '{2}'",
-                                requestId,
-                                nameID ?? string.Empty,
-                                loa);
+                    LogService.Log.InfoFormat(
+                        "Successfully processed response for request with id '{0}', NameID '{1}', LOA '{2}'",
+                        requestId,
+                        nameID ?? string.Empty,
+                        loa);
                 }
 
                 return null;
@@ -369,36 +482,12 @@ namespace SURFnet.Authentication.Adfs.Plugin
             catch (Exception ex)
             {
                 LogService.Log.FatalFormat("Error while processing the SAML response. Details: {0}", ex.Message);
-                return new AuthFailedForm(false, ErrorMessageValues.DefaultErrorMessageResourcerId, context.ContextId, context.ActivityId);
+                return new AuthFailedForm(
+                    false,
+                    ErrorMessageValues.DefaultErrorMessageResourcerId,
+                    context.ContextId,
+                    context.ActivityId);
             }
-        }
-
-        /// <summary>
-        /// Validates the name identifier.
-        /// Return null if validation is OK, otherwise a <see cref="AuthFailedForm"/> is returned.
-        /// </summary>
-        /// <param name="context">The context</param>
-        /// <param name="receivedNameId">The received name identifier.</param>
-        /// <returns></returns>
-        private static IAdapterPresentation ValidateNameID(IAuthenticationContext context, string receivedNameId)
-        {
-            if (context.Data.TryGetValue(AuthenticationContextNameID, out object expectedNameIDObject))
-            {
-                var nameIDFromContext = expectedNameIDObject as string;
-                if (!string.IsNullOrEmpty(nameIDFromContext) && nameIDFromContext.Equals(receivedNameId, StringComparison.Ordinal))
-                {
-                    LogService.Log.DebugFormat("The Subject NameID '{0}' in the SAML Response matches what was requested.", nameIDFromContext);
-                    return null;
-                }
-
-                LogService.Log.FatalFormat("Received Subject NameID '{0}' does not match the expected '{1}'.", receivedNameId, nameIDFromContext);
-            }
-            else
-            {
-                LogService.Log.FatalFormat("Subject NameID not found in SAML Response.");
-            }
-
-            return new AuthFailedForm(false, ErrorMessageValues.DefaultVerificationFailedResourcerId, context.ContextId, context.ActivityId);
         }
 
         /// <summary>
@@ -422,45 +511,11 @@ namespace SURFnet.Authentication.Adfs.Plugin
         {
             LogService.PrepareCorrelatedLogger(ex.Context.ContextId, ex.Context.ActivityId);
             LogService.Log.ErrorFormat("Error occurred: {0}", ex);
-            return new AuthFailedForm(false, ErrorMessageValues.DefaultErrorMessageResourcerId, ex.Context.ContextId, ex.Context.ActivityId);
-        }
-
-        /// <summary>
-        /// Configures the sustainsys once per ADFS server.
-        /// </summary>
-        private static void ConfigureSustainsys()
-        {
-            if (sustainSysConfigured == false)
-            {
-                lock (SustainsysLock)
-                {
-                    if (sustainSysConfigured == false)
-                    {
-                        InitializeSustainSys();
-                        sustainSysConfigured = true;  // set to true, even on errors otherwise it will wrap the EventLog.
-                    }
-                }
-            }
-        }
-
-        /// <summary>
-        /// Initializes the sustain system.
-        /// </summary>
-        private static void InitializeSustainSys()
-        {
-            try
-            {
-                var exePathSustainsys = Path.Combine(AdapterDir, "Sustainsys.Saml2.dll");
-                var configuration = ConfigurationManager.OpenExeConfiguration(exePathSustainsys);
-                Sustainsys.Saml2.Configuration.SustainsysSaml2Section.Configuration = configuration;
-
-                // Call now to provoke/localize/isolate parsing errors.
-                var unused = Sustainsys.Saml2.Configuration.Options.FromConfiguration.IdentityProviders.Default;
-            }
-            catch (Exception ex)
-            {
-                throw new InvalidConfigurationException("Accessing Sustainsys configuration failed. Caught in Adapter!", ex);
-            }
+            return new AuthFailedForm(
+                false,
+                ErrorMessageValues.DefaultErrorMessageResourcerId,
+                ex.Context.ContextId,
+                ex.Context.ActivityId);
         }
 
         /// <summary>
@@ -468,7 +523,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
         /// </summary>
         private void DelayPickupOfCertFromSustainsys()
         {
-            var cert = Sustainsys.Saml2.Configuration.Options.FromConfiguration.SPOptions.SigningServiceCertificate;
+            var cert = Options.FromConfiguration.SPOptions.SigningServiceCertificate;
             this.cryptographicService = new CryptographicService(cert);
         }
     }

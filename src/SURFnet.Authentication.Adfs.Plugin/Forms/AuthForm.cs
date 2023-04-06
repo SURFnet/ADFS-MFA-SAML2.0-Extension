@@ -14,15 +14,16 @@
 * limitations under the License.
 */
 
-namespace SURFnet.Authentication.Adfs.Plugin
+using System;
+using System.Net;
+using System.Text;
+
+using log4net;
+
+using Microsoft.IdentityServer.Web.Authentication.External;
+
+namespace SURFnet.Authentication.Adfs.Plugin.Forms
 {
-    using System;
-    using System.Text;
-
-    using log4net;
-
-    using Microsoft.IdentityServer.Web.Authentication.External;
-
     /// <summary>
     /// The presentation form for the adapter.
     /// </summary>
@@ -66,7 +67,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
         {
             this.log.DebugFormat("Rendering form for posting request to '{0}'", this.serviceUrl);
             var builder = new StringBuilder(Resources.GetForm("AuthForm"));
-            builder.Replace("%FormUrl%", System.Net.WebUtility.HtmlEncode(this.serviceUrl.ToString()));
+            builder.Replace("%FormUrl%", WebUtility.HtmlEncode(this.serviceUrl.ToString()));
             builder.Replace("%SAMLRequest%", this.signedXml);
             builder.Replace("%NoJavascript%", Resources.GetLabel(lcid, "NoJavascript"));
             builder.Replace("%OneMomentPlease%", Resources.GetLabel(lcid, "OneMomentPlease"));

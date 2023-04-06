@@ -14,14 +14,14 @@
 * limitations under the License.
 */
 
-namespace SURFnet.Authentication.Adfs.Plugin
+using System.Text;
+
+using Microsoft.IdentityServer.Web.Authentication.External;
+
+using SURFnet.Authentication.Adfs.Plugin.Setup.Common;
+
+namespace SURFnet.Authentication.Adfs.Plugin.Forms
 {
-    using System.Text;
-
-    using Microsoft.IdentityServer.Web.Authentication.External;
-
-    using SURFnet.Authentication.Adfs.Plugin.Setup.Common;
-
     /// <summary>
     /// The presentation form for the adapter.
     /// </summary>
@@ -77,9 +77,13 @@ namespace SURFnet.Authentication.Adfs.Plugin
 
             if (string.IsNullOrWhiteSpace(message))
             {
-                message = Resources.GetLabel(lcid, ErrorMessageValues.DefaultErrorMessageResourcerId, this.contextId, this.activityId);
+                message = Resources.GetLabel(
+                    lcid,
+                    ErrorMessageValues.DefaultErrorMessageResourcerId,
+                    this.contextId,
+                    this.activityId);
             }
-            
+
             var builder = new StringBuilder(Resources.GetForm("AuthFailedForm"));
             builder.Replace("{message}", message);
             builder.Replace("{AuthFailedFormTitle}", Resources.GetLabel(lcid, "AuthFailedFormTitle"));
