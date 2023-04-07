@@ -3,6 +3,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using SURFnet.Authentication.Adfs.Plugin.Setup;
 using SURFnet.Authentication.Adfs.Plugin.Setup.Common;
+using SURFnet.Authentication.Adfs.Plugin.Setup.Versions;
 
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
@@ -34,6 +35,6 @@ using SURFnet.Authentication.Adfs.Plugin.Setup.Common;
 // You can specify all the values or you can default the Build and Revision Numbers
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion(SetupConstants.SetupFileVersion)]
-[assembly: AssemblyInformationalVersion(SetupConstants.SetupProductVersion)]
-[assembly: AssemblyFileVersion(SetupConstants.SetupFileVersion)]
+[assembly: AssemblyVersion(VersionConstants.FileVersion)]
+[assembly: AssemblyInformationalVersion(VersionConstants.ProductVersion)]
+[assembly: AssemblyFileVersion(VersionConstants.FileVersion)]

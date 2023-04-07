@@ -86,14 +86,14 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
 
             doc.AppendChild(cfgElement);
 
-            return ConfigurationFileService.SaveXmlDocumentConfiguration(doc, Values.AdapterCfgFilename);
+            return ConfigurationFileService.SaveXmlDocumentConfiguration(doc, Common.Constants.AdapterCfgFilename);
         }
 
         private int ExtractAdapterConfig(List<Setting> settings)
         {
             int rc = 0;
 
-            string adapterConfigurationPath = FileService.OurDirCombine(FileDirectory.AdfsDir, Values.AdapterCfgFilename);
+            string adapterConfigurationPath = FileService.OurDirCombine(FileDirectory.AdfsDir, Common.Constants.AdapterCfgFilename);
             if (!File.Exists(adapterConfigurationPath))
             {
                 LogService.Log.Error("  ??Parsing missing Adaptercfg??  ");

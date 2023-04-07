@@ -16,7 +16,7 @@
 
 namespace SURFnet.Authentication.Adfs.Plugin.Setup.Common
 {
-    public class Values
+    public class Constants
     {
         /// <summary>
         /// The file version for all (by referencing THIS value).
@@ -50,15 +50,5 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Common
         /// Location in the Registry for registration time parameters.
         /// </summary>
         public const string RegistryRootKey = "Software\\Surfnet\\Authentication\\ADFS\\Plugin";
-
-        /// <summary>
-        /// The default error message resourcer identifier.
-        /// </summary>
-        public const string DefaultErrorMessageResourcerId = "ERROR_0000";
-
-        /// <summary>
-        /// The default verification failed resourcer identifier.
-        /// </summary>
-        public const string DefaultVerificationFailedResourcerId = "ERROR_0001";
     }
 }

@@ -4,9 +4,13 @@
   "ERROR_0002": "The StepUp configuration is incorrect. Please contact your IT admin and provide the following details: ContextId '{0}', ActivityId '{1}'",
   "ERROR_0003": "Your account is not configured for MFA in the Active Directory . Please contact your IT admin and provide the following details: ContextId '{0}', ActivityId '{1}'",
   "AuthFailedFormTitle": "Authentication failed",
+  "SamlAuthFailedFormTitle": "Authentication failed",
   "NoJavascript": "You have disabled Javascript. Please enable it to continue.",
   "OneMomentPlease": "One moment please...",
   "Working": "Working...",
   "Description": "SURFNet Second Factor Authentication",
-  "FriendlyName": "SURFNet Second Factor Authentication"
+  "FriendlyName": "SURFNet Second Factor Authentication",
+  "ERROR_SAML_Default": "Saml Error. Please contact your IT admin and provide the details below.",
+  "ERROR_SAML_AuthnFailed": "Saml AuthnFailed Error. Please contact your IT admin and provide the details below.",
+  "ERROR_SAML_NoAuthnContext": "Saml AuthnFailed Error. Please contact your IT admin and provide the details below."
 }

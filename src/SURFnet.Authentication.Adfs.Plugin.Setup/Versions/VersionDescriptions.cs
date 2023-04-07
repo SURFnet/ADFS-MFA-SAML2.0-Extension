@@ -14,7 +14,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
     {
         #region AssemblySpecs
 
-        private static readonly AssemblySpec Adapter_2_0_4Spec = new AssemblySpec(Values.AdapterFilename)
+        private static readonly AssemblySpec Adapter_2_0_4Spec = new AssemblySpec(Common.Constants.AdapterFilename)
         {
             AssemblyFullName = "SURFnet.Authentication.Adfs.Plugin, Version=1.0.1.0, Culture=neutral, PublicKeyToken=" + CurrentPublicTokenKey.PublicTokenKey,
             AssemblyVersion = new Version("1.0.1.0"),
@@ -22,7 +22,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
             FileVersion = new Version("2.0.4.0")
         };
 
-        private static readonly AssemblySpec Adapter_2_1_0Spec = new AssemblySpec(Values.AdapterFilename)
+        private static readonly AssemblySpec Adapter_2_1_0Spec = new AssemblySpec(Common.Constants.AdapterFilename)
         {
             AssemblyFullName = "SURFnet.Authentication.Adfs.Plugin, Version=1.0.1.0, Culture=neutral, PublicKeyToken=" + CurrentPublicTokenKey.PublicTokenKey,
             AssemblyVersion = new Version("1.0.1.0"),

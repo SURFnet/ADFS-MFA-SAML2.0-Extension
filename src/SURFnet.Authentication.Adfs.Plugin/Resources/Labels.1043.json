@@ -4,9 +4,13 @@
   "ERROR_0002": "De StepUp configuratie is incorrect. Neem contact op met uw eigen IT administrator en geef de volgende details door: ContextId '{0}', ActivityId '{1}'",
   "ERROR_0003": "Uw account in de Active Directory is niet geconfigureerd voor MFA. Neem contact op met uw eigen IT administrator en geef de volgende details door: ContextId '{0}', ActivityId '{1}'",
   "AuthFailedFormTitle": "Authenticatie mislukt",
+  "SamlAuthFailedFormTitle": "Authenticatie mislukt",
   "NoJavascript": "Je hebt Javascript uitgeschakeld. Schakele Javascript in om verder te gaan.",
   "OneMomentPlease": "Een moment geduld alstublieft...",
   "Working": "Bezig...",
   "Description": "SURFNet Tweede Factor Authenticatie.",
-  "FriendlyName": "SURFNet Tweede Factor Authenticatie."
+  "FriendlyName": "SURFNet Tweede Factor Authenticatie.",
+  "ERROR_SAML_Default": "Saml Fout. Verificatie mislukt. Neem contact op met uw eigen IT administrator en geef de onderstaande details door.",
+  "ERROR_SAML_AuthnFailed": "Saml AuthnFailed Fout. Verificatie mislukt. Neem contact op met uw eigen IT administrator en geef de onderstaande details door.",
+  "ERROR_SAML_NoAuthnContext": "Saml NoAuthnContext Fout. Verificatie mislukt. Neem contact op met uw eigen IT administrator en geef de onderstaande details door."
 }

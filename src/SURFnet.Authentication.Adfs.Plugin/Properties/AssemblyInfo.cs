@@ -51,6 +51,6 @@ using SURFnet.Authentication.Adfs.Plugin.Setup.Common;
 // [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyVersion("1.0.1.0")]   // Do NOT CHANGE!!
 // Shows as "Product version" in the File Explorer
-[assembly: AssemblyInformationalVersion(Values.ProductVersion)]
+[assembly: AssemblyInformationalVersion(Constants.ProductVersion)]
 // Shows as "File version" in the File Explorer
-[assembly: AssemblyFileVersion(Values.FileVersion)]
+[assembly: AssemblyFileVersion(Constants.FileVersion)]

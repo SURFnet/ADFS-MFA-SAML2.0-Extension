@@ -99,19 +99,19 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
         {
             var result = true;
             var adapters = new List<AssemblySpec>(); 
-            versionfound = Constants.AssemblyNullVersion;
+            versionfound = VersionConstants.AssemblyNullVersion;
 
             LogService.Log.Info("VersionHeuristics: Try find adapters in GAC and ADFS directory.");
 
             // look in ADFS directory
-            if (TryGetAdapterAssembly(FileDirectory.AdfsDir, Values.AdapterFilename, out var asssemblyFromAdfsDirectory))
+            if (TryGetAdapterAssembly(FileDirectory.AdfsDir, Common.Constants.AdapterFilename, out var asssemblyFromAdfsDirectory))
             {
                 adapters.Add(asssemblyFromAdfsDirectory);
                 LogService.Log.Info($"Found in ADFS directory: {asssemblyFromAdfsDirectory.FileVersion}");
             }
 
             // look in gac
-            if (TryGetAdapterAssembly(FileDirectory.GAC, Values.AdapterFilename, out var asssemblyFromGac))
+            if (TryGetAdapterAssembly(FileDirectory.GAC, Common.Constants.AdapterFilename, out var asssemblyFromGac))
             {
                 adapters.Add(asssemblyFromGac);
                 LogService.Log.Info($"Found in GAC: {asssemblyFromGac.FileVersion}");

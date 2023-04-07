@@ -5,7 +5,8 @@ using System.Globalization;
 using Microsoft.IdentityServer.Web.Authentication.External;
 
 using SURFnet.Authentication.Adfs.Plugin.Configuration;
-using SURFnet.Authentication.Adfs.Plugin.Setup.Common;
+
+using Constants = SURFnet.Authentication.Adfs.Plugin.Setup.Common.Constants;
 
 namespace SURFnet.Authentication.Adfs.Plugin
 {
@@ -19,7 +20,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
     /// 
     /// However we do change this based on the configuration, which we do read from special places.
     /// </summary>
-    /// <seealso cref="IAuthenticationAdapterMetadata" />
+    /// <seealso cref="Microsoft.IdentityServer.Web.Authentication.External.IAuthenticationAdapterMetadata" />
     public class AdapterMetadata : IAuthenticationAdapterMetadata
     {
         /// <summary>
@@ -33,8 +34,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
         private static readonly string[] authenticationMethods =
         {
             // Default to current production at Registration time
-            "http://surfconext.nl/assurance/sfo-level1.5", 
-            "http://surfconext.nl/assurance/sfo-level2",
+            "http://surfconext.nl/assurance/sfo-level1.5", "http://surfconext.nl/assurance/sfo-level2",
             "http://surfconext.nl/assurance/sfo-level3"
         };
 
@@ -98,8 +98,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
                 authenticationMethods = new string[]
                 {
                     $"http://{minimalLoa.Host}/assurance/sfo-level1.5",
-                    $"http://{minimalLoa.Host}/assurance/sfo-level2",
-                    $"http://{minimalLoa.Host}/assurance/sfo-level3"
+                    $"http://{minimalLoa.Host}/assurance/sfo-level2", $"http://{minimalLoa.Host}/assurance/sfo-level3"
                 };
             }
             // else: remains at production default.
@@ -151,7 +150,8 @@ namespace SURFnet.Authentication.Adfs.Plugin
         /// Returns the name of the provider that will be shown in the AD FS management UI (not visible to end users).
         /// </summary>
         /// <value>The name of the admin.</value>
-        public string AdminName => $"ADFS.SCSA {Values.FileVersion}"; // PLUgh: 
+
+        public string AdminName => $"ADFS.SCSA {Constants.FileVersion}"; // PLUgh: 
 
         /// <summary>
         /// Gets an array indicating which languages are supported by the provider. AD FS uses this information

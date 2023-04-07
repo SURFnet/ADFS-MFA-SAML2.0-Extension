@@ -53,7 +53,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Configuration
             var newcfg = new StepUpConfig();
             var rc = 0;
 
-            var adapterConfigurationPath = GetConfigFilepath(Values.AdapterCfgFilename, log);
+            var adapterConfigurationPath = GetConfigFilepath(Constants.AdapterCfgFilename, log);
+
             if (adapterConfigurationPath == null)
             {
                 return 1; // was written!!

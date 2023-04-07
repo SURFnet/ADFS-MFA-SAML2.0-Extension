@@ -7,9 +7,9 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Models
 {
     public class AdfsConfiguration
     {
-        public Version RegisteredAdapterVersion = Constants.AssemblyNullVersion;
+        public Version RegisteredAdapterVersion = VersionConstants.AssemblyNullVersion;
 
-        public Version AdfsProductVersion = Constants.AssemblyNullVersion;
+        public Version AdfsProductVersion = VersionConstants.AssemblyNullVersion;
 
         public AdfsSyncProperties SyncProps = new AdfsSyncProperties();
 

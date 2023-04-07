@@ -1,10 +1,10 @@
-﻿using System;
-
-using SURFnet.Authentication.Adfs.Plugin.Setup.Common;
-using SURFnet.Authentication.Adfs.Plugin.Setup.Configuration;
+﻿using SURFnet.Authentication.Adfs.Plugin.Setup.Configuration;
 using SURFnet.Authentication.Adfs.Plugin.Setup.Question;
 using SURFnet.Authentication.Adfs.Plugin.Setup.Services;
-using SURFnet.Authentication.Adfs.Plugin.Setup.Versions;
+
+using System;
+
+using SURFnet.Authentication.Adfs.Plugin.Setup.Common;
 
 namespace SURFnet.Authentication.Adfs.Plugin.Setup
 {
@@ -40,10 +40,10 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                         doit = true;
                         if (AdfsPSService.UnregisterAdapter())
                         {
-                            setupstate.AdfsConfig.RegisteredAdapterVersion = Constants.AssemblyNullVersion;
+                            setupstate.AdfsConfig.RegisteredAdapterVersion = Versions.VersionConstants.AssemblyNullVersion;
                             Console.WriteLine(
                                 "\"Unregister\" successful, the ADFS EventLog should no longer show loading this ('"
-                                + Values.AdapterRegistrationName
+                                + Common.Constants.AdapterRegistrationName
                                 + "') adapter.");
                             Console.WriteLine();
                             if (!Messages.DoYouWantTO(

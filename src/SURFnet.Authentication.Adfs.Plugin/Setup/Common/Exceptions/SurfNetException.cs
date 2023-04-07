@@ -44,7 +44,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Common.Exceptions
         protected SurfNetException(string message, bool isTransient) : base(message)
         {
             this.IsTransient = isTransient;
-            this.MessageResourceId = Values.DefaultErrorMessageResourcerId;
+            this.MessageResourceId = ErrorMessageValues.DefaultErrorMessageResourcerId;
         }
 
         /// <summary>
@@ -68,7 +68,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Common.Exceptions
         protected SurfNetException(string message, bool isTransient, Exception innerException) : base(message, innerException)
         {
             this.IsTransient = isTransient;
-            this.MessageResourceId = Values.DefaultErrorMessageResourcerId;
+            this.MessageResourceId = ErrorMessageValues.DefaultErrorMessageResourcerId;
         }
 
         /// <summary>

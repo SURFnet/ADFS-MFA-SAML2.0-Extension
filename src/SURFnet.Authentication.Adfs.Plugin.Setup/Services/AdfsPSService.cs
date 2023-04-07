@@ -1,15 +1,13 @@
 ﻿namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
 {
-    using System;
-
     using SURFnet.Authentication.Adfs.Plugin.Setup.Common;
-    using SURFnet.Authentication.Adfs.Plugin.Setup.Assemblies;
-    using SURFnet.Authentication.Adfs.Plugin.Setup.PS;
-    using System.ServiceProcess;
-    using System.Collections.Generic;
     using SURFnet.Authentication.Adfs.Plugin.Setup.Models;
+    using SURFnet.Authentication.Adfs.Plugin.Setup.PS;
     using SURFnet.Authentication.Adfs.Plugin.Setup.Versions;
-    using SURFnet.Authentication.Adfs.Plugin.Setup.Question;
+
+    using System;
+    using System.Collections.Generic;
+    using System.ServiceProcess;
 
     /// <summary>
     /// High level ADFS PowerShell command combinations.
@@ -20,7 +18,7 @@
     /// </summary>
     public static class AdfsPSService
     {
-        private static readonly string adapterName = Values.AdapterRegistrationName;
+        private static readonly string adapterName = Constants.AdapterRegistrationName;
 
         private static readonly Version Version1000 = new Version(1, 0, 0, 0);
 

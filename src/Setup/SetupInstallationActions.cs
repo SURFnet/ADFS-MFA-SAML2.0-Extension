@@ -1,10 +1,10 @@
-﻿using System;
-
-using SURFnet.Authentication.Adfs.Plugin.Setup.Common;
+﻿using SURFnet.Authentication.Adfs.Plugin.Setup.Common;
 using SURFnet.Authentication.Adfs.Plugin.Setup.Configuration;
 using SURFnet.Authentication.Adfs.Plugin.Setup.Models;
 using SURFnet.Authentication.Adfs.Plugin.Setup.Services;
 using SURFnet.Authentication.Adfs.Plugin.Setup.Versions;
+
+using System;
 
 namespace SURFnet.Authentication.Adfs.Plugin.Setup
 {
@@ -48,7 +48,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                 }
 
                 Console.WriteLine("Registration Successful.");
-                Console.WriteLine("Adapter registration name: " + Values.AdapterRegistrationName);
+                Console.WriteLine("Adapter registration name: " + Common.Constants.AdapterRegistrationName);
             }
 
             if (AdfsServer.RestartAdFsService() != 0)

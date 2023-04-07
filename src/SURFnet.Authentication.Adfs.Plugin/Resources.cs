@@ -14,15 +14,16 @@
 * limitations under the License.
 */
 
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
+using System.Reflection;
+
+using Newtonsoft.Json;
+
 namespace SURFnet.Authentication.Adfs.Plugin
 {
-    using System.Collections.Generic;
-    using System.Globalization;
-    using System.IO;
-    using System.Reflection;
-
-    using Newtonsoft.Json;
-
     /// <summary>
     /// A provider for resource files.
     /// </summary>
@@ -31,13 +32,13 @@ namespace SURFnet.Authentication.Adfs.Plugin
         /// <summary>
         /// Statically storing all labels to make sure no reloading is necessary.
         /// </summary>
-        private static readonly Dictionary<int, Dictionary<string, string>> Labels
-            = new Dictionary<int, Dictionary<string, string>>();
+        private static readonly Dictionary<int, Dictionary<string, string>> Labels =
+            new Dictionary<int, Dictionary<string, string>>();
 
         /// <summary>
         /// Statically storing all forms to make sure no reloading is necessary.
         /// </summary>
-        private static readonly Dictionary<string, string> Forms = new Dictionary<string, string>();
+        private static readonly Dictionary<string, string> Forms = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
         /// <summary>
         /// Gets a Labels dictionary for a specified LCID.
@@ -95,6 +96,42 @@ namespace SURFnet.Authentication.Adfs.Plugin
         }
 
         /// <summary>
+        /// Gets a single label from the necessary resource files.
+        /// </summary>
+        /// <param name="lcid">The LCID (language identifier).</param>
+        /// <param name="key">The resource identifier.</param>
+        /// <param name="defaultKey">The default resource identifier.</param>
+        /// <param name="formattedValues">Values to insert into string.Format, if supplied.</param>
+        /// <returns>
+        /// The resource value.
+        /// </returns>
+        public static string GetLabelOrDefault(int lcid, string key, string defaultKey, params object[] formattedValues)
+        {
+            var labels = GetLabels(lcid);
+            if (!labels.TryGetValue(key, out var label))
+            {
+                return GetLabel(lcid, defaultKey, formattedValues);
+            }
+
+            var result = label;
+
+            if (formattedValues != null)
+            {
+                try
+                {
+                    result = string.Format(label, formattedValues);
+                }
+                catch
+                {
+                    // Return just the unformatted label if there's an error with formatting the label
+                    result = label;
+                }
+            }
+
+            return result;
+        }
+
+        /// <summary>
         /// Gets a form for a specified form name.
         /// </summary>
         /// <param name="formName">The name of the form.</param>
@@ -116,11 +153,13 @@ namespace SURFnet.Authentication.Adfs.Plugin
                                 ?? throw new FileNotFoundException(
                                     $"Could not find the Form file {formName}.html",
                                     $"{formName}.html"))
-            using (var reader = new StreamReader(stream))
             {
-                var form = reader.ReadToEnd();
-                Forms.Add(formName, form);
-                return form;
+                using (var reader = new StreamReader(stream))
+                {
+                    var form = reader.ReadToEnd();
+                    Forms.Add(formName, form);
+                    return form;
+                }
             }
         }
 
@@ -183,8 +222,9 @@ namespace SURFnet.Authentication.Adfs.Plugin
                 }
             }
 
-            Labels.Add(lcid, labels);
-            return labels;
+            var result = new Dictionary<string, string>(labels, StringComparer.OrdinalIgnoreCase);
+            Labels.Add(lcid, result);
+            return result;
         }
     }
 }
