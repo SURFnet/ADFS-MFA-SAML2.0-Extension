@@ -5,6 +5,7 @@ using SURFnet.Authentication.Adfs.Plugin.Setup.Services;
 using SURFnet.Authentication.Adfs.Plugin.Setup.Util;
 
 using System;
+using System.Linq;
 
 namespace SURFnet.Authentication.Adfs.Plugin.Setup
 {
@@ -25,9 +26,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
         [STAThread]
         public static int Main(string[] args)
         {
-            if (args.Length == 1
-                && args[0]
-                    .Equals("useMock", StringComparison.OrdinalIgnoreCase))
+            if (args.Length > 0
+                && args.Any(x => x.Equals("useMock", StringComparison.OrdinalIgnoreCase)))
             {
                 UseMock = true;
                 FileService.InitFileServiceMock();
