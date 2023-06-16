@@ -1,17 +1,10 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using CommandLine;
 
-using CommandLine;
-using CommandLine.Text;
-
-using SURFnet.Authentication.Adfs.Plugin.Setup.Common;
 using SURFnet.Authentication.Adfs.Plugin.Setup.Configuration;
-using SURFnet.Authentication.Adfs.Plugin.Setup.Models;
-using SURFnet.Authentication.Adfs.Plugin.Setup.Question;
 using SURFnet.Authentication.Adfs.Plugin.Setup.Services;
 using SURFnet.Authentication.Adfs.Plugin.Setup.Util;
-using SURFnet.Authentication.Adfs.Plugin.Setup.Versions;
+
+using System;
 
 namespace SURFnet.Authentication.Adfs.Plugin.Setup
 {
@@ -20,6 +13,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
     /// </summary>
     public static class SetupProgram
     {
+        public static bool UseMock = false;
+
         /// <summary>
         /// Defines the entry point of the application.
         /// </summary>
@@ -30,15 +25,26 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
         [STAThread]
         public static int Main(string[] args)
         {
+            if (args.Length == 1
+                && args[0]
+                    .Equals("useMock", StringComparison.OrdinalIgnoreCase))
+            {
+                UseMock = true;
+                FileService.InitFileServiceMock();
+            }
+
 #if DEBUG
-            Console.Write("Attach remote debugger and press any key to continue...");
-            Console.ReadLine();
+            if (!UseMock)
+            {
+                Console.Write("Attach remote debugger and press any key to continue...");
+                Console.ReadLine();
+            }
 #endif
 
             var response = Parser.Default.ParseArguments<SetupOptions>(args)
-                .MapResult(
-                    ParseOptions,
-                    _ => ReturnOptions.Failure);
+                                 .MapResult(
+                                     ParseOptions,
+                                     _ => ReturnOptions.Failure);
 
             Console.WriteLine("Result: {0}", response);
             Console.Write("Hit any key to exit.");
@@ -90,7 +96,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
             state = new SetupState();
             Console.WriteLine(state.SetupProgramVersion.VersionToString("Setup program version"));
 
-            if (!UAC.HasAdministratorPrivileges())
+            if (!UAC.HasAdministratorPrivileges() && !UseMock)
             {
                 Console.WriteLine("Must be a member of local Administrators and run with local");
                 Console.WriteLine("Administrative privileges.");

@@ -109,6 +109,19 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
             ValidateConfigFolder();
         }
 
+        public static void InitFileServiceMock()
+        {
+            if (!Directory.Exists(DistFolder))
+            {
+                Directory.CreateDirectory(DistFolder);
+            }
+
+            if (!Directory.Exists(ConfigFolder))
+            {
+                Directory.CreateDirectory(ConfigFolder);
+            }
+        }
+
         public static string Enum2Directory(FileDirectory value)
         {
             if (value == FileDirectory.Backup)
@@ -358,7 +371,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
         /// <exception cref="DirectoryNotFoundException">Missing dist folder. Cannot continue.</exception>
         private static void ValidateDistFolder()
         {
-            if (!Directory.Exists(DistFolder))
+            if (!Directory.Exists(DistFolder)) //todo mock do we need dist folder?
             {
                 LogService.WriteFatal("Missing dist folder with installation files. Cannot continue.");
                 throw new DirectoryNotFoundException("Missing dist folder. Cannot continue.");
