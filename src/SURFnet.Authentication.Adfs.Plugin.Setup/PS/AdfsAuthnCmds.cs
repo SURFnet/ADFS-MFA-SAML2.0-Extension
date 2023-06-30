@@ -176,7 +176,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.PS
         /// <param name="name"></param>
         /// <param name="fullTypeName"></param>
         /// <param name="cfgFilePath"></param>
-        public static void RegisterAuthnProvider(string name, string fullTypeName, string cfgFilePath = null)
+        public static void RegisterAuthnProvider(string name, string fullTypeName, string cfgFilePath = null) //todo mock
         {
             PowerShell ps = PowerShell.Create();
             ps.AddCommand("Register-AdfsAuthenticationProvider");

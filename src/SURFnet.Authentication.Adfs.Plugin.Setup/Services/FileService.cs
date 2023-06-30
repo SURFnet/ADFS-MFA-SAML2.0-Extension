@@ -48,7 +48,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
         /// <summary>
         /// The path of the ADFS directory. (set by static constructor)
         /// </summary>
-        private static string AdfsDir { get; }
+        private static string AdfsDir { get; set; }
 
         /// <summary>
         /// The V4 GAC directory directory. Which is where the V1.0.1.0 files are.
@@ -79,7 +79,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
         public static string BackupFolder { get; }
         private static bool backupInitialized = false;
 
-
+        //todo mock configure directories?
         static FileService()
         {
             AdfsDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), "ADFS");
@@ -92,7 +92,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
             directoryMap[(int)FileDirectory.AdfsDir] = AdfsDir;
             directoryMap[(int)FileDirectory.GAC] = GACDir;
             directoryMap[(int)FileDirectory.Output] = OutputFolder;
-            directoryMap[(int)FileDirectory.Dist] = DistFolder;
+            directoryMap[(int)FileDirectory.Dist] = DistFolder; 
             directoryMap[(int)FileDirectory.Config] = ConfigFolder;
             directoryMap[(int)FileDirectory.Backup] = BackupFolder;
         }
@@ -119,6 +119,14 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
             if (!Directory.Exists(ConfigFolder))
             {
                 Directory.CreateDirectory(ConfigFolder);
+            }
+
+            var adfsMockFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "adfs");
+            if (!Directory.Exists(adfsMockFolder))
+            {
+                Directory.CreateDirectory(adfsMockFolder);
+                AdfsDir = adfsMockFolder;
+                directoryMap[(int)FileDirectory.AdfsDir] = adfsMockFolder;
             }
         }
 
