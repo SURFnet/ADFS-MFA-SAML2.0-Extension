@@ -121,13 +121,13 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Services
                 Directory.CreateDirectory(ConfigFolder);
             }
 
-            var adfsMockFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "adfs");
-            if (!Directory.Exists(adfsMockFolder))
+            AdfsDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "adfs");
+            if (!Directory.Exists(AdfsDir))
             {
-                Directory.CreateDirectory(adfsMockFolder);
-                AdfsDir = adfsMockFolder;
-                directoryMap[(int)FileDirectory.AdfsDir] = adfsMockFolder;
+                Directory.CreateDirectory(AdfsDir);
             }
+
+            directoryMap[(int)FileDirectory.AdfsDir] = AdfsDir;
         }
 
         public static string Enum2Directory(FileDirectory value)

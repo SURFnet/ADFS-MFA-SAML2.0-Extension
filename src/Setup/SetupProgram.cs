@@ -96,7 +96,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
             state = new SetupState();
             Console.WriteLine(state.SetupProgramVersion.VersionToString("Setup program version"));
 
-            if (!UAC.HasAdministratorPrivileges() && !UseMock)
+            if (!UAC.HasAdministratorPrivileges())
             {
                 Console.WriteLine("Must be a member of local Administrators and run with local");
                 Console.WriteLine("Administrative privileges.");
