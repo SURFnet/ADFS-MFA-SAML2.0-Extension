@@ -110,7 +110,6 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                         rc = 4;
                     }
                 }
-
             }
 
             return rc;

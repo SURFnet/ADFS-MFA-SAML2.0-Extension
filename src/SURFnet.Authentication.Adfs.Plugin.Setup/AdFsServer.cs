@@ -14,6 +14,8 @@
 * limitations under the License.
 */
 
+using SURFnet.Authentication.Adfs.Plugin.Setup.Controllers;
+
 namespace SURFnet.Authentication.Adfs.Plugin.Setup
 {
     using System;
@@ -22,6 +24,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
     using System.Threading;
     using Microsoft.Win32;
     using SURFnet.Authentication.Adfs.Plugin.Setup.Assemblies;
+using SURFnet.Authentication.Adfs.Plugin.Setup.Common;
     using SURFnet.Authentication.Adfs.Plugin.Setup.Services;
     using SURFnet.Authentication.Adfs.Plugin.Setup.Versions;
 
@@ -36,11 +39,13 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
 
         private const string DefaultAdfsSvcName = "adfssrv";
 
+        public static SetupRunMode RunMode;
+
         /// <summary>
         /// Gets the ADFS service controller.
         /// </summary>
-        /// <returns><see cref="ServiceController"/>null on error</returns>
-        public static ServiceController CheckAdFsService(out Version adfsProductVersion)
+        /// <returns><see cref="SURFnet.Authentication.Adfs.Plugin.Setup.Controllers.ServiceControllerHost"/>null on error</returns>
+        public static IServiceControllerHost CheckAdFsService(out Version adfsProductVersion)
         {
             SvcController = null;
 
@@ -50,12 +55,18 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                 // No need to check the rest...
                 // Avoiding the silly exceptions in 99 out 0f 100?
                 LogService.Log.Info("No AdfsAssembly in ADFS directory");
+
+                if (RunMode == SetupRunMode.MockAdfs)
+                {
+                    SvcController = new ServiceControllerMock();
+                }
+
                 return (SvcController);
             }
 
             try
             {
-                var tmpController = new ServiceController("adfssrv");
+                var tmpController = new ServiceControllerHost();
 
                 var status = tmpController.Status; // trigger exception if not on machine.
                 if ( status != ServiceControllerStatus.Running )
@@ -145,7 +156,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
         /// <summary>
         /// Get Available for the service account, which must have rights for the private key.
         /// </summary>
-        public static ServiceController SvcController { get; private set; } = null;
+        public static IServiceControllerHost SvcController { get; private set; } = null;
 
         /// <summary>
         /// This is really ridiculous, getting it from the Registry seems far simpler.....

@@ -1,4 +1,5 @@
-﻿using SURFnet.Authentication.Adfs.Plugin.Setup.Services;
+﻿using SURFnet.Authentication.Adfs.Plugin.Setup.Common;
+using SURFnet.Authentication.Adfs.Plugin.Setup.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,20 +16,27 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.PS
     /// The most common error is a Stopped ADFS server. Check that before calling!
     /// The other return null on fatal errors.
     /// </summary>
-    static public class AdfsAuthnCmds
+    public static class AdfsAuthnCmds
     {
+        public static SetupRunMode RunMode;
+
         /// <summary>
         /// Does not throw, must test the return code.
         /// </summary>
         /// <param name="name"></param>
         /// <returns>null on fatal error, otherwise a (possibly empty) list.</returns>
-        static public List<AdfsExtAuthProviderProps> GetAuthProviderProps(string name)
+        public static List<AdfsExtAuthProviderProps> GetAuthProviderProps(string name)
         {
+            if (RunMode == SetupRunMode.MockAdfs)
+            {
+                return new List<AdfsExtAuthProviderProps>();
+            }
+
             List<AdfsExtAuthProviderProps> rc = null;
 
             try
             {
-                PowerShell ps = PowerShell.Create();
+                var ps = PowerShell.Create();
                 ps.AddCommand("Get-AdfsAuthenticationProvider");
                 if (false == string.IsNullOrWhiteSpace(name))
                     ps.AddParameter("Name", name);
@@ -98,12 +106,17 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.PS
         /// Does not throw, must test the return code.
         /// </summary>
         /// <returns>null on fatal error, otherwise a (possibly empty) list.</returns>
-        static public AdfsGlobAuthPolicy GetGlobAuthnPol()
+        public static AdfsGlobAuthPolicy GetGlobAuthnPol()
         {
+            if (RunMode == SetupRunMode.MockAdfs)
+            {
+                return new AdfsGlobAuthPolicy();
+            }
+
             AdfsGlobAuthPolicy policy = null;
             try
             {
-                PowerShell ps = PowerShell.Create();
+                var ps = PowerShell.Create();
                 ps.AddCommand("Get-AdfsGlobalAuthenticationPolicy");
 
                 var result = ps.Invoke();
@@ -152,9 +165,14 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.PS
         /// Throws on errors. Must catch!
         /// </summary>
         /// <param name="policy"></param>
-        static public void SetGlobAuthnPol(AdfsGlobAuthPolicy policy)
+        public static void SetGlobAuthnPol(AdfsGlobAuthPolicy policy)
         {
-            PowerShell ps = PowerShell.Create();
+            if (RunMode == SetupRunMode.MockAdfs)
+            {
+                return;
+            }
+
+            var ps = PowerShell.Create();
             ps.AddCommand("Set-AdfsGlobalAuthenticationPolicy");
             if (null != policy.AdditionalAuthenticationProviders)
             {
@@ -178,7 +196,12 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.PS
         /// <param name="cfgFilePath"></param>
         public static void RegisterAuthnProvider(string name, string fullTypeName, string cfgFilePath = null) //todo mock
         {
-            PowerShell ps = PowerShell.Create();
+            if (RunMode == SetupRunMode.MockAdfs)
+            {
+                return;
+            }
+
+            var ps = PowerShell.Create();
             ps.AddCommand("Register-AdfsAuthenticationProvider");
             ps.AddParameter("Name", name);
             ps.AddParameter("TypeName", fullTypeName);
@@ -195,7 +218,12 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.PS
         /// <param name="confirm"></param>
         public static void UnregisterAuthnProvider(string name, bool confirm = false)
         {
-            PowerShell ps = PowerShell.Create();
+            if (RunMode == SetupRunMode.MockAdfs)
+            {
+                return;
+            }
+
+            var ps = PowerShell.Create();
             ps.AddCommand("Unregister-AdfsAuthenticationProvider");
             ps.AddParameter("Name", name);
             if ( confirm == false )
@@ -216,10 +244,15 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.PS
         /// </summary>
         /// <param name="name"></param>
         /// <param name="filepath"></param>
-        static public void ExportCfgData(string name, string filepath)
+        public static void ExportCfgData(string name, string filepath)
         {
+            if (RunMode == SetupRunMode.MockAdfs)
+            {
+                return;
+            }
+
             // TODO: should report errors! Currently void!
-            PowerShell ps = PowerShell.Create();
+            var ps = PowerShell.Create();
             ps.AddCommand("Export-AdfsAuthenticationProviderConfigurationData");
             ps.AddParameter("Name", name);
             ps.AddParameter("FilePath", filepath);
@@ -234,10 +267,15 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.PS
         /// </summary>
         /// <param name="name"></param>
         /// <param name="filepath"></param>
-        static public void ImportCfgData(string name, string filepath)
+        public static void ImportCfgData(string name, string filepath)
         {
+            if (RunMode == SetupRunMode.MockAdfs)
+            {
+                return;
+            }
+
             // TODO: should report errors! Currently void!
-            PowerShell ps = PowerShell.Create();
+            var ps = PowerShell.Create();
             ps.AddCommand("Import-AdfsAuthenticationProviderConfigurationData");
             ps.AddParameter("Name", name);
             ps.AddParameter("FilePath", filepath);

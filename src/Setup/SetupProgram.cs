@@ -1,11 +1,13 @@
-﻿using CommandLine;
+﻿using System;
+using System.Linq;
 
+using CommandLine;
+
+using SURFnet.Authentication.Adfs.Plugin.Setup.Common;
 using SURFnet.Authentication.Adfs.Plugin.Setup.Configuration;
+using SURFnet.Authentication.Adfs.Plugin.Setup.PS;
 using SURFnet.Authentication.Adfs.Plugin.Setup.Services;
 using SURFnet.Authentication.Adfs.Plugin.Setup.Util;
-
-using System;
-using System.Linq;
 
 namespace SURFnet.Authentication.Adfs.Plugin.Setup
 {
@@ -14,7 +16,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
     /// </summary>
     public static class SetupProgram
     {
-        public static bool UseMock = false;
+        public static SetupRunMode RunMode;
 
         /// <summary>
         /// Defines the entry point of the application.
@@ -29,22 +31,20 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
             if (args.Length > 0
                 && args.Any(x => x.Equals("useMock", StringComparison.OrdinalIgnoreCase)))
             {
-                UseMock = true;
+                RunMode = SetupRunMode.MockAdfs;
+                AdfsServer.RunMode = SetupRunMode.MockAdfs;
+                AdfsSyncPropertiesCmds.RunMode = SetupRunMode.MockAdfs;
+                AdfsAuthnCmds.RunMode = SetupRunMode.MockAdfs;
                 FileService.InitFileServiceMock();
             }
 
 #if DEBUG
-            if (!UseMock)
-            {
-                Console.Write("Attach remote debugger and press any key to continue...");
-                Console.ReadLine();
-            }
+            Console.Write("Attach remote debugger and press any key to continue...");
+            Console.ReadLine();
 #endif
 
             var response = Parser.Default.ParseArguments<SetupOptions>(args)
-                                 .MapResult(
-                                     ParseOptions,
-                                     _ => ReturnOptions.Failure);
+                                 .MapResult(ParseOptions, _ => ReturnOptions.Failure);
 
             Console.WriteLine("Result: {0}", response);
             Console.Write("Hit any key to exit.");
@@ -117,7 +117,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                 FileService.InitFileService();
 
                 var idPEnvironments = state.IdPEnvironments = ConfigurationFileService.LoadIdPDefaults();
-                if (idPEnvironments == null || idPEnvironments.Count == 0)
+                if (idPEnvironments == null
+                    || idPEnvironments.Count == 0)
                 {
                     // Darn, no error check at low level?
                     throw new ApplicationException("Error reading the SFO server (IdP) environment descriptions.");
@@ -139,8 +140,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                 // set default SP entityID. Has a very essential side effect:
                 //   - It fills the setting Dictionary!
                 ConfigSettings.SPEntityID.DefaultValue = state.IsPrimaryComputer
-                    ? $"http://{state.AdfsConfig.AdfsProps.HostName}/stepup-mfa"
-                    : null;
+                                                             ? $"http://{state.AdfsConfig.AdfsProps.HostName}/stepup-mfa"
+                                                             : null;
 
                 LogService.Log.Info("Successful end of PrepareforSetup()");
             }

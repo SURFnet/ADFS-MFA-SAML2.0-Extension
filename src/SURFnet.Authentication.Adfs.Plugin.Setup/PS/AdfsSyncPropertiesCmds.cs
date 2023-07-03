@@ -1,27 +1,32 @@
-﻿using SURFnet.Authentication.Adfs.Plugin.Setup.Services;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System;
 using System.Management.Automation;
-using System.Text;
-using System.Threading.Tasks;
+
+using SURFnet.Authentication.Adfs.Plugin.Setup.Common;
+using SURFnet.Authentication.Adfs.Plugin.Setup.Services;
 
 namespace SURFnet.Authentication.Adfs.Plugin.Setup.PS
 {
-    static public class AdfsSyncPropertiesCmds
+    public static class AdfsSyncPropertiesCmds
     {
+        public static SetupRunMode RunMode;
+
         /// <summary>
         /// In the end calling: GetSyncPropertiesCommand
         /// </summary>
         /// <returns></returns>
-        static public AdfsSyncProperties GetSyncProperties()
+        public static AdfsSyncProperties GetSyncProperties()
         {
             AdfsSyncProperties rc = null;
             LogService.Log.Info("Enter AdfsSynPropertiesCmds.GetSyncProperties()");
 
+            if (RunMode == SetupRunMode.MockAdfs)
+            {
+                return new AdfsSyncProperties();
+            }
+
             try
             {
-                PowerShell ps = PowerShell.Create();
+                var ps = PowerShell.Create();
                 ps.AddCommand("Get-AdfsSyncProperties");
 
                 var result = ps.Invoke();
@@ -41,10 +46,14 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.PS
                     // if we could get to the these properties on the older versions too.
 
                     // Just Role, for now.
-                    if (result[0].TryGetPropertyString("Role", out string role))
+                    if (result[0]
+                        .TryGetPropertyString("Role", out var role))
                     {
                         LogService.Log.Info($"Get-AdfsSyncProperties  role: {role}");
-                        rc = new AdfsSyncProperties() { Role = role };
+                        rc = new AdfsSyncProperties()
+                        {
+                            Role = role
+                        };
                     }
                     else
                     {

@@ -185,6 +185,9 @@
     <Binaries Include="$(ProjectDir)bin\$(Configuration)\SURFnet.Authentication.Adfs.Plugin.dll" />
     <Binaries Include="$(ProjectDir)bin\$(Configuration)\SURFnet.Authentication.Adfs.Plugin.dll.config" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="NewFolder1\" />
+  </ItemGroup>
   <Import Project="..\..\packages\Brutal.Dev.StrongNameSigner.2.7.1\build\Brutal.Dev.StrongNameSigner.targets" Condition="Exists('..\..\packages\Brutal.Dev.StrongNameSigner.2.7.1\build\Brutal.Dev.StrongNameSigner.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

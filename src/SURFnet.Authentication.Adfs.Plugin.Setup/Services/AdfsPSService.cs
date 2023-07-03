@@ -274,7 +274,7 @@
             bool rc = false;
             //registeredAdapterVersion = new Version(0,0,0,0);
 
-            ServiceController adfsService = AdfsServer.SvcController;
+            var adfsService = AdfsServer.SvcController;
             try
             {
                 // get the Registration data from the ADFS configuration.

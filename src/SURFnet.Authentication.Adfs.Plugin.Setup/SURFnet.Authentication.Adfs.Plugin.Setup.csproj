@@ -74,6 +74,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AdfsServer.cs" />
+    <Compile Include="Common\SetupRunMode.cs" />
     <Compile Include="Configuration\AdapterMaintenance.cs" />
     <Compile Include="Configuration\AnyControllerUtils.cs" />
     <Compile Include="Configuration\CertCreate.cs" />
@@ -86,6 +87,9 @@
     <Compile Include="Configuration\CertFromStore.cs" />
     <Compile Include="Configuration\SettingCollector.cs" />
     <Compile Include="Configuration\SPCertController.cs" />
+    <Compile Include="Controllers\IServiceControllerHost.cs" />
+    <Compile Include="Controllers\ServiceControllerMock.cs" />
+    <Compile Include="Controllers\ServiceControllerHost.cs" />
     <Compile Include="FileDirectory.cs" />
     <Compile Include="Models\AdfsConfiguration.cs" />
     <Compile Include="Models\RegistrationData.cs" />
