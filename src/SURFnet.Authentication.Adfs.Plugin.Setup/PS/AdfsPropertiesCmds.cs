@@ -1,22 +1,27 @@
-﻿using SURFnet.Authentication.Adfs.Plugin.Setup.Services;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System;
 using System.Management.Automation;
-using System.Text;
-using System.Threading.Tasks;
+
+using SURFnet.Authentication.Adfs.Plugin.Setup.Common;
+using SURFnet.Authentication.Adfs.Plugin.Setup.Services;
 
 namespace SURFnet.Authentication.Adfs.Plugin.Setup.PS
 {
-    static public class AdfsPropertiesCmds
+    public static class AdfsPropertiesCmds
     {
-        static public AdfsProperties GetAdfsProps()
+        public static SetupRunMode RunMode;
+
+        public static AdfsProperties GetAdfsProps()
         {
+            if (RunMode == SetupRunMode.MockAdfs)
+            {
+                return new AdfsProperties();
+            }
+
             AdfsProperties rc = null;
 
             try
             {
-                PowerShell ps = PowerShell.Create();
+                var ps = PowerShell.Create();
                 ps.AddCommand("Get-AdfsProperties");
 
                 var result = ps.Invoke();
@@ -30,26 +35,37 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.PS
                 }
                 else
                 {
-                    bool error = false;
+                    var error = false;
 
                     var props = result[0];
 
-                    if (false == props.TryGetPropertyString("FederationPassiveAddress", out string federationPassiveAddress))
+                    if (false
+                        == props.TryGetPropertyString("FederationPassiveAddress", out var federationPassiveAddress))
+                    {
                         error = true;
+                    }
 
-                    if (false == props.TryGetPropertyString("HostName", out string hostname))
+                    if (false == props.TryGetPropertyString("HostName", out var hostname))
+                    {
                         error = true;
+                    }
 
-                    if (false == props.TryGetPropertyInt("HttpPort", out int httpPort))
+                    if (false == props.TryGetPropertyInt("HttpPort", out var httpPort))
+                    {
                         error = true;
+                    }
 
-                    if (false == props.TryGetPropertyInt("HttpsPort", out int httpsPort))
+                    if (false == props.TryGetPropertyInt("HttpsPort", out var httpsPort))
+                    {
                         error = true;
+                    }
 
                     if (false == props.TryGetPropertyValue("Identifier", out Uri identifier))
+                    {
                         error = true;
+                    }
 
-                    if ( false == error )
+                    if (false == error)
                     {
                         rc = new AdfsProperties
                         {

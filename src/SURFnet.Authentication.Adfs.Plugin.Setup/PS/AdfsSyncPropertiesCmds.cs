@@ -2,6 +2,7 @@
 using System.Management.Automation;
 
 using SURFnet.Authentication.Adfs.Plugin.Setup.Common;
+using SURFnet.Authentication.Adfs.Plugin.Setup.Controllers;
 using SURFnet.Authentication.Adfs.Plugin.Setup.Services;
 
 namespace SURFnet.Authentication.Adfs.Plugin.Setup.PS
@@ -21,7 +22,12 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.PS
 
             if (RunMode == SetupRunMode.MockAdfs)
             {
-                return new AdfsSyncProperties();
+                var mock = new AdfsSyncProperties
+                {
+                    Role = AdfsSyncProperties.PrimaryRole
+                };
+
+                return mock;
             }
 
             try

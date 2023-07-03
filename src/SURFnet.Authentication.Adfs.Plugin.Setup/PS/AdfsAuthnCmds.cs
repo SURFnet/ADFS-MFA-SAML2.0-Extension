@@ -110,7 +110,10 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.PS
         {
             if (RunMode == SetupRunMode.MockAdfs)
             {
-                return new AdfsGlobAuthPolicy();
+                return new AdfsGlobAuthPolicy()
+                {
+                    AdditionalAuthenticationProviders = new List<string>()
+                };
             }
 
             AdfsGlobAuthPolicy policy = null;

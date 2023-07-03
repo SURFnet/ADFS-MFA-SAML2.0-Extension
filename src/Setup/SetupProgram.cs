@@ -33,6 +33,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
             {
                 RunMode = SetupRunMode.MockAdfs;
                 AdfsServer.RunMode = SetupRunMode.MockAdfs;
+                AdfsPropertiesCmds.RunMode = SetupRunMode.MockAdfs;
                 AdfsSyncPropertiesCmds.RunMode = SetupRunMode.MockAdfs;
                 AdfsAuthnCmds.RunMode = SetupRunMode.MockAdfs;
                 FileService.InitFileServiceMock();
