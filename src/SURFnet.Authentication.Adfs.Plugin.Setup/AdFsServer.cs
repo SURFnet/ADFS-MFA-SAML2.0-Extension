@@ -39,8 +39,6 @@ using SURFnet.Authentication.Adfs.Plugin.Setup.Common;
 
         private const string DefaultAdfsSvcName = "adfssrv";
 
-        public static SetupRunMode RunMode;
-
         /// <summary>
         /// Gets the ADFS service controller.
         /// </summary>
@@ -56,7 +54,7 @@ using SURFnet.Authentication.Adfs.Plugin.Setup.Common;
                 // Avoiding the silly exceptions in 99 out 0f 100?
                 LogService.Log.Info("No AdfsAssembly in ADFS directory");
 
-                if (RunMode == SetupRunMode.MockAdfs)
+                if (SetupConfig.RunMode == SetupRunMode.MockAdfs)
                 {
                     SvcController = new ServiceControllerMock();
                 }

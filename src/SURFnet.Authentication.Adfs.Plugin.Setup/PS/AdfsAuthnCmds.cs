@@ -18,8 +18,6 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.PS
     /// </summary>
     public static class AdfsAuthnCmds
     {
-        public static SetupRunMode RunMode;
-
         /// <summary>
         /// Does not throw, must test the return code.
         /// </summary>
@@ -27,7 +25,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.PS
         /// <returns>null on fatal error, otherwise a (possibly empty) list.</returns>
         public static List<AdfsExtAuthProviderProps> GetAuthProviderProps(string name)
         {
-            if (RunMode == SetupRunMode.MockAdfs)
+            if (SetupConfig.RunMode == SetupRunMode.MockAdfs)
             {
                 return new List<AdfsExtAuthProviderProps>();
             }
@@ -108,7 +106,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.PS
         /// <returns>null on fatal error, otherwise a (possibly empty) list.</returns>
         public static AdfsGlobAuthPolicy GetGlobAuthnPol()
         {
-            if (RunMode == SetupRunMode.MockAdfs)
+            if (SetupConfig.RunMode == SetupRunMode.MockAdfs)
             {
                 return new AdfsGlobAuthPolicy()
                 {
@@ -170,7 +168,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.PS
         /// <param name="policy"></param>
         public static void SetGlobAuthnPol(AdfsGlobAuthPolicy policy)
         {
-            if (RunMode == SetupRunMode.MockAdfs)
+            if (SetupConfig.RunMode == SetupRunMode.MockAdfs)
             {
                 return;
             }
@@ -199,7 +197,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.PS
         /// <param name="cfgFilePath"></param>
         public static void RegisterAuthnProvider(string name, string fullTypeName, string cfgFilePath = null) //todo mock
         {
-            if (RunMode == SetupRunMode.MockAdfs)
+            if (SetupConfig.RunMode == SetupRunMode.MockAdfs)
             {
                 return;
             }
@@ -221,7 +219,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.PS
         /// <param name="confirm"></param>
         public static void UnregisterAuthnProvider(string name, bool confirm = false)
         {
-            if (RunMode == SetupRunMode.MockAdfs)
+            if (SetupConfig.RunMode == SetupRunMode.MockAdfs)
             {
                 return;
             }
@@ -249,7 +247,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.PS
         /// <param name="filepath"></param>
         public static void ExportCfgData(string name, string filepath)
         {
-            if (RunMode == SetupRunMode.MockAdfs)
+            if (SetupConfig.RunMode == SetupRunMode.MockAdfs)
             {
                 return;
             }
@@ -272,7 +270,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.PS
         /// <param name="filepath"></param>
         public static void ImportCfgData(string name, string filepath)
         {
-            if (RunMode == SetupRunMode.MockAdfs)
+            if (SetupConfig.RunMode == SetupRunMode.MockAdfs)
             {
                 return;
             }

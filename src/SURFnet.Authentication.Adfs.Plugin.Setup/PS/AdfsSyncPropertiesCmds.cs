@@ -2,15 +2,12 @@
 using System.Management.Automation;
 
 using SURFnet.Authentication.Adfs.Plugin.Setup.Common;
-using SURFnet.Authentication.Adfs.Plugin.Setup.Controllers;
 using SURFnet.Authentication.Adfs.Plugin.Setup.Services;
 
 namespace SURFnet.Authentication.Adfs.Plugin.Setup.PS
 {
     public static class AdfsSyncPropertiesCmds
     {
-        public static SetupRunMode RunMode;
-
         /// <summary>
         /// In the end calling: GetSyncPropertiesCommand
         /// </summary>
@@ -20,7 +17,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.PS
             AdfsSyncProperties rc = null;
             LogService.Log.Info("Enter AdfsSynPropertiesCmds.GetSyncProperties()");
 
-            if (RunMode == SetupRunMode.MockAdfs)
+            if (SetupConfig.RunMode == SetupRunMode.MockAdfs)
             {
                 var mock = new AdfsSyncProperties
                 {

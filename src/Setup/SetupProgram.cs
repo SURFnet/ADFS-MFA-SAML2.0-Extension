@@ -16,8 +16,6 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
     /// </summary>
     public static class SetupProgram
     {
-        public static SetupRunMode RunMode;
-
         /// <summary>
         /// Defines the entry point of the application.
         /// </summary>
@@ -31,11 +29,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
             if (args.Length > 0
                 && args.Any(x => x.Equals("useMock", StringComparison.OrdinalIgnoreCase)))
             {
-                RunMode = SetupRunMode.MockAdfs;
-                AdfsServer.RunMode = SetupRunMode.MockAdfs;
-                AdfsPropertiesCmds.RunMode = SetupRunMode.MockAdfs;
-                AdfsSyncPropertiesCmds.RunMode = SetupRunMode.MockAdfs;
-                AdfsAuthnCmds.RunMode = SetupRunMode.MockAdfs;
+                SetupConfig.RunMode = SetupRunMode.MockAdfs;
                 FileService.InitFileServiceMock();
             }
 

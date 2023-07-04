@@ -8,11 +8,9 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.PS
 {
     public static class AdfsPropertiesCmds
     {
-        public static SetupRunMode RunMode;
-
         public static AdfsProperties GetAdfsProps()
         {
-            if (RunMode == SetupRunMode.MockAdfs)
+            if (SetupConfig.RunMode == SetupRunMode.MockAdfs)
             {
                 return new AdfsProperties();
             }
