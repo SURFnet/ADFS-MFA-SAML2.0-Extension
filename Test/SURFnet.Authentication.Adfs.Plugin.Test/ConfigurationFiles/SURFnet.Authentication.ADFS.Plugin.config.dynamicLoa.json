@@ -1,14 +1,5 @@
-[
-  {
-    "Group": "group1.5",
-    "Loa": "http://test.surfconext.nl/assurance/sfo-level1.5a"
-  },
-  {
-    "Group": "group2",
-    "Loa": "http://test.surfconext.nl/assurance/sfo-level2a"
-  },
-  {
-    "Group": "group3",
-    "Loa": "http://test.surfconext.nl/assurance/sfo-level3a"
-  }
-]
+{
+  "group1.5": "http://test.surfconext.nl/assurance/sfo-level1.5a",
+  "group2": "http://test.surfconext.nl/assurance/sfo-level2a",
+  "group3": "http://test.surfconext.nl/assurance/sfo-level3a"
+}

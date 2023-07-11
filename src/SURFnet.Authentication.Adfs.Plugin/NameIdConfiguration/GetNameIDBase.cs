@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Data.Linq;
 using System.DirectoryServices;
 using System.DirectoryServices.AccountManagement;
 using System.IO;
 using System.Linq;
+using System.Net.PeerToPeer;
 using System.Reflection;
 using System.Security.Claims;
 using System.Text;
@@ -21,7 +24,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.NameIdConfiguration
     /// 
     /// See comments below and in IGetNameID.
     /// </summary>
-    public abstract class GetNameIDBase : IGetNameID
+    public abstract partial class GetNameIDBase : IGetNameID
     {
         /// <summary>
         /// The log4net iterface to log errors. See log4net documentation.
@@ -65,9 +68,12 @@ namespace SURFnet.Authentication.Adfs.Plugin.NameIdConfiguration
                         Assembly.GetExecutingAssembly()
                                 .Location);
                     var dynamicLoaFilePath = Path.Combine(baseDirectory, dynamicLoaFile);
-                    this.dynamicLoaGroups =
-                        JsonConvert.DeserializeObject<List<LoaGroupConfiguration>>(
-                            File.ReadAllText(dynamicLoaFilePath));
+
+                    this.dynamicLoaGroups = JsonConvert.DeserializeObject<List<LoaGroupConfiguration>>(
+                        File.ReadAllText(dynamicLoaFilePath),
+                        new LoaGroupConfigurationsJsonConverter());
+
+                    this.CheckDynamicLoaGroupsForDuplicates();
                 }
                 catch (Exception exception)
                 {
@@ -77,6 +83,18 @@ namespace SURFnet.Authentication.Adfs.Plugin.NameIdConfiguration
             else
             {
                 this.dynamicLoaGroups = new List<LoaGroupConfiguration>();
+            }
+        }
+
+        private void CheckDynamicLoaGroupsForDuplicates()
+        {
+            var duplicates = this.dynamicLoaGroups.GroupBy(x => x.Group)
+                                 .Where(x => x.Count() > 1)
+                                 .Select(x => x.Key)
+                                 .ToList();
+            if (duplicates.Any())
+            {
+                throw new DuplicateKeyException(duplicates, $"{dynamicLoaFile} has duplicate keys '{string.Join(",", duplicates)}'");
             }
         }
 
@@ -120,19 +138,20 @@ namespace SURFnet.Authentication.Adfs.Plugin.NameIdConfiguration
         }
 
         /// <inheritdoc />
-        public bool TryGetMinimalLoa(string groupName, out Uri configuredLoa)
+        public bool TryGetMinimalLoa(IList<string> groups, out LoaGroupConfiguration loaGroupConfiguration)
         {
-            var loaGroupConfiguration =
-                this.dynamicLoaGroups.FirstOrDefault(
-                    x => x.Group.Equals(groupName, StringComparison.OrdinalIgnoreCase));
-
-            if (loaGroupConfiguration != null)
+            foreach (var dynamicLoaGroup in this.dynamicLoaGroups)
             {
-                configuredLoa = loaGroupConfiguration.Loa;
-                return true;
+                var index = groups.FirstOrDefault(x => x.Equals(dynamicLoaGroup.Group, StringComparison.OrdinalIgnoreCase));
+
+                if (index != null)
+                {
+                    loaGroupConfiguration = dynamicLoaGroup;
+                    return true;
+                }
             }
 
-            configuredLoa = null;
+            loaGroupConfiguration = null;
             return false;
         }
 

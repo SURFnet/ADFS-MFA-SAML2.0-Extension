@@ -48,10 +48,10 @@ namespace SURFnet.Authentication.Adfs.Plugin.NameIdConfiguration
         /// <summary>
         /// Returns the first matched configuredLoa otherwise false
         /// </summary>
-        /// <param name="groupName">Name of the group.</param>
-        /// <param name="configuredLoa">The configured loa.</param>
+        /// <param name="groups">List of user groups.</param>
+        /// <param name="loaGroupConfiguration">The configured group configuration.</param>
         /// <returns></returns>
-        bool TryGetMinimalLoa(string groupName, out Uri configuredLoa);
+        bool TryGetMinimalLoa(IList<string> groups, out LoaGroupConfiguration loaGroupConfiguration);
 
         /// <summary>
         /// Returns the parameters used for Initialization
