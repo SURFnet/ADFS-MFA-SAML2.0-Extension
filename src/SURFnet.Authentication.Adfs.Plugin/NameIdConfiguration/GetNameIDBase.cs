@@ -150,6 +150,11 @@ namespace SURFnet.Authentication.Adfs.Plugin.NameIdConfiguration
         /// <inheritdoc />
         public bool TryGetMinimalLoa(IList<string> groups, out LoaGroupConfiguration loaGroupConfiguration)
         {
+            if (this.dynamicLoaGroups.Count > 1)
+            {
+                this.Log.Debug($"TryGetMinimalLoa: User is a member of group(s): {string.Join(", ", groups)}");
+            }
+
             foreach (var dynamicLoaGroup in this.dynamicLoaGroups)
             {
                 var index = groups.FirstOrDefault(x => x.Equals(dynamicLoaGroup.Group, StringComparison.OrdinalIgnoreCase));
