@@ -169,7 +169,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Configuration
             }
 
             log.Info(
-                $"Authenticating at the default '{this.minimalLoa.AbsoluteUri}' because user '{userName}' is not a member of any group");
+                $"Authenticating at the default '{this.minimalLoa.AbsoluteUri}' because user '{userName}' is not a member of a dynamic LoA group");
             return this.minimalLoa;
         }
     }
