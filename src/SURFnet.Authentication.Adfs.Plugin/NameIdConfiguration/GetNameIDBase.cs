@@ -74,10 +74,20 @@ namespace SURFnet.Authentication.Adfs.Plugin.NameIdConfiguration
                         new LoaGroupConfigurationsJsonConverter());
 
                     this.CheckDynamicLoaGroupsForDuplicates();
+
+                    // log the dynamicLoaGroups to string
+                    var dynamicLoaGroupsString = new StringBuilder();
+                    var i = 0;
+                    foreach (var dynamicLoaGroup in this.dynamicLoaGroups)
+                    {
+                        dynamicLoaGroupsString.Append($"{i}: {dynamicLoaGroup.Group} => {dynamicLoaGroup.Loa}\r\n");
+                        i++;
+                    }
+                    this.Log.Info($"Using dynamic group to LoA mapping:\r\n{dynamicLoaGroupsString}");
                 }
                 catch (Exception exception)
                 {
-                    this.Log.Error($"Failed to initialize dynamic Loa from file {dynamicLoaFile}", exception);
+                    this.Log.Error($"Failed to initialize dynamic LoA from file {dynamicLoaFile}", exception);
                 }
             }
             else
