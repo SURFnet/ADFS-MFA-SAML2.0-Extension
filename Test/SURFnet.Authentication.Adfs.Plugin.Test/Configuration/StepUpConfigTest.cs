@@ -85,7 +85,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Test.Configuration
                     "group2",
                     "group1.5"
                 },
-                "http://test.surfconext.nl/assurance/sfo-level1.5a"
+                "http://test.surfconext.nl/assurance/sfo-level3a"
             };
 
             // case 5
@@ -97,7 +97,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Test.Configuration
                     "group3",
                     "group1.5"
                 },
-                "http://test.surfconext.nl/assurance/sfo-level1.5a"
+                "http://test.surfconext.nl/assurance/sfo-level2a"
             };
 
             // case 6
@@ -119,7 +119,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Test.Configuration
                     "group3",
                     "group2",
                 },
-                "http://test.surfconext.nl/assurance/sfo-level2a"
+                "http://test.surfconext.nl/assurance/sfo-level3a"
             };
 
             // case 8
@@ -133,7 +133,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Test.Configuration
                     "group5",
                     "group6"
                 },
-                "http://test.surfconext.nl/assurance/sfo-level2"
+                "http://test.surfconext.nl/assurance/sfo-level3a"
             };
 
             // case 9

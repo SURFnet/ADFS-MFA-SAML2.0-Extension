@@ -36,7 +36,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.NameIdConfiguration
 
         private Dictionary<string, string> parameters;
 
-        private Dictionary<string, Uri> dynamicLoaGroups;
+        private List<LoaGroupConfiguration> dynamicLoaGroups;
 
         /// <summary>
         /// Constructor with log4net insertion.
@@ -65,14 +65,9 @@ namespace SURFnet.Authentication.Adfs.Plugin.NameIdConfiguration
                         Assembly.GetExecutingAssembly()
                                 .Location);
                     var dynamicLoaFilePath = Path.Combine(baseDirectory, dynamicLoaFile);
-                    var dynamicLoaParsed =
-                        JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText(dynamicLoaFilePath));
-
-                    this.dynamicLoaGroups = new Dictionary<string, Uri>(
-                        dynamicLoaParsed.ToDictionary(
-                            x => x.Key,
-                            x => new Uri(x.Value),
-                            StringComparer.OrdinalIgnoreCase));
+                    this.dynamicLoaGroups =
+                        JsonConvert.DeserializeObject<List<LoaGroupConfiguration>>(
+                            File.ReadAllText(dynamicLoaFilePath));
                 }
                 catch (Exception exception)
                 {
@@ -81,7 +76,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.NameIdConfiguration
             }
             else
             {
-                this.dynamicLoaGroups = new Dictionary<string, Uri>();
+                this.dynamicLoaGroups = new List<LoaGroupConfiguration>();
             }
         }
 
@@ -127,7 +122,18 @@ namespace SURFnet.Authentication.Adfs.Plugin.NameIdConfiguration
         /// <inheritdoc />
         public bool TryGetMinimalLoa(string groupName, out Uri configuredLoa)
         {
-            return this.dynamicLoaGroups.TryGetValue(groupName, out configuredLoa);
+            var loaGroupConfiguration =
+                this.dynamicLoaGroups.FirstOrDefault(
+                    x => x.Group.Equals(groupName, StringComparison.OrdinalIgnoreCase));
+
+            if (loaGroupConfiguration != null)
+            {
+                configuredLoa = loaGroupConfiguration.Loa;
+                return true;
+            }
+
+            configuredLoa = null;
+            return false;
         }
 
         /// <inheritdoc />

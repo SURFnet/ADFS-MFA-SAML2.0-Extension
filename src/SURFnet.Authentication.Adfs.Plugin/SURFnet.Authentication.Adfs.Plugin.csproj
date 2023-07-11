@@ -128,6 +128,7 @@
     <Compile Include="NameIdConfiguration\ADUserAttributes.cs" />
     <Compile Include="NameIdConfiguration\GetNameIDBase.cs" />
     <Compile Include="NameIdConfiguration\IGetNameID.cs" />
+    <Compile Include="NameIdConfiguration\LoaGroupConfiguration.cs" />
     <Compile Include="NameIdConfiguration\NameIDValueResult.cs" />
     <Compile Include="NameIdConfiguration\ResolveNameIDType.cs" />
     <Compile Include="NameIdConfiguration\UserIdAndShoFromADAttr.cs" />
