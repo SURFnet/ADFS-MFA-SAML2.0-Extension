@@ -31,7 +31,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
         public static int Main(string[] args)
         {
 #if DEBUG
-            Console.Write("Attach remote debugger and press any key to continue...");
+            Console.Write("This is a DEBUG build. You can attach a remote debugger now. Press enter/return to continue...");
             Console.ReadLine();
 #endif
 
@@ -41,7 +41,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup
                     _ => ReturnOptions.Failure);
 
             Console.WriteLine("Result: {0}", response);
-            Console.Write("Hit any key to exit.");
+            Console.Write("Press the enter/return key to exit.");
             Console.ReadLine();
             return (int)response;
         }
