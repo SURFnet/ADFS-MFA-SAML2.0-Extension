@@ -79,6 +79,9 @@
       <HintPath>..\..\packages\System.Configuration.ConfigurationManager.4.7.0\lib\net461\System.Configuration.ConfigurationManager.dll</HintPath>
     </Reference>
     <Reference Include="System.Core" />
+    <Reference Include="System.Data.Linq">
+      <HintPath>..\..\..\..\..\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.6.2\System.Data.Linq.dll</HintPath>
+    </Reference>
     <Reference Include="System.Data.OracleClient" />
     <Reference Include="System.DirectoryServices" />
     <Reference Include="System.DirectoryServices.AccountManagement" />
@@ -128,6 +131,8 @@
     <Compile Include="NameIdConfiguration\ADUserAttributes.cs" />
     <Compile Include="NameIdConfiguration\GetNameIDBase.cs" />
     <Compile Include="NameIdConfiguration\IGetNameID.cs" />
+    <Compile Include="NameIdConfiguration\LoaGroupConfigurationsJsonConverter.cs" />
+    <Compile Include="NameIdConfiguration\LoaGroupConfiguration.cs" />
     <Compile Include="NameIdConfiguration\NameIDValueResult.cs" />
     <Compile Include="NameIdConfiguration\ResolveNameIDType.cs" />
     <Compile Include="NameIdConfiguration\UserIdAndShoFromADAttr.cs" />

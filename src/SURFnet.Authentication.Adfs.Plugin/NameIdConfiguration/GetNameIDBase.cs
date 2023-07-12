@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Data.Linq;
 using System.DirectoryServices;
 using System.DirectoryServices.AccountManagement;
 using System.IO;
 using System.Linq;
+using System.Net.PeerToPeer;
 using System.Reflection;
 using System.Security.Claims;
 using System.Text;
@@ -21,7 +24,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.NameIdConfiguration
     /// 
     /// See comments below and in IGetNameID.
     /// </summary>
-    public abstract class GetNameIDBase : IGetNameID
+    public abstract partial class GetNameIDBase : IGetNameID
     {
         /// <summary>
         /// The log4net iterface to log errors. See log4net documentation.
@@ -36,7 +39,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.NameIdConfiguration
 
         private Dictionary<string, string> parameters;
 
-        private Dictionary<string, Uri> dynamicLoaGroups;
+        private List<LoaGroupConfiguration> dynamicLoaGroups;
 
         /// <summary>
         /// Constructor with log4net insertion.
@@ -65,23 +68,43 @@ namespace SURFnet.Authentication.Adfs.Plugin.NameIdConfiguration
                         Assembly.GetExecutingAssembly()
                                 .Location);
                     var dynamicLoaFilePath = Path.Combine(baseDirectory, dynamicLoaFile);
-                    var dynamicLoaParsed =
-                        JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText(dynamicLoaFilePath));
 
-                    this.dynamicLoaGroups = new Dictionary<string, Uri>(
-                        dynamicLoaParsed.ToDictionary(
-                            x => x.Key,
-                            x => new Uri(x.Value),
-                            StringComparer.OrdinalIgnoreCase));
+                    this.dynamicLoaGroups = JsonConvert.DeserializeObject<List<LoaGroupConfiguration>>(
+                        File.ReadAllText(dynamicLoaFilePath),
+                        new LoaGroupConfigurationsJsonConverter());
+
+                    this.CheckDynamicLoaGroupsForDuplicates();
+
+                    // log the dynamicLoaGroups to string
+                    var dynamicLoaGroupsString = new StringBuilder();
+                    var i = 0;
+                    foreach (var dynamicLoaGroup in this.dynamicLoaGroups)
+                    {
+                        dynamicLoaGroupsString.Append($"{i}: {dynamicLoaGroup.Group} => {dynamicLoaGroup.Loa}\r\n");
+                        i++;
+                    }
+                    this.Log.Info($"Using dynamic group to LoA mapping:\r\n{dynamicLoaGroupsString}");
                 }
                 catch (Exception exception)
                 {
-                    this.Log.Error($"Failed to initialize dynamic Loa from file {dynamicLoaFile}", exception);
+                    this.Log.Error($"Failed to initialize dynamic LoA from file {dynamicLoaFile}", exception);
                 }
             }
             else
             {
-                this.dynamicLoaGroups = new Dictionary<string, Uri>();
+                this.dynamicLoaGroups = new List<LoaGroupConfiguration>();
+            }
+        }
+
+        private void CheckDynamicLoaGroupsForDuplicates()
+        {
+            var duplicates = this.dynamicLoaGroups.GroupBy(x => x.Group)
+                                 .Where(x => x.Count() > 1)
+                                 .Select(x => x.Key)
+                                 .ToList();
+            if (duplicates.Any())
+            {
+                throw new DuplicateKeyException(duplicates, $"{dynamicLoaFile} has duplicate keys '{string.Join(",", duplicates)}'");
             }
         }
 
@@ -125,9 +148,26 @@ namespace SURFnet.Authentication.Adfs.Plugin.NameIdConfiguration
         }
 
         /// <inheritdoc />
-        public bool TryGetMinimalLoa(string groupName, out Uri configuredLoa)
+        public bool TryGetMinimalLoa(IList<string> groups, out LoaGroupConfiguration loaGroupConfiguration)
         {
-            return this.dynamicLoaGroups.TryGetValue(groupName, out configuredLoa);
+            if (this.dynamicLoaGroups.Count > 1)
+            {
+                this.Log.Debug($"TryGetMinimalLoa: User is a member of group(s): {string.Join(", ", groups)}");
+            }
+
+            foreach (var dynamicLoaGroup in this.dynamicLoaGroups)
+            {
+                var index = groups.FirstOrDefault(x => x.Equals(dynamicLoaGroup.Group, StringComparison.OrdinalIgnoreCase));
+
+                if (index != null)
+                {
+                    loaGroupConfiguration = dynamicLoaGroup;
+                    return true;
+                }
+            }
+
+            loaGroupConfiguration = null;
+            return false;
         }
 
         /// <inheritdoc />

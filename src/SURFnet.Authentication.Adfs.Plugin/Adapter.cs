@@ -468,7 +468,7 @@ namespace SURFnet.Authentication.Adfs.Plugin
                     }
 
                     LogService.Log.InfoFormat(
-                        "Successfully processed response for request with id '{0}', NameID '{1}', LOA '{2}'",
+                        "Successfully processed response for request with id '{0}', NameID '{1}', LoA '{2}'",
                         requestId,
                         nameID ?? string.Empty,
                         loa);

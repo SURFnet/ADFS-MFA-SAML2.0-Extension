@@ -66,6 +66,16 @@ namespace SURFnet.Authentication.Adfs.Plugin.Test.Configuration
                 "http://test.surfconext.nl/assurance/sfo-level3a"
             };
 
+            /*
+             * When a user is in multiple groups, the order of the groups does not matter
+             * group - loa mappings are evaluated top to bottom and the first match decides the resulting loa   
+             * {
+             * "group1.5": "http://test.surfconext.nl/assurance/sfo-level1.5a",
+             * "group2": "http://test.surfconext.nl/assurance/sfo-level2a",
+             * "group3": "http://test.surfconext.nl/assurance/sfo-level3a"
+             * }
+             */
+
             // case 4
             yield return new object[]
             {
@@ -75,7 +85,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Test.Configuration
                     "group2",
                     "group1.5"
                 },
-                "http://test.surfconext.nl/assurance/sfo-level3a"
+                "http://test.surfconext.nl/assurance/sfo-level1.5a"
             };
 
             // case 5
@@ -87,12 +97,49 @@ namespace SURFnet.Authentication.Adfs.Plugin.Test.Configuration
                     "group3",
                     "group1.5"
                 },
+                "http://test.surfconext.nl/assurance/sfo-level1.5a"
+            };
+
+            // case 6
+            yield return new object[]
+            {
+                new List<string>()
+                {
+                    "group2",
+                    "group3",
+                },
                 "http://test.surfconext.nl/assurance/sfo-level2a"
             };
 
-            // case 5
+            // case 7
             yield return new object[]
             {
+                new List<string>()
+                {
+                    "group3",
+                    "group2",
+                },
+                "http://test.surfconext.nl/assurance/sfo-level2a"
+            };
+
+            // case 8
+            yield return new object[]
+            {
+                // Only group 3 matches 
+                new List<string>()
+                {
+                    "group3",
+                    "group4",
+                    "group5",
+                    "group6"
+                },
+                "http://test.surfconext.nl/assurance/sfo-level3a"
+            };
+
+            // case 9
+            yield return new object[]
+            {
+                // No groups match, so the default loa (minimalLoa from the config xml) is returned 
                 new List<string>()
                 {
                     "group4",

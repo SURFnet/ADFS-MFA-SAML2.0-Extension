@@ -156,22 +156,20 @@ namespace SURFnet.Authentication.Adfs.Plugin.Configuration
         /// <summary>
         /// Returns the first matched configured MinimalLoa for the one of the usergroups otherwise false
         /// </summary>
+        /// <param name="userName">the name of the user</param>
         /// <param name="userGroups">the user groups for the user</param>
         /// <returns>The <see cref="Uri" />Minimal Loa</returns>
         public Uri GetMinimalLoa(string userName, IEnumerable<string> userGroups, ILog log)
         {
-            foreach (var userGroup in userGroups)
+            if (this.GetNameID.TryGetMinimalLoa(userGroups.ToList(), out var configuredLoa))
             {
-                if (this.GetNameID.TryGetMinimalLoa(userGroup, out var configuredLoa))
-                {
-                    log.Info(
-                        $"Authenticating at '{configuredLoa.AbsoluteUri}' because user '{userName}' is a member of group '{userGroup}'");
-                    return configuredLoa;
-                }
+                log.Info(
+                    $"Authenticating at '{configuredLoa.Loa.AbsoluteUri}' because user '{userName}' is a member of group '{configuredLoa.Group}'");
+                return configuredLoa.Loa;
             }
 
             log.Info(
-                $"Authenticating at the default '{this.minimalLoa.AbsoluteUri}' because user '{userName}' is not a member of any group");
+                $"Authenticating at the default '{this.minimalLoa.AbsoluteUri}' because user '{userName}' is not a member of a dynamic LoA group");
             return this.minimalLoa;
         }
     }
