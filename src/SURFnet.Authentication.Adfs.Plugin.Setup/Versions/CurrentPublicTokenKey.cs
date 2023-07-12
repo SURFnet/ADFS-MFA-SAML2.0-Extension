@@ -8,6 +8,7 @@
     {
 #if DEBUG
         public const string PublicTokenKey = "47882A64C781ECE6";
+#warning Using DEBUG PublicTokenKey
 #else
         public const string PublicTokenKey = "5A7C03A5AB19FEC3";
 #endif

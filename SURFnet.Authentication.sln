@@ -10,6 +10,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionIt
 	ProjectSection(SolutionItems) = preProject
 		SolutionItems\MakeRelease.cmd = SolutionItems\MakeRelease.cmd
 		SolutionItems\SignSustainsys.cmd = SolutionItems\SignSustainsys.cmd
+		snk-check.cmd = snk-check.cmd
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SURFnet.Authentication.Adfs.Plugin.Setup", "src\SURFnet.Authentication.Adfs.Plugin.Setup\SURFnet.Authentication.Adfs.Plugin.Setup.csproj", "{9CAB3115-6BE7-4A01-BEF1-5D506F943361}"
