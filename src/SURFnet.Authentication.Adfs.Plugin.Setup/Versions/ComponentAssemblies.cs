@@ -18,6 +18,17 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
             }
         };
 
+        static public readonly AssemblySpec[] Log4Net2_0_8AssemblySpec = new AssemblySpec[]
+        {
+            new AssemblySpec(SetupConstants.Log4netFilename)
+            {
+                AssemblyFullName = "log4net, Version=2.0.8.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a",
+                AssemblyVersion = new Version("2.0.8.0"),
+                ProductVersion = new Version("2.0.8.0"),
+                FileVersion = new Version("2.0.8.0")
+            }
+        };
+
         public static readonly AssemblySpec[] Log4Net2_0_12AssemblySpec = new AssemblySpec[]
         {
             new AssemblySpec(SetupConstants.Log4netFilename)

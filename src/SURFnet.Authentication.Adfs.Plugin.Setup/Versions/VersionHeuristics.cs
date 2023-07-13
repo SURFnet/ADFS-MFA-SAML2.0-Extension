@@ -40,7 +40,11 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
 
             if ( TryFindAdapter(out found) )
             {
-                if (found == VersionDescriptions.V2_0_4_0.DistributionVersion)
+                if (found == VersionDescriptions.V2_0_3_0.DistributionVersion)
+                {
+                    Description = VersionDescriptions.V2_0_3_0;
+                }
+                else if (found == VersionDescriptions.V2_0_4_0.DistributionVersion)
                 {
                     Description = VersionDescriptions.V2_0_4_0;
                 }
@@ -63,7 +67,9 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
                         if (Description == null)
                         {
                             // BUG trap: No description assignment for this version! Should add it above!
-                            LogService.WriteFatal($"Description==null bug for detected: v{found}");
+                            LogService.WriteFatal("This version of setup does not support upgrading from currenty installed version");
+                            LogService.WriteFatal("because it does not recognise the installed version.");
+                            LogService.WriteFatal($"Found version: v{found}");
                             ok = false;
                         }
                         else
