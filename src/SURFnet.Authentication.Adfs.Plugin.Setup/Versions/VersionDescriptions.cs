@@ -14,6 +14,14 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
     {
         #region AssemblySpecs
 
+        static public readonly AssemblySpec Adapter_2_0_3Spec = new AssemblySpec(Common.Constants.AdapterFilename)
+        {
+            AssemblyFullName = "SURFnet.Authentication.Adfs.Plugin, Version=1.0.1.0, Culture=neutral, PublicKeyToken=" + CurrentPublicTokenKey.PublicTokenKey,
+            AssemblyVersion = new Version("1.0.1.0"),
+            ProductVersion = new Version("2.0.3.0"),
+            FileVersion = new Version("2.0.3.0")
+        };
+
         private static readonly AssemblySpec Adapter_2_0_4Spec = new AssemblySpec(Common.Constants.AdapterFilename)
         {
             AssemblyFullName = "SURFnet.Authentication.Adfs.Plugin, Version=1.0.1.0, Culture=neutral, PublicKeyToken=" + CurrentPublicTokenKey.PublicTokenKey,
@@ -34,6 +42,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
 
         #region VersionAdapters
 
+        private static readonly AdapterComponentBase V2_0_3Adapter = new AdapterComponentV2(Adapter_2_0_3Spec);
+
         private static readonly AdapterComponentBase V2_0_4Adapter = new AdapterComponentV2(Adapter_2_0_4Spec);
 
         private static readonly AdapterComponentBase V2_1_0Adapter = new AdapterComponentV2(Adapter_2_1_0Spec);
@@ -41,6 +51,19 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
         #endregion
 
         #region StepupComponents
+
+        private static readonly StepupComponent[] V2_0_3 = {
+            new Sustainsys2_7Component()
+            {
+                Assemblies = ComponentAssemblies.Sustain2_7AssemblySpec,
+                ConfigFilename = SetupConstants.SustainCfgFilename
+            },
+            new Log4netV2_0_8Component("log4net V2.0.8.0"), new StepupComponent("Newtonsoft v12.0.3")
+            {
+                Assemblies = ComponentAssemblies.Newtonsoft12_0_3AssemblySpec,
+                ConfigFilename = null
+            }
+        };
 
         private static readonly StepupComponent[] V2_0_4 = {
             new Sustainsys2_7Component()
@@ -69,6 +92,12 @@ namespace SURFnet.Authentication.Adfs.Plugin.Setup.Versions
         };
 
         #endregion
+
+        static public readonly VersionDescription V2_0_3_0 = new VersionDescription(V2_0_3Adapter)
+        {
+            Components = VersionDescriptions.V2_0_3,
+            ExtraAssemblies = SustainsysDependencies.Version_2_7_release_2_0_3
+        };
 
         public static readonly VersionDescription V2_0_4_0 = new VersionDescription(V2_0_4Adapter)
         {

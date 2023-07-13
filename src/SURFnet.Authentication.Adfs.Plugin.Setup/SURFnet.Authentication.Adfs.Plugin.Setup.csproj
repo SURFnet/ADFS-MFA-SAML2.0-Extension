@@ -130,7 +130,9 @@
     <Compile Include="Versions\AdapterComponentBase.cs" />
     <Compile Include="Versions\ComponentAssemblies.cs" />
     <Compile Include="Versions\CurrentPublicTokenKey.cs" />
+    <Compile Include="Versions\Log4net\Log4netBaseComponent.cs" />
     <Compile Include="Versions\Log4net\Log4netV2_0_12Component.cs" />
+    <Compile Include="Versions\Log4net\Log4netV2_0_8Component.cs" />
     <Compile Include="Versions\Sustainsys\SustainsysDependencies.cs" />
     <Compile Include="Versions\Sustainsys\Sustainsys2_7Component.cs" />
     <Compile Include="Versions\Sustainsys\SustainsysBaseComponent.cs" />
