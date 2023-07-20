@@ -310,7 +310,11 @@ namespace SURFnet.Authentication.Adfs.Plugin
                 if (!StepUpConfig.Current.GetNameID.TryGetNameIDValue(identityClaim, out NameIDValueResult nameIDValueResult))
                 {
                     LogService.Log.ErrorFormat("Could not determine NameID for user with identityclaim '{0}'", identityClaim.Value);
-                    throw new NotSupportedException();
+                    return new AuthFailedForm(
+                        false,
+                        ErrorMessageValues.MissingAccountInfoResourcerId,
+                        context.ContextId,
+                        context.ActivityId);
                 }
 
                 var requestId = $"_{context.ContextId}";
