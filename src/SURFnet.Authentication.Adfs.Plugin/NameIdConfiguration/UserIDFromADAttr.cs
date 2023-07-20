@@ -43,13 +43,22 @@ namespace SURFnet.Authentication.Adfs.Plugin.NameIdConfiguration
 
         protected override string ComposeNameID(Claim claim, DirectoryEntry de)
         {
+            this.Log.Debug("Enter UserIDFromADAttr::ComposeNameID()");
             string nameID = null;
-            string uid = de.Properties[_activeDirectoryUserIdAttribute]?.Value.ToString();
-            if (uid != null)
+            //string uid = de.Properties[_activeDirectoryUserIdAttribute]?.Value.ToString();
+            PropertyValueCollection pvc = de.Properties[_activeDirectoryUserIdAttribute];
+            if ((pvc == null) || (pvc.Value == null))
             {
-                nameID = BuildNameID(_schacHomeOrganization, uid);
+                this.Log.ErrorFormat("User '{0}' is missing the '{1}' AD attribute", claim.Value, _activeDirectoryUserIdAttribute);
+                return null;
             }
 
+            string uid = pvc.Value.ToString();
+            this.Log.DebugFormat("uid = {0}", uid);
+
+            nameID = BuildNameID(_schacHomeOrganization, uid);
+
+            this.Log.Debug("Leave UserIDFromADAttr::ComposeNameID()");
             return nameID;
         }
     }

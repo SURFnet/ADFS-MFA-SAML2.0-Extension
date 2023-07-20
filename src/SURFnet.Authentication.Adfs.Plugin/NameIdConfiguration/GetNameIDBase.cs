@@ -173,9 +173,11 @@ namespace SURFnet.Authentication.Adfs.Plugin.NameIdConfiguration
         /// <inheritdoc />
         public virtual bool TryGetNameIDValue(Claim identityClaim, out NameIDValueResult nameIDValueResult)
         {
+            this.Log.Debug("Enter GetNameIDBase::TryGetNameIDValue()");
             var userAttributes = this.GetAttributes(identityClaim);
             if (userAttributes.UserObject != null)
             {
+                this.Log.Debug("Found user in AD");
                 try
                 {
                     var nameId = this.ComposeNameID(identityClaim, userAttributes.UserObject);
@@ -185,6 +187,8 @@ namespace SURFnet.Authentication.Adfs.Plugin.NameIdConfiguration
                             nameId,
                             userAttributes.UserObject.Name,
                             userAttributes.UserGroups);
+
+                        this.Log.Debug("Leave GetNameIDBase::TryGetNameIDValue()");
                         return true;
                     }
                 }
@@ -199,6 +203,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.NameIdConfiguration
             }
 
             nameIDValueResult = NameIDValueResult.CreateEmpty();
+            this.Log.Debug("Leave GetNameIDBase::TryGetNameIDValue()");
             return false;
         }
 

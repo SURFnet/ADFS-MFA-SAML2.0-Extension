@@ -11,5 +11,10 @@
         /// The default verification failed resourcer identifier.
         /// </summary>
         public const string DefaultVerificationFailedResourcerId = "ERROR_0001";
+
+        /// <summary>
+        /// The default verification failed resourcer identifier.
+        /// </summary>
+        public const string MissingAccountInfoResourcerId = "ERROR_0003";
     }
 }
