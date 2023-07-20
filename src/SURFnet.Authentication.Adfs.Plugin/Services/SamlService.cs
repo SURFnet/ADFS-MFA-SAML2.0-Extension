@@ -30,6 +30,7 @@ namespace SURFnet.Authentication.Adfs.Plugin.Services
 
     using Models;
 using SURFnet.Authentication.Adfs.Plugin.NameIdConfiguration;
+    using SURFnet.Authentication.Adfs.Plugin.Setup.Common;
     using SURFnet.Authentication.Adfs.Plugin.Setup.Common.Exceptions;
 
     using Sustainsys.Saml2;
@@ -64,14 +65,14 @@ using SURFnet.Authentication.Adfs.Plugin.NameIdConfiguration;
             var samlConfiguration = Options.FromConfiguration;
             if (samlConfiguration == null)
             {
-                throw new InvalidConfigurationException("ERROR_0002", "The SAML configuration could not be loaded");
+                throw new InvalidConfigurationException(ErrorMessageValues.PluginConfigurationErrorResourceId, "The SAML configuration could not be loaded");
             }
 
             // Should have been tested in constructors!
             var spConfiguration = samlConfiguration.SPOptions;
             if (spConfiguration == null)
             {
-                throw new InvalidConfigurationException("ERROR_0002", "The service provider section of the SAML configuration could not be loaded");
+                throw new InvalidConfigurationException(ErrorMessageValues.PluginConfigurationErrorResourceId, "The service provider section of the SAML configuration could not be loaded");
             }
 
             var minimalLoa = StepUpConfig.Current.GetMinimalLoa(nameIDValue.UserName, nameIDValue.UserGroups, Log); 
@@ -134,12 +135,12 @@ using SURFnet.Authentication.Adfs.Plugin.NameIdConfiguration;
             var providers = serviceProviderConfiguration.IdentityProviders.KnownIdentityProviders.ToList();
             if (providers.Count == 0)
             {
-                throw new InvalidConfigurationException("ERROR_0002", "No identity providers found. Add the SURFConext identity provider before using Second Factor Authentication");
+                throw new InvalidConfigurationException(ErrorMessageValues.PluginConfigurationErrorResourceId, "No identity providers found. Add an SFO identity provider");
             }
 
             if (providers.Count > 1)
             {
-                throw new InvalidConfigurationException("ERROR_0002", "Too many identity providers found. Add only the SURFConext identity provider");
+                throw new InvalidConfigurationException(ErrorMessageValues.PluginConfigurationErrorResourceId, "Too many SAML identity providers found. Add only one SFO identity provider");
             }
 
             return providers[0];
