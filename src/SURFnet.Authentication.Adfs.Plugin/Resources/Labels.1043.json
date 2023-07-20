@@ -1,16 +1,16 @@
 {
-  "ERROR_0000": "Er is een onverwachte fout opgetreden. Neem contact op met uw eigen IT administrator en geef de volgende details door: ContextId '{0}', ActivityId '{1}'",
-  "ERROR_0001": "Verificatie mislukt. Neem contact op met uw eigen IT administrator en geef de volgende details door: ContextId '{0}', ActivityId '{1}'",
-  "ERROR_0002": "De StepUp configuratie is incorrect. Neem contact op met uw eigen IT administrator en geef de volgende details door: ContextId '{0}', ActivityId '{1}'",
-  "ERROR_0003": "Uw account in de Active Directory is niet geconfigureerd voor MFA. Neem contact op met uw eigen IT administrator en geef de volgende details door: ContextId '{0}', ActivityId '{1}'",
-  "AuthFailedFormTitle": "Authenticatie mislukt",
-  "SamlAuthFailedFormTitle": "Authenticatie mislukt",
-  "NoJavascript": "Je hebt Javascript uitgeschakeld. Schakele Javascript in om verder te gaan.",
+  "ERROR_0000": "Er is een onverwachte fout opgetreden. Neem contact op met de locale ICT-helpdesk en geeft de onderstaande gegevens door: ContextId '{0}', ActivityId '{1}'",
+  "ERROR_0001": "Aanvullende authenticatie mislukt. Neem contact op met de locale ICT-helpdesk en geeft de onderstaande gegevens door: ContextId '{0}', ActivityId '{1}'",
+  "ERROR_0002": "De configuratie van deze MFA extensie is niet correct. Neem contact op met de locale ICT-helpdesk en geeft de onderstaande gegevens door: ContextId '{0}', ActivityId '{1}'",
+  "ERROR_0003": "In dit account mist informatie die nodig is voor de aanvullende authenticatie. Neem contact op met de locale ICT-helpdesk en geeft de onderstaande gegevens door: ContextId '{0}', ActivityId '{1}'",
+  "AuthFailedFormTitle": "Aanvullende authenticatie mislukt",
+  "SamlAuthFailedFormTitle": "Aanvullende authenticatie mislukt",
+  "NoJavascript": "Javascript is uitgeschakeld. Schakel Javascript in om verder te gaan.",
   "OneMomentPlease": "Een moment geduld alstublieft...",
   "Working": "Bezig...",
-  "Description": "SURFNet Tweede Factor Authenticatie.",
-  "FriendlyName": "SURFNet Tweede Factor Authenticatie.",
-  "ERROR_SAML_Default": "Saml Fout. Verificatie mislukt. Neem contact op met uw eigen IT administrator en geef de onderstaande details door.",
-  "ERROR_SAML_AuthnFailed": "Saml AuthnFailed Fout. Verificatie mislukt. Neem contact op met uw eigen IT administrator en geef de onderstaande details door.",
-  "ERROR_SAML_NoAuthnContext": "Saml NoAuthnContext Fout. Verificatie mislukt. Neem contact op met uw eigen IT administrator en geef de onderstaande details door."
+  "Description": "SURF tweede factor authenticatie.",
+  "FriendlyName": "SURF tweede factor authenticatie.",
+  "ERROR_SAML_Default": "De aanvullende authenticatie is mislukt. Neem voor meer informatie contact op met de locale ICT-helpdesk en geeft de onderstaande gegevens door.",
+  "ERROR_SAML_AuthnFailed": "De authenticatie met de aanvullende authenticatie methode is mislukt. Probeer het op opnieuw. Neem voor meer informatie contact op met de locale ICT-helpdesk en geeft de onderstaande gegevens door.",
+  "ERROR_SAML_NoAuthnContext": "Er is voor dit account geen aanvullende authenticatie methode met de vereiste betrouwbaarheid beschikbaar. Neem voor meer informatie contact op met de locale ICT-helpdesk en geeft de onderstaande gegevens door."
 }

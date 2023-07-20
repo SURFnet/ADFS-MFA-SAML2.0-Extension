@@ -1,16 +1,16 @@
 {
-  "ERROR_0000": "An unexpected error occured. Please try again. Please contact your IT admin and provide the following details: ContextId '{0}', ActivityId '{1}'",
-  "ERROR_0001": "Verification failed. Please contact your IT admin and provide the following details: ContextId '{0}', ActivityId '{1}'",
-  "ERROR_0002": "The StepUp configuration is incorrect. Please contact your IT admin and provide the following details: ContextId '{0}', ActivityId '{1}'",
-  "ERROR_0003": "Your account is not configured for MFA in the Active Directory . Please contact your IT admin and provide the following details: ContextId '{0}', ActivityId '{1}'",
-  "AuthFailedFormTitle": "Authentication failed",
-  "SamlAuthFailedFormTitle": "Authentication failed",
+  "ERROR_0000": "An unexpected error occured. Please try again. For more information please contact your local ICT-servicedesk and provide the details below.: ContextId '{0}', ActivityId '{1}'",
+  "ERROR_0001": "The additional authentication failed. For more information please contact your local ICT-servicedesk and provide the details below.: ContextId '{0}', ActivityId '{1}'",
+  "ERROR_0002": "The configuration of this MFA extension is not correct. Please contact your local ICT-servicedesk and provide the details below.: ContextId '{0}', ActivityId '{1}'",
+  "ERROR_0003": "Your account is missing information required for the additional authentication. For more information please contact your local ICT-servicedesk and provide the details below.: ContextId '{0}', ActivityId '{1}'",
+  "AuthFailedFormTitle": "Additional authentication failed",
+  "SamlAuthFailedFormTitle": "Additional authentication failed",
   "NoJavascript": "You have disabled Javascript. Please enable it to continue.",
   "OneMomentPlease": "One moment please...",
   "Working": "Working...",
-  "Description": "SURFNet Second Factor Authentication",
-  "FriendlyName": "SURFNet Second Factor Authentication",
-  "ERROR_SAML_Default": "Saml Error. Please contact your IT admin and provide the details below.",
-  "ERROR_SAML_AuthnFailed": "Saml AuthnFailed Error. Please contact your IT admin and provide the details below.",
-  "ERROR_SAML_NoAuthnContext": "Saml AuthnFailed Error. Please contact your IT admin and provide the details below."
+  "Description": "SURF Second Factor Authentication",
+  "FriendlyName": "SURF Second Factor Authentication",
+  "ERROR_SAML_Default": "The additional authentication failed. For more information please contact your local ICT-servicedesk and provide the details below.",
+  "ERROR_SAML_AuthnFailed": "The authentication with your additional authentication method failed. Please try again. For more information please contact your local ICT-servicedesk and provide the details below.",
+  "ERROR_SAML_NoAuthnContext": "There is no additional authentication method of the required strength available for your account. For more information please contact your local ICT servicedesk and provide the details below."
 }
