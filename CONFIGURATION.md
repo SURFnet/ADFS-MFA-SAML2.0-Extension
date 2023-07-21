@@ -29,7 +29,7 @@ The `SURFnet.Authentication.ADFS.Plugin.config.dynamicLoa.json` file`:
 {
   "Domain Admins": "http://test.surfconext.nl/assurance/sfo-level3",
   "LOA2": "http://test.surfconext.nl/assurance/sfo-level2",
-  "Domain Users": "http://test.surfconext.nl/assurance/sfo-level1.5",
+  "Domain Users": "http://test.surfconext.nl/assurance/sfo-level1.5"
 }
 ```
 
