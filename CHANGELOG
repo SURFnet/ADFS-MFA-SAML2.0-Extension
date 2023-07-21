@@ -1,3 +1,19 @@
+Version 2.1.0
+* Plugin
+- Add support for the LoA 1.5 uri introduced in Stepup-Gateway 4.0.3 (self-asserted tokens)
+- Add support for dynamic LoA based on the authenticating user's group memberships(https://www.pivotaltracker.com/story/show/184488069)
+- Improved error feedback to users when the authentication fails based on the SAML status code returned by the Stepup-Gateway. The case where a user does not have a token or does not have a token at a sufficient LoA now has a distinct error message. Requires Stepup-Gateway 4.1.2 or above (https://www.pivotaltracker.com/story/show/184485953)
+- Show a specific error when the user's ID for Stepup-Gateway (NameID) cannot be formed and improve logging by the pugin when this happens (#26)
+- Update the user facing error messages that are shown by the plugin to make them more consistent (#27)
+- Removed support for upgrading from plugin versions before 2.0.3.
+- Dependency updates:
+  - Update Newtonsoft SAML library to 13.0.2
+  - Update .NET framework to 4.6.2
+
+* Setup
+- Remove metadata for the SURFsecureID pilot environment
+- Fix setup flow bug where a (default) "yes" was interpreted as a no when changing a SP certificate (https://www.pivotaltracker.com/story/show/176591282)
+
 Version 2.0.4
 * Plugin 
 - Add support for customising the way the NameID is calculated. 
