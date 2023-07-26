@@ -3,9 +3,11 @@
 @set root_dir=%CD%
 @popd
 
+@rem Default to an unsigned release build
 @set build=Release
 @set sign=0
 
+@rem Parse command line arguments
 @if [%1] == [-debug] (
   @echo Enabled debug release
   @set build=Debug
@@ -44,6 +46,18 @@ mkdir %root_dir%\release
 	set release=%root_dir%\release\SetupPackage-debug-%version%
 )
 
+@echo.
+@echo ------------------------------------------------------------
+@echo Version: %version%
+@echo Build:   %build%
+@if %sign% == 1 (
+  @echo Signing: Enabled
+) else (
+  @echo Signing: Disabled
+)
+@echo ------------------------------------------------------------
+@echo.
+
 @if exist %release%\ (
   @echo Deleting %release%
   rmdir /S /Q %release% || goto :error
@@ -55,7 +69,8 @@ mkdir %release%\dist || goto :error
 mkdir %release%\config || goto :error
 mkdir %release%\extensions || goto :error
    
-@echo Copying files   
+@echo Copying files
+@rem Copy the files for running Setup.exe to the root of the release directory   
 copy %root_dir%\src\Setup\bin\%build%\CommandLine.dll %release% || goto :error
 copy %root_dir%\src\Setup\bin\%build%\log4net.dll %release% || goto :error
 copy %root_dir%\src\Setup\bin\%build%\Newtonsoft.Json.dll %release% || goto :error
@@ -65,10 +80,12 @@ copy %root_dir%\src\Setup\bin\%build%\Setup.log4net %release% || goto :error
 copy %root_dir%\src\Setup\bin\%build%\SURFnet.Authentication.Adfs.Plugin.Setup.dll %release% || goto :error
 copy %root_dir%\src\Setup\bin\%build%\SURFnet.Authentication.Adfs.Plugin.Setup.dll.config %release% || goto :error
 
+@rem Copy the Setup configuration for SURF's SURFsecureID service to the config directory
 copy %root_dir%\src\Setup\bin\%build%\config\sa-gw.surfconext.nl.xml %release%\config || goto :error
 copy %root_dir%\src\Setup\bin\%build%\config\sa-gw.test.surfconext.nl.xml %release%\config || goto :error
 copy %root_dir%\src\Setup\bin\%build%\config\SURFnet.Authentication.ADFS.MFA.Plugin.Environments.json %release%\config || goto :error
 
+@rem Copy the plugin binaries and their dependencies to the dist directory
 copy %root_dir%\src\SURFnet.Authentication.Adfs.Plugin\bin\%build%\log4net.dll %release%\dist || goto :error
 copy %root_dir%\src\SURFnet.Authentication.Adfs.Plugin\bin\%build%\Microsoft.IdentityModel.Logging.dll %release%\dist || goto :error
 copy %root_dir%\src\SURFnet.Authentication.Adfs.Plugin\bin\%build%\Microsoft.IdentityModel.Protocols.dll %release%\dist || goto :error
@@ -87,8 +104,11 @@ copy %root_dir%\src\SURFnet.Authentication.Adfs.Plugin\bin\%build%\System.Securi
 copy %root_dir%\src\SURFnet.Authentication.Adfs.Plugin\bin\%build%\System.Security.Principal.Windows.dll %release%\dist || goto :error
 copy %root_dir%\src\SURFnet.Authentication.Adfs.Plugin\bin\%build%\System.ValueTuple.dll %release%\dist || goto :error
 
+@rem Copy the NameIDfromType examples extension to the extensions directory so that is is included in the release
+@rem It is not installed by default
 copy %root_dir%\src\SURFnet.Authentication.Adfs.Plugin.Extensions.Samples\bin\%build%\SURFnet.Authentication.Adfs.Plugin.Extensions.Samples.dll %release%\extensions || goto :error
 
+@rem Copy the documentation to the root of the release directory
 copy %root_dir%\CHANGELOG %release% || goto :error
 copy %root_dir%\LICENSE %release% || goto :error
 copy %root_dir%\NOTICE %release% || goto :error
@@ -121,8 +141,12 @@ copy %root_dir%\CONFIGURATION.md %release% || goto :error
 )
 
 @echo Making Self extracting archive
-del %release%.exe
-"C:\Program Files\7-Zip\7z.exe" a -bb3 -sfx7z.sfx -r %release%.exe %release%
+@rem delete the self extracting archive if it already exists
+@if exist %release%.exe (
+  @echo Deleting %release%.exe
+  del %release%.exe || goto :error
+)
+"C:\Program Files\7-Zip\7z.exe" a -bb3 -sfx7z.sfx -r %release%.exe %release%  || goto :error
 
 @if "%sign%" == "1" (
   @echo Signing SetupPackage self extracting archive
@@ -132,9 +156,11 @@ del %release%.exe
 
 @echo Sucessfully created Release %release%.exe
 @echo.
+@echo.
 @exit /b 0
 
 :error
 @echo Building setup package failed
+@echo.
 @echo.
 @exit /b %errorlevel%
