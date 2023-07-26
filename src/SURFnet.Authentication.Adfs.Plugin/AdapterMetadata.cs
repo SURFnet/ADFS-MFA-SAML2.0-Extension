@@ -55,32 +55,40 @@ namespace SURFnet.Authentication.Adfs.Plugin
         };
 
         /// <summary>
+        /// Returns a Dictionary containing the set of localized descriptions (hover over help) of the provider, indexed by lcid. 
+        /// These descriptions are displayed in the "choice page" offered to the user when there is more than one 
+        /// secondary authentication provider available.
+        /// 
         /// Statically initializing the descriptions so they do not get created for every instance.
         /// </summary>
         private static readonly Dictionary<int, string> descriptions = new Dictionary<int, string>
         {
             {
                 new CultureInfo("en-us").LCID,
-                "SURFNet Second Factor Authentication will ask for extra credentials" /*Resources.GetLabel(1033, "Description")*/
+                Resources.GetLabel(1033, "Description")
             },
             {
                 new CultureInfo("nl-nl").LCID,
-                "SURFNet Tweede Factor Authenticatie zal om extra authenticatie middelen vragen." /*Resources.GetLabel(1043, "Description")*/
+                Resources.GetLabel(1043, "Description")
             }
         };
 
         /// <summary>
+        /// Returns a Dictionary containing the set of localized friendly names of the provider, indexed by lcid. 
+        /// These Friendly Names are displayed in the "choice page" offered to the user when there is more than 
+        /// one secondary authentication provider available.
+        /// 
         /// Statically initializing the friendly names so they do not get created for every instance.
         /// </summary>
         private static readonly Dictionary<int, string> friendlyNames = new Dictionary<int, string>
         {
             {
                 new CultureInfo("en-us").LCID,
-                "SURFNet Second Factor Authentication" /*Resources.GetLabel(1033, "FriendlyName")*/
+                Resources.GetLabel(1033, "FriendlyName")
             },
             {
                 new CultureInfo("nl-nl").LCID,
-                "SURFNet Tweede Factor Authenticatie" /*Resources.GetLabel(1043, "FriendlyName")*/
+                Resources.GetLabel(1043, "FriendlyName")
             }
         };
 
@@ -149,7 +157,6 @@ namespace SURFnet.Authentication.Adfs.Plugin
         /// <summary>
         /// Returns the name of the provider that will be shown in the AD FS management UI (not visible to end users).
         /// </summary>
-        /// <value>The name of the admin.</value>
 
         public string AdminName => $"ADFS.SCSA {Constants.FileVersion}"; // PLUgh: 
 

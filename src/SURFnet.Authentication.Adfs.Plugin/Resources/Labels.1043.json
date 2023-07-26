@@ -8,8 +8,8 @@
   "NoJavascript": "Javascript is uitgeschakeld. Schakel Javascript in om verder te gaan.",
   "OneMomentPlease": "Een moment geduld alsjeblieft...",
   "Working": "Bezig...",
-  "Description": "SURF tweede factor authenticatie.",
-  "FriendlyName": "SURF tweede factor authenticatie.",
+  "Description": "Om deze methode te gebruiken moet je over een SURF tweede factor beschikken. Neem voor meer informatie contact op met de locale ICT-helpdesk.",
+  "FriendlyName": "Aanmelden met een SURF tweede factor",
   "ERROR_SAML_Default": "De aanvullende authenticatie is mislukt. Neem voor meer informatie contact op met je locale ICT-helpdesk en geef de onderstaande gegevens door.",
   "ERROR_SAML_AuthnFailed": "De authenticatie met de aanvullende authenticatie methode is mislukt. Probeer het opnieuw. Neem voor meer informatie contact op met je locale ICT-helpdesk en geef de onderstaande gegevens door.",
   "ERROR_SAML_NoAuthnContext": "Er is voor dit account geen aanvullende authenticatie methode met de vereiste betrouwbaarheid beschikbaar. Neem voor meer informatie contact op met je locale ICT-helpdesk en geef de onderstaande gegevens door."

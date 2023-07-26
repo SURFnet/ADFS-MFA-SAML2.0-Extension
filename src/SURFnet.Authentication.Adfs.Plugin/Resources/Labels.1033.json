@@ -8,8 +8,8 @@
   "NoJavascript": "You have disabled Javascript. Please enable it to continue.",
   "OneMomentPlease": "One moment please...",
   "Working": "Working...",
-  "Description": "SURF Second Factor Authentication",
-  "FriendlyName": "SURF Second Factor Authentication",
+  "Description": "To use this method you need a SURF second factor. Contact your local ICT-servicedesk for more information.",
+  "FriendlyName": "Sign in using your SURF second factor",
   "ERROR_SAML_Default": "The additional authentication failed. For more information please contact your local ICT-servicedesk and provide the details below.",
   "ERROR_SAML_AuthnFailed": "The authentication with your additional authentication method failed. Please try again. For more information please contact your local ICT-servicedesk and provide the details below.",
   "ERROR_SAML_NoAuthnContext": "There is no additional authentication method of the required strength available for your account. For more information please contact your local ICT servicedesk and provide the details below."
