@@ -94,7 +94,8 @@ copy %root_dir%\LICENSE %release% || goto :error
 copy %root_dir%\NOTICE %release% || goto :error
 copy %root_dir%\INSTALL.md %release% || goto :error
 copy %root_dir%\UPGRADE.md %release% || goto :error
-copy %root_dir%\KNOWN_ISSUES %release% || goto :error
+copy %root_dir%\KNOWN_ISSUES.md %release% || goto :error
+copy %root_dir%\CONFIGURATION.md %release% || goto :error
 
 @if "%sign%" == "0" (
 	@choice /m "Sign release?" /c YN
