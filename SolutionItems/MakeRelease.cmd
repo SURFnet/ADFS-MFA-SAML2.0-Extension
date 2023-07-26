@@ -97,14 +97,27 @@ copy %root_dir%\UPGRADE.md %release% || goto :error
 copy %root_dir%\KNOWN_ISSUES.md %release% || goto :error
 copy %root_dir%\CONFIGURATION.md %release% || goto :error
 
+@rem Message when signing is not enabled
 @if "%sign%" == "0" (
-	@choice /m "Sign release?" /c YN
-	@if "%errorlevel%" == "1" set sign=1
+  @echo.
+  @echo ------------------------------------------------------------
+  @echo Signing is not enabled, the release will not be signed  
+  @echo To sign the release, run MakeRelease.cmd -sign %version%
+  @echo ------------------------------------------------------------
+  @echo.
 )
+
+@rem Use signtool.exe from the windows SDK to create timestamped signature is requested
+@rem First we sign Setup.exe, later we sign the self extracting archive
+
+@rem Set the RFC 3161 timestamp service to use
+@rem @set timestampservice=http://timestamp.digicert.com
+@set timestampservice=http://timestamp.sectigo.com
 
 @if "%sign%" == "1" (
   @echo Signing Setup.exe
-  signtool sign /tr http://timestamp.digicert.com /td sha256 /fd sha256 /a %release%\Setup.exe || goto :error
+  @echo signtool.exe sign /tr %timestampservice% /td sha256 /fd sha256 /a %release%\Setup.exe
+  signtool.exe sign /tr %timestampservice% /td sha256 /fd sha256 /a %release%\Setup.exe || goto :error
 )
 
 @echo Making Self extracting archive
@@ -113,7 +126,8 @@ del %release%.exe
 
 @if "%sign%" == "1" (
   @echo Signing SetupPackage self extracting archive
-  signtool sign /tr http://timestamp.digicert.com /td sha256 /fd sha256 /a %release%.exe || goto :error
+  echo signtool.exe sign /tr %timestampservice% /td sha256 /fd sha256 /a %release%.exe
+  signtool.exe sign /tr %timestampservice% /td sha256 /fd sha256 /a %release%.exe || goto :error
 )
 
 @echo Sucessfully created Release %release%.exe
