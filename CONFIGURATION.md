@@ -5,10 +5,9 @@ Basic configuration of the plugin is performed using the Setup.exe program. Adva
 
 Dynamic LoA configuration
 -------------------------
-Since version 2.1.0 the of the plugin supports setting the `minimalLoa` that is used during the authentication of a user based on the user's group memberships in AD. Configuration of this feature is not supported by the Setup.exe program and must be performed manually after installation of the plugin.
+Since version 2.1.0 the plugin supports setting the `minimalLoa` that is used during the authentication of a user based on the user's group memberships in AD. The minimal level of assurance (LoA) determins the minimally required autehntiction strenght. Configuration of this feature is not supported by the Setup.exe program and must be performed manually after installation of the plugin.
 
-To use dynamic LoA, add a json file to the `Windows\ADFS` directory with a mapping of the AD group names to the LoA to use. When a user is a member of a group in this file, the LoA specified for that group is used instead of the `minimalLoa` set in the `SURFnet.Authentication.ADFS.Plugin.config.xml` configuration file. This can be both a higher or a lower LoA. If a user is a member of multiple groups in the file, the first matching group is used, so the order of the groups in the file can be important.
-The group to LoA mappings a evaluated top to bottom.
+To use dynamic LoA, add a json file to the `Windows\ADFS` directory with a mapping of the AD group names to the LoA to use. When a user is a member of a group in this file, the LoA specified for that group is used instead of the `minimalLoa` set in the `SURFnet.Authentication.ADFS.Plugin.config.xml` configuration file. This can be both a higher or a lower LoA. If a user is a member of multiple groups in the file, the first matching group is used, so the order of the groups in the file can be important. The group to LoA mappings are evaluated top to bottom.
 
 The dynamic LoA file to load must be specified in the `dynamicLoaFile` attribute of the `SfoMfaExtension` element in the `SURFnet.Authentication.ADFS.Plugin.config.xml` configuration file:
 
@@ -21,8 +20,11 @@ The dynamic LoA file to load must be specified in the `dynamicLoaFile` attribute
                  dynamicLoaFile="SURFnet.Authentication.ADFS.Plugin.config.dynamicLoa.json" />
 ```
 
-In this example the `SURFnet.Authentication.ADFS.Plugin.config.dynamicLoa.json` file is loaded from the `Windows\ADFS` directory. A dynamicLoa file must contain a JSON dictionary mapping the AD group names to level of assurance identifiers.
-Note that when a user is a member of multiple groups in this file, the first matching group is used. So in the example below the if a user is a member of both the "Domain Admins" and the "Domain Users" group, the "Domain Admins" group is used and the user is authenticated at LoA `http://test.surfconext.nl/assurance/sfo-level3`.
+In this example the `SURFnet.Authentication.ADFS.Plugin.config.dynamicLoa.json` file is loaded from the `Windows\ADFS` directory. A dynamicLoa file must contain a JSON dictionary mapping the AD group names to the LoAs.
+
+Note that we use the LoA indentifiers of the SURFsecureID public TEST instance in this example, the identifiers of the SURFsecureID production environment are different.
+
+Note that when a user is a member of multiple groups in this file, the first matching group is used. So in the example below, if a user is a member of both the "Domain Admins" and the "Domain Users" group, the "Domain Admins" group is used and the user is authenticated at LoA `http://test.surfconext.nl/assurance/sfo-level3`.
 
 The `SURFnet.Authentication.ADFS.Plugin.config.dynamicLoa.json` file`:
 ```json
