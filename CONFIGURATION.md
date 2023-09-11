@@ -15,7 +15,7 @@ The dynamic LoA file to load must be specified in the `dynamicLoaFile` attribute
 <?xml version="1.0" encoding="utf-8"?>
 <SfoMfaExtension schacHomeOrganization="institution-b.nl" 
                  activeDirectoryUserIdAttribute="employeeNumber" 
-                 minimalLoa="http://test.surfconext.nl/assurance/sfo-level15" 
+                 minimalLoa="http://test.surfconext.nl/assurance/sfo-level1.5" 
                  NameIdAlgorithm="UserIdFromADAttr"
                  dynamicLoaFile="SURFnet.Authentication.ADFS.Plugin.config.dynamicLoa.json" />
 ```
